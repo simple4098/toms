@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.UserInfoDao" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.UserInfo" >
+              <id column="id" property="id" />
+              <result column="login_name" property="loginName"/>
+              <result column="user_type" property="userType"/>
+              <result column="telephone" property="telephone"/>
+              <result column="password" property="password"/>
+              <result column="data_permission" property="dataPermission"/>
+              <result column="role_id" property="roleId"/>
+              <result column="created_date" property="createdDate"/>
+       </resultMap>
+       <insert id="insertUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
+              insert into user_info(id,login_name,user_type,telephone,password,data_permission,role_id,created_date)
+               values (#{id},#{loginName},#{userType},#{telephone},#{password},#{dataPermission},#{roleId},#{createdDate})
+       </insert>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+       <context:component-scan base-package="com.fanqielaile.toms" use-default-filters="false">
+              <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+       </context:component-scan>
+
+       <bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean" id="conversionService"/>
+
+       <mvc:annotation-driven conversion-service="conversionService"/>
+       <mvc:default-servlet-handler/>
+
+       <bean class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
+              <constructor-arg index="0" value="zh_CN"/>
+       </bean>
+       <bean
+               class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+              <property name="messageConverters">
+                     <list>
+                            <bean
+                                    class="org.springframework.http.converter.StringHttpMessageConverter">
+                                   <property name="supportedMediaTypes">
+                                          <list>
+                                                 <value>text/plain;charset=UTF-8</value>
+                                          </list>
+                                   </property>
+                            </bean>
+                            <bean
+                                    class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+                                   <property name="supportedMediaTypes">
+                                          <list>
+                                                 <value>text/html;charset=UTF-8</value>
+                                                 <!--
+                                                        <value>application/json;charset=UTF-8</value>
+                                                         -->
+                                          </list>
+                                   </property>
+                            </bean>
+                     </list>
+              </property>
+       </bean>
+       <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+              <property name="order" value="1"/>
+              <property name="favorParameter" value="false"/>
+              <property name="ignoreAcceptHeader" value="true"/>
+              <property name="mediaTypes">
+                     <map>
+                            <entry key="json" value="application/json"/>
+                            <!--<entry key="jsons" value="text/jsons"/>-->
+                     </map>
+              </property>
+              <property name="defaultViews">
+                     <list>
+                            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+                            <!--<bean class="com.funi.core.biz.coredata.support.JsonsView"/>-->
+                     </list>
+              </property>
+       </bean>
+       <bean  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+              <property name="prefix" value="/WEB-INF/jsp/"/>
+              <property name="suffix" value=".jsp" />
+       </bean>
+</beans>
