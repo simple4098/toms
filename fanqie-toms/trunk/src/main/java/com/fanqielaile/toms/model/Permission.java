@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model;
 
+import com.fanqie.core.Domain;
+
 import java.util.List;
 
 /**

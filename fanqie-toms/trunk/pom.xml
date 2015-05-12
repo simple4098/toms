@@ -52,8 +52,8 @@
   </pluginRepositories>
   <dependencies>
     <dependency>
-      <groupId>com.fanqie</groupId>
-      <artifactId>fanqie-util</artifactId>
+      <groupId>com.fanqie.com</groupId>
+      <artifactId>fanqie-core</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

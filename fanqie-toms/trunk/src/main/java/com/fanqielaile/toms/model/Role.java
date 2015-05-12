@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.model;
 
+import com.fanqie.core.Domain;
 import org.springframework.security.access.ConfigAttribute;
 
 import java.util.Set;
