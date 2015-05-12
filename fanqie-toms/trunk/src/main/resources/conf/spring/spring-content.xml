@@ -84,4 +84,5 @@
                      <value>4096</value>
               </property>
        </bean>
+       <bean id="passwordEncoder" class="com.fanqielaile.toms.support.util.passwordEncoder"/>
 </beans>
