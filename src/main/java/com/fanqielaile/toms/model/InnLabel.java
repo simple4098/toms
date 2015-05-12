@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model;
 
+import com.fanqie.core.Domain;
+
 /**
  * Created by wangdayin on 2015/5/12.
  */

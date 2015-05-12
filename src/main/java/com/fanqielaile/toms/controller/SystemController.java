@@ -1,8 +1,10 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.model.InnLabel;
+import com.fanqielaile.toms.model.NoticeTemplate;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IInnLabelService;
+import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,8 @@ import java.util.List;
 public class SystemController extends BaseController {
     @Resource
     private IInnLabelService iInnLabelService;
+    @Resource
+    private INoticeTemplateService noticeTemplateService;
 
     /**
      * 查询当前登陆用户所在的客栈标签
@@ -45,13 +49,8 @@ public class SystemController extends BaseController {
             //TODO 获取当前登陆用户
 //            UserInfo currentUser = getCurrentUser();
 //            innLabel.setCompanyId(currentUser.getCompanyId());
-            int label = this.iInnLabelService.createInnLabel(innLabel);
-            if (1 == label) {
+            this.iInnLabelService.createInnLabel(innLabel);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            } else {
-                model.addAttribute(Constants.STATUS, Constants.ERROR);
-                model.addAttribute(Constants.MESSAGE, "添加标签失败");
-            }
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "请检查参数");
@@ -109,4 +108,88 @@ public class SystemController extends BaseController {
             model.addAttribute(Constants.MESSAGE, "删除失败，不存在该标签");
         }
     }
+
+    /**
+     * 查询通知模板列表
+     *
+     * @param model
+     */
+    @RequestMapping("find_notices")
+    public void findNotices(Model model) {
+        //TODO 获取当前登陆用户所在的公司
+        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(null));
+    }
+
+    /**
+     * 新增通知模板
+     *
+     * @param model
+     * @param noticeTemplate
+     */
+    @RequestMapping("create_notice")
+    public void createNotice(Model model, NoticeTemplate noticeTemplate) {
+        //TODO 获取当前登陆用户中的所属公司
+        if (StringUtils.isNotEmpty(noticeTemplate.getNoticeTitle()) && StringUtils.isNotEmpty(noticeTemplate.getNoticeContent())) {
+            this.noticeTemplateService.createNoticeTemplate(noticeTemplate);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "请检查参数");
+        }
+    }
+
+    /**
+     * 根据id查询通知模板
+     *
+     * @param model
+     * @param id
+     */
+    @RequestMapping("find_notice")
+    public void findNotice(Model model, String id) {
+        NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(id);
+        if (noticeTemplate == null) {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "没有改通知模板信息");
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, noticeTemplate);
+        }
+    }
+
+    /**
+     * 修改通知模板
+     *
+     * @param model
+     * @param noticeTemplate
+     */
+    @RequestMapping("update_notice")
+    public void updateNotice(Model model, NoticeTemplate noticeTemplate) {
+        boolean flag = this.noticeTemplateService.modifyNoticeTemplate(noticeTemplate);
+        if (flag) {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "修改失败");
+        }
+    }
+
+    /**
+     * 删除通知模板
+     *
+     * @param model
+     * @param id
+     */
+    @RequestMapping("delete_notice")
+    public void deleteNotice(Model model, String id) {
+        boolean flag = this.noticeTemplateService.removeNoticeTemplateById(id);
+        if (flag) {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "删除失败");
+        }
+
+    }
+
 }
