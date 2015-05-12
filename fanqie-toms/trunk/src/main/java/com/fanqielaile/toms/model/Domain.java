@@ -9,9 +9,9 @@ public class Domain {
     //ID
     private String id;
     //创建时间
-    private Date createdDate;
+    private Date createdDate = new Date();
     //更新时间
-    private Date updatedDate;
+    private Date updatedDate = new Date();
     //修改者ID
     private String modifierId;
     //版本号
@@ -19,7 +19,7 @@ public class Domain {
     //创建者ID
     private String creatorId;
     //是否删除
-    private boolean deleted;
+    private int deleted = 0;
 
     public String getId() {
         return id;
@@ -69,18 +69,19 @@ public class Domain {
         this.creatorId = creatorId;
     }
 
-    public boolean isDeleted() {
+    public int isDeleted() {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+
+    public void setDeleted(int deleted) {
         this.deleted = deleted;
     }
 
     public Domain() {
     }
 
-    public Domain(String id, Date createdDate, Date updatedDate, String modifierId, float version, String creatorId, boolean deleted) {
+    public Domain(String id, Date createdDate, Date updatedDate, String modifierId, float version, String creatorId, int deleted) {
         this.id = id;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;

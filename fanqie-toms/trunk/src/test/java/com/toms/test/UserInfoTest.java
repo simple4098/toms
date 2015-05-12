@@ -5,7 +5,6 @@ import com.fanqielaile.toms.model.UserInfo;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -23,7 +22,7 @@ public class UserInfoTest {
     private UserInfoDao userInfoDao;
 
     @Test
-//    @Ignore
+    @Ignore
     public void testInsert(){
         UserInfo userInfo = new UserInfo();
         userInfo.setId(UUID.randomUUID().toString());
