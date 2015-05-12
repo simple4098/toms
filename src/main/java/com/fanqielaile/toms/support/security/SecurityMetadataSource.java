@@ -2,7 +2,6 @@ package com.fanqielaile.toms.support.security;
 
 import com.fanqielaile.toms.dao.RoleDao;
 import com.fanqielaile.toms.model.Role;
-import com.fanqielaile.toms.support.security.ReloadableRequestMapResolver;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
