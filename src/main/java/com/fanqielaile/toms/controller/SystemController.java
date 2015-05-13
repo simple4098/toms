@@ -6,12 +6,15 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IInnLabelService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -32,9 +35,8 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("find_label")
     public void findLabels(Model model) {
-        //TODO 获取当前登陆用户中的所属公司
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.iInnLabelService.findLabelsByCompanyId(null));
+        model.addAttribute(Constants.DATA, this.iInnLabelService.findLabelsByCompanyId(getCurrentUser().getCompanyId()));
     }
 
     /**
@@ -44,17 +46,11 @@ public class SystemController extends BaseController {
      * @param innLabel
      */
     @RequestMapping("create_inn_label")
-    public void createInnLabel(Model model, InnLabel innLabel) {
-        if (StringUtils.isNotEmpty(innLabel.getLabelName())) {
-            //TODO 获取当前登陆用户
-//            UserInfo currentUser = getCurrentUser();
-//            innLabel.setCompanyId(currentUser.getCompanyId());
+    public Model createInnLabel(Model model, @Valid InnLabel innLabel, BindingResult result) {
+        UserInfo currentUser = getCurrentUser();
+        innLabel.setCompanyId(currentUser.getCompanyId());
             this.iInnLabelService.createInnLabel(innLabel);
-                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "请检查参数");
-        }
+        return new JsonModel().getModel(model, result);
     }
 
     /**
@@ -116,9 +112,8 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("find_notices")
     public void findNotices(Model model) {
-        //TODO 获取当前登陆用户所在的公司
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(null));
+        model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(getCurrentUser().getCompanyId()));
     }
 
     /**
@@ -128,15 +123,10 @@ public class SystemController extends BaseController {
      * @param noticeTemplate
      */
     @RequestMapping("create_notice")
-    public void createNotice(Model model, NoticeTemplate noticeTemplate) {
-        //TODO 获取当前登陆用户中的所属公司
-        if (StringUtils.isNotEmpty(noticeTemplate.getNoticeTitle()) && StringUtils.isNotEmpty(noticeTemplate.getNoticeContent())) {
+    public Model createNotice(Model model, @Valid NoticeTemplate noticeTemplate, BindingResult result) {
+        noticeTemplate.setCompanyId(getCurrentUser().getCompanyId());
             this.noticeTemplateService.createNoticeTemplate(noticeTemplate);
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "请检查参数");
-        }
+        return new JsonModel().getModel(model, result);
     }
 
     /**

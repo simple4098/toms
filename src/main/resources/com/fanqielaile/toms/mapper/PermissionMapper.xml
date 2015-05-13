@@ -32,7 +32,10 @@
         <include refid="Base_Column_List"/>
         from permission
     </select>
-
+    <select id="selectPermissionByCompanyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT p.id,p.permission_name,p.url,p.parent_id,p.indexed from permission p left join company_permission cp on p.id = cp.permission_id
+        where company_id = #{companyId}
+    </select>
     <select id="selectPermissionRoles" resultMap="permissionRoleResultMap">
         SELECT p.id,p.permission_name,p.url,r.role_name,r.role_key,r.id role_id FROM permission p
         left JOIN role_permission rp on p.id = rp.permission_id LEFT JOIN role r ON rp.role_id=r.id
