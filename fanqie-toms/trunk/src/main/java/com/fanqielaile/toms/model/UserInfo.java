@@ -2,6 +2,8 @@ package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
 import com.fanqielaile.toms.enums.UserType;
+
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,12 +18,16 @@ public class UserInfo extends Domain implements UserDetails {
     //用户类型
     private UserType userType;
     //登陆账号
+    @NotBlank(message = "账户名不能为空")
     private String loginName;
     //电话号码
+    @NotBlank(message = "电话号码不能为空")
     private String telephone;
     //用户姓名
+    @NotBlank(message = "用户姓名不能为空")
     private String userName;
     //密码
+    @NotBlank(message = "密码不能为空")
     private String password;
     //数据权限
     private Integer dataPermission;

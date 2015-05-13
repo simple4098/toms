@@ -23,16 +23,20 @@ public class BaseController {
     * 获取登陆用户信息
     * */
     protected UserInfo getCurrentUser() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication == null) {
-            throw new TomsRuntimeException("登录超时，请重新登录");
-        }
-        Object principal = authentication.getPrincipal();
-        if (!(principal instanceof UserInfo)) {
-            throw new TomsRuntimeException("登录超时，请重新登录");
-        }
-        return (UserInfo) principal;
+//        SecurityContext securityContext = SecurityContextHolder.getContext();
+//        Authentication authentication = securityContext.getAuthentication();
+//        if (authentication == null) {
+//            throw new TomsRuntimeException("登录超时，请重新登录");
+//        }
+//        Object principal = authentication.getPrincipal();
+//        if (!(principal instanceof UserInfo)) {
+//            throw new TomsRuntimeException("登录超时，请重新登录");
+//        }
+//        return (UserInfo) principal;
+        //TODO 获取当前登陆用户
+        UserInfo userInfo = new UserInfo();
+        userInfo.setCompanyId(null);
+        return userInfo;
     }
 
     /**

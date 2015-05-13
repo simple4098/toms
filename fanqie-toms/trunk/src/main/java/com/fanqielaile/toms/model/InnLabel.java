@@ -1,12 +1,14 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Created by wangdayin on 2015/5/12.
  */
 public class InnLabel extends Domain {
     //标签名称
+    @NotBlank(message = "标签名称不能为空")
     private String labelName;
     //排序字段
     private int indexed;

@@ -36,14 +36,13 @@
         select r.id, r.role_name, r.role_desc, r.role_key,rp.permission_id
         from role r left join role_permission rp on r.id=rp.role_id where r.id=#{id}
     </select>
+    <select id="selectMaxIndex" resultType="java.lang.Integer">
+        select max(indexed) from role
+    </select>
     <insert id="insertRole" parameterType="com.fanqielaile.toms.model.Role">
         insert into role (id, role_name, role_desc, role_key,created_date,creator_id,indexed)
         values (#{id}, #{roleName}, #{roleDesc}, #{roleKey},#{createdDate},#{creatorId},#{indexed})
     </insert>
-    <update id="updateRolePermission" parameterType="java.lang.String">
-        update role set permissionList=#{permissions} where id=#{id}
-    </update>
-
     <delete id="deletePermissionsOfRole" parameterType="java.lang.String">
         delete from role_permission where role_id =#{roleId}
     </delete>
