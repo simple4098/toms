@@ -33,7 +33,6 @@ public class BaseController {
             throw new TomsRuntimeException("登录超时，请重新登录");
         }
         return (UserInfo) principal;
-//        //TODO 获取当前登陆用户
 //        UserInfo userInfo = new UserInfo();
 //        userInfo.setCompanyId(null);
 //        return userInfo;
