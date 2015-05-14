@@ -56,10 +56,11 @@ public class UserInfoService implements IUserInfoService {
                 this.roleDao.deletePermissionsOfRole(role.getId());
                 Role rolePermission = new Role();
                 rolePermission.setId(UUID.randomUUID().toString());
+                rolePermission.setRolePermissionRoleId(role.getId());
                 rolePermission.setPermissions(new HashSet<String>(permissionIdlist));
                 rolePermission.setCreatedDate(new Date());
                 rolePermission.setUpdatedDate(new Date());
-                this.roleDao.insertPermissionsForRole(role);
+                this.roleDao.insertPermissionsForRole(rolePermission);
                 return true;
             }
         }
