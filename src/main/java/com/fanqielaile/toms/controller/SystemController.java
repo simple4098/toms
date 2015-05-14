@@ -28,6 +28,10 @@ public class SystemController extends BaseController {
     @Resource
     private INoticeTemplateService noticeTemplateService;
 
+    @RequestMapping("login_success")
+    public String loginSuccess() {
+        return "user/test";
+    }
     /**
      * 查询当前登陆用户所在的客栈标签
      *
