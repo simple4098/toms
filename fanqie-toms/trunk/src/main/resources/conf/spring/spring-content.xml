@@ -84,5 +84,5 @@
                      <value>4096</value>
               </property>
        </bean>
-       <bean id="passwordEncoder" class="com.fanqielaile.toms.support.util.passwordEncoder"/>
+       <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 </beans>

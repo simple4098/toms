@@ -6,6 +6,7 @@ import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,8 @@ public class UserInfoService implements IUserInfoService {
     private UserInfoDao userInfoDao;
     @Resource
     private RoleDao roleDao;
+    @Resource
+    private Md5PasswordEncoder passwordEncoder;
     @Override
     public boolean createUserInfo(UserInfo userInfo, List<String> permissionIdlist) {
         if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
@@ -46,6 +49,8 @@ public class UserInfoService implements IUserInfoService {
                 //创建用户
                 userInfo.setId(UUID.randomUUID().toString());
                 userInfo.setRoleId(role.getId());
+                //设置密码
+                userInfo.setPassword(passwordEncoder.encodePassword(userInfo.getPassword(), null));
                 userInfoDao.insertUserInfo(userInfo);
                 //创建角色与权限的关系
                 this.roleDao.deletePermissionsOfRole(role.getId());
@@ -102,7 +107,9 @@ public class UserInfoService implements IUserInfoService {
     public UserDetails loadUserByUsername(String loginName) throws UsernameNotFoundException {
         UserInfo userInfo = this.userInfoDao.selectUserInfoByLoginName(loginName);
         Role role = userInfo.getRole();
-        userInfo.setAuthorities(new HashSet<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(role.getRoleKey()))));
+        if (null != role) {
+            userInfo.setAuthorities(new HashSet<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(role.getRoleKey()))));
+        }
         return userInfo;
     }
 }

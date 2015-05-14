@@ -5,6 +5,7 @@ import com.fanqielaile.toms.model.UserInfo;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -20,16 +21,18 @@ import java.util.UUID;
 public class UserInfoTest {
     @Resource
     private UserInfoDao userInfoDao;
+    @Resource
+    private Md5PasswordEncoder passwordEncoder;
 
     @Test
-    @Ignore
+//    @Ignore
     public void testInsert(){
         UserInfo userInfo = new UserInfo();
         userInfo.setId(UUID.randomUUID().toString());
         userInfo.setLoginName("test");
         userInfo.setCreatedDate(new Date());
         userInfo.setDataPermission(1);
-
+        userInfo.setPassword(passwordEncoder.encodePassword("111111", null));
         int i = userInfoDao.insertUserInfo(userInfo);
         System.out.println("=====>"+i);
     }
