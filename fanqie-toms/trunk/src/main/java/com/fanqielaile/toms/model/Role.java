@@ -19,6 +19,16 @@ public class Role extends Domain implements ConfigAttribute {
     private String roleKey;
     // 角色权限
     private Set<String> permissions;
+    //关联关系roleId
+    private String rolePermissionRoleId;
+
+    public String getRolePermissionRoleId() {
+        return rolePermissionRoleId;
+    }
+
+    public void setRolePermissionRoleId(String rolePermissionRoleId) {
+        this.rolePermissionRoleId = rolePermissionRoleId;
+    }
 
     public String getRoleDesc() {
         return roleDesc;
