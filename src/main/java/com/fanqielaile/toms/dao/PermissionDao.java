@@ -16,8 +16,24 @@ public interface PermissionDao {
     List<Permission> selectPermissionRoles();
 
     /**
+     * 根据公司ID查询公司具有的权限
      * @param companyId
      * @return
      */
     List<Permission> selectPermissionByCompanyId(String companyId);
+
+    /**
+     * 根据用户id查询权限列表
+     *
+     * @param userId
+     * @return
+     */
+    List<Permission> selectPermissionByUserId(String userId);
+
+    /**
+     * 创建权限
+     *
+     * @param permission
+     */
+    void insertPermission(Permission permission);
 }

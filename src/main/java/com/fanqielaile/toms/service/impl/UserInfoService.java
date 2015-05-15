@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqielaile.toms.dao.RoleDao;
 import com.fanqielaile.toms.dao.UserInfoDao;
+import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
@@ -28,7 +29,7 @@ public class UserInfoService implements IUserInfoService {
     @Resource
     private Md5PasswordEncoder passwordEncoder;
     @Override
-    public boolean createUserInfo(UserInfo userInfo, List<String> permissionIdlist) {
+    public boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdlist) {
         if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
             UserInfo userInfo1 = userInfoDao.selectUserInfoByLoginName(userInfo.getLoginName());
             if (null == userInfo1) {
@@ -57,7 +58,8 @@ public class UserInfoService implements IUserInfoService {
                 Role rolePermission = new Role();
                 rolePermission.setId(UUID.randomUUID().toString());
                 rolePermission.setRolePermissionRoleId(role.getId());
-                rolePermission.setPermissions(new HashSet<String>(permissionIdlist));
+//                rolePermission.setPermissions(new HashSet<String>(permissionIdlist));
+                rolePermission.setPermissionList(permissionIdlist);
                 rolePermission.setCreatedDate(new Date());
                 rolePermission.setUpdatedDate(new Date());
                 this.roleDao.insertPermissionsForRole(rolePermission);
@@ -86,6 +88,7 @@ public class UserInfoService implements IUserInfoService {
     public boolean modifyUserInfo(UserInfo userInfo) {
         UserInfo userInfo1 = userInfoDao.selectUserInfoById(userInfo.getId());
         if (null != userInfo1) {
+            userInfo.setPassword(passwordEncoder.encodePassword(userInfo.getPassword(), null));
             userInfoDao.updateUserInfo(userInfo);
             return true;
         } else {
@@ -102,6 +105,19 @@ public class UserInfoService implements IUserInfoService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void modifyUserPermission(UserInfo userInfo, List<Permission> permissionsList, int dataPermission) {
+        //创建角色与权限的关系
+        this.roleDao.deletePermissionsOfRole(userInfo.getRoleId());
+        Role rolePermission = new Role();
+        rolePermission.setId(UUID.randomUUID().toString());
+        rolePermission.setRolePermissionRoleId(userInfo.getRoleId());
+        rolePermission.setPermissionList(permissionsList);
+        this.roleDao.insertPermissionsForRole(rolePermission);
+        //修改用户数据权限
+        this.userInfoDao.updateUserDataPermission(userInfo.getId(), dataPermission);
     }
 
     @Override

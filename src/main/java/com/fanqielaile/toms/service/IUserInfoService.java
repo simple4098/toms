@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -15,7 +16,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param userInfo
      * @return
      */
-    boolean createUserInfo(UserInfo userInfo, List<String> permissionIdList);
+    boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdList);
 
     /**
      * 根据登陆账户查询用户
@@ -56,4 +57,12 @@ public interface IUserInfoService extends UserDetailsService {
      * @return
      */
     boolean removeUserInfo(String id);
+
+    /**
+     * 更新用户权限
+     *
+     * @param userInfo
+     * @param permissionsList
+     */
+    void modifyUserPermission(UserInfo userInfo, List<Permission> permissionsList, int dataPermission);
 }

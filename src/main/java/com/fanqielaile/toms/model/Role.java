@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 import org.springframework.security.access.ConfigAttribute;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,6 +22,16 @@ public class Role extends Domain implements ConfigAttribute {
     private Set<String> permissions;
     //关联关系roleId
     private String rolePermissionRoleId;
+    //权限
+    private List<Permission> permissionList;
+
+    public List<Permission> getPermissionList() {
+        return permissionList;
+    }
+
+    public void setPermissionList(List<Permission> permissionList) {
+        this.permissionList = permissionList;
+    }
 
     public String getRolePermissionRoleId() {
         return rolePermissionRoleId;

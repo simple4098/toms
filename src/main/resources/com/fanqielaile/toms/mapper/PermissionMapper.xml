@@ -44,4 +44,10 @@
         insert into permission(id,permission_name,url,parent_id,indexed,deleted) values
         (#{id},#{permissionName},#{url},#{parentId},#{indexed},#{deleted})
     </insert>
+    <select id="selectPermissionByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT p.id,p.permission_name,p.url,p.parent_id,p.indexed from user_info u
+        left join role_permission rp on u.role_id=rp.role_id
+        LEFT join permission p on p.id = rp.permission_id
+        where u.deleted = 0 and u.id= #{userId}
+    </select>
 </mapper>
