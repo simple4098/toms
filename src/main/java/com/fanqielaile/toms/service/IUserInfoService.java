@@ -56,7 +56,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param id
      * @return
      */
-    boolean removeUserInfo(String id);
+    boolean removeUserInfo(String id, String replaceUserid);
 
     /**
      * 更新用户权限
@@ -65,4 +65,12 @@ public interface IUserInfoService extends UserDetailsService {
      * @param permissionsList
      */
     void modifyUserPermission(UserInfo userInfo, List<Permission> permissionsList, int dataPermission);
+
+    /**
+     * 查询公司其他员工
+     *
+     * @param userInfo
+     * @return
+     */
+    List<UserInfo> findOtherUserInfoById(UserInfo userInfo);
 }

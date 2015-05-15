@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 角色
  * Created by wangdayin on 2015/5/11.
  */
 public class Role extends Domain implements ConfigAttribute {

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.RoleDao;
 import com.fanqielaile.toms.dao.UserInfoDao;
 import com.fanqielaile.toms.model.Permission;
@@ -28,6 +29,8 @@ public class UserInfoService implements IUserInfoService {
     private RoleDao roleDao;
     @Resource
     private Md5PasswordEncoder passwordEncoder;
+    @Resource
+    private BangInnDao bangInnDao;
     @Override
     public boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdlist) {
         if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
@@ -97,9 +100,12 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
-    public boolean removeUserInfo(String id) {
+    public boolean removeUserInfo(String id, String replaceUserId) {
         UserInfo userInfo = userInfoDao.selectUserInfoById(id);
         if (userInfo != null) {
+            //删除员工之前将员工名下的管理客栈转移
+            this.bangInnDao.updateBangInnUserId(id, replaceUserId);
+            //删除员工
             userInfoDao.deleteUserInfo(id);
             return true;
         } else {
@@ -118,6 +124,11 @@ public class UserInfoService implements IUserInfoService {
         this.roleDao.insertPermissionsForRole(rolePermission);
         //修改用户数据权限
         this.userInfoDao.updateUserDataPermission(userInfo.getId(), dataPermission);
+    }
+
+    @Override
+    public List<UserInfo> findOtherUserInfoById(UserInfo userInfo) {
+        return this.userInfoDao.selectOtherUserInfoById(userInfo);
     }
 
     @Override

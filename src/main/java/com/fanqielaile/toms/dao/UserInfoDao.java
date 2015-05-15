@@ -56,5 +56,20 @@ public interface UserInfoDao {
     */
    int deleteUserInfo(@Param("id")String id);
 
+   /**
+    * 修改用户的数据权限
+    *
+    * @param id
+    * @param dataPermission
+    * @return
+    */
    int updateUserDataPermission(@Param("id") String id, @Param("dataPermission") int dataPermission);
+
+   /**
+    * 查询公司其他员工
+    *
+    * @param userInfo
+    * @return
+    */
+   List<UserInfo> selectOtherUserInfoById(UserInfo userInfo);
 }
