@@ -108,14 +108,31 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 查询公司其他员工
+     * @param model
+     * @param userInfo
+     */
+    @RequestMapping("find_other_user")
+    public void findOtherUser(Model model, UserInfo userInfo) {
+        UserInfo userInfo1 = this.userInfoService.findUserInfoById(userInfo.getId());
+        if (null != userInfo1) {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, this.userInfoService.findOtherUserInfoById(userInfo1));
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "查询错误");
+        }
+    }
+
+    /**
      * 删除用户
      *
      * @param model
      * @param id
      */
     @RequestMapping("delete_user")
-    public void deleteUser(Model model, String id) {
-        boolean flag = this.userInfoService.removeUserInfo(id);
+    public void deleteUser(Model model, String id, String replaceUserId) {
+        boolean flag = this.userInfoService.removeUserInfo(id, replaceUserId);
         if (flag) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.MESSAGE, "删除成功");

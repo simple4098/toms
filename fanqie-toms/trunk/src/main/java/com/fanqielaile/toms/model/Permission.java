@@ -5,6 +5,7 @@ import com.fanqie.core.Domain;
 import java.util.List;
 
 /**
+ * 权限
  * Created by wangdayin on 2015/5/11.
  */
 public class Permission extends Domain {

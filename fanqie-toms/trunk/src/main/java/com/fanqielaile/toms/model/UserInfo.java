@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
+ * 用户
  * Created by wangdayin on 2015/5/11.
  */
 public class UserInfo extends Domain implements UserDetails {

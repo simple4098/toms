@@ -4,6 +4,7 @@ import com.fanqie.core.Domain;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
+ * 客栈标签
  * Created by wangdayin on 2015/5/12.
  */
 public class InnLabel extends Domain {

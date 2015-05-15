@@ -1,9 +1,7 @@
 package com.fanqielaile.toms.controller;
 
-import com.fanqielaile.toms.model.InnLabel;
-import com.fanqielaile.toms.model.NoticeTemplate;
-import com.fanqielaile.toms.model.Permission;
-import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IInnLabelService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.service.IPermissionService;
@@ -31,6 +29,8 @@ public class SystemController extends BaseController {
     private INoticeTemplateService noticeTemplateService;
     @Resource
     private IPermissionService permissionService;
+    @Resource
+    private IBangInnService bangInnService;
 
     /**
      * 登陆成功跳转
@@ -112,12 +112,19 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("delete_label")
     public void deleteLabel(Model model, String id) {
-        boolean flag = this.iInnLabelService.removeLabelById(id);
-        if (flag) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        //判断该标签下是否存在绑定的客栈
+        List<BangInn> bangInnList = this.bangInnService.findBangInnByInnLabelId(id);
+        if (null == bangInnList) {
+            boolean flag = this.iInnLabelService.removeLabelById(id);
+            if (flag) {
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "删除失败，不存在该标签");
+            }
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "删除失败，不存在该标签");
+            model.addAttribute(Constants.MESSAGE, "删除失败，该标签下有绑定客栈，不能删除");
         }
     }
 

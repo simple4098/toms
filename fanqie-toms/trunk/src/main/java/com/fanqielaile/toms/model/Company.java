@@ -5,6 +5,7 @@ import com.fanqie.core.Domain;
 import java.util.List;
 
 /**
+ * 公司基本信息
  * Created by wangdayin on 2015/5/15.
  */
 public class Company extends Domain {

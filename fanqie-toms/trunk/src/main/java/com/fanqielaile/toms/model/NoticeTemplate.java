@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
+ * 通知模板
  * Created by wangdayin on 2015/5/12.
  */
 public class NoticeTemplate extends Domain {

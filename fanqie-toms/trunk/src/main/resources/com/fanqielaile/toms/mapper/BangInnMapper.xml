@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.BangInnDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.BangInn">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="bang_date" property="bangDate"/>
+        <result column="lose_date" property="loseDate"/>
+        <result column="start_date" property="startDate"/>
+        <result column="inn_id" property="innId"/>
+        <result column="inn_name" property="innName"/>
+        <result column="code" property="code"/>
+        <result column="inn_label_id" property="innLabelId"/>
+        <result column="mobile" property="mobile"/>
+        <result column="inn_code" property="innCode"/>
+        <result column="user_id" property="userId"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+              id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type
+       </sql>
+    <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
+              insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type)
+              values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type})
+       </insert>
+    <select id="selectBangInnByInnLabelId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where inn_label_id = #{innLabelId}
+    </select>
+    <update id="updateBangInnUserId">
+              update bang_inn set user_id = #{newUserId} where user_id = #{oldUserId}
+       </update>
+    <select id="selectBangInnByUser" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
+        SELECT inn_label_id FROM bang_inn
+        <if test="dataPermission == 0">
+            where user_id = #{id}
+        </if>
+        GROUP BY inn_label_id
+    </select>
+</mapper>
