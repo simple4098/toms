@@ -32,6 +32,11 @@ public class SystemController extends BaseController {
     @Resource
     private IPermissionService permissionService;
 
+    /**
+     * 登陆成功跳转
+     *
+     * @param model
+     */
     @RequestMapping("login_success")
     public void loginSuccess(Model model) {
         UserInfo currentUser = getCurrentUser();

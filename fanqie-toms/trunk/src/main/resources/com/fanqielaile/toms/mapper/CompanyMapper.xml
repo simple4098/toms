@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.CompanyDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.Company">
+        <id column="id" property="id"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="modifier_id" property="modifierId"/>
+        <result column="version" property="version"/>
+        <result column="deleted" property="deleted"/>
+        <result column="company_name" property="companyName"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name
+    </sql>
+    <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
+              insert into company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name)
+              values (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName})
+       </insert>
+    <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM company where deleted = 0
+        and id = #{id}
+    </select>
+    <insert id="insertCompanyPermission" parameterType="com.fanqielaile.toms.model.Company">
+        INSERT INTO company_permission (id,company_id,permission_id,created_date,updated_date)
+        VALUES
+        <foreach collection="permissionList" item="p" separator=",">
+            (#{p.uuid},#{id},#{p.id},#{p.createdDate},#{p.updatedDate})
+        </foreach>
+    </insert>
+</mapper>
