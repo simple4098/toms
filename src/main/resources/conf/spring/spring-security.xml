@@ -11,7 +11,8 @@
     <security:http auto-config="true">
         <security:form-login login-page="/login" password-parameter="password"
                              username-parameter="username" login-processing-url="/login_process"
-                             authentication-failure-url="/login?error=true" default-target-url="/system/login_success"/>
+                             authentication-failure-url="/login?error=true"
+                             default-target-url="/system/login_success.json"/>
         <security:custom-filter ref="filterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR"/>
         <security:logout logout-url="/logout" logout-success-url="/login"/>
         <security:access-denied-handler error-page="/denied"/>
