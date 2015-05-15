@@ -25,7 +25,7 @@ public class UserInfoTest {
     private Md5PasswordEncoder passwordEncoder;
 
     @Test
-//    @Ignore
+    @Ignore
     public void testInsert(){
         UserInfo userInfo = new UserInfo();
         userInfo.setId(UUID.randomUUID().toString());
@@ -35,5 +35,11 @@ public class UserInfoTest {
         userInfo.setPassword(passwordEncoder.encodePassword("111111", null));
         int i = userInfoDao.insertUserInfo(userInfo);
         System.out.println("=====>"+i);
+    }
+
+    @Test
+    @Ignore
+    public void testUpdateDataPermission() {
+        this.userInfoDao.updateUserDataPermission("dd9c2648-3b79-4e61-87d3-18079e9256d3", 1);
     }
 }

@@ -2,9 +2,11 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.NoticeTemplate;
+import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IInnLabelService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
+import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
@@ -27,10 +29,15 @@ public class SystemController extends BaseController {
     private IInnLabelService iInnLabelService;
     @Resource
     private INoticeTemplateService noticeTemplateService;
+    @Resource
+    private IPermissionService permissionService;
 
     @RequestMapping("login_success")
-    public String loginSuccess() {
-        return "user/test";
+    public void loginSuccess(Model model) {
+        UserInfo currentUser = getCurrentUser();
+        List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
+        model.addAttribute(Constants.DATA, permissionList);
+        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
     }
     /**
      * 查询当前登陆用户所在的客栈标签
@@ -183,7 +190,28 @@ public class SystemController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "删除失败");
         }
+    }
 
+    /**
+     * 跳转到创建权限页面
+     *
+     * @return
+     */
+    @RequestMapping("create_permission_page")
+    public String createPage() {
+        return "permission";
+    }
+
+    /**
+     * 新增权限
+     *
+     * @param permission
+     * @return
+     */
+    @RequestMapping("create_permission")
+    public String createPermission(Permission permission) {
+        permissionService.createPermission(permission);
+        return "permission";
     }
 
 }

@@ -55,4 +55,6 @@ public interface UserInfoDao {
     * @return
     */
    int deleteUserInfo(@Param("id")String id);
+
+   int updateUserDataPermission(@Param("id") String id, @Param("dataPermission") int dataPermission);
 }

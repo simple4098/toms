@@ -49,8 +49,8 @@
 
     <insert id="insertPermissionsForRole" parameterType="com.fanqielaile.toms.model.Role">
         insert into role_permission(id, role_id, permission_id,created_date,updated_date) values
-        <foreach collection="permissions" item="p" separator=",">
-            (#{id},#{rolePermissionRoleId},#{p},#{createdDate},#{updatedDate})
+        <foreach collection="permissionList" item="p" separator=",">
+            (#{p.uuid},#{rolePermissionRoleId},#{p.id},#{p.createdDate},#{p.updatedDate})
         </foreach>
     </insert>
 </mapper>

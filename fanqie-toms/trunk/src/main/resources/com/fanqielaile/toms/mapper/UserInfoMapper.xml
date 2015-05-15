@@ -88,4 +88,7 @@
        <update id="deleteUserInfo" parameterType="java.lang.String">
               update user_info set deleted = 1 where id = #{id}
        </update>
+       <update id="updateUserDataPermission">
+              update user_info set data_permission =#{dataPermission} where id = #{id}
+       </update>
 </mapper>

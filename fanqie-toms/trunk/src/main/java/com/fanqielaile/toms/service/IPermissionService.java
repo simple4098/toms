@@ -15,4 +15,14 @@ public interface IPermissionService {
      * @return
      */
     List<Permission> findPermissionByCompanyId(String companyId);
+
+    /**
+     * 根据用户id查询权限列表
+     *
+     * @param userId
+     * @return
+     */
+    List<Permission> findPermissionByUserId(String userId);
+
+    void createPermission(Permission permission);
 }
