@@ -44,6 +44,22 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 根据登陆名查询用户
+     * @param model
+     * @param loginName
+     */
+    @RequestMapping("find_user_by_name")
+    public void findUserByName(Model model, String loginName) {
+        UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
+        if (null == userInfo) {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "该账号已经注册过");
+        }
+    }
+
+    /**
      * 创建用户
      *
      * @param model

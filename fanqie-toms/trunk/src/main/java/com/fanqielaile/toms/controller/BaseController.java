@@ -26,11 +26,11 @@ public class BaseController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication == null) {
-            throw new TomsRuntimeException("登录超时，请重新登录");
+            throw new TomsRuntimeException("The login timeout, please login again!");
         }
         Object principal = authentication.getPrincipal();
         if (!(principal instanceof UserInfo)) {
-            throw new TomsRuntimeException("登录超时，请重新登录");
+            throw new TomsRuntimeException("The login timeout, please login again!");
         }
         return (UserInfo) principal;
 //        UserInfo userInfo = new UserInfo();
