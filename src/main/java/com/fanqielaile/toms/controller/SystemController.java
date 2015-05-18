@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -43,6 +45,19 @@ public class SystemController extends BaseController {
         List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
         model.addAttribute(Constants.DATA, permissionList);
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+    }
+
+    /**
+     * 异常统一处理类
+     *
+     * @param model
+     * @param message
+     * @return
+     */
+    @RequestMapping("error")
+    public String toError(Model model, String message) {
+        model.addAttribute("msg", message);
+        return "error";
     }
     /**
      * 查询当前登陆用户所在的客栈标签

@@ -1,30 +1,22 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Administrator
-  Date: 2015/5/12
-  Time: 10:25
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+  String path = request.getContextPath();
+  String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+
 <html>
 <head>
-    <title></title>
+  <title>错误页面</title>
 </head>
 <body>
 <div>
   <h2>操作失败</h2>
-
-  <div class="content">
-    <dl class="lp_tips clearfix disable">
-      <dt></dt>
-      <dd>
-        <h3 style="border-bottom:none;height:auto">${msg}</h3>
-        <c:if test="${empty msg}"><h2>对不起你没有权限访问！</h2></c:if>
-        <p><a href="javascript:history.go(-1);">返回上一步</a><span></span></p>
-      </dd>
-    </dl>
-  </div>
+  <c:if test="${not empty msg}">
+    <h1>失败原因：${msg}</h1>
+    <a href="<%=basePath%>login">返回登录页面</a>
+  </c:if>
+  <c:if test="${empty msg}">Sorry, you have no access！</c:if>
 </div>
 </body>
 </html>
