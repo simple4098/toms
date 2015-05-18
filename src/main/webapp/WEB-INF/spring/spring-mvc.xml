@@ -19,6 +19,16 @@
        <mvc:view-controller path="/login" view-name="login"/>
        <mvc:view-controller path="/error" view-name="error"/>
        <mvc:view-controller path="/denied" view-name="error"/>
+       <mvc:interceptors>
+              <mvc:interceptor>
+                     <mvc:mapping path="/user/*"/>
+                     <mvc:mapping path="/inn_manage/*"/>
+                     <mvc:mapping path="/notice/*"/>
+                     <mvc:mapping path="/system/*"/>
+                     <bean class="com.fanqielaile.toms.support.interceptor.LoginUserInterceptor"/>
+              </mvc:interceptor>
+
+       </mvc:interceptors>
        <bean class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
               <constructor-arg index="0" value="zh_CN"/>
        </bean>
@@ -61,7 +71,6 @@
               <property name="defaultViews">
                      <list>
                             <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
-                            <!--<bean class="com.funi.core.biz.coredata.support.JsonsView"/>-->
                      </list>
               </property>
        </bean>

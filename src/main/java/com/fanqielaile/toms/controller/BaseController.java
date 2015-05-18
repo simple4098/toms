@@ -49,9 +49,9 @@ public class BaseController {
     public String handleServiceException(TomsRuntimeException exception, HttpServletRequest request) throws UnsupportedEncodingException {
         request.setAttribute("msg", exception.getMessage());
         if (exception instanceof TomsRuntimeException) {
-            return redirectUrl("/system/error?message=" + URLEncoder.encode(exception.getMessage(), "UTF-8"));
+            return redirectUrl("/common/error?message=" + URLEncoder.encode(exception.getMessage(), "UTF-8"));
         }
-        return redirectUrl("/system/error?message=" + URLEncoder.encode(exception.getMessage(), "UTF-8"));
+        return redirectUrl("/common/error?message=" + URLEncoder.encode(exception.getMessage(), "UTF-8"));
     }
 
     /**

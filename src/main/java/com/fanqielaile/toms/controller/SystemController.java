@@ -48,18 +48,6 @@ public class SystemController extends BaseController {
     }
 
     /**
-     * 异常统一处理类
-     *
-     * @param model
-     * @param message
-     * @return
-     */
-    @RequestMapping("error")
-    public String toError(Model model, String message) {
-        model.addAttribute("msg", message);
-        return "error";
-    }
-    /**
      * 查询当前登陆用户所在的客栈标签
      *
      * @param model
