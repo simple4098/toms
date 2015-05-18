@@ -83,7 +83,7 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 查询当前所属公司下是员工
+     * 查询当前所属公司下属员工
      *
      * @param model
      */
