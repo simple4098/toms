@@ -12,7 +12,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("notice")
 public class NoticeTemplateController extends BaseController {
-
+    /**
+     * 发送短信或者系统弹窗
+     *
+     * @param model
+     * @param content
+     * @param innIdString
+     * @param sendType
+     */
     @RequestMapping("send_message")
     public void sendMessage(Model model, @RequestParam String content, @RequestParam String innIdString, @RequestParam SendType sendType) {
         if (SendType.valueOf("MESSAGE").equals(sendType)) {

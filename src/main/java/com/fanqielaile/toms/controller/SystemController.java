@@ -40,11 +40,12 @@ public class SystemController extends BaseController {
      * @param model
      */
     @RequestMapping("login_success")
-    public void loginSuccess(Model model) {
+    public String loginSuccess(Model model) {
         UserInfo currentUser = getCurrentUser();
         List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
         model.addAttribute(Constants.DATA, permissionList);
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        return "user/test";
     }
 
     /**
