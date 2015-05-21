@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,7 +33,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param companyId
      * @return
      */
-    List<UserInfo> findUserInfos(String companyId);
+    List<UserInfoDto> findUserInfos(String companyId);
 
     /**
      * 根据id查询员工

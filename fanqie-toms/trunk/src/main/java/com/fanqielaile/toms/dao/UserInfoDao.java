@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -30,7 +31,7 @@ public interface UserInfoDao {
     * @param companyId
     * @return
     */
-   List<UserInfo> selectUserInfos(@Param("companyId") String companyId);
+   List<UserInfoDto> selectUserInfos(@Param("companyId") String companyId);
 
    /**
     * 根据ID查询用户
