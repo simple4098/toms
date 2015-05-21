@@ -3,4 +3,5 @@
     <mapping path="*.json" exclude="true"/>
     <mapping path="/system/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/user/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/common/*" decorator="/WEB-INF/decorators/main.jsp"/>
 </sitemesh>

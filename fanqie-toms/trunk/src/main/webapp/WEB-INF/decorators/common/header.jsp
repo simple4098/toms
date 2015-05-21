@@ -36,24 +36,25 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">
                         <img class="nav-user-photo" src="<%=basePath%>/assets/avatars/user.jpg" alt="Jason's Photo"/>
 								<span class="user-info">
-									<small>欢迎光临,</small>
+									<small>Welcome,</small>
 									Jason
 								</span>
 
                         <i class="icon-caret-down"></i>
                     </a>
+
                     <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                         <li>
                             <a href="#">
                                 <i class="icon-cog"></i>
-                                设置
+                                Settings
                             </a>
                         </li>
 
                         <li>
                             <a href="#">
                                 <i class="icon-user"></i>
-                                个人资料
+                                Profile
                             </a>
                         </li>
 
@@ -62,7 +63,7 @@
                         <li>
                             <a href="#">
                                 <i class="icon-off"></i>
-                                退出
+                                Logout
                             </a>
                         </li>
                     </ul>

@@ -7,197 +7,13 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="url"
        value='${requestScope["org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"]}'
        scope="request"/>
-<style type="text/css">
-    <!--
-    * {
-        margin: 0;
-        padding: 0;
-        border: 0;
-    }
 
-    body {
-        font-family: arial, 宋体, serif;
-        font-size: 12px;
-    }
 
-    #nav {
-        width: 180px;
-        line-height: 24px;
-        list-style-type: none;
-        text-align: left;
-        /*定义整个ul菜单的行高和背景色*/
-    }
 
-    /*==================一级目录===================*/
-    #nav a {
-        width: 160px;
-        display: block;
-        padding-left: 20px;
-        /*Width(一定要)，否则下面的Li会变形*/
-    }
-
-    #nav li {
-        /*background:#CCC; /!*一级目录的背景色*!/*/
-        border-bottom: #FFF 5px solid; /*下面的一条白边*/
-        float: left;
-        /*float：left,本不应该设置，但由于在Firefox不能正常显示
-        继承Nav的width,限制宽度，li自动向下延伸*/
-    }
-
-    #nav li a:hover {
-        background: #CC0000; /*一级目录onMouseOver显示的背景色*/
-    }
-
-    #nav a:link {
-        color: #666;
-        text-decoration: none;
-    }
-
-    #nav a:visited {
-        color: #666;
-        text-decoration: none;
-    }
-
-    #nav a:hover {
-        color: #FFF;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    /*==================二级目录===================*/
-    #nav li ul {
-        list-style: none;
-        text-align: left;
-    }
-
-    #nav li ul li {
-        /*background: #EBEBEB; /!*二级目录的背景色*!/*/
-        border-bottom: white 5px solid;
-        padding-top: 5px;
-    }
-
-    #nav li ul a {
-        padding-left: 20px;
-        width: 160px;
-        /* padding-left二级目录中文字向右移动，但Width必须重新设置=(总宽度-padding-left)*/
-    }
-
-    /*下面是二级目录的链接样式*/
-    #nav li ul a:link {
-        color: #666;
-        text-decoration: none;
-    }
-
-    #nav li ul a:visited {
-        color: #666;
-        text-decoration: none;
-    }
-
-    #nav li ul a:hover {
-        color: #F3F3F3;
-        text-decoration: none;
-        font-weight: normal;
-        background: #CC0000;
-        /* 二级onmouseover的字体颜色、背景色*/
-    }
-
-    /*==============================*/
-    #nav li:hover ul {
-        left: auto;
-    }
-
-    #nav li.sfhover ul {
-        left: auto;
-    }
-
-    #content {
-        clear: left;
-    }
-
-    #nav ul.collapsed {
-        display: none;
-    }
-
-    -->
-    #PARENT {
-        width: 300px;
-        padding-left: 20px;
-    }
-</style>
-<script type=text/javascript><!--
-var LastLeftID = "";
-function menuFix() {
-    var obj = document.getElementById("nav").getElementsByTagName("li");
-
-    for (var i = 0; i < obj.length; i++) {
-        obj[i].onmouseover = function () {
-            this.className += (this.className.length > 0 ? " " : "") + "sfhover";
-        }
-        obj[i].onMouseDown = function () {
-            this.className += (this.className.length > 0 ? " " : "") + "sfhover";
-        }
-        obj[i].onMouseUp = function () {
-            this.className += (this.className.length > 0 ? " " : "") + "sfhover";
-        }
-        obj[i].onmouseout = function () {
-            this.className = this.className.replace(new RegExp("( ?|^)sfhover\\b"), "");
-        }
-    }
-}
-function DoMenu(emid) {
-    var obj = document.getElementById(emid);
-    obj.className = (obj.className.toLowerCase() == "expanded" ? "collapsed" : "expanded");
-    if ((LastLeftID != "") && (emid != LastLeftID)) //关闭上一个Menu
-    {
-        document.getElementById(LastLeftID).className = "collapsed";
-    }
-    LastLeftID = emid;
-}
-function GetMenuID() {
-    var MenuID = "";
-    var _paramStr = new String(window.location.href);
-    var _sharpPos = _paramStr.indexOf("#");
-
-    if (_sharpPos >= 0 && _sharpPos < _paramStr.length - 1) {
-        _paramStr = _paramStr.substring(_sharpPos + 1, _paramStr.length);
-    }
-    else {
-        _paramStr = "";
-    }
-
-    if (_paramStr.length > 0) {
-        var _paramArr = _paramStr.split("&");
-        if (_paramArr.length > 0) {
-            var _paramKeyVal = _paramArr[0].split("=");
-            if (_paramKeyVal.length > 0) {
-                MenuID = _paramKeyVal[1];
-            }
-        }
-    }
-
-    if (MenuID != "") {
-        DoMenu(MenuID)
-    }
-}
-GetMenuID(); //*这两个function的顺序要注意一下，不然在Firefox里GetMenuID()不起效果
-menuFix();
---></script>
-
-<div class="main-container" id="main-container">
-    <script type="text/javascript">
-        try {
-            ace.settings.check('main-container', 'fixed')
-        } catch (e) {
-        }
-    </script>
-
-    <div class="main-container-inner">
-        <a class="menu-toggler" id="menu-toggler" href="#">
-            <span class="menu-text"></span>
-        </a>
 
         <div class="sidebar" id="sidebar">
             <script type="text/javascript">
@@ -237,28 +53,31 @@ menuFix();
                 </div>
             </div>
             <!-- #sidebar-shortcuts -->
-            <ul id="nav" class="nav nav-list">
-                <li>
-                    <a href="#">
+
+            <ul class="nav nav-list">
+                <li class="active">
+                    <a href="index.html">
                         <i class="icon-dashboard"></i>
                         <span class="menu-text"> 首页 </span>
                     </a>
                 </li>
 
-                <li class="active">
-                    <a href="#">
+                <li>
+                    <a href="typography.html">
                         <i class="icon-text-width"></i>
                         <span class="menu-text"> 房态数量 </span>
                     </a>
                 </li>
+
                 <li>
-                    <a href="#" class="dropdown-toggle" onclick="DoMenu('ChildMenu1')">
+                    <a href="#" class="dropdown-toggle">
                         <i class="icon-desktop"></i>
                         <span class="menu-text"> 运营报表 </span>
 
                         <b class="arrow icon-angle-down"></b>
                     </a>
-                    <ul class="submenu collapsed" id="ChildMenu1">
+
+                    <ul class="submenu">
                         <li>
                             <a href="elements.html">
                                 <i class="icon-double-angle-right"></i>
@@ -272,65 +91,74 @@ menuFix();
                                 客户资料分析
                             </a>
                         </li>
+
                         <li>
-                            <a href="buttons.html">
+                            <a href="treeview.html">
                                 <i class="icon-double-angle-right"></i>
                                 订单来源分析
                             </a>
                         </li>
+
                     </ul>
                 </li>
+
                 <li>
-                    <a href="#" class="dropdown-toggle" onclick="DoMenu('ChildMenu2')">
-                        <i class="icon-edit"></i>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-list"></i>
                         <span class="menu-text"> 客栈管理 </span>
 
                         <b class="arrow icon-angle-down"></b>
-                        <ul class="submenu collapsed" id="ChildMenu2">
-                            <li>
-                                <a href="buttons.html">
-                                    <i class="icon-double-angle-right"></i>
-                                    客栈列表
-                                </a>
-                            </li>
-                            <li>
-                                <a href="buttons.html">
-                                    <i class="icon-double-angle-right"></i>
-                                    客栈活跃表
-                                </a>
-                            </li>
-                        </ul>
                     </a>
+
+                    <ul class="submenu">
+                        <li>
+                            <a href="tables.html">
+                                <i class="icon-double-angle-right"></i>
+                                客栈列表
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="jqgrid.html">
+                                <i class="icon-double-angle-right"></i>
+                                客栈活跃表
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
                 <li>
-                    <a href="#">
-                        <i class="icon-list-alt"></i>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-edit"></i>
                         <span class="menu-text"> 消息通知 </span>
                     </a>
                 </li>
+
                 <li>
-                    <a href="#" class="dropdown-toggle" onclick="DoMenu('ChildMenu3')">
+                    <a href="#" class="dropdown-toggle">
                         <i class="icon-tag"></i>
                         <span class="menu-text"> 设置 </span>
 
                         <b class="arrow icon-angle-down"></b>
                     </a>
-                    <ul class="submenu collapsed" id="ChildMenu3">
+
+                    <ul class="submenu">
                         <li>
-                            <a href="elements.html">
+                            <a href="profile.html">
                                 <i class="icon-double-angle-right"></i>
                                 账号设置
                             </a>
                         </li>
 
                         <li>
-                            <a href="buttons.html">
+                            <a href="inbox.html">
                                 <i class="icon-double-angle-right"></i>
                                 通知模板
                             </a>
                         </li>
+
                         <li>
-                            <a href="buttons.html">
+                            <a href="pricing.html">
                                 <i class="icon-double-angle-right"></i>
                                 客栈标签
                             </a>
@@ -338,7 +166,71 @@ menuFix();
                     </ul>
                 </li>
             </ul>
+            <!-- /.nav-list -->
 
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left"
+                   data-icon2="icon-double-angle-right"></i>
+            </div>
+
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'collapsed')
+                } catch (e) {
+                }
+            </script>
+        </div>
+
+
+<div class="ace-settings-container" id="ace-settings-container">
+    <div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
+        <i class="icon-cog bigger-150"></i>
+    </div>
+
+    <div class="ace-settings-box" id="ace-settings-box">
+        <div>
+            <div class="pull-left">
+                <select id="skin-colorpicker" class="hide">
+                    <option data-skin="default" value="#438EB9">#438EB9</option>
+                    <option data-skin="skin-1" value="#222A2D">#222A2D</option>
+                    <option data-skin="skin-2" value="#C6487E">#C6487E</option>
+                    <option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+                </select>
+            </div>
+            <span>&nbsp; Choose Skin</span>
+        </div>
+
+        <div>
+            <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-navbar"/>
+            <label class="lbl" for="ace-settings-navbar"> Fixed Navbar</label>
+        </div>
+
+        <div>
+            <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-sidebar"/>
+            <label class="lbl" for="ace-settings-sidebar"> Fixed Sidebar</label>
+        </div>
+
+        <div>
+            <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-breadcrumbs"/>
+            <label class="lbl" for="ace-settings-breadcrumbs"> Fixed Breadcrumbs</label>
+        </div>
+
+        <div>
+            <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-rtl"/>
+            <label class="lbl" for="ace-settings-rtl"> Right To Left (rtl)</label>
+        </div>
+
+        <div>
+            <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-add-container"/>
+            <label class="lbl" for="ace-settings-add-container">
+                Inside
+                <b>.container</b>
+            </label>
         </div>
     </div>
 </div>
+<!-- /#ace-settings-container -->
+
+<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+    <i class="icon-double-angle-up icon-only bigger-110"></i>
+</a>
