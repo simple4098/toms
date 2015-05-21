@@ -10,13 +10,62 @@
   <title>错误页面</title>
 </head>
 <body>
-<div>
-  <h2>操作失败</h2>
-  <c:if test="${not empty msg}">
-    <h1>失败原因：${msg}</h1>
-    <a href="<%=basePath%>login">返回登录页面</a>
-  </c:if>
-  <c:if test="${empty msg}">Sorry, you have no access！</c:if>
+<div class="page-content">
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- PAGE CONTENT BEGINS -->
+
+      <div class="error-container">
+        <div class="well">
+          <h1 class="grey lighter smaller">
+											<span class="blue bigger-125">
+												<i class="icon-random"></i>
+												500
+											</span>
+            <c:if test="${empty msg}"> Something Went Wrong </c:if>
+            <c:if test="${not empty msg}"> ${msg} </c:if>
+          </h1>
+
+          <hr/>
+          <h3 class="lighter smaller">
+            But we are working
+            <i class="icon-wrench icon-animated-wrench bigger-125"></i>
+            on it!
+          </h3>
+
+          <div class="space"></div>
+
+          <div>
+            <h4 class="lighter smaller">Meanwhile, try one of the following:</h4>
+
+            <ul class="list-unstyled spaced inline bigger-110 margin-15">
+              <li>
+                <i class="icon-hand-right blue"></i>
+                Read the faq
+              </li>
+
+              <li>
+                <i class="icon-hand-right blue"></i>
+                Give us more info on how this specific error occurred!
+              </li>
+            </ul>
+          </div>
+
+          <hr/>
+          <div class="space"></div>
+        </div>
+      </div>
+
+      <!-- PAGE CONTENT ENDS -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->
 </div>
+<!-- /.page-content -->
+
+<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+  <i class="icon-double-angle-up icon-only bigger-110"></i>
+</a>
 </body>
 </html>

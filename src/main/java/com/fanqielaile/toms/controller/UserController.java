@@ -88,9 +88,10 @@ public class UserController extends BaseController {
      * @param model
      */
     @RequestMapping("find_users")
-    public void findUsers(Model model) {
+    public String findUsers(Model model) {
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, this.userInfoService.findUserInfos(getCurrentUser().getCompanyId()));
+        return "/system/user_list";
     }
 
     /**
