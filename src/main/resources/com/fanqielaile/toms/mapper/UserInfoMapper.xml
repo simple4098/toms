@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fanqielaile.toms.dao.UserInfoDao" >
-       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.UserInfo" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.UserInfoDto">
               <id column="id" property="id" />
               <result column="creator_id" property="creatorId"/>
               <result column="created_date" property="createdDate"/>
@@ -17,6 +17,7 @@
               <result column="data_permission" property="dataPermission"/>
               <result column="company_id" property="companyId"/>
               <result column="role_id" property="roleId"/>
+              <result column="company_name" property="companyName"/>
        </resultMap>
        <resultMap id="userResultMap" type="com.fanqielaile.toms.model.UserInfo">
               <id column="id" property="id"/>
@@ -37,7 +38,7 @@
               <result column="role_key" property="roleKey"/>
        </resultMap>
        <sql id="Base_Column_List">
-              id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id
+              id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id,user_name
        </sql>
        <insert id="insertUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
               insert into
@@ -53,10 +54,11 @@
        </select>
        <select id="selectUserInfos" parameterType="java.lang.String" resultMap="BaseResultMap">
               select
-              <include refid="Base_Column_List"/>
-              from user_info where deleted = 0
+              u.id,u.user_name,u.user_type,u.login_name,u.telephone,u.data_permission,u.company_id,u.role_id,c.company_name
+              from user_info u LEFT join company c on u.company_id = c.id
+              where u.deleted = 0
               <if test="companyId != null and companyId != ''">
-                     and company_id = #{companyId}
+                     and u.company_id = #{companyId}
               </if>
        </select>
        <select id="selectUserInfoById" parameterType="java.lang.String" resultMap="BaseResultMap">

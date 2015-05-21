@@ -134,7 +134,7 @@
                     </a>
                 </li>
 
-                <li>
+                <li <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>>
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-tag"></i>
                         <span class="menu-text"> 设置 </span>
@@ -143,8 +143,8 @@
                     </a>
 
                     <ul class="submenu">
-                        <li>
-                            <a href="profile.html">
+                        <li <c:if test="${fn:contains(url, '/user/find_users')}">class="active"</c:if>>
+                            <a href="<c:url value="/user/find_users"/>">
                                 <i class="icon-double-angle-right"></i>
                                 账号设置
                             </a>

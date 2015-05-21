@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.helper.PermissionHelper;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
@@ -89,8 +90,12 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_users")
     public String findUsers(Model model) {
+        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(getCurrentUser().getCompanyId());
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.userInfoService.findUserInfos(getCurrentUser().getCompanyId()));
+        model.addAttribute(Constants.DATA, userInfos);
+        if (null != userInfos) {
+            model.addAttribute("company", userInfos.get(0).getCompanyName());
+        }
         return "/system/user_list";
     }
 

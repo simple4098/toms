@@ -53,6 +53,17 @@
 
           <hr/>
           <div class="space"></div>
+          <div class="center">
+            <a href="javascript:history.go(-1);" class="btn btn-grey">
+              <i class="icon-arrow-left"></i>
+              Go Back
+            </a>
+
+            <a href="<c:url value="/logout"/>" class="btn btn-primary">
+              <i class="icon-dashboard"></i>
+              Login
+            </a>
+          </div>
         </div>
       </div>
 

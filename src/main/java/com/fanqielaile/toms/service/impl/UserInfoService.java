@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.RoleDao;
 import com.fanqielaile.toms.dao.UserInfoDao;
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
@@ -78,7 +79,7 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
-    public List<UserInfo> findUserInfos(String companyId) {
+    public List<UserInfoDto> findUserInfos(String companyId) {
         return userInfoDao.selectUserInfos(companyId);
     }
 

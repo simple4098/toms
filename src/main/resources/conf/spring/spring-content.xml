@@ -16,7 +16,7 @@
        <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
               <property name="locations">
                      <list>
-                            <value>classpath:conf/properties/datasorce.properties</value>
+                            <value>classpath:conf/properties/datasource.properties</value>
                      </list>
               </property>
        </bean>
