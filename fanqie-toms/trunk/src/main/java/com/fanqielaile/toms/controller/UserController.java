@@ -106,9 +106,10 @@ public class UserController extends BaseController {
      * @param id
      */
     @RequestMapping("find_user")
-    public void findUser(Model model, String id) {
+    public String findUser(Model model, String id) {
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, this.userInfoService.findUserInfoById(id));
+        return "system/update_user";
     }
 
     /**
@@ -118,7 +119,7 @@ public class UserController extends BaseController {
      * @param userInfo
      */
     @RequestMapping("update_user")
-    public void updateUser(Model model, UserInfo userInfo) {
+    public String updateUser(Model model, UserInfo userInfo) {
         boolean flag = this.userInfoService.modifyUserInfo(userInfo);
         if (flag) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -127,6 +128,7 @@ public class UserController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "修改失败");
         }
+        return redirectUrl("/user/find_users");
     }
 
     /**
@@ -204,5 +206,32 @@ public class UserController extends BaseController {
         }
     }
 
+    /**
+     * 检查用户修改基本信息
+     *
+     * @param model
+     * @param id
+     * @param loginName
+     */
+    @RequestMapping("/check_user")
+    public void checkUser(Model model, String id, String loginName) {
+        UserInfo userInfo = this.userInfoService.findUserInfoById(id);
+        if (userInfo != null) {
+            if (userInfo.getLoginName().equals(loginName)) {
+                model.addAttribute("status", true);
+            } else {
+                UserInfo userInfo1 = this.userInfoService.findUserInfoByLoginName(loginName);
+                if (null != userInfo1) {
+                    model.addAttribute("status", false);
+                    model.addAttribute("message", "登录名已存在，请重新修改");
+                } else {
+                    model.addAttribute("status", true);
+                }
+            }
+        } else {
+            model.addAttribute("status", false);
+            model.addAttribute("message", "该用户不存在");
+        }
+    }
 
 }

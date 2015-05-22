@@ -45,7 +45,7 @@ public class SystemController extends BaseController {
         List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
         model.addAttribute(Constants.DATA, permissionList);
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        return "user/test";
+        return "welcome";
     }
 
     /**

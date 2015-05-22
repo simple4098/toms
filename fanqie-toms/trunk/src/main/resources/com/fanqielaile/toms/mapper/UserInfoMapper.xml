@@ -69,7 +69,7 @@
        <update id="updateUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
               update user_info
               <trim prefix="SET" suffixOverrides=",">
-                     updated_date=now,
+                     updated_date=now(),
                      version=version+1,
                      <if test="loginName != null and loginName != ''">
                             login_name = #{loginName},
@@ -87,7 +87,7 @@
                             data_permission = #{dataPermission},
                      </if>
               </trim>
-              where delted = 0 and id = #{id}
+              where deleted = 0 and id = #{id}
        </update>
        <update id="deleteUserInfo" parameterType="java.lang.String">
               update user_info set deleted = 1 where id = #{id}
