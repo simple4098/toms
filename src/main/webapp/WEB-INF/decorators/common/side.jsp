@@ -55,8 +55,8 @@
             <!-- #sidebar-shortcuts -->
 
             <ul class="nav nav-list">
-                <li class="active">
-                    <a href="index.html">
+                <li <c:if test="${fn:contains(url, '/system/login_success')}">class="active"</c:if>>
+                    <a href="<c:url value="/system/login_success"/>">
                         <i class="icon-dashboard"></i>
                         <span class="menu-text"> 首页 </span>
                     </a>

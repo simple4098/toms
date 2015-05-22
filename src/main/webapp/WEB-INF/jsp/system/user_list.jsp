@@ -7,8 +7,10 @@
 <html>
 <head>
     <title>账号设置</title>
-    <script src="<%=basePath%>/assets/js/jquery.dataTables.min.js"></script>
-    <script src="<%=basePath%>/assets/js/jquery.dataTables.bootstrap.js"></script>
+    <%--<script src="<%=basePath%>/assets/js/jquery.dataTables.min.js"></script>--%>
+    <%--<script src="<%=basePath%>/assets/js/jquery.dataTables.bootstrap.js"></script>--%>
+    <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
 <body>
 <div class="page-content">
@@ -64,11 +66,11 @@
 
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
-                                                <a class="green" href="#">
+                                                <a class="green" href="<c:url value="/user/find_user?id=${d.id}"/>">
                                                     <i class="icon-pencil bigger-130"></i>
                                                 </a>
 
-                                                <a class="red" href="#">
+                                                <a class="red del" data="${d.id}" href="#">
                                                     <i class="icon-trash bigger-130"></i>
                                                 </a>
                                             </div>
@@ -91,39 +93,33 @@
 
 <script type="text/javascript">
     jQuery(function ($) {
-        var oTable1 = $('#sample-table-2').dataTable({
-            "aoColumns": [
-                {"bSortable": false},
-                null, null, null, null, null,
-                {"bSortable": false}
-            ]
+        $('.del').on('click', function () {
+            var data = $(this).attr('data');
+            layer.confirm('是否删除？', {
+                btn: ['确认', '取消'], //按钮
+                shade: false //不显示遮罩
+            }, function () {
+                $.ajax({
+                    url: '<c:url value="/user/delete_user.json?id="/>' + data,
+                    type: 'post',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (!data.status) {
+                            layer.msg(data.message);
+                            window.location.reload();
+                        } else {
+                            layer.msg(data.message);
+                            window.location.reload();
+                        }
+                    },
+                    error: function () {
+                        //do same thing!
+                    }
+                });
+            }, function () {
+//                layer.msg('奇葩么么哒', {shift: 6});
+            });
         });
-
-
-        $('table th input:checkbox').on('click', function () {
-            var that = this;
-            $(this).closest('table').find('tr > td:first-child input:checkbox')
-                    .each(function () {
-                        this.checked = that.checked;
-                        $(this).closest('tr').toggleClass('selected');
-                    });
-
-        });
-
-
-        $('[data-rel="tooltip"]').tooltip({placement: tooltip_placement});
-        function tooltip_placement(context, source) {
-            var $source = $(source);
-            var $parent = $source.closest('table')
-            var off1 = $parent.offset();
-            var w1 = $parent.width();
-
-            var off2 = $source.offset();
-            var w2 = $source.width();
-
-            if (parseInt(off2.left) < parseInt(off1.left) + parseInt(w1 / 2)) return 'right';
-            return 'left';
-        }
     })
 </script>
 </body>

@@ -8,14 +8,14 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-  String path = request.getContextPath();
-  String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>空白页 - Bootstrap后台管理系统模版Ace下载</title>
+    <meta charset="utf-8"/>
+    <title>欢迎页面</title>
 </head>
 
 <body>
