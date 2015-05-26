@@ -30,6 +30,7 @@ public class LoginUserInterceptor extends HandlerInterceptorAdapter {
             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/common/error?message=Get the user login failed!");
             return false;
         }
+        httpServletRequest.getSession().setAttribute("currtentUser", (UserInfo) authentication.getPrincipal());
         return true;
     }
 

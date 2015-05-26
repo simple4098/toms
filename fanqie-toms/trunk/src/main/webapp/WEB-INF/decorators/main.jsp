@@ -23,11 +23,9 @@
 
     <script src="<%=basePath%>/assets/js/ace-extra.min.js"></script>
     <sitemesh:write property="head"/>
-
 </head>
 <body>
     <jsp:include page="/WEB-INF/decorators/common/header.jsp"/>
-
     <div class="main-container" id="main-container">
         <script type="text/javascript">
             try {
