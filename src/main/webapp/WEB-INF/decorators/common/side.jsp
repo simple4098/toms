@@ -66,7 +66,7 @@
                     </a>
                 </li>
 
-                <li>
+                <li <c:if test="${fn:contains(url,'/operate/')}">class="open active"</c:if>>
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-desktop"></i>
                         <span class="menu-text"> 运营报表 </span>
@@ -76,21 +76,21 @@
 
                     <ul class="submenu">
                         <li>
-                            <a href="elements.html">
+                            <a href="<c:url value='/operate/qs'/>">
                                 <i class="icon-double-angle-right"></i>
                                 运营趋势
                             </a>
                         </li>
 
                         <li>
-                            <a href="buttons.html">
+                            <a href="<c:url value='/operate/kf'/>">
                                 <i class="icon-double-angle-right"></i>
                                 客户资料分析
                             </a>
                         </li>
 
                         <li>
-                            <a href="treeview.html">
+                            <a href="<c:url value='/operate/order'/>">
                                 <i class="icon-double-angle-right"></i>
                                 订单来源分析
                             </a>
