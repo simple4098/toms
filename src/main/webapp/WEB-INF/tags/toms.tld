@@ -30,4 +30,14 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    <tag>
+        <name>authorize</name>
+        <tag-class>com.fanqielaile.toms.support.tag.AuthorizeTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>uri</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 </taglib>
