@@ -234,4 +234,20 @@ public class UserController extends BaseController {
         }
     }
 
+    /**
+     * 检查用户的登录账号
+     *
+     * @param model
+     * @param loginName
+     */
+    @RequestMapping("/check_user_name")
+    public void checkUserLoginName(Model model, String loginName) {
+        UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
+        if (userInfo == null) {
+            model.addAttribute("status", true);
+        } else {
+            model.addAttribute("status", false);
+        }
+    }
+
 }

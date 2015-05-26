@@ -48,11 +48,14 @@
                 <div class="space-4"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right" for="form-field-2"> 密 码 </label>
+                    <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 密 码 </label>
 
                     <div class="col-sm-9">
                         <input type="password" name="password" id="form-field-2" placeholder="密码"
-                               class="col-xs-10 col-sm-5 ace"/>
+                               class="col-xs-10 col-sm-5 ace password"/>
+                        <span class="help-password col-xs-12 col-sm-7">
+
+											</span>
                     </div>
                 </div>
 
@@ -62,8 +65,11 @@
                     <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly"> 联系电话 </label>
 
                     <div class="col-sm-9">
-                        <input type="text" class="col-xs-10 col-sm-5 ace" id="form-input-readonly" name="telephone"
+                        <input type="text" class="col-xs-10 col-sm-5 ace tel" id="form-input-readonly" name="telephone"
                                value="${data.telephone}"/>
+                        <span class="help-tel col-xs-12 col-sm-7">
+
+											</span>
                     </div>
                 </div>
 
@@ -73,8 +79,12 @@
                     <label class="col-sm-3 control-label no-padding-right" for="form-field-4">姓 名</label>
 
                     <div class="col-sm-9">
-                        <input class="col-xs-10 col-sm-5 ace" type="text" name="userName" value="${data.userName}"
+                        <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                               value="${data.userName}"
                                id="form-field-4" placeholder="真实姓名"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
 
                         <div class="space-2"></div>
 
@@ -125,7 +135,23 @@
                 }
             });
         });
+        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
         $('.btn-info').on('click', function () {
+            $('.help-password .middle').remove();
+            $('.help-tel .middle').remove();
+            $('.help-name .middle').remove();
+            if ($('.password').val() == null || $('.password').val() == '') {
+                $('.help-password').append(span);
+                return false;
+            }
+            if ($('.tel').val() == null || $('.tel').val() == '') {
+                $('.help-tel').append(span);
+                return false;
+            }
+            if ($('.user-name').val() == null || $('.user-name').val() == '') {
+                $('.help-name').append(span);
+                return false;
+            }
 //        return false;
         });
     });

@@ -11,10 +11,6 @@
 <c:set var="url"
        value='${requestScope["org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"]}'
        scope="request"/>
-
-
-
-
         <div class="sidebar" id="sidebar">
             <script type="text/javascript">
                 try {

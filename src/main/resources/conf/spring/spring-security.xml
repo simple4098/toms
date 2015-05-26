@@ -6,9 +6,8 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
     <security:http pattern="/login" security="none"/>
     <security:http pattern="/error" security="none"/>
-    <security:http pattern="index.jsp" security="none"/>
     <security:http pattern="/denied" security="none"/>
-    <security:http auto-config="true">
+    <security:http use-expressions="false">
         <security:form-login login-page="/login" password-parameter="password"
                              username-parameter="username" login-processing-url="/login_process"
                              authentication-failure-url="/login?error=true"
