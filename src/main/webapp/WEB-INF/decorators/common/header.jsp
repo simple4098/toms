@@ -48,7 +48,7 @@
 
                     <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                         <li>
-                            <a href="#" class="update-password">
+                            <a data-toggle="modal" data-target="#updatePassword" class="update-password">
                                 <i class="icon-cog"></i>
                                 设置
                             </a>
@@ -69,17 +69,49 @@
     </div>
     <!-- /.container -->
 </div>
+<%--修改密码弹出层--%>
+<div class="modal fade" id="updatePassword" tabindex="-1" role="dialog" aria-labelledby="addLabelLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addLabelLabel">修改密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="<c:url value="/user/update_password"/>" method="post" role="form">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 新密码 </label>
+
+                        <div class="col-sm-9">
+                            <input type="password" id="form-field-1" name="password"
+                                   value="" placeholder="密码" class="col-xs-10 col-sm-5 password"/>
+                            <span class="help-label-name col-xs-12 col-sm-7"></span>
+                        </div>
+                    </div>
+                    <div class="clearfix form-actions">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button class="btn btn-info btn-sub" type="submit">
+                                <i class="icon-ok bigger-110"></i>
+                                确认
+                            </button>
+                            &nbsp; &nbsp; &nbsp;
+                            <button class="btn" type="reset">
+                                <i class="icon-undo bigger-110"></i>
+                                清空
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     jQuery(function ($) {
         $('.update-password').on('click', function () {
-//            layer.prompt({
-//                title:'新密码',
-//                formType:1
-//            });
-//            layer.alert('test');
-            layer.prompt(function (val) {
-                layer.msg('得到了' + val);
-            });
+
         })
     });
 

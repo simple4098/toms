@@ -28,7 +28,6 @@ import java.util.List;
 @Controller
 @RequestMapping("user")
 public class UserController extends BaseController {
-    Logger logger = Logger.getLogger(UserController.class);
     @Resource
     private IUserInfoService userInfoService;
     @Resource
@@ -92,7 +91,6 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_users")
     public String findUsers(Model model) {
-        logger.info("dddddddd");
         List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(getCurrentUser().getCompanyId());
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, userInfos);
@@ -251,6 +249,21 @@ public class UserController extends BaseController {
         } else {
             model.addAttribute("status", false);
         }
+    }
+
+    /**
+     * 更新用户密码
+     *
+     * @param model
+     * @param password
+     * @return
+     */
+    @RequestMapping("update_password")
+    public String updatePassword(Model model, String password) {
+        UserInfo userInfo = getCurrentUser();
+        userInfo.setPassword(password);
+        this.userInfoService.modifyUserInfo(userInfo);
+        return "login";
     }
 
 }

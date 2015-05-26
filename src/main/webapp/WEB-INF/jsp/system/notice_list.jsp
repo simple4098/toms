@@ -1,0 +1,185 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2015/5/26
+  Time: 16:05
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
+%>
+<html>
+<head>
+    <title>通知模板</title>
+    <script src='<%=basePath%>/assets/js/jquery-2.0.3.min.js'></script>
+</head>
+<body>
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            通知模板
+        </h1>
+    </div>
+    <!-- /.page-header -->
+
+    <div class="row">
+        <c:if test="${not empty data}">
+            <c:forEach items="${data}" var="d">
+                <div class="col-xs-12 col-sm-3 widget-container-span">
+                    <!-- PAGE CONTENT BEGINS -->
+
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h5>${d.noticeTitle}</h5>
+
+                            <div class="widget-toolbar">
+                                <a href="<c:url value="/system/update_notice_page?id=${d.id}"/>">
+                                    <i class="icon-cog"></i>
+                                </a>
+                                <a class="delete-notice" data-toggle="modal" data-target="#myModal"
+                                   data-whatever="${d.id}">
+                                    <i class="icon-remove"></i>
+                                </a>
+                                <a class="add-notice" data-toggle="modal" data-target="#addNotice">
+                                    <i class="icon-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                <input type="hidden" name="id" value="${d.id}" class="id"/>
+
+                                <p class="alert alert-info">
+                                        ${d.noticeContent}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </c:if>
+    </div>
+</div>
+<%--删除弹出层--%>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">提示信息</h4>
+            </div>
+            <div class="modal-body">
+                是否删除？
+                <input name="noticeId" id="notice-id" class="notice-id" type="hidden"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary btn-submit">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<%--新增模板弹出层--%>
+<div class="modal fade" id="addNotice" tabindex="-1" role="dialog" aria-labelledby="addNoticeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addNoticeLabel">新增模板</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="<c:url value="/system/create_notice"/>" method="post" role="form">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 模板标题 </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-1" name="noticeTitle"
+                                   value="" placeholder="标题" class="col-xs-10 col-sm-5 notice-title"/>
+                            <span class="help-notice-title col-xs-12 col-sm-7"></span>
+                        </div>
+                    </div>
+                    <div class="space-4"></div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 模板内容 </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" name="noticeContent" id="form-field-2" placeholder="内容"
+                                   class="col-xs-10 col-sm-5 ace notice-content"/>
+                        <span class="help-notice-content col-xs-12 col-sm-7">
+
+											</span>
+                        </div>
+                    </div>
+                    <div class="clearfix form-actions">
+                        <div class="col-md-offset-3 col-md-9">
+                            <button class="btn btn-info btn-sub" type="submit">
+                                <i class="icon-ok bigger-110"></i>
+                                确认
+                            </button>
+                            &nbsp; &nbsp; &nbsp;
+                            <button class="btn" type="reset">
+                                <i class="icon-undo bigger-110"></i>
+                                清空
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <%--<div class="modal-footer">--%>
+            <%--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>--%>
+            <%--<button type="button" class="btn btn-primary btn-submit">确认</button>--%>
+            <%--</div>--%>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(function ($) {
+        /*删除模板弹出层把noticeId传入*/
+        $('.delete-notice').on('click', function () {
+            var noticeId = $(this).attr('data-whatever');
+            $('.notice-id').val(noticeId);
+        });
+        /*删除模板*/
+        $('.btn-submit').on('click', function () {
+            var data = $('.notice-id').val();
+            $.ajax({
+                url: '<c:url value="/system/delete_notice.json?id="/>' + data,
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.status) {
+                        window.location.reload();
+                    } else {
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    //do same thing!
+                }
+            });
+        });
+        /*必填验证*/
+        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
+        $('.btn-sub').on('click', function () {
+            $('.help-notice-title .middle').remove();
+            $('.help-notice-content .middle').remove();
+            if ($('.notice-title').val() == null || $('.notice-title').val() == '') {
+                $('.help-notice-title').append(span);
+                return false;
+            }
+            if ($('.notice-content').val() == null || $('.notice-content').val() == '') {
+                $('.help-notice-content').append(span);
+                return false;
+            }
+        });
+    })
+</script>
+</body>
+</html>

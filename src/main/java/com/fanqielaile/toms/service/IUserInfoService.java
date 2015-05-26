@@ -74,4 +74,5 @@ public interface IUserInfoService extends UserDetailsService {
      * @return
      */
     List<UserInfo> findOtherUserInfoById(UserInfo userInfo);
+
 }

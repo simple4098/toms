@@ -259,7 +259,7 @@
         });
         /*删除员工弹出层把userid传入*/
         $('.del-btn').on('click', function () {
-            var userId = $('.del-btn').attr('data-whatever');
+            var userId = $(this).attr('data-whatever');
             $('.user-id').val(userId);
         });
         /*删除员工*/
