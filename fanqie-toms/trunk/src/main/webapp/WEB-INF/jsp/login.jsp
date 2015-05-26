@@ -105,8 +105,10 @@
         <div class="lg_main">
             <div class="lg_m_1">
 
+                <p style="color: red;padding-left:25px;">${param.error==true?"用户名或密码错误！":""}</p>
                 <input name="username" value="" placeholder="用户名" class="ur"/>
                 <input name="password" type="password" value="" placeholder="密码" class="pw"/>
+
 
             </div>
         </div>

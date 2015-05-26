@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <c:set var="url"
        value='${requestScope["org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"]}'
        scope="request"/>
@@ -130,7 +131,11 @@
                     </a>
                 </li>
 
-                <li <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>>
+                <li
+                        <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/system/find_labels')}">class="open active"</c:if>
+                        >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-tag"></i>
                         <span class="menu-text"> 设置 </span>
@@ -139,22 +144,25 @@
                     </a>
 
                     <ul class="submenu">
+                        <toms:authorize uri="/user/find_users">
                         <li <c:if test="${fn:contains(url, '/user/find_users')}">class="active"</c:if>>
                             <a href="<c:url value="/user/find_users"/>">
                                 <i class="icon-double-angle-right"></i>
                                 账号设置
                             </a>
                         </li>
-
-                        <li>
-                            <a href="inbox.html">
+                        </toms:authorize>
+                        <li
+                                <c:if test="${fn:contains(url, '/system/find_notices')}">class="active" </c:if> >
+                            <a href="<c:url value="/system/find_notices"/>">
                                 <i class="icon-double-angle-right"></i>
                                 通知模板
                             </a>
                         </li>
 
-                        <li>
-                            <a href="pricing.html">
+                        <li
+                                <c:if test="${fn:contains(url, '/system/find_labels')}">class="active" </c:if> >
+                            <a href="<c:url value="/system/find_labels"/>">
                                 <i class="icon-double-angle-right"></i>
                                 客栈标签
                             </a>

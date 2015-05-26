@@ -5,6 +5,7 @@ import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IInnLabelService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.service.IPermissionService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
@@ -55,10 +56,11 @@ public class SystemController extends BaseController {
      *
      * @param model
      */
-    @RequestMapping("find_label")
-    public void findLabels(Model model) {
+    @RequestMapping("find_labels")
+    public String findLabels(Model model) {
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, this.iInnLabelService.findLabelsByCompanyId(getCurrentUser().getCompanyId()));
+        return "/system/label_list";
     }
 
     /**
@@ -68,11 +70,11 @@ public class SystemController extends BaseController {
      * @param innLabel
      */
     @RequestMapping("create_inn_label")
-    public Model createInnLabel(Model model, @Valid InnLabel innLabel, BindingResult result) {
+    public String createInnLabel(Model model, @Valid InnLabel innLabel, BindingResult result) {
         UserInfo currentUser = getCurrentUser();
         innLabel.setCompanyId(currentUser.getCompanyId());
             this.iInnLabelService.createInnLabel(innLabel);
-        return new JsonModel().getModel(model, result);
+        return redirectUrl("/system/find_labels");
     }
 
     /**
@@ -81,7 +83,7 @@ public class SystemController extends BaseController {
      * @param model
      * @param id    标签ID
      */
-    @RequestMapping("find_label_id")
+    @RequestMapping("find_label")
     public void findLabelById(Model model, String id) {
         InnLabel innLabel = this.iInnLabelService.findLabelById(id);
         if (null != innLabel) {
@@ -100,7 +102,7 @@ public class SystemController extends BaseController {
      * @param innLabel
      */
     @RequestMapping("update_label")
-    public void updateLabel(Model model, InnLabel innLabel) {
+    public String updateLabel(Model model, InnLabel innLabel) {
         boolean flag = this.iInnLabelService.modifyLableById(innLabel);
         if (flag) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -108,6 +110,7 @@ public class SystemController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "修改失败,没有找到该标签信息");
         }
+        return redirectUrl("/system/find_labels");
     }
 
     /**
@@ -120,7 +123,7 @@ public class SystemController extends BaseController {
     public void deleteLabel(Model model, String id) {
         //判断该标签下是否存在绑定的客栈
         List<BangInn> bangInnList = this.bangInnService.findBangInnByInnLabelId(id);
-        if (null == bangInnList) {
+        if (null == bangInnList || bangInnList.size() == 0) {
             boolean flag = this.iInnLabelService.removeLabelById(id);
             if (flag) {
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -140,9 +143,10 @@ public class SystemController extends BaseController {
      * @param model
      */
     @RequestMapping("find_notices")
-    public void findNotices(Model model) {
+    public String findNotices(Model model) {
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(getCurrentUser().getCompanyId()));
+        return "/system/notice_list";
     }
 
     /**
@@ -152,10 +156,10 @@ public class SystemController extends BaseController {
      * @param noticeTemplate
      */
     @RequestMapping("create_notice")
-    public Model createNotice(Model model, @Valid NoticeTemplate noticeTemplate, BindingResult result) {
+    public String createNotice(Model model, @Valid NoticeTemplate noticeTemplate, BindingResult result) {
         noticeTemplate.setCompanyId(getCurrentUser().getCompanyId());
             this.noticeTemplateService.createNoticeTemplate(noticeTemplate);
-        return new JsonModel().getModel(model, result);
+        return redirectUrl("/system/find_notices");
     }
 
     /**
@@ -177,13 +181,31 @@ public class SystemController extends BaseController {
     }
 
     /**
+     * 跳转到模板编辑页面
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping("update_notice_page")
+    public String updateNoticePage(Model model, String id) {
+        NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(id);
+        if (noticeTemplate == null) {
+            throw new TomsRuntimeException("没有找到该模板信息");
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, noticeTemplate);
+        }
+        return "/system/update_notice";
+    }
+    /**
      * 修改通知模板
      *
      * @param model
      * @param noticeTemplate
      */
     @RequestMapping("update_notice")
-    public void updateNotice(Model model, NoticeTemplate noticeTemplate) {
+    public String updateNotice(Model model, NoticeTemplate noticeTemplate) {
         boolean flag = this.noticeTemplateService.modifyNoticeTemplate(noticeTemplate);
         if (flag) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -191,6 +213,7 @@ public class SystemController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "修改失败");
         }
+        return redirectUrl("/system/find_notices");
     }
 
     /**
