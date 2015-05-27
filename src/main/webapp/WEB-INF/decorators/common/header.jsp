@@ -80,19 +80,20 @@
                 <h4 class="modal-title" id="addLabelLabel">修改密码</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="<c:url value="/user/update_password"/>" method="post" role="form">
+                <form class="form-horizontal update-password" action="<c:url value="/user/update_password"/>"
+                      method="post" role="form">
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 新密码 </label>
 
                         <div class="col-sm-9">
                             <input type="password" id="form-field-1" name="password"
-                                   value="" placeholder="密码" class="col-xs-10 col-sm-5 password"/>
-                            <span class="help-label-name col-xs-12 col-sm-7"></span>
+                                   value="" placeholder="密码" class="col-xs-10 col-sm-5 paswd"/>
+                            <span class="help-password-head col-xs-12 col-sm-7"></span>
                         </div>
                     </div>
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info btn-sub" type="submit">
+                            <button class="btn btn-info btn-sub-head" type="submit">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -108,11 +109,4 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        $('.update-password').on('click', function () {
-
-        })
-    });
-
-</script>
+<script src="<%=basePath%>/js/my-system.js"></script>
