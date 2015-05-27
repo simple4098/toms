@@ -145,6 +145,16 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
+    public boolean removeUserInfo(String id) {
+        UserInfo userInfo = this.userInfoDao.selectUserInfoById(id);
+        if (userInfo != null) {
+            this.userInfoDao.deleteUserInfo(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String loginName) throws UsernameNotFoundException {
         UserInfo userInfo = this.userInfoDao.selectUserInfoByLoginName(loginName);
         Role role = userInfo.getRole();
