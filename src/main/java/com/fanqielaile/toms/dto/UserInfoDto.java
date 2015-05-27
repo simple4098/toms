@@ -8,6 +8,16 @@ import com.fanqielaile.toms.model.UserInfo;
 public class UserInfoDto extends UserInfo {
     //所属公司
     private String companyName;
+    //是否有管理的客栈
+    private boolean isHaveInn;
+
+    public boolean getIsHaveInn() {
+        return isHaveInn;
+    }
+
+    public void setIsHaveInn(boolean isHaveInn) {
+        this.isHaveInn = isHaveInn;
+    }
 
     public String getCompanyName() {
         return companyName;

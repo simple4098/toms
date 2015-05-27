@@ -4,10 +4,12 @@ import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.RoleDao;
 import com.fanqielaile.toms.dao.UserInfoDao;
 import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.GrantedAuthority;
@@ -80,7 +82,17 @@ public class UserInfoService implements IUserInfoService {
 
     @Override
     public List<UserInfoDto> findUserInfos(String companyId) {
-        return userInfoDao.selectUserInfos(companyId);
+        //该用户是否有管理的客栈
+        List<UserInfoDto> infoDtoList = userInfoDao.selectUserInfos(companyId);
+        if (ArrayUtils.isNotEmpty(infoDtoList.toArray())) {
+            for (UserInfoDto userInfoDto : infoDtoList) {
+                List<BangInn> bangInnList = this.bangInnDao.selectBangInnByUserId(userInfoDto.getId());
+                if (ArrayUtils.isNotEmpty(bangInnList.toArray())) {
+                    userInfoDto.setIsHaveInn(true);
+                }
+            }
+        }
+        return infoDtoList;
     }
 
     @Override
