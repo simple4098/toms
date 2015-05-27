@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 客栈管理
  * Created by wangdayin on 2015/5/15.
  */
 @Controller

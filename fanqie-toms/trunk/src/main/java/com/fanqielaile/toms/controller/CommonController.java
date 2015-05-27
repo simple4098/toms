@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
+ * 公用控制器
  * Created by wangdayin on 2015/5/18.
  */
 @Controller

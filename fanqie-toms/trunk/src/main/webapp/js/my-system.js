@@ -222,3 +222,21 @@ $('.btn-update-label').on('click', function () {
         $('.update-label-form').submit();
     }
 });
+
+/*通知消息联动*/
+$('.notice').on('change', function () {
+    var noticeId = $(this).val();
+    var url = $(this).attr('data-url');
+    if (noticeId != null && noticeId != '') {
+        $.ajax({
+            url: url + noticeId,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                $('.notice-content').val(data.data.noticeContent);
+            }
+        })
+    } else {
+        $('.notice-content').val('');
+    }
+})
