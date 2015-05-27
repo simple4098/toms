@@ -156,7 +156,7 @@ public class UserController extends BaseController {
      * @param id
      */
     @RequestMapping("delete_user")
-    public void deleteUser(Model model, String id, String replaceUserId) {
+    public String deleteUser(Model model, String id, String replaceUserId) {
         boolean flag = this.userInfoService.removeUserInfo(id, replaceUserId);
         if (flag) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -165,8 +165,26 @@ public class UserController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "删除失败");
         }
+        return redirectUrl("/user/find_users");
     }
 
+    /**
+     * 删除用户
+     *
+     * @param model
+     * @param id
+     */
+    @RequestMapping("only_delete_user")
+    public void deleteOnlyUser(Model model, String id) {
+        boolean flag = this.userInfoService.removeUserInfo(id);
+        if (flag) {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.MESSAGE, "删除成功");
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "删除失败");
+        }
+    }
     /**
      * 查询用户的权限列表
      *

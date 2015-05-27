@@ -75,4 +75,12 @@ public interface IUserInfoService extends UserDetailsService {
      */
     List<UserInfo> findOtherUserInfoById(UserInfo userInfo);
 
+    /**
+     * 删除用户
+     *
+     * @param id
+     * @return
+     */
+    boolean removeUserInfo(String id);
+
 }

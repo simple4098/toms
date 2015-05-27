@@ -56,11 +56,30 @@ $('.del-btn').on('click', function () {
     $('.user-id').val(userId);
     var dataUrl = $(this).attr('data-url');
     $('.data-url').val(dataUrl);
+    var url = $(this).attr('json-url');
+    var delUrl = $(this).attr('del-url');
+    $('.del-url').val(delUrl);
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            if (data.status) {
+                $('.user-list option').remove();
+                for (var i = 0; i < data.data.length; i++) {
+                    $('.user-list').append('<option value="' + data.data[i].id + '">' + data.data[i].userName + '</option>')
+                }
+            }
+        }
+    })
+});
+//删除form提交
+$('.btn-del-1').on('click', function () {
+    $('.delete-user').submit();
 });
 /*删除员工*/
-$('.btn-submit').on('click', function () {
-    var data = $('.user-id').val();
-    var url = $('.data-url').val();
+$('.btn-del').on('click', function () {
+    var url = $('.del-url').val();
     $.ajax({
         url: url,
         type: 'post',

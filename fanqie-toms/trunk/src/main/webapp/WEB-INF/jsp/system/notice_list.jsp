@@ -142,6 +142,6 @@
         </div>
     </div>
 </div>
-<script src="<%=basePath%>/js/user_list.js"></script>
+<script src="<%=basePath%>/js/my-system.js"></script>
 </body>
 </html>

@@ -70,7 +70,9 @@
                                                     <i class="icon-pencil bigger-130"></i>
                                                 </a> &nbsp;&nbsp;
                                                 <button type="button" data-whatever="${d.id}"
+                                                        del-url="<c:url value="/user/only_delete_user.json?id=${d.id}"/>"
                                                         data-url="<c:url value="/user/delete_user.json?id=${d.id}"/>"
+                                                        json-url="<c:url value="/user/find_other_user.json?id=${d.id}"/>"
                                                         class="btn btn-danger btn-sm del-btn" data-toggle="modal"
                                                         <c:if test="${d.isHaveInn}">data-target="#myModalShare"</c:if>
                                                         <c:if test="${!d.isHaveInn}">data-target="#myModal"</c:if>
@@ -107,10 +109,11 @@
                 是否删除？
                 <input name="user-id" id="user-id-1" class="user-id" type="hidden"/>
                 <input type="hidden" class="data-url"/>
+                <input type="hidden" class="del-url"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary btn-submit">确认</button>
+                <button type="button" class="btn btn-primary btn-del">确认</button>
             </div>
         </div>
     </div>
@@ -126,20 +129,24 @@
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalShareLabel">提示信息</h4>
             </div>
+            <form class="form-horizontal delete-user" action="<c:url value="/user/delete_user"/>" method="post"
+                  role="form">
             <div class="modal-body">
                 <p>该员工帐号下有正在管理中的客栈，
                     若要删除，先将客栈交接到其他帐号！</p><br/>
-
                 <div class="user-body">
-
+                    将该帐号下的客栈全部交接给：
+                    <select name="replaceUserId" class="user-list">
+                        <option value="">请选择</option>
+                    </select>
                 </div>
-
-                <input name="user-id" id="user-id" class="user-id" type="hidden"/>
+                <input name="id" id="user-id" class="user-id" type="hidden"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary btn-submit-1">确认删除</button>
+                <button type="button" class="btn btn-primary btn-del-1">确认删除</button>
             </div>
+            </form>
         </div>
     </div>
 </div>
@@ -234,6 +241,6 @@
         </div>
     </div>
 </div>
-<script src="<%=basePath%>/js/user_list.js"></script>
+<script src="<%=basePath%>/js/my-system.js"></script>
 </body>
 </html>
