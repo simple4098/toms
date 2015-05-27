@@ -6,5 +6,6 @@
     <mapping path="/user/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/common/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/operate/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/notice/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/user/update_password" exclude="true"/>
 </sitemesh>

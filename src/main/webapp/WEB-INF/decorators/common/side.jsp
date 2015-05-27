@@ -124,8 +124,9 @@
                     </ul>
                 </li>
 
-                <li>
-                    <a href="#" class="dropdown-toggle">
+                <li
+                        <c:if test="${fn:contains(url, '/notice/find_notices')}">class="active"</c:if> >
+                    <a href="<c:url value="/notice/find_notices"/>" class="dropdown-toggle">
                         <i class="icon-edit"></i>
                         <span class="menu-text"> 消息通知 </span>
                     </a>
