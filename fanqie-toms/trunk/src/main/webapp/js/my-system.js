@@ -1,5 +1,17 @@
-/*新增员工*/
 var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
+
+/*修改密码-header*/
+$('.btn-sub-head').on('click', function () {
+    $('.help-password-head .middle').remove();
+    if ($('.paswd').val() == null || $('.paswd').val() == '') {
+        $('.help-password-head').append(span);
+        return false;
+    }
+    if ($('.paswd').val() != null && $('.paswd').val() != '') {
+        $('.update-password').submit();
+    }
+});
+/*新增员工*/
 $('.btn-info').on('click', function () {
     $('.help-login-name .middle').remove();
     $('.help-password .middle').remove();
