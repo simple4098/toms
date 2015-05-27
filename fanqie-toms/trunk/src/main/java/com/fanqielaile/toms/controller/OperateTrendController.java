@@ -1,9 +1,9 @@
 package com.fanqielaile.toms.controller;
 
 
-
 import com.fanqie.core.domain.InnCustomer;
 import com.fanqie.core.domain.OperateTrend;
+import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -13,12 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DESC : 趋势报表
@@ -84,6 +83,30 @@ public class OperateTrendController extends BaseController  {
             logger.error("趋势报表异常",e);
         }
         return "/operate/kf";
+    }
+
+    /**
+     * 订单来源
+     * @param paramDto 查询参数
+     */
+    @RequestMapping("/order")
+    public String order(Model model,ParamDto paramDto){
+        try {
+            paramDto.setStartDate("2015-05-23");
+            paramDto.setEndDate("2015-05-23 23:59:59");
+            paramDto.setInnId(753);
+            paramDto.setUserId("3");
+            String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
+            JSONObject jsonObject = JSONObject.fromObject(order);
+            Object rows = jsonObject.get("rows");
+            Map<String, Object> result = (Map<String, Object>)jsonObject.get("result");
+            List<OrderSource> list  = JacksonUtil.json2list(rows.toString(), OrderSource.class);
+            model.addAttribute("list",list);
+            model.addAttribute("result",result);
+        } catch (IOException e) {
+            logger.error("趋势报表异常",e);
+        }
+        return "/operate/order";
     }
 
 

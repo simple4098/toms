@@ -6,8 +6,42 @@ package com.fanqielaile.toms.common;
  * @data : 2015/5/27
  * @version: v1.0.0
  */
-public interface CommonApi {
-    public static  final String QS = "http://localhost:8083/api/toms/operate.json";
-    public static  final String KF = "http://localhost:8083/api/toms/obtCustomerNum.json";
-    public static  final String KF_D = "http://localhost:8083/api/toms/customer.json";
+public class CommonApi {
+
+    public static   String QS = "";
+    public static   String KF = "";
+    public static   String KF_D = "";
+    public static   String ORDER = "";
+
+    public static String getQS() {
+        return QS;
+    }
+
+    public  void setQS(String QS) {
+        CommonApi.QS = QS;
+    }
+
+    public static String getKF() {
+        return KF;
+    }
+
+    public  void setKF(String KF) {
+        CommonApi.KF = KF;
+    }
+
+    public static String getKfD() {
+        return KF_D;
+    }
+
+    public  void setKfD(String kfD) {
+        CommonApi.KF_D = kfD;
+    }
+
+    public static String getORDER() {
+        return ORDER;
+    }
+
+    public  void setORDER(String ORDER) {
+        CommonApi.ORDER = ORDER;
+    }
 }
