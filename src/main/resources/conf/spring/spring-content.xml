@@ -24,12 +24,7 @@
        <bean class="org.springframework.context.support.ResourceBundleMessageSource" id="messageSource"
              p:basenames="message"/>
 
-       <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-              <property name="driverClassName" value="${jdbc.driver}"/>
-              <property name="url" value="${jdbc.url}"/>
-              <property name="username" value="${jdbc.username}"/>
-              <property name="password" value="${jdbc.password}"/>
-       </bean>
+
 
        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
               <property name="dataSource" ref="dataSource"/>
@@ -85,4 +80,89 @@
               </property>
        </bean>
        <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+
+      <!-- <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+              <property name="driverClassName" value="${jdbc.driver}"/>
+              <property name="url" value="${jdbc.url}"/>
+              <property name="username" value="${jdbc.username}"/>
+              <property name="password" value="${jdbc.password}"/>
+       </bean>-->
+       <beans profile="dev">
+              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                     <property name="driverClassName" value="org.postgresql.Driver"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="username" value="ota"/>
+                     <property name="password" value="ota"/>
+                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
+                     <property name="username" value="root"/>
+                     <property name="password" value="123456"/>-->
+                     <property name="maxWait" value="1000" />
+                     <property name="initialSize" value="5" />
+                     <property name="maxActive" value="20" />
+                     <property name="testWhileIdle" value="false" />
+                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
+                     <property name="removeAbandoned" value="true" />
+                     <property name="removeAbandonedTimeout" value="1800" />
+                     <property name="validationQuery" value="select 1"/>
+              </bean>
+              <bean class="com.fanqielaile.toms.common.CommonApi">
+                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
+                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
+              </bean>
+       </beans>
+       <beans profile="test">
+              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                     <property name="driverClassName" value="org.postgresql.Driver"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="username" value="ota"/>
+                     <property name="password" value="ota"/>
+                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
+                     <property name="username" value="root"/>
+                     <property name="password" value="123456"/>-->
+                     <property name="maxWait" value="1000" />
+                     <property name="initialSize" value="5" />
+                     <property name="maxActive" value="20" />
+                     <property name="testWhileIdle" value="false" />
+                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
+                     <property name="removeAbandoned" value="true" />
+                     <property name="removeAbandonedTimeout" value="1800" />
+                     <property name="validationQuery" value="select 1"/>
+              </bean>
+              <bean class="com.fanqielaile.toms.common.CommonApi">
+                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
+                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
+              </bean>
+       </beans>
+       <beans profile="pro">
+              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                     <property name="driverClassName" value="org.postgresql.Driver"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="username" value="ota"/>
+                     <property name="password" value="ota"/>
+                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
+                     <property name="username" value="root"/>
+                     <property name="password" value="123456"/>-->
+                     <property name="maxWait" value="1000" />
+                     <property name="initialSize" value="5" />
+                     <property name="maxActive" value="20" />
+                     <property name="testWhileIdle" value="false" />
+                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
+                     <property name="removeAbandoned" value="true" />
+                     <property name="removeAbandonedTimeout" value="1800" />
+                     <property name="validationQuery" value="select 1"/>
+              </bean>
+              <bean class="com.fanqielaile.toms.common.CommonApi">
+                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
+                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
+              </bean>
+       </beans>
 </beans>
