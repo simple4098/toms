@@ -40,6 +40,7 @@
                                     <i class="icon-cog"></i>
                                 </a>
                                 <a class="delete-notice" data-toggle="modal" data-target="#myModal"
+                                   data-url="<c:url value="/system/delete_notice.json?id=${d.id}"/>"
                                    data-whatever="${d.id}">
                                     <i class="icon-remove"></i>
                                 </a>
@@ -77,6 +78,7 @@
             <div class="modal-body">
                 是否删除？
                 <input name="noticeId" id="notice-id" class="notice-id" type="hidden"/>
+                <input name="dataUrl" class="data-url" type="hidden"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -95,7 +97,8 @@
                 <h4 class="modal-title" id="addNoticeLabel">新增模板</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="<c:url value="/system/create_notice"/>" method="post" role="form">
+                <form class="form-horizontal notice-form" action="<c:url value="/system/create_notice"/>" method="post"
+                      role="form">
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 模板标题 </label>
 
@@ -139,47 +142,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        /*删除模板弹出层把noticeId传入*/
-        $('.delete-notice').on('click', function () {
-            var noticeId = $(this).attr('data-whatever');
-            $('.notice-id').val(noticeId);
-        });
-        /*删除模板*/
-        $('.btn-submit').on('click', function () {
-            var data = $('.notice-id').val();
-            $.ajax({
-                url: '<c:url value="/system/delete_notice.json?id="/>' + data,
-                type: 'post',
-                dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        window.location.reload();
-                    } else {
-                        window.location.reload();
-                    }
-                },
-                error: function () {
-                    //do same thing!
-                }
-            });
-        });
-        /*必填验证*/
-        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
-        $('.btn-sub').on('click', function () {
-            $('.help-notice-title .middle').remove();
-            $('.help-notice-content .middle').remove();
-            if ($('.notice-title').val() == null || $('.notice-title').val() == '') {
-                $('.help-notice-title').append(span);
-                return false;
-            }
-            if ($('.notice-content').val() == null || $('.notice-content').val() == '') {
-                $('.help-notice-content').append(span);
-                return false;
-            }
-        });
-    })
-</script>
+<script src="<%=basePath%>/js/user_list.js"></script>
 </body>
 </html>

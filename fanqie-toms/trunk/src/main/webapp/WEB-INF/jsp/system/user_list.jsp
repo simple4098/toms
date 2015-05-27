@@ -7,8 +7,6 @@
 <html>
 <head>
     <title>账号设置</title>
-    <%--<script src="<%=basePath%>/assets/js/jquery.dataTables.min.js"></script>--%>
-    <%--<script src="<%=basePath%>/assets/js/jquery.dataTables.bootstrap.js"></script>--%>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
@@ -72,8 +70,11 @@
                                                     <i class="icon-pencil bigger-130"></i>
                                                 </a> &nbsp;&nbsp;
                                                 <button type="button" data-whatever="${d.id}"
+                                                        data-url="<c:url value="/user/delete_user.json?id=${d.id}"/>"
                                                         class="btn btn-danger btn-sm del-btn" data-toggle="modal"
-                                                        data-target="#myModal">
+                                                        <c:if test="${d.isHaveInn}">data-target="#myModalShare"</c:if>
+                                                        <c:if test="${!d.isHaveInn}">data-target="#myModal"</c:if>
+                                                        >
                                                     删除
                                                 </button>
                                             </div>
@@ -104,11 +105,40 @@
             </div>
             <div class="modal-body">
                 是否删除？
-                <input name="user-id" id="user-id" class="user-id" type="hidden"/>
+                <input name="user-id" id="user-id-1" class="user-id" type="hidden"/>
+                <input type="hidden" class="data-url"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary btn-submit">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<%--删除弹出层分配客栈--%>
+<!-- Modal -->
+<div class="modal fade" id="myModalShare" tabindex="-1" role="dialog" aria-labelledby="myModalShareLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalShareLabel">提示信息</h4>
+            </div>
+            <div class="modal-body">
+                <p>该员工帐号下有正在管理中的客栈，
+                    若要删除，先将客栈交接到其他帐号！</p><br/>
+
+                <div class="user-body">
+
+                </div>
+
+                <input name="user-id" id="user-id" class="user-id" type="hidden"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary btn-submit-1">确认删除</button>
             </div>
         </div>
     </div>
@@ -129,7 +159,8 @@
 
                         <div class="col-sm-9">
                             <input type="text" id="form-field-1" name="loginName"
-                                   value="" placeholder="登录账号" class="col-xs-10 col-sm-5 login-name"/>
+                                   value="" placeholder="登录账号" class="col-xs-10 col-sm-5 login-name"
+                                   data-url="<c:url value="/user/check_user_name.json"/>"/>
                             <span class="help-login-name col-xs-12 col-sm-7"></span>
                         </div>
                     </div>
@@ -139,7 +170,7 @@
 
                         <div class="col-sm-9">
                             <input type="password" name="password" id="form-field-2" placeholder="密码"
-                                   class="col-xs-10 col-sm-5 ace password"/>
+                                   class="col-xs-10 col-sm-5 ace pawd"/>
                         <span class="help-password col-xs-12 col-sm-7">
 
 											</span>
@@ -203,85 +234,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        /*新增员工*/
-        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
-        $('.btn-info').on('click', function () {
-            $('.help-login-name .middle').remove();
-            $('.help-password .middle').remove();
-            $('.help-tel .middle').remove();
-            $('.help-name .middle').remove();
-            if ($('.login-name').val() == null || $('.login-name').val() == '') {
-                $('.help-login-name').append(span);
-                return false;
-            }
-            if ($('.password').val() == null || $('.password').val() == '') {
-                $('.help-password').append(span);
-                return false;
-            }
-            if ($('.tel').val() == null || $('.tel').val() == '') {
-                $('.help-tel').append(span);
-                return false;
-            }
-            if ($('.user-name').val() == null || $('.user-name').val() == '') {
-                $('.help-name').append(span);
-                return false;
-            }
-//        return false;
-        });
-        /*验证登陆名*/
-        $('.login-name').on('blur', function () {
-            $('.help-login-name .middle').remove();
-            var value = $(this).val();
-            var name = $(this).attr('name');
-            var url = "<c:url value="/user/check_user_name.json"/>"
-            $.ajax({
-                url: url,
-                type: 'post',
-                dataType: 'json',
-                data: name + '=' + value,
-                success: function (data) {
-                    var span = '<span class="middle" name="middle" disabled="false" style="color: red">登录名已经存在</span>';
-                    if (!data.status) {
-                        $('.help-login-name').append(span);
-                        $('.btn-sub').attr('disabled', true);
-                    } else {
-                        $('.help-login-name .middle').remove();
-                        $('.btn-sub').attr('disabled', false);
-
-                    }
-                },
-                error: function () {
-                    //do same thing!
-                }
-            });
-        });
-        /*删除员工弹出层把userid传入*/
-        $('.del-btn').on('click', function () {
-            var userId = $(this).attr('data-whatever');
-            $('.user-id').val(userId);
-        });
-        /*删除员工*/
-        $('.btn-submit').on('click', function () {
-            var data = $('.user-id').val();
-            $.ajax({
-                url: '<c:url value="/user/delete_user.json?id="/>' + data,
-                type: 'post',
-                dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        window.location.reload();
-                    } else {
-                        window.location.reload();
-                    }
-                },
-                error: function () {
-                    //do same thing!
-                }
-            });
-        });
-    })
-</script>
+<script src="<%=basePath%>/js/user_list.js"></script>
 </body>
 </html>

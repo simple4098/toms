@@ -38,4 +38,9 @@
         </if>
         GROUP BY inn_label_id
     </select>
+    <select id="selectBangInnByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where user_id = #{userId}
+    </select>
 </mapper>

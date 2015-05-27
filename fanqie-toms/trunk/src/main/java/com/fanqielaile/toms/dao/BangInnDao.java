@@ -42,4 +42,12 @@ public interface BangInnDao {
      * @return
      */
     List<BangInn> selectBangInnByUser(UserInfo userInfo);
+
+    /**
+     * 根据用户id查询管理的客栈
+     *
+     * @param userId
+     * @return
+     */
+    List<BangInn> selectBangInnByUserId(String userId);
 }

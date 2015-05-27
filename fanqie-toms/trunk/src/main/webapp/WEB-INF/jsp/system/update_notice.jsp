@@ -63,7 +63,7 @@
                 <div class="space-4"></div>
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
-                        <button class="btn btn-info" type="submit">
+                        <button class="btn btn-info btn-sub" type="submit">
                             <i class="icon-ok bigger-110"></i>
                             Submit
                         </button>
@@ -79,22 +79,5 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
-        $('.btn-info').on('click', function () {
-            $('.help-notice-title .middle').remove();
-            $('.help-notice-content .middle').remove();
-            if ($('.notice-title').val() == null || $('.notice-title').val() == '') {
-                $('.help-notice-title').append(span);
-                return false;
-            }
-            if ($('.notice-content').val() == null || $('.notice-content').val() == '') {
-                $('.help-notice-content').append(span);
-                return false;
-            }
-        });
-    });
-</script>
 </body>
 </html>

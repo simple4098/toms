@@ -36,19 +36,21 @@
                         <div class="widget-header">
                             <div class="widget-toolbar">
                                 <a class="update-label" data-toggle="modal" data-target="#updateLabel"
+                                   data-url="<c:url value="/system/find_label.json?id=${d.id}"/>"
                                    data-whatever="${d.id}">
                                     <i class="icon-cog"></i>
                                 </a>
                                 <a class="delete-label" data-toggle="modal" data-target="#myModal"
+                                   data-url="<c:url value="/system/delete_label.json?id=${d.id}"/>"
                                    data-whatever="${d.id}">
                                     <i class="icon-remove"></i>
                                 </a>
                                 <a class="add-label" data-toggle="modal" data-target="#addLabel">
                                     <i class="icon-plus"></i>
                                 </a>
-                                <a class="share-label" data-toggle="modal" data-target="#shareLabel">
-                                    <i class="icon-share"></i>
-                                </a>
+                                    <%--<a class="share-label" data-toggle="modal" data-target="#shareLabel">--%>
+                                    <%--<i class="icon-share"></i>--%>
+                                    <%--</a>--%>
                             </div>
                         </div>
 
@@ -80,6 +82,7 @@
             <div class="modal-body">
                 是否删除？
                 <input name="labelId" id="label-id" class="label-id" type="hidden"/>
+                <input type="hidden" class="data-url"/>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -89,7 +92,7 @@
     </div>
 </div>
 <%--新增分类弹出层--%>
-<div class="modal fade" id="addLabel" tabindex="-1" role="dialog" aria-labelledby="addLabelLabel" aria-hidden="true">
+<div class="modal fade " id="addLabel" tabindex="-1" role="dialog" aria-labelledby="addLabelLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -98,7 +101,7 @@
                 <h4 class="modal-title" id="addLabelLabel">新增分类</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="<c:url value="/system/create_inn_label"/>" method="post"
+                <form class="form-horizontal new-label" action="<c:url value="/system/create_inn_label"/>" method="post"
                       role="form">
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 分类名称 </label>
@@ -111,7 +114,7 @@
                     </div>
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info btn-sub" type="submit">
+                            <button class="btn btn-info btn-sub btn-new-label" type="submit">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -142,7 +145,8 @@
                 <h4 class="modal-title" id="updateLabelLabel">编辑分类</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="<c:url value="/system/update_label"/>" method="post" role="form">
+                <form class="form-horizontal update-label-form" action="<c:url value="/system/update_label"/>"
+                      method="post" role="form">
                     <input type="hidden" name="id" class="labelId"/>
 
                     <div class="form-group">
@@ -156,53 +160,7 @@
                     </div>
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info btn-sub" type="submit">
-                                <i class="icon-ok bigger-110"></i>
-                                确认
-                            </button>
-                            &nbsp; &nbsp; &nbsp;
-                            <button class="btn" type="reset">
-                                <i class="icon-undo bigger-110"></i>
-                                清空
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <%--<div class="modal-footer">--%>
-            <%--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>--%>
-            <%--<button type="button" class="btn btn-primary btn-submit">确认</button>--%>
-            <%--</div>--%>
-        </div>
-    </div>
-</div>
-<%--分享客栈弹出层--%>
-<div class="modal fade" id="shareLabel" tabindex="-1" role="dialog" aria-labelledby="addShareLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addShareLabel">分配客栈</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal" action="<c:url value="/system/create_inn_label"/>" method="post"
-                      role="form">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 员工名称 </label>
-
-                        <div class="col-sm-9">
-                            <select>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="clearfix form-actions">
-                        <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info btn-sub" type="submit">
+                            <button class="btn btn-info btn-sub btn-update-label" type="submit">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -218,60 +176,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        /*删除分类传入labelId*/
-        $('.delete-label').on('click', function () {
-            var labelId = $(this).attr('data-whatever');
-            $('.label-id').val(labelId);
-        });
-        /*删除分类*/
-        $('.btn-submit').on('click', function () {
-            var data = $('.label-id').val();
-            $.ajax({
-                url: '<c:url value="/system/delete_label.json?id="/>' + data,
-                type: 'post',
-                dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        layer.msg(data.message);
-                    } else {
-                        window.location.reload();
-                    }
-                },
-                error: function () {
-                    //do same thing!
-                }
-            });
-        });
-        /*必填验证*/
-        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
-        $('.btn-sub').on('click', function () {
-            $('.help-label-name .middle').remove();
-            if ($('.label-name').val() == null || $('.label-name').val() == '') {
-                $('.help-label-name').append(span);
-                return false;
-            }
-        });
-        /*编辑分类*/
-        $('.update-label').on('click', function () {
-            $('.help-label-name .middle').remove();
-            var data = $(this).attr('data-whatever');
-            $.ajax({
-                url: '<c:url value="/system/find_label.json?id="/>' + data,
-                type: 'post',
-                dataType: 'json',
-                success: function (data) {
-                    if (data.status) {
-                        $('.label-name').val(data.data.labelName);
-                        $('.labelId').val(data.data.id);
-                    } else {
-                        layer.msg(data.message);
-                    }
-                }
-            });
-        })
-    })
-</script>
+<script src="<%=basePath%>/js/user_list.js"></script>
 </body>
 </html>

@@ -52,7 +52,7 @@
 
                     <div class="col-sm-9">
                         <input type="password" name="password" id="form-field-2" placeholder="密码"
-                               class="col-xs-10 col-sm-5 ace password"/>
+                               class="col-xs-10 col-sm-5 ace pawd"/>
                         <span class="help-password col-xs-12 col-sm-7">
 
 											</span>
@@ -111,50 +111,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    jQuery(function ($) {
-        $('.login-name').on('blur', function () {
-            var value = $(this).val();
-            var name = $(this).attr('name');
-            var url = "<c:url value="/user/check_user.json"/>"
-            $.ajax({
-                url: url,
-                type: 'post',
-                dataType: 'json',
-                data: name + '=' + value + '&id=${data.id}',
-                success: function (data) {
-                    var span = '<span class="middle" name="middle" disabled="false" style="color: red">登录名已经存在</span>';
-                    if (!data.status) {
-                        $('.help-inline').append(span);
-                    } else {
-                        $('.help-inline .middle').remove();
-                    }
-                },
-                error: function () {
-                    //do same thing!
-                }
-            });
-        });
-        var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
-        $('.btn-info').on('click', function () {
-            $('.help-password .middle').remove();
-            $('.help-tel .middle').remove();
-            $('.help-name .middle').remove();
-            if ($('.password').val() == null || $('.password').val() == '') {
-                $('.help-password').append(span);
-                return false;
-            }
-            if ($('.tel').val() == null || $('.tel').val() == '') {
-                $('.help-tel').append(span);
-                return false;
-            }
-            if ($('.user-name').val() == null || $('.user-name').val() == '') {
-                $('.help-name').append(span);
-                return false;
-            }
-//        return false;
-        });
-    });
-</script>
+<script src="<%=basePath%>/js/user_list.js"></script>
 </body>
 </html>
