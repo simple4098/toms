@@ -40,12 +40,24 @@
 }
 .select-area{
 	margin:10px 0;
-	/* height: 30px; */
 }
-.date-input{
-	line-height: inherit!important;
+/* 下拉框 */
+select.form-control{
+	display: inline-block;
+	width: 165px;
+	min-width: 165px;
+	padding: 3px 6px;
 	height: 30px;
 }
+
+/* 日历选择框 */
+.date-input[readonly]{
+	line-height: inherit!important;
+	height: 30px;
+	cursor: pointer;
+}
+
+/*搜索按钮*/
 .search-btn{
 	height: 29px;
 }
