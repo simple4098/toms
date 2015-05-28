@@ -97,13 +97,13 @@
                     <div class="col-md-offset-3 col-md-9">
                         <button class="btn btn-info" type="submit">
                             <i class="icon-ok bigger-110"></i>
-                            Submit
+                            确认
                         </button>
 
                         &nbsp; &nbsp; &nbsp;
                         <button class="btn" type="reset">
                             <i class="icon-undo bigger-110"></i>
-                            Reset
+                            清空
                         </button>
                     </div>
                 </div>
