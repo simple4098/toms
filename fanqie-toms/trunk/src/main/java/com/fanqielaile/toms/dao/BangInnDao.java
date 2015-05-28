@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dao.base.IBaseDao;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by wangdayin on 2015/5/15.
  */
-public interface BangInnDao {
+public interface BangInnDao extends IBaseDao {
     /**
      * 新增绑定客栈信息
      *

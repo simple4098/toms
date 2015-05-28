@@ -1,35 +1,66 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+  String path = request.getContextPath();
+  String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
+%>
+<!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="/assets/css/pages.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>运营趋势</title>
+  <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
+  <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
+
 </head>
 <body>
+
 <div class="container">
-  <div>
-    <select class="selectpicker">
-      <option>Mustard</option>
-      <option>Ketchup</option>
-      <option>Relish</option>
-    </select>
+  <div class="clearfix select-area">
+    <div class="pull-right">
+      <form id="qsId" method="POST">
+        <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
+        <input type="hidden" class="operate-url" data-url="<c:url value="/operate/qsDetail.json"/>">
+        <input type="hidden" class="qs-url" data-url="<c:url value="/operate/ajax/qs.json"/>"/>
+        <select class="form-control" id="fast_select">
+          <option>快捷日期</option>
+          <option>昨日</option>
+          <option>本月</option>
+          <option>近7天</option>
+          <option>近30天</option>
+        </select>
+        <input readonly class="date-input" name="startDate" type="text" id="from_datepicker" placeholder="请选择开始日期">
+        <span>至</span>
+        <input readonly class="date-input" name="endDate" type="text" id="to_datepicker" placeholder="请选择结束日期">
+        <!-- <select class="selectpicker"> -->
+        <select class="form-control" name="tagId" id="kz-tags"> </select>
+        <select class="form-control " id="kz_item" name="innId">
+        </select>
+        <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">搜索
+          <i class="icon-search icon-on-right bigger-110"></i>
+        </button>
+      </form>
+    </div>
   </div>
   <div class="data-count-container">
     <div class="row data-count-box">
       <div class="col-md-3">
         <p>营业收入</p>
-        <p class="text-center color-green"><span>${operateTrend.totalIncome}</span>元</p>
+        <p class="text-center color-green"><span id="totalIncome">120000</span>元</p>
       </div>
       <div class="col-md-3">
         <p>实住间夜数</p>
-        <p class="text-center color-green"><span>${operateTrend.realLiveNum}</span>间夜</p>
-        <p class="text-center color-gray">总数${operateTrend.totalRoomNum}间夜；空置${operateTrend.emptyRoomNum}间夜</p>
+        <p class="text-center color-green"><span id="realLiveNum">30000</span>间夜</p>
+        <p class="text-center color-gray" id="emptyAndTotalRoom"></p>
       </div>
       <div class="col-md-3">
         <p>入住率</p>
-        <p class="text-center color-green"><span>${operateTrend.livePercent*100}</span>%</p>
+        <p class="text-center color-green"><span id="livePercent">60</span>%</p>
       </div>
       <div class="col-md-3">
         <p>间夜均价</p>
-        <p class="text-center color-green"><span>400</span>元</p>
+        <p class="text-center color-green"><span id="avgId">400</span>元</p>
       </div>
     </div>
   </div>
@@ -63,22 +94,11 @@
 
 </div>
 
-<%--  <script type="text/javascript">
-
-    $.ajax({
-      url: 'http://localhost:8083/api/toms/order.json',
-      type: 'post',
-      dataType: 'json',
-      /*data: name + '=' + value + '&id=${data.id}',*/
-      success: function (data) {
-        alert(data);
-
-      },
-      error: function (data) {
-        alert("error"+data);
-      }
-    });
-
-  </script>--%>
+<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+<script src="<%=basePath%>/assets/js/echarts-all.js"></script>
+<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
+<script src="<%=basePath%>/assets/js/tomato.min.js"></script>
+<script src="<%=basePath%>/assets/js/dateSelecter.js"></script>
+<script src="<%=basePath%>/assets/js/dataCount.js"></script>
 </body>
 </html>
