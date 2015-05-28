@@ -246,7 +246,11 @@ init_jianYeJunJia();
         }
     })
 }*/
+$('#myButton').on('click', function(){
+    var startDate = $('#from_datepicker').val(),
+        endDate = $('#to_datepicker').val();
 
+})
 
 
 

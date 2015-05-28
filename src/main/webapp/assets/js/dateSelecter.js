@@ -9,6 +9,9 @@ $(function(){
 		dateFormat: 'yy-mm-dd',
 		maxDate: new Date()
 	}); 
+	
+	// 日期初始化，默认选择昨天
+	$('#from_datepicker, #to_datepicker').val( TC.plusDate(new Date(), '-1', 'd', 'yyyy-MM-dd'));
 	// 快捷日期
 	$('#fast_select').change(function(){
 		var date = new Date(),
@@ -45,22 +48,21 @@ $(function(){
 	    	var i = 0;
 	    	// 遍历获取客栈标签
 	    	for(var attr in json.data){
-	    		aLabel += "<option value='"+i+"'>"+json.data[attr].innLabel.labelName+"</option>";
+	    		aLabel += "<option data-index='"+i+"' value='"+json.data[attr].innLabel.id+"'>"+json.data[attr].innLabel.labelName+"</option>";
 	    		i++;
 	    	}
 	    	// 遍历获取客栈列表
     		function getInnName(num){
 	    		aList = "";
 	    		for(var innList in json.data[num].innList){
-	    			aList += "<option>"+json.data[num].innList[innList].innName+"</option>"
+	    			aList += "<option value='"+json.data[num].innList[innList].innId+"'>"+json.data[num].innList[innList].innName+"</option>"
 	    		};	
     		}
     		// 默认加载第一个列表
     		getInnName(0);
     		// 联动刷新客栈列表
     		$('#kz-tags').change(function(){
-    			var num = $(this).val();
-    			// alert(num)
+    			var num = $(this).children(':selected').attr('data-index');
     			getInnName(num);
     			$('#kz_item').html(aList);
     		})
