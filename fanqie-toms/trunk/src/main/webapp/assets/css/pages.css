@@ -79,3 +79,7 @@ select.form-control{
 .progress{
 	margin-bottom: 0!important; /* 进度条样式重置 */
 }
+
+.chosen-select{
+	width: 100px;
+}
