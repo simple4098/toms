@@ -9,9 +9,18 @@ package com.fanqielaile.toms.common;
 public class CommonApi {
 
     public static   String QS = "";
+    public static   String QSDetail = "";
     public static   String KF = "";
     public static   String KF_D = "";
     public static   String ORDER = "";
+
+    public static String getQSDetail() {
+        return QSDetail;
+    }
+
+    public  void setQSDetail(String QSDetail) {
+        CommonApi.QSDetail = QSDetail;
+    }
 
     public static String getQS() {
         return QS;

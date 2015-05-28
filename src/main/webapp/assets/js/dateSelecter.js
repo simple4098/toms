@@ -46,30 +46,30 @@ $(function(){
 	    success:function(json){
 	    	var aLabel = ""; //存放客栈标签
 	    	var aList = "";  //存放客栈列表
-	    	var i = 0;
 	    	// 遍历获取客栈标签
 	    	for(var attr in json.data){
-	    		aLabel += "<option data-index='"+i+"' value='"+json.data[attr].innLabelId+"'>"+json.data[attr].innLabelName+"</option>";
-	    		i++;
+	    		aLabel += "<option value='"+json.data[attr].innLabelId+"'>"+json.data[attr].innLabelName+"</option>";
 	    	}
 	    	// 遍历获取客栈列表
     		function getInnName(num){
 	    		aList = "";
 	    		for(var innList in json.data[num].bangInnList){
 	    			aList += "<option value='"+json.data[num].bangInnList[innList].innId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
-	    		};	
+	    		};
     		}
     		// 默认加载第一个列表
     		getInnName(0);
     		// 联动刷新客栈列表
     		$('#kz-tags').change(function(){
-    			var num = $(this).children(':selected').attr('data-index');
+    			var num = $(this).children(':selected').index();
     			getInnName(num);
     			$('#kz_item').html(aList);
     		})
     		// 写入DOM
 	    	$('#kz-tags').html(aLabel);
 	    	$('#kz_item').html(aList);
+           //加载运营概况数据；
+
 	    }
 	});
 })

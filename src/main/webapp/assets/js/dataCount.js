@@ -30,7 +30,7 @@ var init_yingYeShouRu = function(){
             {
                 type : 'category',
                 boundaryGap : false,
-                data : _data.date
+                data : _data.result.date
             }
         ],
         yAxis : [
@@ -43,7 +43,7 @@ var init_yingYeShouRu = function(){
                 name:'营业收入',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.income
             }
         ]
     };
@@ -55,7 +55,7 @@ var init_yingYeShouRu = function(){
 var init_jianYeShu = function(){
     var myChart_jianYeShu = echarts.init(document.getElementById('jianYeShu'));
     myChart_jianYeShu.showLoading({
-        text: '正在努力的读取数据中...',    //loading
+        text: '正在努力的读取数据中...'    //loading
     });
                 
     myChart_jianYeShu.hideLoading();
@@ -81,7 +81,7 @@ var init_jianYeShu = function(){
             {
                 type : 'category',
                 boundaryGap : false,
-                data : _data.date
+                data : _data.result.date
             }
         ],
         yAxis : [
@@ -95,19 +95,19 @@ var init_jianYeShu = function(){
                 name:'间夜总数',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.totalRooms
             },
             {
                 name:'实住间夜数',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.realLiveNum
             },
             {
                 name:'空置间夜数',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.emptyRooms
             }
         ]
     };
@@ -125,7 +125,8 @@ var init_ruZhuLv = function(){
     myChart_ruZhuLv.hideLoading();
     option = {
         tooltip : {
-            trigger: 'axis'
+            trigger: 'axis',
+            formatter: "{b}<br>{a}:{c}%"
         },
         legend: {
             data:['入住率']
@@ -145,12 +146,17 @@ var init_ruZhuLv = function(){
             {
                 type : 'category',
                 boundaryGap : false,
-                data : _data.date
+                data : _data.result.date
             }
         ],
         yAxis : [
             {
-                type : 'value'
+                type : 'value',
+                axisLabel: {
+                    show: true,
+                    interval: 'auto',
+                    formatter: '{value} %'
+                }
             }
         ],
         series : [
@@ -158,7 +164,7 @@ var init_ruZhuLv = function(){
                 name:'入住率',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.livePercentList
             }
         ]
     };
@@ -196,7 +202,7 @@ var init_jianYeJunJia = function(){
             {
                 type : 'category',
                 boundaryGap : false,
-                data : _data.date
+                data : _data.result.date
             }
         ],
         yAxis : [
@@ -209,7 +215,7 @@ var init_jianYeJunJia = function(){
                 name:'间夜均价',
                 type:'line',
                 stack: '总量',
-                data:_data.visit
+                data:_data.result.avgPriceList
             }
         ]
     };
@@ -217,42 +223,69 @@ var init_jianYeJunJia = function(){
     myChart_jianYeJunJia.setOption(option);    
 }
 
-
+var url= $('.operate-url').attr('data-url');
+var qs_url= $('.qs-url').attr('data-url');
+var postData = $("#qsId").serialize();
 function getData(postData){
     $.ajax({
         type:'POST',
         data:postData,
-        url:'../json2.json',
+        url:url,
         dataType:'json',
         success:function(data){
             _data = data;
             init_yingYeShouRu();
+            init_jianYeShu();
+            init_ruZhuLv();
+            init_jianYeJunJia();
         }
     })
 }
+var timer = setInterval(function(){
+    if($('#kz_item').html()){
+        opt(postData);
+        getData(postData);
+        clearInterval(timer);
+    }
+},500);
+function opt(obj){
+    $.ajax({
+        type:'post',
+        url:qs_url,
+        dataType:'json',
+        data:obj,
+        success:function(json) {
+            var ope = json.operateTrend;
+            $("#totalIncome").html(ope.totalIncome);
+            $("#realLiveNum").html(ope.realLiveNum);
+            $("#emptyAndTotalRoom").html("总数"+ope.totalRoomNum+"间夜;空置"+ope.emptyRoomNum+"间夜");
+            $("#livePercent").html(ope.livePercent*100);
+            $("#avgId").html(ope.totalIncome/ope.realLiveNum);
+        }
+    });
+}
+
 $('#myButton').on('click', function(){
-    var startDate = $('#from_datepicker').val(),
-        endDate = $('#to_datepicker').val(),
-        tagId = $('#kz-tags').val(),
-        innId = $('#kz_item').val(),
-        postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'innId': innId};
-    
+    opt(postData);
     getData( postData );
 })
 
 // 营业收入
-init_yingYeShouRu();
+//init_yingYeShouRu();
+$('a[href="#tab_yingYeShouRu"]').on('shown.bs.tab', function (e) {
+    init_yingYeShouRu();
+})
 // 间夜数
-$('a[href="#tab_jianYeShu"]').on('shown.bs.tab', function (e) { 
-init_jianYeShu();
+$('a[href="#tab_jianYeShu"]').on('shown.bs.tab', function (e) {
+    init_jianYeShu();
 })
 // 入住率
-$('a[href="#tab_ruZhuLv"]').on('shown.bs.tab', function (e) { 
-init_ruZhuLv();
+$('a[href="#tab_ruZhuLv"]').on('shown.bs.tab', function (e) {
+    init_ruZhuLv();
 })
 // 间夜均价
 $('a[href="#tab_jianYeJunJia"]').on('shown.bs.tab', function (e) { 
-init_jianYeJunJia();
+    init_jianYeJunJia();
 })
 
 
