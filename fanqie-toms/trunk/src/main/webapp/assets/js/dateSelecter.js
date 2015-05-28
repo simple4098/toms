@@ -33,4 +33,40 @@ $(function(){
 					break;
 		}
 	});
+
+	// 筛选地区后，加载客栈列表
+	$.ajax({
+		type:'GET',
+	    url:'../json.json',
+	    dataType:'json',
+	    success:function(json){
+	    	var aLabel = ""; //存放客栈标签
+	    	var aList = "";  //存放客栈列表
+	    	var i = 0;
+	    	// 遍历获取客栈标签
+	    	for(var attr in json.data){
+	    		aLabel += "<option value='"+i+"'>"+json.data[attr].innLabel.labelName+"</option>";
+	    		i++;
+	    	}
+	    	// 遍历获取客栈列表
+    		function getInnName(num){
+	    		aList = "";
+	    		for(var innList in json.data[num].innList){
+	    			aList += "<option>"+json.data[num].innList[innList].innName+"</option>"
+	    		};	
+    		}
+    		// 默认加载第一个列表
+    		getInnName(0);
+    		// 联动刷新客栈列表
+    		$('#kz-tags').change(function(){
+    			var num = $(this).val();
+    			// alert(num)
+    			getInnName(num);
+    			$('#kz_item').html(aList);
+    		})
+    		// 写入DOM
+	    	$('#kz-tags').html(aLabel);
+	    	$('#kz_item').html(aList);
+	    }
+	});
 })

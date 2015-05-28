@@ -25,16 +25,7 @@ $(function(){
 		}).css('color', $(this).data('color'));
 	});
 
-	// 筛选地区后，加载客栈列表
-	$('#kz-tags').change(function(){
-		$.ajax({
-			type:'GET',
-		    url:'json.json',
-		    data:$('#kz-tags').val(),
-		    dataType:'text',
-		    success:function(data){
-		    	// todo
-		    }
-		});
-	})
+	
+
+	
 })
