@@ -69,6 +69,26 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <p class="alert alert-info">
+                            <span class="label label-lg label-purple arrowed">
+                                    <input type="checkbox" class="all-inn" style="padding-top: 10px"/>全选所有客栈
+                            </span>
+                            <br/><br/>
+                            <c:if test="${not empty bangInnList}">
+                                <c:forEach items="${bangInnList}" var="bi">
+                                    <span class="label label-lg label-purple arrowed">
+                                    <input type="checkbox" class="${bi.innLabelId} inn-label"
+                                           style="padding-top: 10px"/>${bi.innLabelName}
+                                    </span>
+                                    <br/>
+                                    <c:if test="${not empty bi.bangInnList}">
+                                        <c:forEach items="${bi.bangInnList}" var="inn">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <input type="checkbox" name="innId" class="${bi.innLabelId}-child inn"
+                                                   value="${inn.id}"/>${inn.innName}<br/>
+                                        </c:forEach>
+                                    </c:if>
+                                </c:forEach>
+                            </c:if>
                         </p>
                     </div>
                 </div>

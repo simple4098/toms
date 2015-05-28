@@ -1,8 +1,10 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.enums.SendType;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.NoticeTemplate;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.support.util.Constants;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,8 @@ import java.util.List;
 public class NoticeTemplateController extends BaseController {
     @Resource
     private INoticeTemplateService noticeTemplateService;
+    @Resource
+    private IBangInnService bangInnService;
     /**
      * 发送短信或者系统弹窗
      *
@@ -50,9 +54,13 @@ public class NoticeTemplateController extends BaseController {
     @RequestMapping("find_notices")
     public String findNotices(Model model) {
         UserInfo currentUser = getCurrentUser();
+        //客栈的通知模板
         List<NoticeTemplate> noticeTemplateList = this.noticeTemplateService.findNoticeTemplates(currentUser.getCompanyId());
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, noticeTemplateList);
+        //客栈的分类
+        List<BangInn> bangInnAndLabel = this.bangInnService.findBangInnAndLabel(currentUser);
+        model.addAttribute("bangInnList", bangInnAndLabel);
         return "/notice/notice_list";
     }
 }

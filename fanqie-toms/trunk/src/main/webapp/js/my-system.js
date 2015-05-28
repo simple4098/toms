@@ -239,4 +239,16 @@ $('.notice').on('change', function () {
     } else {
         $('.notice-content').val('');
     }
+});
+
+/*选择接收的客栈*/
+$('.all-inn').on('click', function () {
+    if ($(this).is(':checked')) {
+        $('.inn-label').attr('checked', true);
+        $('.inn').attr('checked', true);
+    }
+    if (!$(this).is(':checked')) {
+        $('.inn-label').attr('checked', false);
+        $('.inn').attr('checked', false);
+    }
 })
