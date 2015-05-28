@@ -22,12 +22,12 @@ public class LoginUserInterceptor extends HandlerInterceptorAdapter {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication == null) {
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath());
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login?msg=true");
             return false;
         }
         Object principal = authentication.getPrincipal();
         if (!(principal instanceof UserInfo)) {
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath());
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login?msg=true");
             return false;
         }
         httpServletRequest.getSession().setAttribute("currtentUser", (UserInfo) authentication.getPrincipal());
