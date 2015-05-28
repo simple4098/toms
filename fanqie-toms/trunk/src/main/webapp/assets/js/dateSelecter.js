@@ -38,9 +38,10 @@ $(function(){
 	});
 
 	// 筛选地区后，加载客栈列表
+	var url= $('.data-url').attr('data-url');
 	$.ajax({
 		type:'GET',
-	    url:'../json.json',
+		url:url,
 	    dataType:'json',
 	    success:function(json){
 	    	var aLabel = ""; //存放客栈标签
@@ -48,14 +49,14 @@ $(function(){
 	    	var i = 0;
 	    	// 遍历获取客栈标签
 	    	for(var attr in json.data){
-	    		aLabel += "<option data-index='"+i+"' value='"+json.data[attr].innLabel.id+"'>"+json.data[attr].innLabel.labelName+"</option>";
+	    		aLabel += "<option data-index='"+i+"' value='"+json.data[attr].innLabelId+"'>"+json.data[attr].innLabelName+"</option>";
 	    		i++;
 	    	}
 	    	// 遍历获取客栈列表
     		function getInnName(num){
 	    		aList = "";
-	    		for(var innList in json.data[num].innList){
-	    			aList += "<option value='"+json.data[num].innList[innList].innId+"'>"+json.data[num].innList[innList].innName+"</option>"
+	    		for(var innList in json.data[num].bangInnList){
+	    			aList += "<option value='"+json.data[num].bangInnList[innList].innId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
 	    		};	
     		}
     		// 默认加载第一个列表
