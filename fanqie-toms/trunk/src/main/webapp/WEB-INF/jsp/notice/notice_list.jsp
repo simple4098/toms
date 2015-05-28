@@ -82,7 +82,7 @@
                                     <br/>
                                     <c:if test="${not empty bi.bangInnList}">
                                         <c:forEach items="${bi.bangInnList}" var="inn">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;
                                             <input type="checkbox" name="innId" class="${bi.innLabelId}-child inn"
                                                    value="${inn.id}"/>${inn.innName}<br/>
                                         </c:forEach>
