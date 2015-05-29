@@ -1,16 +1,16 @@
 package com.fanqielaile.toms.controller;
 
 
-import com.fanqie.core.domain.InnCustomer;
 import com.fanqie.core.domain.OperateTrend;
-import com.fanqie.core.domain.OrderSource;
+import com.fanqie.core.dto.CustomerDto;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
-import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.IOperateTrendService;
+import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -20,8 +20,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * DESC : 趋势报表
@@ -33,6 +34,11 @@ import java.util.List;
 @RequestMapping("/operate")
 public class OperateTrendController extends BaseController  {
     private static Logger logger = LoggerFactory.getLogger(OperateTrendController.class);
+
+    @Resource
+    private IOperateTrendService operateTrendService;
+    @Resource
+    private IOrderService orderService;
 
     //运营趋势页面
     @RequestMapping("/qs")
@@ -72,66 +78,73 @@ public class OperateTrendController extends BaseController  {
 
     }
 
+    /**
+     * 客服资料分析
+     * @param paramDto  查询参数
+     * @param page 当前页
+     */
     @RequestMapping("/kf")
     public String kf(Model model,ParamDto paramDto,@RequestParam(defaultValue = "1",required = false)Integer page){
         try {
-           // String gets = HttpClientUtil.httpGets("http://localhost:8083/api/toms/operate.json");
-            paramDto.setStartDate("2015-04-01 00:00:00");
-            paramDto.setEndDate("2015-04-03 23:59:00");
-            paramDto.setTagId("1");
-            paramDto.setUserId("2df7667a-6cf4-4320-8449-6483c643ea62");
-            paramDto.setInnId(12087);
-            paramDto.setDataPermission(true);
-            paramDto.setCompanyId("d0392bc8-131c-48a4-846e-c81c66097781");
-            paramDto.setTagId("d51c1bad-56a4-420b-aea2-fcace22af546");
+            UserInfo currentUser = getCurrentUser();
+            paramDto.setUserId(currentUser.getId());
+            paramDto.setCompanyId(currentUser.getCompanyId());
+            paramDto.setDataPermission(currentUser.getDataPermission()==1);
             paramDto.setPage(page);
-            String kf = HttpClientUtil.httpPost(CommonApi.KF, paramDto);
-            String kf_d = HttpClientUtil.httpPost(CommonApi.KF_D, paramDto);
-            JSONObject jsonObject = JSONObject.fromObject(kf);
-            JSONObject kfDObject = JSONObject.fromObject(kf_d);
-            Object rows = kfDObject.get("rows");
-            Pagination pagination = JacksonUtil.json2obj(kfDObject.get("pagination").toString(),Pagination.class);
-            List<InnCustomer> innCustomer  = JacksonUtil.json2list(rows.toString(), InnCustomer.class);
-            Integer totalCityNum =(Integer) jsonObject.get("totalCityNum");
-            Integer totalNum =(Integer)jsonObject.get("totalNum");
-            model.addAttribute("totalCityNum",totalCityNum);
-            model.addAttribute("totalNum",totalNum);
-            model.addAttribute("innCustomerList",innCustomer);
-            model.addAttribute("pagination",pagination);
-        } catch (IOException e) {
+            CustomerDto customer = operateTrendService.findCustomer(paramDto);
+            model.addAttribute("customer",customer);
+        } catch (Exception e) {
             logger.error("趋势报表异常",e);
         }
         return "/operate/kf";
     }
 
     /**
-     * 订单来源
+     * 订单来源页面
      * @param paramDto 查询参数
      */
     @RequestMapping("/order")
-    public String order(Model model,ParamDto paramDto){
+    public String orderView(Model model,ParamDto paramDto){
+
+        return "/operate/order";
+    }
+    /**
+     * 订单来源
+     * @param paramDto 查询参数
+     */
+    @RequestMapping("/ajax/order")
+    public void order(Model model,ParamDto paramDto){
         try {
             paramDto.setStartDate("2015-05-23");
             paramDto.setEndDate("2015-05-23 23:59:59");
             paramDto.setInnId(753);
             paramDto.setUserId("2df7667a-6cf4-4320-8449-6483c643ea62");
-            String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
-            JSONObject jsonObject = JSONObject.fromObject(order);
-            if (jsonObject.get("obj")!=null){
-               OrderSourceDto orderSource  = JacksonUtil.json2obj(jsonObject.get("obj").toString(), OrderSourceDto.class);
-               model.addAttribute("orderSource",orderSource);
-            }
-            if (jsonObject.get("rows")!=null){
-                Object rows = jsonObject.get("rows");
-                List<OrderSource> list  = JacksonUtil.json2list(rows.toString(), OrderSource.class);
-                model.addAttribute("list",list);
-            }
-
+            OrderSourceDto sourceDto = orderService.findOrderSourceDto(paramDto);
+            model.addAttribute("orderSource",sourceDto);
         } catch (Exception e) {
             logger.error("趋势报表异常",e);
             throw new TomsRuntimeException("error error error",e);
         }
-        return "/operate/order";
+    }
+
+    /**
+     * 订单来源详情
+     * @param paramDto 查询参数
+     */
+    @RequestMapping("/ajax/orderDetail")
+    public void orderD(Model model,ParamDto paramDto){
+        try {
+            paramDto.setStartDate("2015-05-23");
+            paramDto.setEndDate("2015-05-23 23:59:59");
+            paramDto.setInnId(753);
+            paramDto.setUserId("2df7667a-6cf4-4320-8449-6483c643ea62");
+            Map<String, Object> orderSourceDetail = orderService.findOrderSourceDetail(paramDto);
+            model.addAttribute("data",orderSourceDetail.get("data"));
+            model.addAttribute("list",orderSourceDetail.get("list"));
+        } catch (Exception e) {
+            logger.error("趋势报表异常",e);
+            throw new TomsRuntimeException("error error error",e);
+        }
     }
 
 
