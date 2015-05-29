@@ -69,7 +69,10 @@
                     </ul>
                 </li>
 
-                <li>
+                <li
+                        <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/inn_manage/to_update_inn')}">class="open active"</c:if>
+                        >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list"></i>
                         <span class="menu-text"> 客栈管理 </span>
@@ -78,8 +81,9 @@
                     </a>
 
                     <ul class="submenu">
-                        <li>
-                            <a href="tables.html">
+                        <li
+                                <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="active" </c:if> >
+                            <a href="<c:url value="/inn_manage/find_inns"/>">
                                 <i class="icon-double-angle-right"></i>
                                 客栈列表
                             </a>

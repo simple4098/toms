@@ -2,10 +2,13 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.InnLabelDao;
+import com.fanqielaile.toms.dao.UserInfoDao;
+import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,6 +26,8 @@ public class BangInnService implements IBangInnService {
     private BangInnDao bangInnDao;
     @Resource
     private InnLabelDao innLabelDao;
+    @Resource
+    private UserInfoDao userInfoDao;
 
     @Override
     public List<BangInn> findBangInnByInnLabelId(String innLabelId) {
@@ -52,5 +57,38 @@ public class BangInnService implements IBangInnService {
             }
         }
         return results;
+    }
+
+    @Override
+    public List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo) {
+        List<BangInnDto> bangInnDtoList = this.bangInnDao.selectBangInnListByUserInfo(userInfo);
+        if (ArrayUtils.isNotEmpty(bangInnDtoList.toArray())) {
+            for (BangInnDto bangInnDto : bangInnDtoList) {
+                //标签
+                InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
+                bangInnDto.setLabelName(innLabel.getLabelName());
+                //所属管理员
+                UserInfo info = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
+                bangInnDto.setUserName(info.getUserName());
+            }
+        }
+        return bangInnDtoList;
+    }
+
+    @Override
+    public BangInnDto findBangInnById(String id) {
+        BangInnDto bangInnDto = this.bangInnDao.selectBangInnById(id);
+        if (null != bangInnDto) {
+            InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
+            bangInnDto.setLabelName(innLabel.getLabelName());
+            UserInfo userInfo = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
+            bangInnDto.setUserName(userInfo.getUserName());
+        }
+        return bangInnDto;
+    }
+
+    @Override
+    public void modifiyBangInn(BangInnDto bangInnDto) {
+        this.bangInnDao.updateBangInn(bangInnDto);
     }
 }
