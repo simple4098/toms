@@ -27,7 +27,10 @@
                      <mvc:mapping path="/system/*"/>
                      <bean class="com.fanqielaile.toms.support.interceptor.LoginUserInterceptor"/>
               </mvc:interceptor>
-
+              <mvc:interceptor>
+                     <mvc:mapping path="/*"/>
+                     <bean class="com.github.miemiedev.mybatis.paginator.springmvc.PageListAttrHandlerInterceptor"/>
+              </mvc:interceptor>
        </mvc:interceptors>
        <bean class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
               <constructor-arg index="0" value="zh_CN"/>
