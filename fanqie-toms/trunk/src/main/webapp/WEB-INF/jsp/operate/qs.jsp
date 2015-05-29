@@ -34,9 +34,8 @@
         <span>至</span>
         <input readonly class="date-input" name="endDate" type="text" id="to_datepicker" placeholder="请选择结束日期">
         <!-- <select class="selectpicker"> -->
-        <select class="form-control" name="tagId" id="kz-tags"> </select>
-        <select class="form-control " id="kz_item" name="innId">
-        </select>
+        <select class="form-control" name="tagId" id="kz-tags"></select>
+        <select class="form-control " id="kz_item" name="innId"></select>
         <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">搜索
           <i class="icon-search icon-on-right bigger-110"></i>
         </button>

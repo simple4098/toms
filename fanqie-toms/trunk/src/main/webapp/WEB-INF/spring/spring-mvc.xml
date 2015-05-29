@@ -25,6 +25,7 @@
                      <mvc:mapping path="/inn_manage/*"/>
                      <mvc:mapping path="/notice/*"/>
                      <mvc:mapping path="/system/*"/>
+                     <mvc:mapping path="/operate/*"/>
                      <bean class="com.fanqielaile.toms.support.interceptor.LoginUserInterceptor"/>
               </mvc:interceptor>
               <mvc:interceptor>
