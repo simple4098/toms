@@ -32,11 +32,10 @@
               update bang_inn set user_id = #{newUserId} where user_id = #{oldUserId}
        </update>
     <select id="selectBangInnByUser" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
-        SELECT inn_label_id FROM bang_inn
+        SELECT DISTINCT inn_label_id FROM bang_inn where company_id = #{companyId}
         <if test="dataPermission == 0">
-            where user_id = #{id}
+            and user_id = #{id}
         </if>
-        GROUP BY inn_label_id
     </select>
     <select id="selectBangInnByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT

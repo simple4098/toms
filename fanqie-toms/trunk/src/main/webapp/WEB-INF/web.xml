@@ -9,7 +9,10 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:conf/spring/spring-*.xml</param-value>
+        <param-value>
+            classpath:conf/spring/spring-content.xml,
+            classpath:conf/spring/spring-security.xml
+        </param-value>
     </context-param>
 
     <!-- Creates the Spring Container shared by all Servlets and Filters -->
