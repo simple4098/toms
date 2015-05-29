@@ -1,9 +1,10 @@
 
 // 各渠道房费所占比例 饼状图
 var channel_data = "",
-    channelName = [];
+    channelName = [],
+    myChart_channel = echarts.init(document.getElementById('map_channel'));
 var init_channel = function(){
-    var myChart_channel = echarts.init(document.getElementById('map_channel'));
+    myChart_channel = echarts.init(document.getElementById('map_channel'));
     myChart_channel.showLoading({
         text: '正在努力的读取数据中...',    //loading
     });
