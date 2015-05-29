@@ -16,6 +16,21 @@
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
     </resultMap>
+    <resultMap id="BangInnDtoResult" type="com.fanqielaile.toms.dto.BangInnDto">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="bang_date" property="bangDate"/>
+        <result column="lose_date" property="loseDate"/>
+        <result column="start_date" property="startDate"/>
+        <result column="inn_id" property="innId"/>
+        <result column="inn_name" property="innName"/>
+        <result column="code" property="code"/>
+        <result column="inn_label_id" property="innLabelId"/>
+        <result column="mobile" property="mobile"/>
+        <result column="inn_code" property="innCode"/>
+        <result column="user_id" property="userId"/>
+        <result column="type" property="type"/>
+    </resultMap>
     <sql id="Base_Column_List">
               id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type
        </sql>
@@ -42,4 +57,39 @@
         <include refid="Base_Column_List"/>
         from bang_inn where user_id = #{userId}
     </select>
+    <select id="selectBangInnListByUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo"
+            resultMap="BangInnDtoResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where company_id = #{companyId}
+        <if test="dataPermission == 0">
+            and user_id = #{id}
+        </if>
+        <if test="innLabelId != null and innLabelId != ''">
+            and inn_label_id = #{innLabelId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and user_id = #{userId}
+        </if>
+    </select>
+    <select id="selectBangInnById" parameterType="java.lang.String" resultMap="BangInnDtoResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where id= #{id}
+    </select>
+    <update id="updateBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
+        update bang_inn
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="innLabelId != null and innLabelId != ''">
+                inn_label_id = #{innLabelId},
+            </if>
+            <if test="code != null and code != ''">
+                code= #{code},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+        </trim>
+        where id= #{id}
+    </update>
 </mapper>

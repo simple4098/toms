@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.ibatis.annotations.Param;
@@ -50,4 +51,27 @@ public interface BangInnDao {
      * @return
      */
     List<BangInn> selectBangInnByUserId(String userId);
+
+    /**
+     * 根据当前登录用户查询客栈列表
+     *
+     * @param userInfo
+     * @return
+     */
+    List<BangInnDto> selectBangInnListByUserInfo(UserInfo userInfo);
+
+    /**
+     * 根据id查询绑定客栈
+     *
+     * @param Id
+     * @return
+     */
+    BangInnDto selectBangInnById(String Id);
+
+    /**
+     * 更新绑定客栈
+     *
+     * @param bangInnDto
+     */
+    void updateBangInn(BangInnDto bangInnDto);
 }

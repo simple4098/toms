@@ -38,6 +38,26 @@ public class UserInfo extends Domain implements UserDetails {
     private String roleId;
     //角色对象
     private Role role;
+    //客栈的标签id
+    private String innLabelId;
+    //管理员ID
+    private String userId;
+
+    public String getInnLabelId() {
+        return innLabelId;
+    }
+
+    public void setInnLabelId(String innLabelId) {
+        this.innLabelId = innLabelId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public Role getRole() {
         return role;

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
@@ -34,4 +35,27 @@ public interface IBangInnService {
      * @return
      */
     List<BangInn> findBangInnAndLabel(UserInfo userInfo);
+
+    /**
+     * 根据当前登录用户查询绑定客栈列表
+     *
+     * @param userInfo
+     * @return
+     */
+    List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo);
+
+    /**
+     * 根据id查询绑定客栈
+     *
+     * @param id
+     * @return
+     */
+    BangInnDto findBangInnById(String id);
+
+    /**
+     * 更新绑定的客栈
+     *
+     * @param bangInnDto
+     */
+    void modifiyBangInn(BangInnDto bangInnDto);
 }
