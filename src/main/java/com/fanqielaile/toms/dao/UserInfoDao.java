@@ -2,9 +2,12 @@ package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.UserInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2015/5/11.
@@ -73,4 +76,6 @@ public interface UserInfoDao {
     * @return
     */
    List<UserInfo> selectOtherUserInfoById(UserInfo userInfo);
+
+   List<UserInfo> selectUserInfoByPage(UserInfo u, PageBounds pageBounds);
 }
