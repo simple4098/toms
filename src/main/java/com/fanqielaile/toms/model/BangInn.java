@@ -35,8 +35,11 @@ public class BangInn extends Domain {
     private String userId;
     //绑定类型（状态）
     private BangType type;
-
+    //标签名称
     private String innLabelName;
+    //account id
+    private Integer accountId;
+
 
     private List<BangInn> bangInnList;
 
@@ -150,5 +153,13 @@ public class BangInn extends Domain {
 
     public void setType(BangType type) {
         this.type = type;
+    }
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
     }
 }
