@@ -17,6 +17,7 @@
     <title>客栈列表</title>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
+
 </head>
 <body>
 <div class="page-content">
@@ -36,7 +37,7 @@
             </span>家
               </span>
                         <span style="float: right;">
-                            <button type="button" class="btn btn-sm btn-success btn-new" data-toggle="modal"
+                            <button type="button" class="btn btn-sm btn-success btn-new-inn" data-toggle="modal"
                                     data-target="#myModal">新增客栈
                             </button>
                         </span>
@@ -78,38 +79,8 @@
                             </tr>
                             </thead>
 
-                            <tbody>
-                            <c:if test="${not empty data}">
-                                <c:forEach items="${data}" var="d">
-                                    <tr>
-                                        <td>
-                                                ${d.innName}
-                                        </td>
-                                        <td>${d.innCode}</td>
-                                        <td class="hidden-480">${d.mobile}</td>
-                                        <td>${d.labelName}</td>
+                            <tbody class="table-data">
 
-                                        <td class="hidden-480">
-                                                ${d.code}
-                                        </td>
-
-                                        <td>
-                                                ${d.userName}
-                                        </td>
-                                        <td>
-                                            <fmt:formatDate value="${d.bangDate}" pattern="yyyy-MM-dd"/>
-                                        </td>
-                                        <td>
-                                            <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
-                                                <a class="green"
-                                                   href="<c:url value="/inn_manage/to_update_inn?id=${d.id}"/>">
-                                                    <i class="icon-pencil bigger-130"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:if>
                             </tbody>
                         </table>
                     </div>
@@ -121,26 +92,93 @@
     <!-- /.col -->
 </div>
 <!-- /.row -->
-<%--新增客栈弹出层--%>
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">新增客栈操作方式</h4>
-            </div>
-            <div class="modal-body">
-                操作步骤的文案
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <%--<button type="button" class="btn btn-primary">Save changes</button>--%>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="<%=basePath%>/js/my-system.js"></script>
+<script type="text/javascript">
+    $('.btn-new-inn').on('click', function () {
+        layer.alert('提示信息：新增绑定客栈的文案', {icon: 6});
+    });
+    //页面加载完成执行
+    $(function () {
+        var innLabelId = $('.inn-label').val();
+        var userId = $('.user-id').val();
+        layer.load();
+
+        $.ajax({
+            url: '<c:url value="/inn_manage/find_inns_data.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: 'innLabelId=' + innLabelId + "&userId=" + userId,
+            success: function (data) {
+                if (data.data.length != 0) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        var text = "<tr><td>" + data.data[i].innName + "</td><td>" + data.data[i].innCode + "</td><td>" + data.data[i].mobile + "</td><td>" + data.data[i].labelName + "</td>" +
+                                "<td>" + data.data[i].code + "</td><td>" + data.data[i].userName + "</td><td>" + data.data[i].bangDataFormat + "</td>" +
+                                "<td><div class='visible-md visible-lg hidden-sm hidden-xs action-buttons'><a class='green' href='<c:url value="/inn_manage/to_update_inn?id="/>" + data.data[i].id + "'><i class='icon-pencil bigger-130'></i></a></div></td></tr>";
+                        $('.table-data').append(text);
+                    }
+                    layer.closeAll('loading');
+                }
+            }
+        })
+    });
+    $('.inn-label').on('change', function () {
+        $('.table-data td').remove();
+        var innLabelId = $('.inn-label').val();
+        var userId = $('.user-id').val();
+        layer.load();
+        $.ajax({
+            url: '<c:url value="/inn_manage/find_inns_data.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: 'innLabelId=' + innLabelId + "&userId=" + userId,
+            success: function (data) {
+                if (data.data.length != 0) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        var text = "<tr><td>" + data.data[i].innName + "</td><td>" + data.data[i].innCode + "</td><td>" + data.data[i].mobile + "</td><td>" + data.data[i].labelName + "</td>" +
+                                "<td>" + data.data[i].code + "</td><td>" + data.data[i].userName + "</td><td>" + data.data[i].bangDataFormat + "</td>" +
+                                "<td><div class='visible-md visible-lg hidden-sm hidden-xs action-buttons'><a class='green' href='<c:url value="/inn_manage/to_update_inn?id="/>" + data.data[i].id + "'><i class='icon-pencil bigger-130'></i></a></div></td></tr>";
+                        $('.table-data').append(text);
+                    }
+                    layer.closeAll('loading');
+                } else {
+                    layer.closeAll('loading');
+                    layer.msg('没有找到任何数据，请重试');
+                }
+            },
+            error: function (data) {
+                alert(data.message);
+            }
+        });
+    });
+    $('.user-id').on('change', function () {
+        $('.table-data td').remove();
+        var innLabelId = $('.inn-label').val();
+        var userId = $('.user-id').val();
+        layer.load();
+        $.ajax({
+            url: '<c:url value="/inn_manage/find_inns_data.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: 'innLabelId=' + innLabelId + "&userId=" + userId,
+            success: function (data) {
+                if (data.data.length != 0) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        var text = "<tr><td>" + data.data[i].innName + "</td><td>" + data.data[i].innCode + "</td><td>" + data.data[i].mobile + "</td><td>" + data.data[i].labelName + "</td>" +
+                                "<td>" + data.data[i].code + "</td><td>" + data.data[i].userName + "</td><td>" + data.data[i].bangDataFormat + "</td>" +
+                                "<td><div class='visible-md visible-lg hidden-sm hidden-xs action-buttons'><a class='green' href='<c:url value="/inn_manage/to_update_inn?id="/>" + data.data[i].id + "'><i class='icon-pencil bigger-130'></i></a></div></td></tr>";
+                        $('.table-data').append(text);
+                    }
+                    layer.closeAll('loading');
+                } else {
+                    layer.closeAll('loading');
+                    layer.msg('没有找到任何数据，请重试');
+                }
+            },
+            error: function (data) {
+                alert(data.message);
+            }
+        });
+    });
+</script>
+<script src="<%=basePath%>/js/my-system.js"/>
 </body>
 </html>
