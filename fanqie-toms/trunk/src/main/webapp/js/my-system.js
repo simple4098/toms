@@ -124,7 +124,7 @@ $('.btn-submit').on('click', function () {
         dataType: 'json',
         success: function (data) {
             if (!data.status) {
-                window.location.reload();
+
             } else {
                 window.location.reload();
             }
