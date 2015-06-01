@@ -68,6 +68,28 @@ public class InnManageController extends BaseController {
     }
 
     /**
+     * 绑定客栈列表数据
+     *
+     * @param model
+     * @param innLabelId
+     * @param userId
+     */
+    @RequestMapping("find_inns_data")
+    public void findInnsData(Model model, String innLabelId, String userId) {
+        UserInfo currentUser = getCurrentUser();
+        currentUser.setInnLabelId(innLabelId);
+        currentUser.setUserId(userId);
+        List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser);
+        model.addAttribute(Constants.DATA, bangInnList);
+        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        //客栈标签
+        List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
+        model.addAttribute("labels", innLabels);
+        //管理员
+        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
+        model.addAttribute("userInfos", userInfos);
+    }
+    /**
      * 跳转到编辑页面
      *
      * @param model

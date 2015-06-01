@@ -256,17 +256,3 @@ $('.all-inn').on('click', function () {
 $('.bang-inn-update').on('click', function () {
     $('.update-inn').submit();
 });
-/*绑定客栈select标签查询*/
-$('.inn-label').on('change', function () {
-    var url = $('.inn-label').attr('data-url');
-    var innLabel = $(this).val();
-    var userId = $('.user-id').val();
-    $.ajax({
-        url: url + "?innLabelId=" + innLabel + "&userId=" + userId,
-        type: 'post',
-        dataType: 'json',
-        success: function (data) {
-            alert("ok");
-        }
-    })
-});

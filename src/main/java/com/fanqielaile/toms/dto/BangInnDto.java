@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dto;
 
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.model.BangInn;
 
 /**
@@ -10,6 +11,19 @@ public class BangInnDto extends BangInn {
     private String userName;
     //客栈标签
     private String labelName;
+    //绑定时间格式化
+    private String bangDataFormat;
+
+    public String getBangDataFormat() {
+        if (getBangDate() != null) {
+            return DateUtil.formatDateToString(getBangDate(), "yyyy-MM-dd");
+        }
+        return bangDataFormat;
+    }
+
+    public void setBangDataFormat(String bangDataFormat) {
+        this.bangDataFormat = bangDataFormat;
+    }
 
     public String getUserName() {
         return userName;
