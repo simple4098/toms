@@ -44,17 +44,17 @@
     </div>
     <div class="data-count-container">
         <div class="row data-count-box">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <p>订单总量</p>
                 <p class="text-center color-green"><span id="orderNum">120000</span>元</p>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <p>实住间夜数</p>
                 <p class="text-center color-green"><span id="realLiveNum">30000</span>间夜</p>
                 <p class="text-center color-gray" id="emptyAndTotalRoom">总数50000间夜；空置20000间夜</p>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <p>房费收入</p>
                 <p class="text-center color-green"><span id="incomeId">400</span>元</p>
             </div>
