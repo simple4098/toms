@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.helper.PermissionHelper;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
@@ -8,6 +9,9 @@ import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -16,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -91,13 +96,16 @@ public class UserController extends BaseController {
      * @param model
      */
     @RequestMapping("find_users")
-    public String findUsers(Model model) {
-        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(getCurrentUser().getCompanyId());
+    public String findUsers(Model model, @RequestParam(defaultValue = "1", required = false) int page) {
+        List<UserInfoDto> userInfos = this.userInfoService.findUserInfoByPage(getCurrentUser().getCompanyId(), new PageBounds(page, defaultRows));
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         model.addAttribute(Constants.DATA, userInfos);
         if (null != userInfos) {
             model.addAttribute("company", userInfos.get(0).getCompanyName());
         }
+        //封装分页信息
+        Paginator paginator = ((PageList) userInfos).getPaginator();
+        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
         return "/system/user_list";
     }
 

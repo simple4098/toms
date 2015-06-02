@@ -12,7 +12,10 @@
 </head>
 <body>
 <div class="page-content">
-
+    <c:set value="${pagination}" var="page"/>
+    <form class="form-page" action="<c:url value="/user/find_users"/>" method="post">
+        <input type="hidden" class="pageId" id="pageId" name="page"/>
+    </form>
     <div class="row">
         <div class="col-xs-12">
             <!-- PAGE CONTENT BEGINS -->
@@ -91,8 +94,48 @@
             </div>
         </div>
         <!-- PAGE CONTENT ENDS -->
+        <div class="container">
+            <div class="text-center">
+                <ul class="pagination">
+
+                    <li <c:if test="${page.page==1}">class="disabled"</c:if>>
+                        <a <c:if test="${page.page!=1}">onclick="page(${page.page-1})"</c:if>>
+                            <i class="icon-double-angle-left"></i>
+                        </a>
+                    </li>
+
+                    <c:forEach begin="1" end="${page.pageCount}" step="1" varStatus="vs" var="p">
+                        <c:if test="${vs.count<11}">
+                            <li <c:if test="${page.page==p}">class="active"</c:if>>
+                                <a onclick="page(${p})">${p}</a>
+                            </li>
+                        </c:if>
+                        <c:if test="${vs.count==11}">
+                            <li>
+                                <a>...</a>
+                            </li>
+                        </c:if>
+                        <c:if test="${vs.count >10}">
+                            <c:if test="${vs.count==page.pageCount}">
+                                <li <c:if test="${page.page==p}">class="active"</c:if>>
+                                    <a onclick="page(${p})">${p}</a>
+                                </li>
+                            </c:if>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${page.page!=page.pageCount}">
+                        <li>
+                            <a onclick="page(${page.page+1})">
+                                <i class="icon-double-angle-right"></i>
+                            </a>
+                        </li>
+                    </c:if>
+                </ul>
+            </div>
+        </div>
     </div>
     <!-- /.col -->
+
 </div>
 <!-- /.row -->
 <%--删除弹出层--%>
@@ -241,6 +284,13 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    //分页方法
+    function page(page) {
+        $("#pageId").attr("value", page);
+        $("#form-page").submit();
+    }
+</script>
 <script src="<%=basePath%>/js/my-system.js"></script>
 </body>
 </html>
