@@ -13,6 +13,26 @@ public class BangInnDto extends BangInn {
     private String labelName;
     //绑定时间格式化
     private String bangDataFormat;
+    //公司名称
+    private String companyName;
+    //公司唯一识别码
+    private String companyCode;
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 
     public String getBangDataFormat() {
         if (getBangDate() != null) {

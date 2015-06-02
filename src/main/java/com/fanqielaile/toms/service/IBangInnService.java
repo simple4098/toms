@@ -59,4 +59,19 @@ public interface IBangInnService {
      * @param bangInnDto
      */
     void modifiyBangInn(BangInnDto bangInnDto);
+
+    /**
+     * 根据客栈id查询绑定的第三方公司
+     *
+     * @param innId
+     * @return
+     */
+    List<BangInnDto> findCompanyByInnId(int innId);
+
+    /**
+     * 新增绑定客栈
+     *
+     * @param bangInnDto
+     */
+    void addBanginn(BangInnDto bangInnDto);
 }

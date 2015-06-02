@@ -11,8 +11,18 @@ import java.util.List;
 public class Company extends Domain {
     //公司名称
     private String companyName;
+    //公司唯一识别码
+    private String companyCode;
     //权限集合
     private List<Permission> permissionList;
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
+    }
 
     public List<Permission> getPermissionList() {
         return permissionList;
