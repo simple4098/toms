@@ -2,6 +2,8 @@ package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.model.Company;
 
+import java.util.List;
+
 /**
  * Created by wangdayin on 2015/5/15.
  */
@@ -28,4 +30,12 @@ public interface CompanyDao {
      * @param company
      */
     void insertCompanyPermission(Company company);
+
+    /**
+     * 根据公司姓名或者唯一码查询公司
+     *
+     * @param company
+     * @return
+     */
+    List<Company> selectCompanyByCompany(Company company);
 }

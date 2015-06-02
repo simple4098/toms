@@ -75,4 +75,19 @@ public interface BangInnDao {
      * @param bangInnDto
      */
     void updateBangInn(BangInnDto bangInnDto);
+
+    /**
+     * 根据客栈id查询公司
+     *
+     * @param innId
+     * @return
+     */
+    List<BangInnDto> selectCompanyByInnId(@Param("innId") int innId);
+
+    /**
+     * 新增绑定客栈
+     *
+     * @param bangInnDto
+     */
+    void createBangInn(BangInnDto bangInnDto);
 }

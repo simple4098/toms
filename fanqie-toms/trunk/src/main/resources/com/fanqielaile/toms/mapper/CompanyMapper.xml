@@ -31,4 +31,15 @@
             (#{p.uuid},#{id},#{p.id},#{p.createdDate},#{p.updatedDate})
         </foreach>
     </insert>
+    <select id="selectCompanyByCompany" parameterType="com.fanqielaile.toms.model.Company" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM company where deleted =0
+        <if test="companyName != null and companyName != ''">
+            and company_name like concat('%',#{companyName},'%')
+        </if>
+        <if test="companyCode != null and companyCode != ''">
+            and company_code = #{companyCode}
+        </if>
+    </select>
 </mapper>
