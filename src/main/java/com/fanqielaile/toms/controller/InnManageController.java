@@ -1,7 +1,9 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
@@ -9,9 +11,13 @@ import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -51,11 +57,11 @@ public class InnManageController extends BaseController {
      * @return
      */
     @RequestMapping("find_inns")
-    public String findInns(Model model, String innLabelId, String userId) {
+    public String findInns(Model model, String innLabelId, String userId, @RequestParam(defaultValue = "1", required = false) int page) {
         UserInfo currentUser = getCurrentUser();
         currentUser.setInnLabelId(innLabelId);
         currentUser.setUserId(userId);
-        List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser);
+        List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
         model.addAttribute(Constants.DATA, bangInnList);
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
         //客栈标签
@@ -64,31 +70,15 @@ public class InnManageController extends BaseController {
         //管理员
         List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
         model.addAttribute("userInfos", userInfos);
+        //分页对象
+        Paginator paginator = ((PageList) bangInnList).getPaginator();
+        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        //保存查询条件
+        model.addAttribute("innLabel", innLabelId);
+        model.addAttribute("userId", userId);
         return "/inn/inn_list";
     }
 
-    /**
-     * 绑定客栈列表数据
-     *
-     * @param model
-     * @param innLabelId
-     * @param userId
-     */
-    @RequestMapping("find_inns_data")
-    public void findInnsData(Model model, String innLabelId, String userId) {
-        UserInfo currentUser = getCurrentUser();
-        currentUser.setInnLabelId(innLabelId);
-        currentUser.setUserId(userId);
-        List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser);
-        model.addAttribute(Constants.DATA, bangInnList);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        //客栈标签
-        List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
-        model.addAttribute("labels", innLabels);
-        //管理员
-        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
-        model.addAttribute("userInfos", userInfos);
-    }
     /**
      * 跳转到编辑页面
      *
