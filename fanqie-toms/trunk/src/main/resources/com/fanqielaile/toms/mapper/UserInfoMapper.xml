@@ -104,4 +104,13 @@
        <select id="selectUserInfoByPage" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
               SELECT * from user_info
        </select>
+       <select id="selectUserInfoByPagination" parameterType="java.lang.String" resultMap="BaseResultMap">
+              select
+              u.id,u.user_name,u.user_type,u.login_name,u.telephone,u.data_permission,u.company_id,u.role_id,c.company_name
+              from user_info u LEFT join company c on u.company_id = c.id
+              where u.deleted = 0
+              <if test="companyId != null and companyId != ''">
+                     and u.company_id = #{companyId}
+              </if>
+       </select>
 </mapper>

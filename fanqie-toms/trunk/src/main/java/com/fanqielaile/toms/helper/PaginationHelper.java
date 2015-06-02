@@ -4,6 +4,7 @@ import com.fanqie.util.Pagination;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 
 /**
+ * 分页帮助类
  * Created by wangdayin on 2015/6/1.
  */
 public class PaginationHelper {

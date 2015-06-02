@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 @Controller
 @RequestMapping(value = "/")
 public class BaseController {
+    //每页显示数量
     public static final int defaultRows = 2;
     /*
     * 获取登陆用户信息

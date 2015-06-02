@@ -77,5 +77,21 @@ public interface UserInfoDao {
     */
    List<UserInfo> selectOtherUserInfoById(UserInfo userInfo);
 
+   /**
+    * 分页测试
+    *
+    * @param u
+    * @param pageBounds
+    * @return
+    */
    List<UserInfo> selectUserInfoByPage(UserInfo u, PageBounds pageBounds);
+
+   /**
+    * 分页查询公司下属
+    *
+    * @param companyId
+    * @param pageBounds
+    * @return
+    */
+   List<UserInfoDto> selectUserInfoByPagination(@Param("companyId") String companyId, PageBounds pageBounds);
 }

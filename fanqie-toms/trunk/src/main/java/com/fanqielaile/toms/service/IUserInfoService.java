@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service;
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -82,5 +83,14 @@ public interface IUserInfoService extends UserDetailsService {
      * @return
      */
     boolean removeUserInfo(String id);
+
+    /**
+     * 分页查询公司下属
+     *
+     * @param companyId
+     * @param pageBounds
+     * @return
+     */
+    List<UserInfoDto> findUserInfoByPage(String companyId, PageBounds pageBounds);
 
 }

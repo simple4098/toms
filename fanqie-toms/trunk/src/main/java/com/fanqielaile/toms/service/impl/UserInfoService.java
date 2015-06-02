@@ -9,6 +9,7 @@ import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
@@ -162,5 +163,20 @@ public class UserInfoService implements IUserInfoService {
             userInfo.setAuthorities(new HashSet<GrantedAuthority>(Arrays.asList(new SimpleGrantedAuthority(role.getRoleKey()))));
         }
         return userInfo;
+    }
+
+    @Override
+    public List<UserInfoDto> findUserInfoByPage(String companyId, PageBounds pageBounds) {
+        //该用户是否有管理的客栈
+        List<UserInfoDto> infoDtoList = userInfoDao.selectUserInfoByPagination(companyId, pageBounds);
+        if (ArrayUtils.isNotEmpty(infoDtoList.toArray())) {
+            for (UserInfoDto userInfoDto : infoDtoList) {
+                List<BangInn> bangInnList = this.bangInnDao.selectBangInnByUserId(userInfoDto.getId());
+                if (ArrayUtils.isNotEmpty(bangInnList.toArray())) {
+                    userInfoDto.setIsHaveInn(true);
+                }
+            }
+        }
+        return infoDtoList;
     }
 }
