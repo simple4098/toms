@@ -4,6 +4,7 @@ import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public interface IBangInnService {
      * @param userInfo
      * @return
      */
-    List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo);
+    List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo, PageBounds pageBounds);
 
     /**
      * 根据id查询绑定客栈

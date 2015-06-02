@@ -8,6 +8,7 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,8 @@ public class BangInnService implements IBangInnService {
     }
 
     @Override
-    public List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo) {
-        List<BangInnDto> bangInnDtoList = this.bangInnDao.selectBangInnListByUserInfo(userInfo);
+    public List<BangInnDto> findBangInnListByUserInfo(UserInfo userInfo, PageBounds pageBounds) {
+        List<BangInnDto> bangInnDtoList = this.bangInnDao.selectBangInnListByUserInfo(userInfo, pageBounds);
         if (ArrayUtils.isNotEmpty(bangInnDtoList.toArray())) {
             for (BangInnDto bangInnDto : bangInnDtoList) {
                 //标签
