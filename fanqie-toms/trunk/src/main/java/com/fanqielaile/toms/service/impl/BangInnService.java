@@ -10,6 +10,7 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -65,12 +66,16 @@ public class BangInnService implements IBangInnService {
         List<BangInnDto> bangInnDtoList = this.bangInnDao.selectBangInnListByUserInfo(userInfo, pageBounds);
         if (ArrayUtils.isNotEmpty(bangInnDtoList.toArray())) {
             for (BangInnDto bangInnDto : bangInnDtoList) {
-                //标签
-                InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
-                bangInnDto.setLabelName(innLabel.getLabelName());
-                //所属管理员
-                UserInfo info = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
-                bangInnDto.setUserName(info.getUserName());
+                if (StringUtils.isNotEmpty(bangInnDto.getInnLabelId())) {
+                    //标签
+                    InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
+                    bangInnDto.setLabelName(innLabel.getLabelName());
+                }
+                if (StringUtils.isNotEmpty(bangInnDto.getUserId())) {
+                    //所属管理员
+                    UserInfo info = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
+                    bangInnDto.setUserName(info.getUserName());
+                }
             }
         }
         return bangInnDtoList;
