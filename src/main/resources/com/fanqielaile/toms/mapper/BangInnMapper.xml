@@ -51,6 +51,7 @@
         <if test="dataPermission == 0">
             and user_id = #{id}
         </if>
+        and inn_label_id is not NULL
     </select>
     <select id="selectBangInnByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
