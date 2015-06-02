@@ -37,7 +37,7 @@
             <ul class="nav ace-nav">
                 <li class="light-blue">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                        <img class="nav-user-photo" src="<%=basePath%>/assets/avatars/user.jpg" alt="Jason's Photo"/>
+                        <img class="nav-user-photo" src="<%=basePath%>/assets/avatars/user1.jpg" alt="Jason's Photo"/>
 								<span class="user-info">
 									<small>欢迎,</small>
 									<toms:currentUser/>
