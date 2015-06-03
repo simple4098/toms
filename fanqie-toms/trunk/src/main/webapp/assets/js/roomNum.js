@@ -9,11 +9,39 @@ function getRoomType(postData){
         dataType:'json',
         success:function(data){
 
-            showRoomData(data);
+            // showRoomData(data);
 
         }
     })
 }
+$('#from_datepicker').change(function(){
+    var date = $(this).val();
+    $('#to_datepicker').val( TC.plusDate(date, '30', 'd', 'yyyy-MM-dd') );
+    
+    var postDate = {'startDay': $('#from_datepicker').val(), 'endDay': $('#to_datepicker').val()}
+    console.log(postDate)
+    $.ajax({
+        type:'POST',
+        data: postDate,
+        url:'../roomType.json',
+        dataType:'json',
+        success:function(data){
+
+            // todo
+
+        }
+    })
+})
+//上一月
+$('#prevM').click(function(){
+    var date = $('#from_datepicker').val();
+    $('#from_datepicker').val( TC.plusDate(date, '-1', 'M', 'yyyy-MM-dd') ).change();
+})
+// 下一月
+$('#nextM').click(function(){
+    var date = $('#from_datepicker').val();
+    $('#from_datepicker').val( TC.plusDate(date, '1', 'M', 'yyyy-MM-dd') ).change();
+})
 
 $('#myButton').on('click', function(){
     var startDate = $('#from_datepicker').val(),
@@ -21,25 +49,10 @@ $('#myButton').on('click', function(){
         tagId = $('#kz-tags').val(),
         innId = $('#kz_item').val(),
         postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'innId': innId};
-        //console.log(postData)
+        
 	
     getRoomType( postData );
 })
 
 
-function showRoomData(roomData){
-	var typeNum = roomData.list.length; // 房型数量
-	var daysNum = roomData.list[0].roomDetail.length;
-	var tableHead = '';
-	for(var i=0; i<=daysNum; i++){
-		if(!i){
-			tableHead += "<td colspan='2'></td>";
-		}
-		else{
-			tableHead +='<td>'+ roomData.list[0].roomDetail[i-1].roomDate.slice(5) +'</td>';
-		}
-	}
-	// console.log( roomData.list[0].roomDetail[0].roomDate )
-	$('<tr>').appendTo($('#table'));
-	$('#table tr').eq(0).html( tableHead );
-}
+
