@@ -16,6 +16,13 @@ public class Company extends Domain {
     //权限集合
     private List<Permission> permissionList;
 
+    public Company() {
+    }
+
+    public Company(String companyCode) {
+        this.companyCode = companyCode;
+    }
+
     public String getCompanyCode() {
         return companyCode;
     }
