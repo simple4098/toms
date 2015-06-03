@@ -43,10 +43,15 @@
        <bean id="paginationInterceptor" class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
               <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.PostgreSQLDialect"/>
        </bean>
+       <bean class="org.mybatis.spring.SqlSessionTemplate" id="templateDc">
+              <constructor-arg index="0" ref="sqlSessionFactory" />
+       </bean>
+
        <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
               <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
               <property name="basePackage" value="com.fanqielaile.toms.dao"/>
        </bean>
+
        <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
        <tx:advice id="txAdvice" transaction-manager="transactionManager">
               <tx:attributes>
@@ -114,10 +119,13 @@
                      <property name="validationQuery" value="select 1"/>
               </bean>
               <bean class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
-                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
+                     <property name="QS" value="http://192.168.1.124:8083/api/toms/operate.json"></property>
+                     <property name="QSDetail" value="http://192.168.1.124:8083/api/toms/opeDetail.json"></property>
+                     <property name="KF" value="http://192.168.1.124:8083/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://192.168.1.124:8083/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://192.168.1.124:8083/api/toms/order.json"></property>
+                     <property name="ActiveInn" value="http://192.168.1.124:8083/api/toms/innActive.json"></property>
+                     <property name="roomType" value="http://192.168.1.158:8083/api/getRoomType"></property>
               </bean>
        </beans>
        <beans profile="test">

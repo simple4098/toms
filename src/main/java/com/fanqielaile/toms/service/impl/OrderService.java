@@ -7,6 +7,7 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OrderDto;
+import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -27,24 +28,19 @@ import java.util.Map;
 @Service
 public class OrderService implements IOrderService {
 
-    @Override
-    public OrderSourceDto findOrderSourceDto(ParamDto paramDto) throws Exception {
-        String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
-        JSONObject jsonObject = JSONObject.fromObject(order);
-        if (jsonObject.get("obj")!=null){
-            OrderSourceDto orderSource  = JacksonUtil.json2obj(jsonObject.get("obj").toString(), OrderSourceDto.class);
-
-            return  orderSource;
-        }
-        return null;
-    }
 
     @Override
-    public Map<String, Object> findOrderSourceDetail(ParamDto paramDto)throws  Exception{
+    public Map<String, Object> findOrderSourceDetail(ParamDto paramDto,UserInfo userInfo)throws  Exception{
+        paramDto.setUserId(userInfo.getUserId());
+        paramDto.setCompanyId(userInfo.getCompanyId());
         String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(order);
         List<OrderDto> data = new ArrayList<OrderDto>();
         Map<String,Object> map = new HashMap<String, Object>();
+        OrderSourceDto orderSource=null;
+        if (jsonObject.get("obj")!=null){
+             orderSource  = JacksonUtil.json2obj(jsonObject.get("obj").toString(), OrderSourceDto.class);
+        }
         if (jsonObject.get("rows")!=null){
             Object rows = jsonObject.get("rows");
             List<OrderSource> list  = JacksonUtil.json2list(rows.toString(), OrderSource.class);
@@ -57,6 +53,7 @@ public class OrderService implements IOrderService {
             }
             map.put("data",data);
             map.put("list",list);
+            map.put("orderSource",orderSource);
             return map;
         }
         return null;

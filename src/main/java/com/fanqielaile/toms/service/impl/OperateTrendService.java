@@ -1,17 +1,23 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.core.domain.InnCustomer;
+import com.fanqie.core.domain.OperateTrend;
 import com.fanqie.core.dto.CustomerDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOperateTrendService;
 import net.sf.json.JSONObject;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DESC :
@@ -23,16 +29,40 @@ import java.util.List;
 public class OperateTrendService implements IOperateTrendService {
 
     @Override
-    public CustomerDto findCustomer(ParamDto paramDto)throws Exception{
+    public CustomerDto findCustomer(ParamDto paramDto,UserInfo userInfo)throws Exception{
+        paramDto.setUserId(userInfo.getId());
+        paramDto.setCompanyId(userInfo.getCompanyId());
+        paramDto.setDataPermission(userInfo.getDataPermission() == 1);
+        DateTime dateTime = DateUtil.addDate(-1);
+        paramDto.setStartDate((paramDto.getStartDate() == null ||paramDto.getStartDate()=="") ? DateUtil.formatDateToString(dateTime.toDate(), "yyyy-MM-dd"):paramDto.getStartDate());
+        paramDto.setEndDate((paramDto.getEndDate() == null ||paramDto.getEndDate()=="") ? DateUtil.formatDateToString(dateTime.toDate(), "yyyy-MM-dd"):paramDto.getEndDate());
         String kf = HttpClientUtil.httpPost(CommonApi.KF, paramDto);
         String kf_d = HttpClientUtil.httpPost(CommonApi.KF_D, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(kf);
         JSONObject kfDObject = JSONObject.fromObject(kf_d);
-        Object rows = kfDObject.get("rows");
         Pagination pagination = JacksonUtil.json2obj(kfDObject.get("pagination").toString(), Pagination.class);
-        List<InnCustomer> innCustomer  = JacksonUtil.json2list(rows.toString(), InnCustomer.class);
+        List<InnCustomer> innCustomer  = JacksonUtil.json2list(kfDObject.get("rows").toString(), InnCustomer.class);
         Integer totalCityNum =(Integer) jsonObject.get("totalCityNum");
         Integer totalNum =(Integer)jsonObject.get("totalNum");
         return new CustomerDto(totalCityNum,totalNum,innCustomer,pagination);
+    }
+
+    @Override
+    public OperateTrend findOperateTrend(ParamDto paramDto, UserInfo currentUser) throws Exception {
+        paramDto.setUserId(currentUser.getId());
+        paramDto.setCompanyId(currentUser.getCompanyId());
+        String gets = HttpClientUtil.httpPost(CommonApi.QS, paramDto);
+        OperateTrend operateTrend = JacksonUtil.json2obj(gets, OperateTrend.class);
+        return operateTrend;
+    }
+
+    @Override
+    public Map<String, Object> findQsDetail(ParamDto paramDto, UserInfo currentUser) throws Exception {
+        paramDto.setUserId(currentUser.getId());
+        paramDto.setCompanyId(currentUser.getCompanyId());
+        String gets = HttpClientUtil.httpPost(CommonApi.QSDetail, paramDto);
+        JSONObject jsonObject = JSONObject.fromObject(gets);
+        Map<String, Object> result = (Map<String, Object>)jsonObject.get("result");
+        return result;
     }
 }

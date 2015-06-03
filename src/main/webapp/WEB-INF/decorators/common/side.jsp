@@ -29,8 +29,8 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="typography.html">
+                <li <c:if test="${fn:contains(url, '/oms/getRoomType')}">class="active"</c:if>>
+                    <a href="<c:url value='/oms/getRoomType'/>">
                         <i class="icon-text-width"></i>
                         <span class="menu-text"> 房态数量 </span>
                     </a>
@@ -53,7 +53,7 @@
                         </li>
 
                         <li>
-                            <a href="<c:url value='/operate/kf'/>">
+                            <a href="<c:url value='/operate/kf?page=1'/>">
                                 <i class="icon-double-angle-right"></i>
                                 客户资料分析
                             </a>
@@ -72,6 +72,7 @@
                 <li
                         <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/inn_manage/to_update_inn')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/inn_manage/activeInn')}">class="open active"</c:if>
                         >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list"></i>
@@ -81,16 +82,15 @@
                     </a>
 
                     <ul class="submenu">
-                        <li
-                                <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="active" </c:if> >
+                        <li <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="active" </c:if> >
                             <a href="<c:url value="/inn_manage/find_inns"/>">
                                 <i class="icon-double-angle-right"></i>
                                 客栈列表
                             </a>
                         </li>
 
-                        <li>
-                            <a href="jqgrid.html">
+                        <li <c:if test="${fn:contains(url, '/inn_manage/activeInn')}">class="active" </c:if> >
+                            <a href="<c:url value="/inn_manage/activeInn?page=1"/> ">
                                 <i class="icon-double-angle-right"></i>
                                 客栈活跃表
                             </a>

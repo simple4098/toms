@@ -225,12 +225,13 @@ var init_jianYeJunJia = function(){
 
 var url= $('.operate-url').attr('data-url');
 var qs_url= $('.qs-url').attr('data-url');
-var postData = $("#qsId").serialize();
+
 function getData(postData){
+    var postData = $("#qsId").serialize();
     $.ajax({
         type:'POST',
         data:postData,
-        url:url,
+        url:url+"?v"+new Date().getTime(),
         dataType:'json',
         success:function(data){
             _data = data;
@@ -243,6 +244,7 @@ function getData(postData){
 }
 var timer = setInterval(function(){
     if($('#kz_item').html()){
+        var  postData = $("#qsId").serialize();
         opt(postData);
         getData(postData);
         clearInterval(timer);
@@ -251,21 +253,31 @@ var timer = setInterval(function(){
 function opt(obj){
     $.ajax({
         type:'post',
-        url:qs_url,
+        url:qs_url+"?v"+new Date().getTime(),
         dataType:'json',
         data:obj,
         success:function(json) {
             var ope = json.operateTrend;
-            $("#totalIncome").html(ope.totalIncome);
-            $("#realLiveNum").html(ope.realLiveNum);
-            $("#emptyAndTotalRoom").html("总数"+ope.totalRoomNum+"间夜;空置"+ope.emptyRoomNum+"间夜");
-            $("#livePercent").html(ope.livePercent*100);
-            $("#avgId").html(ope.totalIncome/ope.realLiveNum);
+            if(ope){
+                $("#totalIncome").html(ope.totalIncome);
+                $("#realLiveNum").html(ope.realLiveNum);
+                $("#emptyAndTotalRoom").html("总数"+ope.totalRoomNum+"间夜;空置"+ope.emptyRoomNum+"间夜");
+                $("#livePercent").html((ope.livePercent*100).toFixed(2));
+                $("#avgId").html((ope.totalIncome/ope.realLiveNum).toFixed(2));
+            }else{
+                $("#totalIncome").html(0);
+                $("#realLiveNum").html(0);
+                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
+                $("#livePercent").html(0);
+                $("#avgId").html(0);
+            }
+
         }
     });
 }
 
 $('#myButton').on('click', function(){
+    var postData = $("#qsId").serialize();
     opt(postData);
     getData( postData );
 })

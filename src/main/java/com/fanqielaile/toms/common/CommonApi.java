@@ -13,6 +13,16 @@ public class CommonApi {
     public static   String KF = "";
     public static   String KF_D = "";
     public static   String ORDER = "";
+    public static   String ActiveInn = "";
+    public static   String ROOM_TYPE="";
+
+    public static String getRoomType() {
+        return ROOM_TYPE;
+    }
+
+    public  void setRoomType(String roomType) {
+        CommonApi.ROOM_TYPE = roomType;
+    }
 
     public static String getQSDetail() {
         return QSDetail;
@@ -52,5 +62,13 @@ public class CommonApi {
 
     public  void setORDER(String ORDER) {
         CommonApi.ORDER = ORDER;
+    }
+
+    public static String getActiveInn() {
+        return ActiveInn;
+    }
+
+    public  void setActiveInn(String activeInn) {
+        ActiveInn = activeInn;
     }
 }

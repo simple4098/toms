@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.core.dto.ParamDto;
+import com.fanqielaile.toms.dto.ActiveInnDto;
 import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
@@ -8,9 +10,12 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
+import com.fanqielaile.toms.service.IInnActiveService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.util.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
@@ -21,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 客栈管理
@@ -30,12 +34,15 @@ import java.util.Map;
 @Controller
 @RequestMapping("inn_manage")
 public class InnManageController extends BaseController {
+    private static Logger logger = LoggerFactory.getLogger(InnManageController.class);
     @Resource
     private IBangInnService bangInnService;
     @Resource
     private InnLabelService innLabelService;
     @Resource
     private IUserInfoService userInfoService;
+    @Resource
+    private IInnActiveService innActiveService;
 
     /**
      * 查询标签对应的客栈
@@ -111,5 +118,20 @@ public class InnManageController extends BaseController {
     public String updateInn(Model model, BangInnDto bangInnDto) {
         this.bangInnService.modifiyBangInn(bangInnDto);
         return redirectUrl("/inn_manage/find_inns");
+    }
+
+    //活跃客栈
+    @RequestMapping("/activeInn")
+    public String activeInn(Model model,ParamDto paramDto){
+        UserInfo currentUser = getCurrentUser();
+        //paramDto.setInnIds();
+        try {
+            ActiveInnDto activeInnDto = innActiveService.findActiveInnDto(paramDto,currentUser);
+            model.addAttribute("inn",activeInnDto);
+            model.addAttribute("paramDto",paramDto);
+        } catch (Exception e) {
+            logger.error("活跃报表错误",e);
+        }
+        return "/inn/active_inn";
     }
 }
