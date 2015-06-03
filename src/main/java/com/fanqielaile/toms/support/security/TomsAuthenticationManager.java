@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * @author Wdy
  */
-public class AuthenticationManager implements AccessDecisionManager {
+public class TomsAuthenticationManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
         if (configAttributes == null) {
