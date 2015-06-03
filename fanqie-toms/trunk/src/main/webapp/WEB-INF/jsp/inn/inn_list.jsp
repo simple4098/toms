@@ -131,7 +131,7 @@
                                 <a onclick="page(${p})">${p}</a>
                             </li>
                         </c:if>
-                        <c:if test="${vs.count >10}">
+                        <c:if test="${vs.count ==10}">
                             <li>
                                 <a>...</a>
                             </li>
