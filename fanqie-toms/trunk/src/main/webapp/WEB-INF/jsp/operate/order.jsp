@@ -20,7 +20,7 @@
         <div class="pull-right">
             <form id="orderId" method="POST">
                 <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
-                <input type="hidden" class="order-url" data-url="<c:url value="/operate/ajax/order.json"/>">
+
                 <input type="hidden" class="orderD-url" data-url="<c:url value="/operate/ajax/orderDetail.json"/>"/>
                 <select class="form-control" id="fast_select">
                     <option>快捷日期</option>
@@ -76,13 +76,6 @@
     </div>
 </div>
 
-
-<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
-<script src="<%=basePath%>/assets/js/jquery.easy-pie-chart.min.js"></script>
-<script src="<%=basePath%>/assets/js/tomato.min.js"></script>
-<script src="<%=basePath%>/assets/js/dateSelecter.js"></script>
-<script src="<%=basePath%>/assets/js/keHuZiLiaoFenXi.js"></script>
 
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
 <script src="<%=basePath%>/assets/js/echarts-all.js"></script>

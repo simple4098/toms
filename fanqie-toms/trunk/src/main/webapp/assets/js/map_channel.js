@@ -44,21 +44,32 @@ var init_channel = function(){
 }
 
 
-var order_url= $('.order-url').attr('data-url');
-var orderD_url= $('.orderD-url').attr('data-url');
-var postData = $("#orderId").serialize();
+
 
 function getData(postData){
+    var orderD_url= $('.orderD-url').attr('data-url');
     $.ajax({
         type:'POST',
         data:postData,
-        url:orderD_url,
+        url:orderD_url+"?v"+new Date().getTime(),
         dataType:'json',
         success:function(data){
             channel_data = data;
             channelName = [];
             for(var attr in channel_data.data){
                 channelName.push( channel_data.data[attr].name )
+            }
+            var order = data.orderSource;
+            if(order){
+                $("#orderNum").html(order.orderNum);
+                $("#realLiveNum").html(order.liveNum);
+                $("#emptyAndTotalRoom").html("总数"+order.totalRoomNum+"间夜;空置"+order.emptyRoomNum+"间夜");
+                $("#incomeId").html(order.income);
+            }else{
+                $("#orderNum").html(0);
+                $("#realLiveNum").html(0);
+                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
+                $("#incomeId").html(0);
             }
             init_channel();
             orderSource(data.list)
@@ -79,33 +90,42 @@ function orderSource(obj){
     $("#orderSourceId").html(source);
 }
 $('#myButton').on('click', function(){
-    postData = $("#orderId").serialize();
-    opt(postData);
+    var postData = $("#orderId").serialize();
+    //opt(postData);
     getData( postData );
 })
 
 var timer = setInterval(function(){
     if($('#kz_item').html()){
-        opt(postData);
+        var postData = $("#orderId").serialize();
+        //opt(postData);
         getData(postData);
         clearInterval(timer);
     }
 },500);
-function opt(obj){
+/*function opt(obj){
     $.ajax({
         type:'post',
-        url:order_url,
+        url:order_url+"?v"+new Date().getTime(),
         dataType:'json',
         data:obj,
         success:function(json) {
             var order = json.orderSource;
-            $("#orderNum").html(order.orderNum);
-            $("#realLiveNum").html(order.liveNum);
-            $("#emptyAndTotalRoom").html("总数"+order.totalRoomNum+"间夜;空置"+order.emptyRoomNum+"间夜");
-            $("#incomeId").html(order.income);
+            if(order){
+                $("#orderNum").html(order.orderNum);
+                $("#realLiveNum").html(order.liveNum);
+                $("#emptyAndTotalRoom").html("总数"+order.totalRoomNum+"间夜;空置"+order.emptyRoomNum+"间夜");
+                $("#incomeId").html(order.income);
+            }else{
+                $("#orderNum").html(0);
+                $("#realLiveNum").html(0);
+                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
+                $("#incomeId").html(0);
+            }
+
         }
     });
-}
+}*/
 
 
 

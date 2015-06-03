@@ -41,7 +41,7 @@ $(function(){
 	var url= $('.data-url').attr('data-url');
 	$.ajax({
 		type:'GET',
-		url:url,
+		url:url+"?v"+new Date().getTime(),
 	    dataType:'json',
 	    success:function(json){
 	    	var aLabel = ""; //存放客栈标签

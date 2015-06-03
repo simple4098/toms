@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.service;
 
-import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqielaile.toms.model.UserInfo;
 
 import java.util.Map;
 
@@ -14,8 +14,14 @@ import java.util.Map;
  */
 public interface IOrderService {
 
-    OrderSourceDto findOrderSourceDto(ParamDto paramDto)throws  Exception;
 
-    Map<String,Object> findOrderSourceDetail(ParamDto paramDto) throws Exception;
+    /**
+     * 订单来源、概况
+     * @param paramDto
+     * @param userInfo
+     * @return
+     * @throws Exception
+     */
+    Map<String,Object> findOrderSourceDetail(ParamDto paramDto,UserInfo userInfo) throws Exception;
 
 }
