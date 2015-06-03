@@ -106,4 +106,9 @@
         insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id)
         VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId})
     </insert>
+    <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from bang_inn where company_id=#{companyId} and inn_id = #{innId}
+    </select>
 </mapper>

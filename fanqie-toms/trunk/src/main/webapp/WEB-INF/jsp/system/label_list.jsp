@@ -107,7 +107,7 @@
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 分类名称 </label>
 
                         <div class="col-sm-9">
-                            <input type="text" id="form-field-1" name="labelName"
+                            <input type="text" maxlength="10" id="form-field-1" name="labelName"
                                    value="" placeholder="名称" class="col-xs-10 col-sm-5 label-name"/>
                             <span class="help-label-name col-xs-12 col-sm-7"></span>
                         </div>
@@ -153,7 +153,7 @@
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 分类名称 </label>
 
                         <div class="col-sm-9">
-                            <input type="text" id="form-field-2" name="labelName"
+                            <input type="text" maxlength="10" id="form-field-2" name="labelName"
                                    value="" placeholder="名称" class="col-xs-10 col-sm-5 label-name"/>
                             <span class="help-label-name col-xs-12 col-sm-7"></span>
                         </div>

@@ -107,4 +107,9 @@ public class BangInnService implements IBangInnService {
     public void addBanginn(BangInnDto bangInnDto) {
         this.bangInnDao.createBangInn(bangInnDto);
     }
+
+    @Override
+    public BangInn findBangInnByCompanyIdAndInnId(String companyId, int innId) {
+        return this.bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, innId);
+    }
 }

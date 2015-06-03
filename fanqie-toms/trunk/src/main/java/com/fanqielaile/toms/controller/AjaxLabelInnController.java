@@ -74,9 +74,15 @@ public class AjaxLabelInnController extends BaseController{
             //添加之前检查公司是否存在
             List<Company> companyList = this.companyService.findCompanyByCompany(new Company(bangInnDto.getCompanyCode()));
             if (ArrayUtils.isNotEmpty(companyList.toArray())) {
-                bangInnDto.setBangDate(new Date());
-                this.bangInnService.addBanginn(bangInnDto);
-                return new JsonModel(true);
+                //检查是否重复绑定
+                BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(companyList.get(0).getId(), bangInnDto.getInnId());
+                if (null == bangInn) {
+                    bangInnDto.setBangDate(new Date());
+                    this.bangInnService.addBanginn(bangInnDto);
+                    return new JsonModel(true);
+                } else {
+                    return new JsonModel(false, "该客栈已绑定过");
+                }
             } else {
                 return new JsonModel(false, "请检查公司唯一码是否正确！");
             }
