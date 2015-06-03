@@ -104,11 +104,44 @@ select.form-control{
 	height: 350px;
 }
 /* ------------------房态房量------------------ */
-#table{
+.room-status-box{
+	position: relative;
+}
+.table-left{
+	width: 130px;
 	overflow-x: scroll;
 }
-#table td{
-	width: 50px!important;
+.table-right{
+	overflow-x: scroll;
+	position: absolute;
+	top: 0;
+	left: 130px;
+	width: 100%;
+}
+.room-status-table{
+	width: 2000px;
+	border-left: none;
+}
+.room-status-table tr td,
+.room-status-table tr th{
+	border-left: none!important;
+	text-align: center;
+}
+.room-status-table thead > tr:first-child{
+	height: 47px;
+}
+.room-status-table thead > tr > th{
+	border-bottom-width: 1px;
+	font-weight: normal;
+}
+.date-input-2[readonly]{
+	line-height: inherit!important;
+	height: 30px;
+	width: 80px;
+	cursor: pointer;
+}
+#prevM, #nextM{
+	cursor: pointer;
 }
 /* ------------------客栈活跃表------------------ */
 .table-box{
