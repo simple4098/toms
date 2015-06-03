@@ -1,7 +1,5 @@
 @charset "UTF-8";
-/**
- * 运营趋势
- */
+/* ------------------运营趋势报表------------------ */
  body{
  	background: #fff;
  }
@@ -63,7 +61,7 @@ select.form-control{
 .search-btn{
 	height: 29px;
 }
-/* 客户资料分析 */
+/* ------------------客户资料分析------------------ */
 .table-wrap thead th:nth-child(2){
 	width: 7%;
 }
@@ -105,3 +103,63 @@ select.form-control{
 	width: 100%;
 	height: 350px;
 }
+/* ------------------房态房量------------------ */
+#table{
+	overflow-x: scroll;
+}
+#table td{
+	width: 50px!important;
+}
+/* ------------------客栈活跃表------------------ */
+.table-box{
+	padding: 0;
+}
+.table-user-active thead tr{
+	color: #fff;
+	border-color: #fff;
+}
+.table-user-active tbody tr td{
+	border-color: #fff;
+}
+.table-user-active thead tr th{
+	border-color: #fff;
+	border-bottom-width: 1px;
+	background-color: #328aa4;
+}
+.table-user-active .color-0{
+	background-color: #f8f8f8;
+}
+.table-user-active .color-1{
+	background-color: #6cd3ff;
+}
+.table-user-active .color-2{
+	background-color: #95ebbc;
+}
+.table-user-active .color-3{
+	background-color: #f8ecca;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
