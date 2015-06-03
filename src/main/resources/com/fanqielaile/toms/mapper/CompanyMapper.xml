@@ -10,11 +10,14 @@
         <result column="version" property="version"/>
         <result column="deleted" property="deleted"/>
         <result column="company_name" property="companyName"/>
+        <result column="ota_id" property="otaId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_password" property="userPassword"/>
         <result column="company_code" property="companyCode"/>
         <result column="type" property="type"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password
     </sql>
     <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
         insert into

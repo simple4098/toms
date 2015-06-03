@@ -15,5 +15,10 @@ import java.util.List;
  */
 public interface IInnActiveService {
 
+    /**
+     * 查询客栈活跃列表
+     * @param paramDto 查询参数
+     * @param userInfo 当前用户信息
+     */
     ActiveInnDto findActiveInnDto(ParamDto paramDto,UserInfo userInfo)throws  Exception;
 }

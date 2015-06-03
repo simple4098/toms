@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.domain.InnCustomer;
 import com.fanqie.core.dto.InnActiveDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.Pagination;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,11 +42,11 @@ public class InnActiveService implements IInnActiveService {
             innIds.add(bangInnDto.getInnId());
             sb.append(bangInnDto.getInnId()).append(",");
         }
-        sb.deleteCharAt(sb.toString().length()-1);
+        sb.deleteCharAt(sb.toString().length() - 1);
         paramDto.setInnInStr(sb.toString());
         paramDto.setCompanyId(userInfo.getCompanyId());
-        paramDto.setDataPermission(userInfo.getDataPermission()==1);
-        paramDto.setUserId(userInfo.getUserId());
+        paramDto.setDataPermission(userInfo.getDataPermission() == 1);
+        paramDto.setUserId(userInfo.getId());
         String post = HttpClientUtil.httpPost(CommonApi.ActiveInn, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(post);
         Object rows = jsonObject.get("rows");

@@ -70,7 +70,7 @@
             </tbody>
         </table>
     </div>
-    <c:if test="${not empty inn.innActiveList}">
+    <c:if test="${not empty inn.innActiveList && page.pageCount>1}">
         <div class="container">
             <div class="text-center">
                 <ul class="pagination">
