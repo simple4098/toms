@@ -97,7 +97,6 @@
                         </li>
                     </ul>
                 </li>
-
                 <li
                         <c:if test="${fn:contains(url, '/notice/find_notices')}">class="active"</c:if> >
                     <a href="<c:url value="/notice/find_notices"/>" class="dropdown-toggle">
@@ -105,7 +104,6 @@
                         <span class="menu-text"> 消息通知 </span>
                     </a>
                 </li>
-
                 <li
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>

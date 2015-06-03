@@ -7,6 +7,7 @@
     <security:http pattern="/login" security="none"/>
     <security:http pattern="/error" security="none"/>
     <security:http pattern="/denied" security="none"/>
+    <security:http pattern="/" security="none"/>
     <security:http use-expressions="false">
         <security:form-login login-page="/login" password-parameter="password"
                              username-parameter="username" login-processing-url="/login_process"
@@ -22,7 +23,7 @@
 
 
     </security:http>
-    <security:authentication-manager alias="tradingAuthenticationManager">
+    <security:authentication-manager alias="tomsAuthenticationManager">
         <security:authentication-provider user-service-ref="userInfoService">
             <security:password-encoder ref="passwordEncoder"/>
         </security:authentication-provider>
@@ -33,7 +34,7 @@
         <!--资源与权限的对应关系-->
         <property name="securityMetadataSource" ref="mySecurityMetadataSource"/>
         <!--用户拥有的权限-->
-        <property name="authenticationManager" ref="tradingAuthenticationManager"/>
+        <property name="authenticationManager" ref="tomsAuthenticationManager"/>
         <!--用户是否拥有所请求的权限-->
         <property name="accessDecisionManager" ref="myAccessDecisionManager"/>
         <property name="rejectPublicInvocations" value="false"/>

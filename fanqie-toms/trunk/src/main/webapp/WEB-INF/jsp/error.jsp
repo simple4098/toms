@@ -22,7 +22,7 @@
 												<i class="icon-random"></i>
 												500
 											</span>
-            <c:if test="${empty msg}"> Something Went Wrong </c:if>
+            <c:if test="${empty msg}"> 系统错误，没有权限访问！ </c:if>
             <c:if test="${not empty msg}"> ${msg} </c:if>
           </h1>
 
