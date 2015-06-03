@@ -15,6 +15,12 @@ public class Company extends Domain {
     private String companyCode;
     //权限集合
     private List<Permission> permissionList;
+    //oms给第三公司提供otaId
+    private Integer otaId;
+    //oms给第三公司提供userAccount
+    private String userAccount;
+    //oms给第三公司提供userPassword
+    private String userPassword;
     //区别公司来源
     private int type = 1;
 
@@ -55,5 +61,29 @@ public class Company extends Domain {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Integer getOtaId() {
+        return otaId;
+    }
+
+    public void setOtaId(Integer otaId) {
+        this.otaId = otaId;
+    }
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public String getUserPassword() {
+        return userPassword;
+    }
+
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
     }
 }

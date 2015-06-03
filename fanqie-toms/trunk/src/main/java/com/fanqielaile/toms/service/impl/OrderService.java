@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
@@ -31,7 +32,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto,UserInfo userInfo)throws  Exception{
-        paramDto.setUserId(userInfo.getUserId());
+        paramDto.setUserId(userInfo.getId());
         paramDto.setCompanyId(userInfo.getCompanyId());
         String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(order);

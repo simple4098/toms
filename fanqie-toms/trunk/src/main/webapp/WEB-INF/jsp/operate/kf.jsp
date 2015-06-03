@@ -76,7 +76,7 @@
             </tbody>
         </table>
     </div>
-    <c:if test="${not empty customer.innCustomer}">
+    <c:if test="${not empty customer.innCustomer && page.pageCount>1}">
         <div class="container">
             <div class="text-center">
                 <ul class="pagination">

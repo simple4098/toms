@@ -31,10 +31,10 @@ function obt(tagId,innId,url){
 			// 默认加载第一个列表
 			getInnName(0);
 			// 联动刷新客栈列表
-			$('#kz-tags').change(function(){
+			$('#kz-tags-ac').change(function(){
 				var num = $(this).children(':selected').index();
 				getInnName(num);
-				$('#kz_item').html(aList);
+				$('#kz_item-ac').html(aList);
 			})
 			// 写入DOM
 			$('#kz-tags-ac').html(aLabel);
