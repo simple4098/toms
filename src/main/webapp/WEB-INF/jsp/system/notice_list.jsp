@@ -55,7 +55,8 @@
                                 <input type="hidden" name="id" value="${d.id}" class="id"/>
 
                                 <p class="alert alert-info">
-                                        ${d.noticeContent}
+                                    <textarea readonly rows="5" cols="40">${d.noticeContent}</textarea>
+
                                 </p>
                             </div>
                         </div>
@@ -103,8 +104,8 @@
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 模板标题 </label>
 
                         <div class="col-sm-9">
-                            <input type="text" id="form-field-1" name="noticeTitle"
-                                   value="" placeholder="标题" class="col-xs-10 col-sm-5 notice-title"/>
+                            <input type="text" maxlength="10" id="form-field-1" name="noticeTitle"
+                                   value="" placeholder="标题" class="col-xs-10 col-sm-8 notice-title"/>
                             <span class="help-notice-title col-xs-12 col-sm-7"></span>
                         </div>
                     </div>
@@ -113,8 +114,9 @@
                         <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 模板内容 </label>
 
                         <div class="col-sm-9">
-                            <input type="text" name="noticeContent" id="form-field-2" placeholder="内容"
-                                   class="col-xs-10 col-sm-5 ace notice-content"/>
+                            <textarea maxlength="70" type="text" cols="10" rows="4" name="noticeContent"
+                                      id="form-field-2" placeholder="内容"
+                                      class="col-xs-10 col-sm-8 ace notice-content"></textarea>
                         <span class="help-notice-content col-xs-12 col-sm-7">
 
 											</span>

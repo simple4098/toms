@@ -90,4 +90,13 @@ public interface BangInnDao {
      * @param bangInnDto
      */
     void createBangInn(BangInnDto bangInnDto);
+
+    /**
+     * 根据公司id和客栈id查询绑定客栈
+     *
+     * @param companyId
+     * @param innId
+     * @return
+     */
+    BangInn selectBangInnByCompanyIdAndInnId(@Param("companyId") String companyId, @Param("innId") int innId);
 }

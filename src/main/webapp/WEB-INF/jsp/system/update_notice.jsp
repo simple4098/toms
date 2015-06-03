@@ -36,7 +36,7 @@
                     <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 模板标题 </label>
 
                     <div class="col-sm-9">
-                        <input type="" id="form-field-1" name="noticeTitle"
+                        <input maxlength="10" type="" id="form-field-1" name="noticeTitle"
                                value="${data.noticeTitle}" placeholder="模板标题" class="col-xs-10 col-sm-5 notice-title"/>
             <span class="help-notice-title col-xs-12 col-sm-7">
 
@@ -51,12 +51,9 @@
                     <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 模板内容 </label>
 
                     <div class="col-sm-9">
-                        <input type="text" name="noticeContent" id="form-field-2" placeholder="模板内容"
-                               value="${data.noticeContent}"
-                               class="col-xs-10 col-sm-5 ace notice-content"/>
-                        <span class="help-notice-content col-xs-12 col-sm-7">
-
-											</span>
+                        <textarea maxlength="70" type="text" name="noticeContent" id="form-field-2" placeholder="模板内容"
+                                  class="col-xs-10 col-sm-5 ace notice-content">${data.noticeContent}</textarea>
+                        <span class="help-notice-content col-xs-12 col-sm-7"></span>
                     </div>
                 </div>
 
