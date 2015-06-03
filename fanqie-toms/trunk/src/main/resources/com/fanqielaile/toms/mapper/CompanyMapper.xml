@@ -10,13 +10,17 @@
         <result column="version" property="version"/>
         <result column="deleted" property="deleted"/>
         <result column="company_name" property="companyName"/>
+        <result column="company_code" property="companyCode"/>
+        <result column="type" property="type"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type
     </sql>
     <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
-              insert into company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name)
-              values (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName})
+        insert into
+        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type)
+        values
+        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type})
        </insert>
     <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT

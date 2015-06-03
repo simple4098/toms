@@ -15,6 +15,16 @@ public class Company extends Domain {
     private String companyCode;
     //权限集合
     private List<Permission> permissionList;
+    //区别公司来源
+    private int type = 1;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public Company() {
     }

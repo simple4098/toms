@@ -98,8 +98,9 @@
         where id= #{id}
     </update>
     <select id="selectCompanyByInnId" parameterType="java.lang.Integer" resultMap="BangInnDtoResult">
-        select bi.inn_id,bi.inn_code,bi.company_id,bi.bang_date,c.company_name,c.company_code from bang_inn bi LEFT JOIN
-        company c on bi.company_id = c.id where bi.inn_id = #{innId}
+        select bi.inn_id,bi.inn_code,bi.company_id,bi.bang_date,c.company_name,c.company_code from bang_inn bi INNER
+        JOIN
+        company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId}
     </select>
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
         insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id)
