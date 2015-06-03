@@ -8,11 +8,13 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -48,28 +50,11 @@ public class AjaxLabelInnController extends BaseController{
      */
     @RequestMapping("/find_companys")
     public void findConpany(Model model, int innId) {
+
         List<BangInnDto> results = this.bangInnService.findCompanyByInnId(innId);
         if (null != results) {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            model.addAttribute(Constants.DATA, results);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "系统内部错误！");
-        }
-    }
-
-    /**
-     * 根据公司名称或公司唯一查询公司信息
-     *
-     * @param model
-     * @param company
-     */
-    @RequestMapping("find_company")
-    public void findCompany(Model model, Company company) {
-        List<Company> companyList = this.companyService.findCompanyByCompany(company);
-        if (null != companyList) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            model.addAttribute(Constants.DATA, companyList);
+            model.addAttribute(Constants.DATA, BangInnDataCheckHelper.dealBangInnData(results));
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "系统内部错误！");
@@ -79,18 +64,24 @@ public class AjaxLabelInnController extends BaseController{
     /**
      * 新增绑定客栈
      *
-     * @param model
+     * @param
      * @param bangInnDto
      */
     @RequestMapping("add_bang_inn")
-    public void addBangInn(Model model, BangInnDto bangInnDto) {
+    @ResponseBody
+    public Object addBangInn(BangInnDto bangInnDto) {
         if (BangInnDataCheckHelper.checkBangInn(bangInnDto)) {
-            bangInnDto.setBangDate(new Date());
-            this.bangInnService.addBanginn(bangInnDto);
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            //添加之前检查公司是否存在
+            List<Company> companyList = this.companyService.findCompanyByCompany(new Company(bangInnDto.getCompanyCode()));
+            if (ArrayUtils.isNotEmpty(companyList.toArray())) {
+                bangInnDto.setBangDate(new Date());
+                this.bangInnService.addBanginn(bangInnDto);
+                return new JsonModel(true);
+            } else {
+                return new JsonModel(false, "请检查公司唯一码是否正确！");
+            }
         } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "请检查传递的参数！");
+            return new JsonModel(false, "请检查传递的参数!");
         }
     }
 }
