@@ -29,8 +29,8 @@
                     </a>
                 </li>
 
-                <li <c:if test="${fn:contains(url, '/oms/getRoomType')}">class="active"</c:if>>
-                    <a href="<c:url value='/oms/getRoomType'/>">
+                <li <c:if test="${fn:contains(url, '/oms/obtRoomType')}">class="active"</c:if>>
+                    <a href="<c:url value='/oms/obtRoomType'/>">
                         <i class="icon-text-width"></i>
                         <span class="menu-text"> 房态数量 </span>
                     </a>

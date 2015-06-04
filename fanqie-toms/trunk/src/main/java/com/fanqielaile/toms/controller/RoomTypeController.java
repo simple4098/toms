@@ -6,11 +6,14 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,31 +33,41 @@ import java.util.List;
 @Controller
 @RequestMapping("/oms")
 public class RoomTypeController extends BaseController {
+    private static Logger logger = LoggerFactory.getLogger(RoomTypeController.class);
     @Resource
     private IRoomTypeService roomTypeService;
 
-    @RequestMapping("/getRoomType")
+    @RequestMapping("/obtRoomType")
     public String roomType(Model model,ParamDto paramDto){
         UserInfo userInfo = getCurrentUser();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
-        paramDto.setStartDate("2015-04-02");
+       /* paramDto.setStartDate("2015-04-02");
         paramDto.setEndDate("2015-05-01");
-        paramDto.setAccountId("15521");
-        roomTypeService.findRoomType(paramDto,userInfo);
-        //Company company = companyService.findCompanyById(userInfo.getCompanyId());
-
-        String s = String.valueOf(new Date().getTime());
-        String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
-        String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId=15521&from=2015-04-02&to=2015-05-01"+"&signature="+signature;
+        paramDto.setAccountId("15521");*/
         try {
-            String httpGets = HttpClientUtil.httpGets(url);
-            JSONObject jsonObject = JSONObject.fromObject(httpGets);
-            ArrayList<RoomTypeInfo> list = (ArrayList<RoomTypeInfo>)JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-            System.out.println(list.size());
-        } catch (IOException e) {
-            e.printStackTrace();
+            RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
+            model.addAttribute("roomType",roomType);
+        } catch (Exception e) {
+            logger.error("房态房量获取失败",e);
         }
         return "/room/room_type";
+    }
+    @RequestMapping("/ajax/obtRoomType")
+    public String ajaxRoomType(Model model,ParamDto paramDto){
+        UserInfo userInfo = getCurrentUser();
+        paramDto.setCompanyId(userInfo.getCompanyId());
+        paramDto.setUserId(userInfo.getId());
+     /*   paramDto.setStartDate("2015-04-02");
+        paramDto.setEndDate("2015-05-01");
+        paramDto.setAccountId("14339");*/
+        try {
+            RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
+            model.addAttribute("roomType",roomType);
+            model.addAttribute("paramDto",paramDto);
+        } catch (Exception e) {
+            logger.error("房态房量获取失败",e);
+        }
+        return "/room/room_type_ajax";
     }
 }

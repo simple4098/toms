@@ -125,7 +125,7 @@
                      <property name="kfD" value="http://192.168.1.124:8083/api/toms/customer.json"></property>
                      <property name="ORDER" value="http://192.168.1.124:8083/api/toms/order.json"></property>
                      <property name="ActiveInn" value="http://192.168.1.124:8083/api/toms/innActive.json"></property>
-                     <property name="roomType" value="http://192.168.1.158:8083/api/getRoomType"></property>
+                     <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
               </bean>
        </beans>
        <beans profile="test">

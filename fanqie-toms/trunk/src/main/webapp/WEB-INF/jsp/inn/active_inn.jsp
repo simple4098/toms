@@ -112,11 +112,13 @@
         </div>
     </c:if>
     <c:if test="${empty inn.innActiveList}">
-        暂无数据
+        <div class="alert alert-danger center">
+            没有数据,请重新筛选条件
+        </div>
     </c:if>
 </div>
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
+<%--<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>--%>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/assets/js/tomato.min.js"></script>
 <script src="<%=basePath%>/assets/js/dateSelecter.js"></script>

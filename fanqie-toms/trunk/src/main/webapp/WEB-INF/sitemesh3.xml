@@ -9,5 +9,5 @@
     <mapping path="/notice/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/user/update_password" exclude="true"/>
     <mapping path="/inn_manage/*" decorator="/WEB-INF/decorators/main.jsp"/>
-    <mapping path="/oms/getRoomType" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/oms/obtRoomType" decorator="/WEB-INF/decorators/main.jsp"/>
 </sitemesh>

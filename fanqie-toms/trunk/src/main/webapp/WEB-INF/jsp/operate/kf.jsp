@@ -118,7 +118,9 @@
         </div>
     </c:if>
     <c:if test="${empty customer.innCustomer}">
-        暂无数据
+            <div class="alert alert-danger center">
+                没有数据,请筛选条件
+            </div>
     </c:if>
 
 </div>
