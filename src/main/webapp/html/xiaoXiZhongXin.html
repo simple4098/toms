@@ -36,81 +36,81 @@
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="liJiang" class="checkbox sub">客栈1
+								<input type="checkbox" data-name="liJiang" class="checkbox sub">客栈1
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="liJiang" class="checkbox sub">客栈2
+								<input type="checkbox" data-name="liJiang" class="checkbox sub">客栈2
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="liJiang" class="checkbox sub">客栈3
+								<input type="checkbox" data-name="liJiang" class="checkbox sub">客栈3
 							</label>
 						</div>
 						
 						<hr class="hr-2">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="sub" class="checkbox" id="daLi">全选大理
+								<input type="checkbox" data-name="sub" class="checkbox" id="daLi">全选大理
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="daLi" class="checkbox sub">客栈1
+								<input type="checkbox" data-name="daLi" class="checkbox sub">客栈1
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="daLi" class="checkbox sub">客栈2
+								<input type="checkbox" data-name="daLi" class="checkbox sub">客栈2
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="daLi" class="checkbox sub">客栈3
-							</label>
-						</div>
-						<hr class="hr-2">
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" name="sub" class="checkbox" id="wuZhen">全选乌镇
-							</label>
-						</div>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" name="wuZhen" class="checkbox sub">客栈1
-							</label>
-						</div>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" name="wuZhen" class="checkbox sub">客栈2
-							</label>
-						</div>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox" name="wuZhen" class="checkbox sub">客栈3
+								<input type="checkbox" data-name="daLi" class="checkbox sub">客栈3
 							</label>
 						</div>
 						<hr class="hr-2">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="sub" class="checkbox" id="laSa">全选拉萨
+								<input type="checkbox" data-name="sub" class="checkbox" id="wuZhen">全选乌镇
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="laSa" class="checkbox sub">客栈1
+								<input type="checkbox" data-name="wuZhen" class="checkbox sub">客栈1
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="laSa" class="checkbox sub">客栈2
+								<input type="checkbox" data-name="wuZhen" class="checkbox sub">客栈2
 							</label>
 						</div>
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" name="laSa" class="checkbox sub">客栈3
+								<input type="checkbox" data-name="wuZhen" class="checkbox sub">客栈3
+							</label>
+						</div>
+						<hr class="hr-2">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-name="sub" class="checkbox" id="laSa">全选拉萨
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-name="laSa" class="checkbox sub">客栈1
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-name="laSa" class="checkbox sub">客栈2
+							</label>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" data-name="laSa" class="checkbox sub">客栈3
 							</label>
 						</div>
 					</div>
@@ -137,14 +137,14 @@ $(function(){
 	// 全选&&反选 分组客栈
 	$("input.checkbox").click(function() {
     	if(!$(this).attr('id')){
-    		var keywords = $(this).attr('name'),
-    			$subs = $("input[name="+keywords+"]"),
+    		var keywords = $(this).attr('data-name'),
+    			$subs = $("input[data-name="+keywords+"]"),
     			$parent = $("#"+keywords);
     		$parent.prop("checked" , $subs.length == $subs.filter(":checked").length ? true :false);
     	}
     	else{
     		var id= $(this).attr('id');
-    		$("input[name="+id+"]").prop("checked", this.checked);
+    		$("input[data-name="+id+"]").prop("checked", this.checked);
     	}
 	});
 })
