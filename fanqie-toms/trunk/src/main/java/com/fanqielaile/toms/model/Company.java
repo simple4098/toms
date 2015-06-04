@@ -23,6 +23,36 @@ public class Company extends Domain {
     private String userPassword;
     //区别公司来源
     private int type = 1;
+    //OTAID
+    private int otaId;
+    //用户名
+    private String userAccount;
+    //密码
+    private String userPassword;
+
+    public int getOtaId() {
+        return otaId;
+    }
+
+    public void setOtaId(int otaId) {
+        this.otaId = otaId;
+    }
+
+    public String getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public String getUserPassword() {
+        return userPassword;
+    }
+
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
 
     public int getType() {
         return type;

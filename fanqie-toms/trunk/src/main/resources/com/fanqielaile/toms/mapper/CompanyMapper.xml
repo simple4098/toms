@@ -15,15 +15,18 @@
         <result column="user_password" property="userPassword"/>
         <result column="company_code" property="companyCode"/>
         <result column="type" property="type"/>
+        <result column="ota_id" property="otaId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_password" property="userPassword"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password
     </sql>
     <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
         insert into
-        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type)
+        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password)
         values
-        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type})
+        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type},#{otaId},#{userAccount},#{userPassword})
        </insert>
     <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
@@ -48,5 +51,10 @@
         <if test="companyCode != null and companyCode != ''">
             and company_code = #{companyCode}
         </if>
+    </select>
+    <select id="selectCompanyByCompanyCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from company where company_code = #{companyCode} and type = 1 and deleted = 0 limit 1
     </select>
 </mapper>

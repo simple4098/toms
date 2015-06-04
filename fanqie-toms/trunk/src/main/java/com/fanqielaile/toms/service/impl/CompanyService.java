@@ -20,4 +20,9 @@ public class CompanyService implements ICompanyService {
     public List<Company> findCompanyByCompany(Company company) {
         return this.companyDao.selectCompanyByCompany(company);
     }
+
+    @Override
+    public Company findCompanyByCompanyCode(String companyCode) {
+        return this.companyDao.selectCompanyByCompanyCode(companyCode);
+    }
 }

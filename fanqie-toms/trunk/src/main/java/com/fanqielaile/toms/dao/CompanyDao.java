@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.model.Company;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -38,4 +39,12 @@ public interface CompanyDao {
      * @return
      */
     List<Company> selectCompanyByCompany(Company company);
+
+    /**
+     * 根据公司唯一码查询公司
+     *
+     * @param companyCode
+     * @return
+     */
+    Company selectCompanyByCompanyCode(@Param("companyCode") String companyCode);
 }

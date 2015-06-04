@@ -17,13 +17,13 @@
 
       <div class="error-container">
         <div class="well">
-          < class="grey lighter smaller">
+          <h1 class="grey lighter smaller">
 											<span class="blue bigger-125">
 												<i class="icon-random"></i>
 												500
 											</span>
-          <c:if test="${empty msg}">Something Went Wrong</c:if>
-          <c:if test="${not empty msg}">${msg}</c:if>
+            <c:if test="${empty msg}"> Something Went Wrong </c:if>
+            <c:if test="${not empty msg}"> ${msg} </c:if>
           </h1>
 
           <hr/>

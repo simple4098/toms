@@ -15,4 +15,12 @@ public interface ICompanyService {
      * @return
      */
     List<Company> findCompanyByCompany(Company company);
+
+    /**
+     * 根据公司code查询公司信息
+     *
+     * @param companyCode
+     * @return
+     */
+    Company findCompanyByCompanyCode(String companyCode);
 }

@@ -85,10 +85,14 @@ public class BangInnService implements IBangInnService {
     public BangInnDto findBangInnById(String id) {
         BangInnDto bangInnDto = this.bangInnDao.selectBangInnById(id);
         if (null != bangInnDto) {
-            InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
-            bangInnDto.setLabelName(innLabel.getLabelName());
-            UserInfo userInfo = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
-            bangInnDto.setUserName(userInfo.getUserName());
+            if (StringUtils.isNotEmpty(bangInnDto.getInnLabelId())) {
+                InnLabel innLabel = this.innLabelDao.selectLabelById(bangInnDto.getInnLabelId());
+                bangInnDto.setLabelName(innLabel.getLabelName());
+            }
+            if (StringUtils.isNotEmpty(bangInnDto.getUserId())) {
+                UserInfo userInfo = this.userInfoDao.selectUserInfoById(bangInnDto.getUserId());
+                bangInnDto.setUserName(userInfo.getUserName());
+            }
         }
         return bangInnDto;
     }
