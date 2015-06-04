@@ -51,9 +51,9 @@ public class NoticeTemplateController extends BaseController {
         UserInfo currentUser = getCurrentUser();
         Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
         NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(noticeId);
-        if (SendType.valueOf("MESSAGE").equals(sendType)) {
+        if (SendType.MESSAGE.name().equals(sendType)) {
             messageManageService.sendMessage(MessageHelper.createSmsMessage(company, mobile, noticeTemplate));
-        } else if (SendType.valueOf("POPUP").equals(sendType)) {
+        } else if (SendType.POPUP.name().equals(sendType)) {
             //TODO 调用系统弹窗接口
         } else {
             //TODO 调用短信和系统弹窗接口
