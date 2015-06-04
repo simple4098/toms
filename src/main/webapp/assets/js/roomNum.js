@@ -2,33 +2,33 @@
  * 房态房量
  */
 function getRoomType(postData){
+    var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
     $.ajax({
         type:'POST',
         data:postData,
-        url:'../roomType.json',
-        dataType:'json',
+        url:url,
+        dataType:'html',
         success:function(data){
-
-            // showRoomData(data);
-
+            $("#roomTypeContainerId").empty();
+            $("#roomTypeContainerId").html(data);
         }
     })
 }
 $('#from_datepicker').change(function(){
+    var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
     var date = $(this).val();
     $('#to_datepicker').val( TC.plusDate(date, '30', 'd', 'yyyy-MM-dd') );
     
     var postDate = {'startDay': $('#from_datepicker').val(), 'endDay': $('#to_datepicker').val()}
-    console.log(postDate)
+
     $.ajax({
         type:'POST',
         data: postDate,
-        url:'../roomType.json',
-        dataType:'json',
+        url:url,
+        dataType:'html',
         success:function(data){
-
-            // todo
-
+            $("#roomTypeContainerId").empty();
+            $("#roomTypeContainerId").html(data);
         }
     })
 })
@@ -49,8 +49,6 @@ $('#myButton').on('click', function(){
         tagId = $('#kz-tags').val(),
         innId = $('#kz_item').val(),
         postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'innId': innId};
-        
-	
     getRoomType( postData );
 })
 

@@ -79,15 +79,19 @@ function getData(postData){
 function orderSource(obj){
     $("#orderSourceId").empty();
     var source="";
-    for (var i=0;i<obj.length;i++){
-        var o = obj[i];
-        source += "<tr> <td><span class='label label-default'>"+ o.fromName+"</span></td>"+
+    if(obj!=undefined){
+        for (var i=0;i<obj.length;i++){
+            var o = obj[i];
+            source += "<tr> <td><span class='label label-default'>"+ o.fromName+"</span></td>"+
             "<td>订单："+ o.orderNum+"</td>"+
             "<td>实住间夜："+ o.liveNum+"</td>"+
             "<td>营业收入："+ o.income+"元</td>"+
             "</tr>"
+        }
+        $("#orderSourceId").html(source);
+    }else{
+        $("#orderSourceId").html("<div class=\"alert alert-danger center\">没有数据,请重新筛选</div>");
     }
-    $("#orderSourceId").html(source);
 }
 $('#myButton').on('click', function(){
     var postData = $("#orderId").serialize();
