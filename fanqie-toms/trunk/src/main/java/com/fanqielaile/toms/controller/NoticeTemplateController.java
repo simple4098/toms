@@ -35,7 +35,7 @@ public class NoticeTemplateController extends BaseController {
     @Resource
     private ICompanyService companyService;
     @Resource
-    private static IMessageManageService messageManageService;
+    private IMessageManageService messageManageService;
 
     /**
      * 发送短信或者系统弹窗
@@ -52,7 +52,6 @@ public class NoticeTemplateController extends BaseController {
         Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
         NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(noticeId);
         if (SendType.valueOf("MESSAGE").equals(sendType)) {
-            //TODO 调用短信接口发送短信
             messageManageService.sendMessage(MessageHelper.createSmsMessage(company, mobile, noticeTemplate));
         } else if (SendType.valueOf("POPUP").equals(sendType)) {
             //TODO 调用系统弹窗接口
