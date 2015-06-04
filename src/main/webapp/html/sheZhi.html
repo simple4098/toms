@@ -19,7 +19,7 @@
 			<tr>
 				<td colspan="5">丽江漫途信息技术有限公司</td>
 				<td>
-					<button class="btn btn-success btn-xs" type="button" data-toggle="modal" data-target=".bs-example-modal-sm">新增员工</button>
+					<button class="btn btn-success btn-xs" type="button" data-toggle="modal" data-target="#userPlus">新增员工</button>
 				</td>
 			</tr>
 			<tr>
@@ -126,26 +126,84 @@
 				</label>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-success" data-dismiss="modal">确定</button>
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="userSet">确定</button>
 				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
 			</div>
 		</div>
 	</div>
 </div>
 <!-- 新增员工弹框 -->
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade" id="userPlus">
 	<div class="modal-dialog modal-sm">
-		<div class="modal-content">...</div>
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">新增员工</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label" for="account">登陆帐号</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" id="account" placeholder="请输入用户名">
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label" for="password">登陆密码</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" id="password" placeholder="请输入密码">
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label" for="tel">联系电话</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" id="tel" placeholder="请输入您的联系电话">
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label" for="username">姓&nbsp;&nbsp;名</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" id="username" placeholder="请输入您的姓名">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="userPlusBtn">确定</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
 	</div>
 </div>
-
-
+<!-- 新增员工弹框 -->
+<div class="modal fade" id="sysMsg">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">温馨提示</h4>
+			</div>
+			<div class="modal-body">
+				保存成功！
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="userPlusBtn">确定</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+	</div>
+</div>
 
 <script src="../assets/js/jquery-2.0.3.min.js"></script>
 <script src="../assets/js/bootstrap.min.js"></script>
 <script src="../assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script>
 $(function(){
+	// 全选&&反选
 	$("#ckAll").click(function() {
     	$("input[name='sub']").prop("checked", this.checked);
 	});
@@ -154,6 +212,16 @@ $(function(){
     	var $subs = $("input[name='sub']");
     	$("#ckAll").prop("checked" , $subs.length == $subs.filter(":checked").length ? true :false);
 	});
+
+	// 新增员工callback
+	$('#userPlusBtn').on('click',function(){
+		$('#jurisdiction').modal();
+	})
+
+	// 权限设置callback
+	$('#userSet').on('click',function(){
+		$('#sysMsg').modal();
+	})
 })
 </script>
 </body>
