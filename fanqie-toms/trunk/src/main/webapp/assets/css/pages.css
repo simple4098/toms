@@ -40,6 +40,7 @@
 .select-area{
 	margin:10px 0;
 	z-index: 10000;
+	height: 44px;
 }
 /* 下拉框 */
 select.form-control{
