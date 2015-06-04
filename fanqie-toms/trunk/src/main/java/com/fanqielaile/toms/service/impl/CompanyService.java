@@ -25,4 +25,9 @@ public class CompanyService implements ICompanyService {
     public Company findCompanyByCompanyCode(String companyCode) {
         return this.companyDao.selectCompanyByCompanyCode(companyCode);
     }
+
+    @Override
+    public Company findCompanyByid(String id) {
+        return this.companyDao.selectCompanyById(id);
+    }
 }

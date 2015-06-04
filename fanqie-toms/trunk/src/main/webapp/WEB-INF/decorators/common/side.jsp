@@ -118,14 +118,14 @@
                     </a>
 
                     <ul class="submenu">
-                        <toms:authorize uri="/user/find_users">
+                        <%--<toms:authorize uri="/user/find_users">--%>
                         <li <c:if test="${fn:contains(url, '/user/find_users')}">class="active"</c:if>>
                             <a href="<c:url value="/user/find_users"/>">
                                 <i class="icon-double-angle-right"></i>
                                 账号设置
                             </a>
                         </li>
-                        </toms:authorize>
+                        <%--</toms:authorize>--%>
                         <li
                                 <c:if test="${fn:contains(url, '/system/find_notices')}">class="active" </c:if> >
                             <a href="<c:url value="/system/find_notices"/>">
