@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.CompanyAjaxDto;
 import com.fanqielaile.toms.helper.BangInnDataCheckHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
@@ -43,25 +44,6 @@ public class AjaxLabelInnController extends BaseController{
     }
 
     /**
-     * OMS接口：根据客栈id，查询第三方公司
-     *
-     * @param model
-     * @param innId
-     */
-    @RequestMapping("/find_companys")
-    public void findConpany(Model model, int innId) {
-
-        List<BangInnDto> results = this.bangInnService.findCompanyByInnId(innId);
-        if (null != results) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            model.addAttribute(Constants.DATA, BangInnDataCheckHelper.dealBangInnData(results));
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "系统内部错误！");
-        }
-    }
-
-    /**
      * 新增绑定客栈
      *
      * @param
@@ -69,17 +51,22 @@ public class AjaxLabelInnController extends BaseController{
      */
     @RequestMapping("add_bang_inn")
     @ResponseBody
-    public Object addBangInn(BangInnDto bangInnDto) {
+    public Object addBangInn(BangInnDto bangInnDto, Model model) {
         if (BangInnDataCheckHelper.checkBangInn(bangInnDto)) {
             //添加之前检查公司是否存在
-            List<Company> companyList = this.companyService.findCompanyByCompany(new Company(bangInnDto.getCompanyCode()));
-            if (ArrayUtils.isNotEmpty(companyList.toArray())) {
+            Company checkCompany = this.companyService.findCompanyByCompanyCode(bangInnDto.getCompanyCode());
+            if (null != checkCompany) {
                 //检查是否重复绑定
-                BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(companyList.get(0).getId(), bangInnDto.getInnId());
+                BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(checkCompany.getId(), bangInnDto.getInnId());
                 if (null == bangInn) {
+                    JsonModel jsonModel = new JsonModel();
                     bangInnDto.setBangDate(new Date());
+                    bangInnDto.setCompanyId(checkCompany.getId());
                     this.bangInnService.addBanginn(bangInnDto);
-                    return new JsonModel(true);
+                    //添加成功后，绑定公司信息返回
+                    jsonModel.setSuccess(true);
+                    jsonModel.addAttribute(Constants.DATA, CompanyAjaxDto.toAjaxBangInnDto(checkCompany));
+                    return jsonModel;
                 } else {
                     return new JsonModel(false, "该客栈已绑定过");
                 }

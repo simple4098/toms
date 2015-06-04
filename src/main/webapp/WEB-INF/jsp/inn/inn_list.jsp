@@ -15,9 +15,9 @@
 <html>
 <head>
     <title>客栈列表</title>
+    <script src="<%=basePath%>/js/my-system.js"/>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
-
 </head>
 <body>
 <div class="page-content">
@@ -177,6 +177,5 @@
         $('.form-page').submit();
     }
 </script>
-<script src="<%=basePath%>/js/my-system.js"/>
 </body>
 </html>
