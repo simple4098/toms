@@ -1,0 +1,9 @@
+@charset "UTF-8";
+/* 设置 */
+.check-list{
+	list-style: none;
+}
+.check-list li{
+	width: 25%;
+	float: left;
+}
