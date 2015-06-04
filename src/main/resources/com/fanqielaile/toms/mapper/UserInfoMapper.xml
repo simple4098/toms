@@ -42,9 +42,9 @@
        </sql>
        <insert id="insertUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
               insert into
-              user_info(id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id)
+              user_info(id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id,user_name)
               values
-              (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{loginName},#{userType},#{telephone},#{password},#{dataPermission},#{companyId},#{roleId})
+              (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{loginName},#{userType},#{telephone},#{password},#{dataPermission},#{companyId},#{roleId},#{userName})
        </insert>
        <select id="selectUserInfoByLoginName" parameterType="java.lang.String" resultMap="userResultMap">
               select u.id,u.login_name, u.telephone, u.user_type, u.password, u.data_permission, u.role_id,
@@ -85,6 +85,9 @@
                      </if>
                      <if test="dataPermission != null and dataPermission != ''">
                             data_permission = #{dataPermission},
+                     </if>
+                     <if test="userName != null and userName != ''">
+                            user_name = #{userName},
                      </if>
               </trim>
               where deleted = 0 and id = #{id}

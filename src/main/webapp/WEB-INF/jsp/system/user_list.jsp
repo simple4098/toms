@@ -7,8 +7,10 @@
 <html>
 <head>
     <title>账号设置</title>
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
+    <script src="<%=basePath%>/js/my-system.js"></script>
 </head>
 <body>
 <div class="page-content">
@@ -61,8 +63,9 @@
 
                                         <td class="hidden-480">
                                             <button type="button" data-whatever="${d.id}"
-                                                    class="btn btn-info btn-sm permission-btn" data-toggle="modal"
-                                                    data-target="#myModal">
+                                                    class="btn btn-info btn-sm permission-btn " data-toggle="modal"
+                                                    data-target="#jurisdiction"
+                                                    data-url="<c:url value="/user/user_permission.json?"/>userId=${d.id}">
                                                 权限
                                             </button>
                                         </td>
@@ -263,8 +266,8 @@
 
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
-                            <button class="btn btn-info btn-sub" type="button" data-toggle="modal"
-                                    data-target="#permissionPage">
+                            <button class="btn btn-info btn-sub" type="button" data-dismiss="modal" id="userPlusBtn"
+                                    >
                                 <i class="icon-ok bigger-110"></i>
                                 下一步
                             </button>
@@ -284,6 +287,113 @@
         </div>
     </div>
 </div>
+<%--修改权限列表--%>
+<div class="modal fade" id="jurisdiction" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPermission"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabelPermission">设置该员工权限</h4>
+            </div>
+            <div class="modal-body">
+                <form class="update-permission-form" id="permission-form"
+                      action="<c:url value="/user/update_permission"/>" method="post">
+                    <input type="hidden" class="permission-user-id" name="userId"/>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="ckAll">全选
+                        </label>
+                    </div>
+                    <hr>
+                    <ul class="check-list">
+                        <c:if test="${not empty permissions}">
+                            <c:forEach items="${permissions}" var="p">
+                                <li>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" class="p-check ${p.id}" name="permissionIds"
+                                               id="inlineCheckbox1" value="${p.id}">${p.permissionName}
+                                    </label>
+                                </li>
+                            </c:forEach>
+                        </c:if>
+                        <br>
+                    </ul>
+                    <hr>
+                    <!-- 单选框 -->
+                    <label class="radio-inline">
+                        <input type="radio" class="dataPermission0" name="dataPermission" id="inlineRadio1" value="0">只看自己的客栈
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="dataPermission" class="dataPermission1" id="inlineRadio2" value="1">能看所有的客栈
+                    </label>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-update-permission" data-dismiss="modal">确定</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+<%--新增权限--%>
+<div class="modal fade" id="jurisdictionnew" tabindex="-1" role="dialog" aria-labelledby="myModalLabelPermissionnew"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabelPermissionnew">设置该员工权限</h4>
+            </div>
+            <div class="modal-body">
+                <form class="new-permission-form" id="permission-form-new" action="<c:url value="/user/create_user"/>"
+                      method="post">
+                    <input type="text" class="login-name-permission" name="loginName"/>
+                    <input type="text" class="password-permission" name="password"/>
+                    <input type="text" class="telephone-permission" name="telephone"/>
+                    <input type="text" class="user-name-permission" name="userName"/>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="ckAll-new">全选
+                        </label>
+                    </div>
+                    <hr>
+                    <ul class="check-list">
+                        <c:if test="${not empty permissions}">
+                            <c:forEach items="${permissions}" var="p">
+                                <li>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" class="p-check ${p.id}" name="permissionIds"
+                                               id="inlineCheckbox1" value="${p.id}">${p.permissionName}
+                                    </label>
+                                </li>
+                            </c:forEach>
+                        </c:if>
+                        <br>
+                    </ul>
+                    <hr>
+                    <!-- 单选框 -->
+                    <label class="radio-inline">
+                        <input type="radio" name="dataPermission" class="dataPermission3" id="inlineRadio3" value="0">只看自己的客栈
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="dataPermission" class="dataPermission4" id="inlineRadio4" value="1">能看所有的客栈
+                    </label>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-new-permission">确定</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     //分页方法
     function page(page) {
@@ -291,6 +401,192 @@
         $("#form-page").submit();
     }
 </script>
-<script src="<%=basePath%>/js/my-system.js"></script>
+<script type="text/javascript">
+    var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
+    /*删除员工弹出层把userid传入*/
+    $('.del-btn').on('click', function () {
+        var userId = $(this).attr('data-whatever');
+        $('.user-id').val(userId);
+        var dataUrl = $(this).attr('data-url');
+        $('.data-url').val(dataUrl);
+        var url = $(this).attr('json-url');
+        var delUrl = $(this).attr('del-url');
+        $('.del-url').val(delUrl);
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status) {
+                    $('.user-list option').remove();
+                    for (var i = 0; i < data.data.length; i++) {
+                        $('.user-list').append('<option value="' + data.data[i].id + '">' + data.data[i].userName + '</option>')
+                    }
+                }
+            }
+        })
+    });
+    //删除form提交
+    $('.btn-del-1').on('click', function () {
+        $('.delete-user').submit();
+    });
+    /*删除员工*/
+    $('.btn-del').on('click', function () {
+        var url = $('.del-url').val();
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (!data.status) {
+                    window.location.reload();
+                } else {
+                    window.location.reload();
+                }
+            },
+            error: function () {
+                //do same thing!
+            }
+        });
+    });
+    $("#ckAll").click(function () {
+        $("input[name='permissionIds']").prop("checked", this.checked);
+    });
+    $("#ckAll-new").click(function () {
+        $("input[name='permissionIds']").prop("checked", this.checked);
+    });
+    $("input[name='permissionIds']").click(function () {
+        var $subs = $("input[name='permissionIds']");
+        $("#ckAll").prop("checked", $subs.length == $subs.filter(":checked").length ? true : false);
+        $("#ckAll-new").prop("checked", $subs.length == $subs.filter(":checked").length ? true : false);
+    });
+    /*修改权限*/
+    $('.permission-btn').on('click', function () {
+        var url = $(this).attr('data-url');
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status) {
+                    $('.permission-user-id').val(data.user.id);
+                    if (data.user.dataPermission == 0) {
+                        $('.dataPermission0').attr('checked', true);
+                    } else {
+                        $('.dataPermission1').attr('checked', true);
+                    }
+                    for (var i = 0; i < data.data.length; i++) {
+                        var checkClass = data.data[i].id;
+                        $('.' + checkClass).attr('checked', true);
+                    }
+                    $('#jurisdiction').modal();
+                }
+            }
+        })
+    });
+    /*修改权限*/
+    $('.btn-update-permission').on('click', function () {
+//        $('.update-permission-form').submit();
+        $.ajax({
+            url: '<c:url value="/user/update_permission.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: $("#permission-form").serialize(),
+            success: function (data) {
+                if (data.status) {
+                    layer.alert('提示信息：修改成功', {icon: 6});
+                } else {
+                    layer.alert('提示信息：修改失败', {icon: 5});
+                }
+            }, error: function () {
+                layer.msg('系统错误');
+            }
+        })
+    });
+    /*新增员工验证*/
+    $('.btn-info').on('click', function () {
+        $('.help-login-name .middle').remove();
+        $('.help-password .middle').remove();
+        $('.help-tel .middle').remove();
+        $('.help-name .middle').remove();
+        if ($('.login-name').val() == null || $('.login-name').val() == '') {
+            $('.help-login-name').append(span);
+            return false;
+        }
+        if ($('.pawd').val() == null || $('.pawd').val() == '') {
+            $('.help-password').append(span);
+            return false;
+        }
+        if ($('.tel').val() == null || $('.tel').val() == '') {
+            $('.help-tel').append(span);
+            return false;
+        }
+        if ($('.user-name').val() == null || $('.user-name').val() == '') {
+            $('.help-name').append(span);
+            return false;
+        }
+        //验证通过跳到第二部
+        $('#jurisdictionnew').modal();
+        //将一步的值传递过去
+        $('.login-name-permission').val($('.login-name').val());
+        $('.password-permission').val($('.pawd').val());
+        $('.telephone-permission').val($('.tel').val());
+        $('.user-name-permission').val($('.user-name').val());
+//        return false;
+    });
+    /*验证登陆名*/
+    $('.login-name').on('blur', function () {
+        $('.help-login-name .middle').remove();
+        var value = $(this).val();
+        var name = $(this).attr('name');
+        var url = $(this).attr('data-url');
+        $.ajax({
+            url: url,
+            type: 'post',
+            dataType: 'json',
+            data: name + '=' + value,
+            success: function (data) {
+                var span = '<span class="middle" name="middle" disabled="false" style="color: red">登录名已经存在</span>';
+                if (!data.status) {
+                    $('.help-login-name').append(span);
+                    $('.btn-sub').attr('disabled', true);
+                } else {
+                    $('.help-login-name .middle').remove();
+                    $('.btn-sub').attr('disabled', false);
+
+                }
+            },
+            error: function () {
+                layer.msg('系统错误');
+            }
+        });
+    });
+    /*新增权限*/
+    $('.btn-new-permission').on('click', function () {
+        $.ajax({
+            url: '<c:url value="/user/create_user.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: $("#permission-form-new").serialize(),
+            success: function (data) {
+                if (data.status) {
+                    layer.alert('提示信息：新增员工成功', {icon: 6}, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    layer.alert('提示信息：新增员工失败', {icon: 5}, function () {
+                        window.location.reload();
+                    });
+                }
+            }, error: function () {
+                layer.msg('系统错误');
+            }
+        })
+    });
+    $('.close').on('click', function () {
+        window.location.reload();
+    });
+</script>
+<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 </body>
 </html>

@@ -14,6 +14,7 @@
 <html>
 <head>
     <title>消息通知</title>
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
     <script src='<%=basePath%>/assets/js/jquery-2.0.3.min.js'></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
@@ -33,7 +34,7 @@
             <div class="widget-box">
                 <div class="widget-header" style="text-align: center">
                     <h5>通知模板：</h5>
-                    <select name="notice" class="notice" data-url="<c:url value="/system/find_notice.json?id="/>">
+                    <select name="noticeId" class="notice" data-url="<c:url value="/system/find_notice.json?id="/>">
                         <option value="" selected>请选择</option>
                         <c:if test="${not empty data}">
                             <c:forEach items="${data}" var="d">
@@ -66,32 +67,66 @@
                     </div>
                 </div>
 
+                <%--<div class="widget-body">--%>
+                <%--<div class="widget-main">--%>
+                <%--<p class="alert alert-info">--%>
+                <%--<span class="label label-lg label-purple arrowed">--%>
+                <%--<input type="checkbox" class="all-inn" style="padding-top: 10px"/>全选所有客栈--%>
+                <%--</span>--%>
+                <%--<br/><br/>--%>
+                <%--<c:if test="${not empty bangInnList}">--%>
+                <%--<c:forEach items="${bangInnList}" var="bi">--%>
+                <%--<span class="label label-lg label-purple arrowed">--%>
+                <%--<input type="checkbox" class="${bi.innLabelId} inn-label"--%>
+                <%--style="padding-top: 10px"/>${bi.innLabelName}--%>
+                <%--</span>--%>
+                <%--<br/>--%>
+                <%--<c:if test="${not empty bi.bangInnList}">--%>
+                <%--<c:forEach items="${bi.bangInnList}" var="inn">--%>
+                <%--&nbsp;&nbsp;--%>
+                <%--<input type="checkbox" name="innId" class="${bi.innLabelId}-child inn"--%>
+                <%--value="${inn.id}"/>${inn.innName}<br/>--%>
+                <%--</c:forEach>--%>
+                <%--</c:if>--%>
+                <%--</c:forEach>--%>
+                <%--</c:if>--%>
+                <%--</p>--%>
+                <%--</div>--%>
+                <%--</div>--%>
                 <div class="widget-body">
                     <div class="widget-main">
-                        <p class="alert alert-info">
-                            <span class="label label-lg label-purple arrowed">
-                                    <input type="checkbox" class="all-inn" style="padding-top: 10px"/>全选所有客栈
-                            </span>
-                            <br/><br/>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" id="ckAll">选择所有客栈
+                            </label>
+                        </div>
+                        <%--<hr>--%>
+                        <div class="checkUnit">
                             <c:if test="${not empty bangInnList}">
                                 <c:forEach items="${bangInnList}" var="bi">
-                                    <span class="label label-lg label-purple arrowed">
-                                    <input type="checkbox" class="${bi.innLabelId} inn-label"
-                                           style="padding-top: 10px"/>${bi.innLabelName}
-                                    </span>
-                                    <br/>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="checkbox"
+                                                   id="${bi.innLabelName}">${bi.innLabelName}
+                                        </label>
+                                    </div>
                                     <c:if test="${not empty bi.bangInnList}">
                                         <c:forEach items="${bi.bangInnList}" var="inn">
-                                            &nbsp;&nbsp;
-                                            <input type="checkbox" name="innId" class="${bi.innLabelId}-child inn"
-                                                   value="${inn.id}"/>${inn.innName}<br/>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="innId" data-name="${bi.innLabelName}"
+                                                           class="checkbox sub">${inn.innName}
+                                                </label>
+                                            </div>
                                         </c:forEach>
                                     </c:if>
                                 </c:forEach>
                             </c:if>
-                        </p>
+                            <hr class="hr-2">
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
         <div class="col-xs-12 col-sm widget-container-span">
@@ -113,6 +148,34 @@
         </div>
     </div>
 </div>
+<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
+<script>
+    $(function () {
+        // 全选&&反选 所有客栈
+        $("#ckAll").click(function () {
+            $("input.checkbox").prop("checked", this.checked);
+        });
+
+        $("input.checkbox").click(function () {
+            var $subs = $("input.checkbox");
+            $("#ckAll").prop("checked", $subs.length == $subs.filter(":checked").length ? true : false);
+        });
+        // 全选&&反选 分组客栈
+        $("input.checkbox").click(function () {
+            if (!$(this).attr('id')) {
+                var keywords = $(this).attr('data-name'),
+                        $subs = $("input[data-name=" + keywords + "]"),
+                        $parent = $("#" + keywords);
+                $parent.prop("checked", $subs.length == $subs.filter(":checked").length ? true : false);
+            }
+            else {
+                var id = $(this).attr('id');
+                $("input[data-name=" + id + "]").prop("checked", this.checked);
+            }
+        });
+    })
+</script>
+
 <script src="<%=basePath%>/js/my-system.js"></script>
 </body>
 </html>

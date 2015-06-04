@@ -256,3 +256,5 @@ $('.all-inn').on('click', function () {
 $('.bang-inn-update').on('click', function () {
     $('.update-inn').submit();
 });
+
+

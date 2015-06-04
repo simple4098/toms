@@ -23,4 +23,12 @@ public interface ICompanyService {
      * @return
      */
     Company findCompanyByCompanyCode(String companyCode);
+
+    /**
+     * 根据公司id查询
+     *
+     * @param id
+     * @return
+     */
+    Company findCompanyByid(String id);
 }

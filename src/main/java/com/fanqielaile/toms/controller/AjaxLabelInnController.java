@@ -12,6 +12,8 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/ajax")
 public class AjaxLabelInnController extends BaseController{
+    private static Logger logger = LoggerFactory.getLogger(AjaxLabelInnController.class);
     @Resource
     private IBangInnService bangInnService;
     @Resource
@@ -52,6 +55,7 @@ public class AjaxLabelInnController extends BaseController{
     @RequestMapping("add_bang_inn")
     @ResponseBody
     public Object addBangInn(BangInnDto bangInnDto, Model model) {
+        logger.info("传入参数", bangInnDto);
         if (BangInnDataCheckHelper.checkBangInn(bangInnDto)) {
             //添加之前检查公司是否存在
             Company checkCompany = this.companyService.findCompanyByCompanyCode(bangInnDto.getCompanyCode());

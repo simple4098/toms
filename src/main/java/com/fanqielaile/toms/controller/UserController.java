@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.enums.UserType;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.helper.PermissionHelper;
 import com.fanqielaile.toms.model.Permission;
@@ -78,6 +79,9 @@ public class UserController extends BaseController {
     @RequestMapping("/create_user")
     public Model createUser(Model model, @Valid UserInfo userInfo, BindingResult bindingResult, String permissionIds) {
         if (StringUtils.isNotEmpty(permissionIds)) {
+            userInfo.setCompanyId(getCurrentUser().getCompanyId());
+            //设置普通员工角色，超级管理员采用初始化
+            userInfo.setUserType(UserType.PUBLIC);
             boolean flag = userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
             if (flag) {
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -106,6 +110,9 @@ public class UserController extends BaseController {
         //封装分页信息
         Paginator paginator = ((PageList) userInfos).getPaginator();
         model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        //封装权限信息
+        List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(getCurrentUser().getCompanyId());
+        model.addAttribute("permissions", permissionList);
         return "/system/user_list";
     }
 
@@ -207,6 +214,7 @@ public class UserController extends BaseController {
             List<Permission> permissions = this.permissionService.findPermissionByUserId(userId);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.DATA, permissions);
+            model.addAttribute("user", userInfo);
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "该用户不存在");
@@ -218,14 +226,14 @@ public class UserController extends BaseController {
      *
      * @param model
      * @param userId
-     * @param permissions
+     * @param permissionIds
      */
     @RequestMapping("update_permission")
-    public void updatePermission(Model model, String userId, String permissions, int dataPermission) {
-        if (StringUtils.isNotEmpty(permissions)) {
+    public void updatePermission(Model model, String userId, String permissionIds, int dataPermission) {
+        if (StringUtils.isNotEmpty(permissionIds)) {
             UserInfo userInfo = this.userInfoService.findUserInfoById(userId);
             if (null != userInfo) {
-                this.userInfoService.modifyUserPermission(userInfo, PermissionHelper.dealPermissionString(permissions), dataPermission);
+                this.userInfoService.modifyUserPermission(userInfo, PermissionHelper.dealPermissionString(permissionIds), dataPermission);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             }
         } else {
