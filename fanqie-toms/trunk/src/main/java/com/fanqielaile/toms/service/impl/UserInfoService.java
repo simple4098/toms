@@ -9,6 +9,8 @@ import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
+import com.fanqielaile.toms.support.event.TomsApplicationEvent;
+import com.fanqielaile.toms.support.listener.RolePermissionChangeListener;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +37,9 @@ public class UserInfoService implements IUserInfoService {
     private Md5PasswordEncoder passwordEncoder;
     @Resource
     private BangInnDao bangInnDao;
+    @Resource
+    private RolePermissionChangeListener rolePermissionChangeListener;
+
     @Override
     public boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdlist) {
         if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
@@ -63,13 +68,14 @@ public class UserInfoService implements IUserInfoService {
                 //创建角色与权限的关系
                 this.roleDao.deletePermissionsOfRole(role.getId());
                 Role rolePermission = new Role();
-                rolePermission.setId(UUID.randomUUID().toString());
+                rolePermission.setId(rolePermission.getUuid());
                 rolePermission.setRolePermissionRoleId(role.getId());
 //                rolePermission.setPermissions(new HashSet<String>(permissionIdlist));
                 rolePermission.setPermissionList(permissionIdlist);
                 rolePermission.setCreatedDate(new Date());
                 rolePermission.setUpdatedDate(new Date());
                 this.roleDao.insertPermissionsForRole(rolePermission);
+                rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(rolePermission));
                 return true;
             }
         }

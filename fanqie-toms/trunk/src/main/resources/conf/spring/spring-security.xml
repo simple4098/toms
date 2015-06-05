@@ -51,7 +51,7 @@
         <property name="permissionDao" ref="permissionDao"/>
     </bean>
     <bean id="messageManageService" class="com.tomasky.msp.client.service.impl.MessageManageServiceImpl"/>
-    <!--<bean id="permissionChangeListener" class="">-->
-    <!--<property name="requestMapResolver" ref="requestMapResolver"/>-->
-    <!--</bean>-->
+    <bean id="rolePermissionChangeListener" class="com.fanqielaile.toms.support.listener.RolePermissionChangeListener">
+        <property name="requestMapResolver" ref="requestMapResolver"/>
+    </bean>
 </beans>
