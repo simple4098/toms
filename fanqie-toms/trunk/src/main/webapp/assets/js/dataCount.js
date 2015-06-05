@@ -239,6 +239,12 @@ function getData(postData){
             var opr = data.operateTrend;
             if(opr){
                 opt(opr);
+            }else{
+                $("#totalIncome").html(0);
+                $("#realLiveNum").html(0);
+                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
+                $("#livePercent").html(0);
+                $("#avgId").html(0);
             }
             init_yingYeShouRu();
             init_jianYeShu();
@@ -297,7 +303,7 @@ function opt(ope){
 
 $('#myButton').on('click', function(){
     var postData = $("#qsId").serialize();
-    opt(postData);
+   /* opt(postData);*/
     getData( postData );
 })
 

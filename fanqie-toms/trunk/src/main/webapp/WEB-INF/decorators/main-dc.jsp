@@ -16,7 +16,7 @@
 </head>
 <body>
     <jsp:include page="/WEB-INF/decorators/common/header.jsp"/>
-    <div class="main-container" id="main-container">
+    <%--<div class="main-container" id="main-container">--%>
         <script type="text/javascript">
             try {
                 ace.settings.check('main-container', 'fixed')
@@ -35,7 +35,7 @@
                 <sitemesh:write property="body"/>
             </div>
             <!-- /.main-content -->
-        </div>
+        <%--</div>--%>
 
     </div>
     <script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
