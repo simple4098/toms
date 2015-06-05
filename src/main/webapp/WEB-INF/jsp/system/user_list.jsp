@@ -15,7 +15,7 @@
 <body>
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
-    <form class="form-page" action="<c:url value="/user/find_users"/>" method="post">
+    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/user/find_users"/>" method="post">
         <input type="hidden" class="pageId" id="pageId" name="page"/>
     </form>
     <div class="row">
@@ -400,8 +400,6 @@
         $("#pageId").attr("value", page);
         $("#form-page").submit();
     }
-</script>
-<script type="text/javascript">
     var span = '<span class="middle" name="middle" disabled="false" style="color: red">此项必填</span>';
     /*删除员工弹出层把userid传入*/
     $('.del-btn').on('click', function () {

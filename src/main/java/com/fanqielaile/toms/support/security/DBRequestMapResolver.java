@@ -6,6 +6,7 @@ import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
