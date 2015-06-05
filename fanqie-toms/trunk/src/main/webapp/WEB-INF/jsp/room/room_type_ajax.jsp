@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <c:set value="${roomType.list}" var="list"/>
-<c:if test="${not empty list}">
+<c:if test="${not empty roomType.list}">
   <div class="table-left">
     <table class="table table-bordered">
       <tr class="success">
@@ -48,7 +48,7 @@
     </table>
   </div>
 </c:if>
-<c:if test="${empty list}">
+<c:if test="${empty roomType.list}">
   <div class="alert alert-danger center">
     没有数据,请选择分类/客栈查询房态房量
   </div>

@@ -46,20 +46,20 @@
     <div class="row data-count-box">
       <div class="col-md-3">
         <p>营业收入</p>
-        <p class="text-center color-green"><span id="totalIncome">120000</span>元</p>
+        <p class="text-center color-green"><span id="totalIncome">0</span>元</p>
       </div>
       <div class="col-md-3">
         <p>实住间夜数</p>
-        <p class="text-center color-green"><span id="realLiveNum">30000</span>间夜</p>
+        <p class="text-center color-green"><span id="realLiveNum">0</span>间夜</p>
         <p class="text-center color-gray" id="emptyAndTotalRoom"></p>
       </div>
       <div class="col-md-3">
         <p>入住率</p>
-        <p class="text-center color-green"><span id="livePercent">60</span>%</p>
+        <p class="text-center color-green"><span id="livePercent">0</span>%</p>
       </div>
       <div class="col-md-3">
         <p>间夜均价</p>
-        <p class="text-center color-green"><span id="avgId">400</span>元</p>
+        <p class="text-center color-green"><span id="avgId">0</span>元</p>
       </div>
     </div>
   </div>

@@ -43,10 +43,10 @@
             </form>
         </div>
     </div>
-    <div class="container color-green">
+    <div class="color-green">
         <p>所选时间段内，共接待 <span>${(empty customer.totalNum)?0:customer.totalNum}</span> 位客人，分布在 <span>${(empty customer.totalCityNum)?0:customer.totalCityNum}</span> 个城市。</p>
     </div>
-    <div class="container table-wrap">
+    <div class="table-wrap">
         <table class="table">
             <thead>
             <tr>

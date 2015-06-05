@@ -6,6 +6,7 @@
 .data-count-container{
 	border: 1px solid #ccc;
 	padding: 5px 0;
+	height: 130px;
 }
 
 .data-count-box > div{
@@ -63,6 +64,9 @@ select.form-control{
 	height: 29px;
 }
 /* ------------------客户资料分析------------------ */
+#myTab{
+	height: 34px;
+}
 .table-wrap thead th:nth-child(2){
 	width: 7%;
 }
