@@ -38,12 +38,13 @@ public class OrderService implements IOrderService {
         JSONObject jsonObject = JSONObject.fromObject(order);
         List<OrderDto> data = new ArrayList<OrderDto>();
         Map<String,Object> map = new HashMap<String, Object>();
+        Object rows = jsonObject.get("rows");
+        Object obj = jsonObject.get("obj");
         OrderSourceDto orderSource=null;
-        if (jsonObject.get("obj")!=null){
-             orderSource  = JacksonUtil.json2obj(jsonObject.get("obj").toString(), OrderSourceDto.class);
+        if (obj!=null){
+             orderSource  = JacksonUtil.json2obj(obj.toString(), OrderSourceDto.class);
         }
-        if (jsonObject.get("rows")!=null){
-            Object rows = jsonObject.get("rows");
+        if (rows!=null){
             List<OrderSource> list  = JacksonUtil.json2list(rows.toString(), OrderSource.class);
             OrderDto orderDto=null;
             for (OrderSource o:list){

@@ -102,10 +102,9 @@
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url"
-                               value="jdbc:postgresql://localhost:5432/toms?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
-                     <property name="username" value="postgres"/>
-                     <property name="password" value="root"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="username" value="ota"/>
+                     <property name="password" value="ota"/>
                      <!--<property name="username" value="ota"/>-->
                      <!--<property name="password" value="ota"/>-->
                      <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -122,12 +121,12 @@
                      <property name="validationQuery" value="select 1"/>
               </bean>
               <bean class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://192.168.1.124:8083/api/toms/operate.json"></property>
-                     <property name="QSDetail" value="http://192.168.1.124:8083/api/toms/opeDetail.json"></property>
-                     <property name="KF" value="http://192.168.1.124:8083/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://192.168.1.124:8083/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://192.168.1.124:8083/api/toms/order.json"></property>
-                     <property name="ActiveInn" value="http://192.168.1.124:8083/api/toms/innActive.json"></property>
+                     <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
+                     <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
+                     <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
+                     <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
                      <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
               </bean>
        </beans>

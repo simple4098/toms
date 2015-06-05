@@ -7,12 +7,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>运营趋势</title>
-  <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
   <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
-
 </head>
 <body>
 
@@ -22,7 +18,6 @@
       <form id="qsId" method="POST">
         <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
         <input type="hidden" class="operate-url" data-url="<c:url value="/operate/qsDetail.json"/>">
-        <input type="hidden" class="qs-url" data-url="<c:url value="/operate/ajax/qs.json"/>"/>
         <select class="form-control" id="fast_select">
           <option>快捷日期</option>
           <option>昨日</option>
@@ -94,6 +89,7 @@
 </div>
 
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
 <script src="<%=basePath%>/assets/js/echarts-all.js"></script>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/assets/js/tomato.min.js"></script>

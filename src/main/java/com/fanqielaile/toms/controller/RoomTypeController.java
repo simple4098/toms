@@ -39,18 +39,18 @@ public class RoomTypeController extends BaseController {
 
     @RequestMapping("/obtRoomType")
     public String roomType(Model model,ParamDto paramDto){
-        UserInfo userInfo = getCurrentUser();
+      /*  UserInfo userInfo = getCurrentUser();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
-       /* paramDto.setStartDate("2015-04-02");
+       *//* paramDto.setStartDate("2015-04-02");
         paramDto.setEndDate("2015-05-01");
-        paramDto.setAccountId("15521");*/
+        paramDto.setAccountId("15521");*//*
         try {
             RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
             model.addAttribute("roomType",roomType);
         } catch (Exception e) {
             logger.error("房态房量获取失败",e);
-        }
+        }*/
         return "/room/room_type";
     }
     @RequestMapping("/ajax/obtRoomType")

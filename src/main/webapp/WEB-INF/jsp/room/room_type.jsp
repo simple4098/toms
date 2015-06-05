@@ -107,7 +107,7 @@
                 }
                 // 遍历获取客栈列表
                 function getInnName(num){
-                    aList = "";
+                    aList = "<option value>--请选择客栈--</option>";
                     for(var innList in json.data[num].bangInnList){
                         aList += "<option value='"+json.data[num].bangInnList[innList].accountId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
                     };

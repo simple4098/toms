@@ -223,10 +223,11 @@ var init_jianYeJunJia = function(){
     myChart_jianYeJunJia.setOption(option);    
 }
 
-var url= $('.operate-url').attr('data-url');
-var qs_url= $('.qs-url').attr('data-url');
+
+
 
 function getData(postData){
+    var url= $('.operate-url').attr('data-url');
     var postData = $("#qsId").serialize();
     $.ajax({
         type:'POST',
@@ -235,6 +236,10 @@ function getData(postData){
         dataType:'json',
         success:function(data){
             _data = data;
+            var opr = data.operateTrend;
+            if(opr){
+                opt(opr);
+            }
             init_yingYeShouRu();
             init_jianYeShu();
             init_ruZhuLv();
@@ -245,12 +250,26 @@ function getData(postData){
 var timer = setInterval(function(){
     if($('#kz_item').html()){
         var  postData = $("#qsId").serialize();
-        opt(postData);
+        /*opt(postData);*/
         getData(postData);
         clearInterval(timer);
     }
 },500);
-function opt(obj){
+function opt(ope){
+    if(ope){
+        $("#totalIncome").html(ope.totalIncome);
+        $("#realLiveNum").html(ope.realLiveNum);
+        $("#emptyAndTotalRoom").html("总数"+ope.totalRoomNum+"间夜;空置"+ope.emptyRoomNum+"间夜");
+        $("#livePercent").html((ope.livePercent*100).toFixed(2));
+        $("#avgId").html((ope.totalIncome/ope.realLiveNum).toFixed(2));
+    }else{
+        $("#totalIncome").html(0);
+        $("#realLiveNum").html(0);
+        $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
+        $("#livePercent").html(0);
+        $("#avgId").html(0);
+    }
+    /*var qs_url= $('.qs-url').attr('data-url');
     $.ajax({
         type:'post',
         url:qs_url+"?v"+new Date().getTime(),
@@ -273,7 +292,7 @@ function opt(obj){
             }
 
         }
-    });
+    });*/
 }
 
 $('#myButton').on('click', function(){
