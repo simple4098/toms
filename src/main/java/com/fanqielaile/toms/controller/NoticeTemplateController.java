@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.enums.SendType;
+import com.fanqielaile.toms.helper.BangInnDataCheckHelper;
 import com.fanqielaile.toms.helper.MessageHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
@@ -9,6 +10,7 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.tomasky.msp.client.service.IMessageManageService;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
@@ -41,23 +43,30 @@ public class NoticeTemplateController extends BaseController {
      * 发送短信或者系统弹窗
      *
      * @param model
-     * @param noticeId
-     * @param mobile
+     * @param noticeContent
+     * @param innId
      * @param sendType
      */
     @RequestMapping("send_message")
-    public void sendMessage(Model model, @RequestParam String noticeId, String innId, @RequestParam String mobile, @RequestParam String sendType) throws IOException {
-        //构建发送短信对象
-        UserInfo currentUser = getCurrentUser();
-        Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
-        NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(noticeId);
-        if (SendType.MESSAGE.name().equals(sendType)) {
-            messageManageService.sendMessage(MessageHelper.createSmsMessage(company, mobile, noticeTemplate));
-        } else if (SendType.POPUP.name().equals(sendType)) {
-            //TODO 调用系统弹窗接口
-        } else {
-            //TODO 调用短信和系统弹窗接口
+    public void sendMessage(Model model, @RequestParam String noticeContent, @RequestParam String innId, @RequestParam String sendType) throws IOException {
+        try {
+            //构建发送短信对象
+            UserInfo currentUser = getCurrentUser();
+            //公司信息
+            Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
+            //绑定客栈信息
+            List<BangInn> bangInns = this.bangInnService.findBangInnByStringBangInn(BangInnDataCheckHelper.dealStringInnIds(innId));
+            if (SendType.MESSAGE.name().equals(sendType)) {
+                messageManageService.sendMessage(MessageHelper.createSmsMessage(company, bangInns, noticeContent));
+            } else if (SendType.POPUP.name().equals(sendType)) {
+                //TODO 调用系统弹窗接口
+            } else {
+                //TODO 调用短信和系统弹窗接口
+            }
+        } catch (Exception e) {
+            throw new TomsRuntimeException("系统内部错误");
         }
+        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
     }
 
     /**

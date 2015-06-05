@@ -1,8 +1,10 @@
 package com.fanqielaile.toms.helper;
 
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.NoticeTemplate;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.tomasky.msp.client.service.IMessageManageService;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
 import com.tomasky.msp.model.ImsMessage;
@@ -27,23 +29,26 @@ public class MessageHelper {
      * 创建短信发送对象
      *
      * @param company
-     * @param mobile
-     * @param noticeTemplate
+     * @param bangInns
+     * @param noticeContent
      * @return
      */
-    public static SmsMessage createSmsMessage(Company company, String mobile, NoticeTemplate noticeTemplate) {
+    public static SmsMessage createSmsMessage(Company company, List<BangInn> bangInns, String noticeContent) {
         List<String> receiver = new ArrayList<>();
-        if (StringUtils.isNotEmpty(mobile)) {
-            String[] mobiles = mobile.split(",");
-            if (ArrayUtils.isNotEmpty(mobiles)) {
-                for (int i = 0; i < mobiles.length; i++) {
-                    receiver.add(mobiles[i]);
+        try {
+            String sender = company.getCompanyName();
+            String content = noticeContent;
+            if (ArrayUtils.isNotEmpty(bangInns.toArray())) {
+                for (BangInn bangInn : bangInns) {
+                    receiver.add(bangInn.getMobile());
                 }
             }
+            return MessageBuilder.buildSmsMessage(sender, receiver, content);
+        } catch (Exception e) {
+            throw new TomsRuntimeException("系统内部错误");
         }
-        String sender = company.getCompanyName();
-        String content = noticeTemplate.getNoticeContent();
-        return MessageBuilder.buildSmsMessage(sender, receiver, content);
+
+
     }
 
 //    public static ImsMessage createImsMessage(){}

@@ -26,7 +26,7 @@
         </h1>
     </div>
     <!-- /.page-header -->
-
+    <form name="data-form" class="data-form" action="<c:url value="/notice/send_message.json"/>">
     <div class="row">
         <div class="col-xs-12 col-sm-4 widget-container-span">
             <!-- PAGE CONTENT BEGINS -->
@@ -89,6 +89,7 @@
                                             <div class="checkbox">
                                                 <label>
                                                     <input type="checkbox" name="innId" data-name="${bi.innLabelName}"
+                                                           value="${inn}"
                                                            class="checkbox sub">${inn.innName}
                                                 </label>
                                             </div>
@@ -109,22 +110,39 @@
                 <div class="widget-header" style="text-align: center">
                     <h5>请选择发送的方式：</h5>
           <span style="padding-left: 60px;">
-          <input type="checkbox"/>短信发送
+          <input type="checkbox" name="sendType" value="MESSAGE"/>短信发送
             </span>
           <span style="padding-left: 80px">
-          <input type="checkbox" style="padding-left: 20%"/>系统弹窗
+          <input name="sendType" value="POPUP" type="checkbox" style="padding-left: 20%"/>系统弹窗
             </span>
           <span style="padding-left: 100px;">
-          <button class="btn btn-success">确认发送</button>
+          <button class="btn btn-success btn-send">确认发送</button>
           </span>
                 </div>
 
             </div>
         </div>
     </div>
+    </form>
 </div>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script>
+    $('.btn-send').on('click', function () {
+        $.ajax({
+            url: '<c:url value="/notice/send_message.json"/>',
+            type: 'post',
+            dataType: 'json',
+            data: $('.form-data').serialize(),
+            success: function (data) {
+                if (data.status) {
+                    layer.alert('提示信息：发送成功！', {icon: 6});
+                }
+            },
+            error: function () {
+                layer.msg("系统错误!");
+            }
+        })
+    });
     $(function () {
         // 全选&&反选 所有客栈
         $("#ckAll").click(function () {
@@ -148,7 +166,7 @@
                 $("input[data-name=" + id + "]").prop("checked", this.checked);
             }
         });
-    })
+    });
 </script>
 
 <script src="<%=basePath%>/js/my-system.js"></script>
