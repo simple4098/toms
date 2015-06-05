@@ -92,6 +92,7 @@ public class UserInfoService implements IUserInfoService {
         role.setRoleName(role.getRoleKey());
         return role;
     }
+
     @Override
     public UserInfo findUserInfoByLoginName(String loginName) {
         return userInfoDao.selectUserInfoByLoginName(loginName);
