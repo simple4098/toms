@@ -176,7 +176,15 @@ select.form-control{
 .table-user-active .color-3{
 	background-color: #f8ecca;
 }
-
+.head-tip {
+	font-size: 14px;
+	font-weight: normal;
+	background-color: darksalmon;
+	color: #fff;
+	display: inline;
+	padding: 8px;
+	border-radius: 5px;
+}
 
 
 
