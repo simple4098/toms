@@ -50,7 +50,8 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <p class="alert alert-info">
-                            <textarea class="notice-content" rows="10" cols="65" style="resize: none"></textarea>
+                            <textarea class="notice-content" maxlength="70" rows="10" cols="65"
+                                      style="resize: none"></textarea>
                         </p>
                     </div>
                 </div>
@@ -66,33 +67,6 @@
 
                     </div>
                 </div>
-
-                <%--<div class="widget-body">--%>
-                <%--<div class="widget-main">--%>
-                <%--<p class="alert alert-info">--%>
-                <%--<span class="label label-lg label-purple arrowed">--%>
-                <%--<input type="checkbox" class="all-inn" style="padding-top: 10px"/>全选所有客栈--%>
-                <%--</span>--%>
-                <%--<br/><br/>--%>
-                <%--<c:if test="${not empty bangInnList}">--%>
-                <%--<c:forEach items="${bangInnList}" var="bi">--%>
-                <%--<span class="label label-lg label-purple arrowed">--%>
-                <%--<input type="checkbox" class="${bi.innLabelId} inn-label"--%>
-                <%--style="padding-top: 10px"/>${bi.innLabelName}--%>
-                <%--</span>--%>
-                <%--<br/>--%>
-                <%--<c:if test="${not empty bi.bangInnList}">--%>
-                <%--<c:forEach items="${bi.bangInnList}" var="inn">--%>
-                <%--&nbsp;&nbsp;--%>
-                <%--<input type="checkbox" name="innId" class="${bi.innLabelId}-child inn"--%>
-                <%--value="${inn.id}"/>${inn.innName}<br/>--%>
-                <%--</c:forEach>--%>
-                <%--</c:if>--%>
-                <%--</c:forEach>--%>
-                <%--</c:if>--%>
-                <%--</p>--%>
-                <%--</div>--%>
-                <%--</div>--%>
                 <div class="widget-body">
                     <div class="widget-main">
                         <div class="checkbox">
@@ -100,7 +74,7 @@
                                 <input type="checkbox" id="ckAll">选择所有客栈
                             </label>
                         </div>
-                        <%--<hr>--%>
+                        <hr class="hr-2">
                         <div class="checkUnit">
                             <c:if test="${not empty bangInnList}">
                                 <c:forEach items="${bangInnList}" var="bi">
@@ -120,6 +94,7 @@
                                             </div>
                                         </c:forEach>
                                     </c:if>
+                                    <hr class="hr-2">
                                 </c:forEach>
                             </c:if>
                             <hr class="hr-2">
