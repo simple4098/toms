@@ -492,7 +492,9 @@
             data: $("#permission-form").serialize(),
             success: function (data) {
                 if (data.status) {
-                    layer.alert('提示信息：修改成功', {icon: 6});
+                    layer.alert('提示信息：修改成功', {icon: 6}, function () {
+                        window.location.reload();
+                    });
                 } else {
                     layer.alert('提示信息：修改失败', {icon: 5});
                 }

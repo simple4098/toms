@@ -46,42 +46,52 @@ public class UserInfoService implements IUserInfoService {
             UserInfo userInfo1 = userInfoDao.selectUserInfoByLoginName(userInfo.getLoginName());
             if (null == userInfo1) {
                 //创建角色
-                Role role = new Role();
-                role.setId(UUID.randomUUID().toString());
-                //查询最大的indexed，设置role_key
-                int index = this.roleDao.selectMaxIndex();
-                if (StringUtils.isNotEmpty(index + "")) {
-                    role.setIndexed(index + 1);
-                } else {
-                    role.setIndexed(0);
-                }
-                role.setRoleKey("ROLE_" + role.getIndexed());
-                role.setRoleDesc(role.getRoleKey());
-                role.setRoleName(role.getRoleKey());
-                this.roleDao.insertRole(role);
+                this.roleDao.insertRole(completeRole());
                 //创建用户
-                userInfo.setId(UUID.randomUUID().toString());
-                userInfo.setRoleId(role.getId());
+                userInfo.setId(userInfo.getUuid());
+                userInfo.setRoleId(completeRole().getId());
                 //设置密码
-                userInfo.setPassword(passwordEncoder.encodePassword(userInfo.getPassword(), null));
+                String passwordEncode = passwordEncoder.encodePassword(userInfo.getPassword(), null);
+                userInfo.setPassword(passwordEncode);
                 userInfoDao.insertUserInfo(userInfo);
-                //创建角色与权限的关系
-                this.roleDao.deletePermissionsOfRole(role.getId());
-                Role rolePermission = new Role();
-                rolePermission.setId(rolePermission.getUuid());
-                rolePermission.setRolePermissionRoleId(role.getId());
-//                rolePermission.setPermissions(new HashSet<String>(permissionIdlist));
-                rolePermission.setPermissionList(permissionIdlist);
-                rolePermission.setCreatedDate(new Date());
-                rolePermission.setUpdatedDate(new Date());
-                this.roleDao.insertPermissionsForRole(rolePermission);
-                rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(rolePermission));
+                //删除角色与权限的关系
+                this.roleDao.deletePermissionsOfRole(completeRole().getId());
+                //新增角色与权限关系
+                this.roleDao.insertPermissionsForRole(completeRolePermission(permissionIdlist));
+                rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(completeRolePermission(permissionIdlist)));
                 return true;
             }
         }
         return false;
     }
 
+    /*新增角色与权限关系的处理方法*/
+    private Role completeRolePermission(List<Permission> permissionIdlist) {
+        Role rolePermission = new Role();
+        rolePermission.setId(rolePermission.getUuid());
+        rolePermission.setRolePermissionRoleId(completeRole().getId());
+        rolePermission.setPermissionList(permissionIdlist);
+        rolePermission.setCreatedDate(new Date());
+        rolePermission.setUpdatedDate(new Date());
+        return rolePermission;
+    }
+
+    /*处理新增角色的方法*/
+    private Role completeRole() {
+        Role role = new Role();
+        role.setId(role.getUuid());
+        //查询最大的indexed，设置role_key
+        int index = this.roleDao.selectMaxIndex();
+        if (StringUtils.isNotEmpty(index + "")) {
+            role.setIndexed(index + 1);
+        } else {
+            role.setIndexed(0);
+        }
+        role.setRoleKey("ROLE_" + role.getIndexed());
+        role.setRoleDesc(role.getRoleKey());
+        role.setRoleName(role.getRoleKey());
+        return role;
+    }
     @Override
     public UserInfo findUserInfoByLoginName(String loginName) {
         return userInfoDao.selectUserInfoByLoginName(loginName);
@@ -144,6 +154,7 @@ public class UserInfoService implements IUserInfoService {
         this.roleDao.insertPermissionsForRole(rolePermission);
         //修改用户数据权限
         this.userInfoDao.updateUserDataPermission(userInfo.getId(), dataPermission);
+        rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(rolePermission));
     }
 
     @Override
