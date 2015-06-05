@@ -97,6 +97,7 @@
                         </li>
                     </ul>
                 </li>
+                <toms:authorize uri="/notice/find_notices">
                 <li
                         <c:if test="${fn:contains(url, '/notice/find_notices')}">class="active"</c:if> >
                     <a href="<c:url value="/notice/find_notices"/>" class="dropdown-toggle">
@@ -104,6 +105,7 @@
                         <span class="menu-text"> 消息通知 </span>
                     </a>
                 </li>
+                </toms:authorize>
                 <li
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>
@@ -118,14 +120,15 @@
                     </a>
 
                     <ul class="submenu">
-                        <%--<toms:authorize uri="/user/find_users">--%>
+                        <toms:authorize uri="/user/find_users">
                         <li <c:if test="${fn:contains(url, '/user/find_users')}">class="active"</c:if>>
                             <a href="<c:url value="/user/find_users"/>">
                                 <i class="icon-double-angle-right"></i>
                                 账号设置
                             </a>
                         </li>
-                        <%--</toms:authorize>--%>
+                        </toms:authorize>
+                        <toms:authorize uri="/system/find_notices">
                         <li
                                 <c:if test="${fn:contains(url, '/system/find_notices')}">class="active" </c:if> >
                             <a href="<c:url value="/system/find_notices"/>">
@@ -133,7 +136,9 @@
                                 通知模板
                             </a>
                         </li>
+                        </toms:authorize>
 
+                        <toms:authorize uri="/system/find_labels">
                         <li
                                 <c:if test="${fn:contains(url, '/system/find_labels')}">class="active" </c:if> >
                             <a href="<c:url value="/system/find_labels"/>">
@@ -141,6 +146,7 @@
                                 客栈标签
                             </a>
                         </li>
+                        </toms:authorize>
                     </ul>
                 </li>
             </ul>
