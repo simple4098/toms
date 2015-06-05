@@ -99,4 +99,12 @@ public interface BangInnDao {
      * @return
      */
     BangInn selectBangInnByCompanyIdAndInnId(@Param("companyId") String companyId, @Param("innId") int innId);
+
+    /**
+     * 查询绑定客栈信息
+     *
+     * @param bangInnList
+     * @return
+     */
+    List<BangInn> selectBangInnByStringInnId(List<BangInn> bangInnList);
 }

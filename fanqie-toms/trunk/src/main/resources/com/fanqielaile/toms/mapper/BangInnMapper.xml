@@ -111,4 +111,15 @@
         <include refid="Base_Column_List"/>
         from bang_inn where company_id=#{companyId} and inn_id = #{innId}
     </select>
+    <select id="selectBangInnByStringInnId" resultMap="BangInnDtoResult"
+            parameterType="com.fanqielaile.toms.model.BangInn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM bang_inn
+        <where>
+            <foreach collection="bangInnList" index="index" item="item" open="(" close=")" separator=",">
+                id in #{item.id}
+            </foreach>
+        </where>
+    </select>
 </mapper>
