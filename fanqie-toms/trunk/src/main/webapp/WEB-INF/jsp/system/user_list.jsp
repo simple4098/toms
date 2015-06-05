@@ -323,6 +323,7 @@
                         <br>
                     </ul>
                     <hr>
+                    <br/>
                     <!-- 单选框 -->
                     <label class="radio-inline">
                         <input type="radio" class="dataPermission0" name="dataPermission" id="inlineRadio1" value="0">只看自己的客栈
@@ -378,6 +379,7 @@
                         <br>
                     </ul>
                     <hr>
+                    <br/>
                     <!-- 单选框 -->
                     <label class="radio-inline">
                         <input type="radio" name="dataPermission" class="dataPermission3" id="inlineRadio3" value="0">只看自己的客栈
