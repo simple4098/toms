@@ -10,19 +10,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>客栈活跃报表</title>
-
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
-    <style>
-        .head-tip {
-            font-size: 14px;
-            font-weight: normal;
-            background-color: darksalmon;
-            color: #fff;
-            display: inline;
-            padding: 8px;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body>
 <c:set value="${inn.pagination}" var="page"/>
