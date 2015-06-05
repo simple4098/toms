@@ -16,7 +16,7 @@
 <c:set value="${inn.pagination}" var="page"/>
 <div class="container">
     <div class="select-area">
-        <form id="innActiveId" method="post">
+        <form id="innActiveId" method="post" action="<c:url value="/inn_manage/activeInn"/> ">
             <input type="hidden" id="pageId" name="page" value="${paramDto.page}" />
             <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
             <input class="date-input" name="startDate" type="text" id="from_datepicker">

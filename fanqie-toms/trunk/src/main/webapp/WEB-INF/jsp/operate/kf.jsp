@@ -19,7 +19,7 @@
 <div class="container">
     <div class="clearfix select-area">
         <div class="pull-right">
-            <form id="kfId" method="POST">
+            <form id="kfId" method="POST" action="<c:url value="/operate/kf"/> ">
                 <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
                 <input type="hidden" id="pageId" name="page" value="${paramDto.page}" />
                 <select class="form-control" id="fast_select">
