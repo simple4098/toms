@@ -58,6 +58,8 @@ public class OperateTrendController extends BaseController  {
             UserInfo currentUser = getCurrentUser();
             Map<String, Object> qsDetail = operateTrendService.findQsDetail(paramDto, currentUser);
             model.addAttribute("result",qsDetail);
+            OperateTrend trend = operateTrendService.findOperateTrend(paramDto, currentUser);
+            model.addAttribute("operateTrend",trend);
         } catch (Exception e) {
             logger.error("趋势报表异常",e);
         }

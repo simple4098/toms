@@ -56,14 +56,15 @@ public class InnActiveService implements IInnActiveService {
         Object p = jsonObject.get("pagination");
         Pagination pagination = null;
         if (p!=null){
-            pagination = JacksonUtil.json2obj(jsonObject.get("pagination").toString(), Pagination.class);
+            pagination = JacksonUtil.json2obj(p.toString(), Pagination.class);
         }
         List<InnActiveDto> innCustomer = null;
         Integer maxLen = 0;
         if (rows!=null){
-            innCustomer = JacksonUtil.json2list(jsonObject.get("rows").toString(), InnActiveDto.class);
-            if(!CollectionUtils.isEmpty(innCustomer) && !CollectionUtils.isEmpty(innCustomer.get(0).getActiveList()))
-            maxLen = innCustomer.get(0).getActiveList().size();
+            innCustomer = JacksonUtil.json2list(rows.toString(), InnActiveDto.class);
+            if(!CollectionUtils.isEmpty(innCustomer) && !CollectionUtils.isEmpty(innCustomer.get(0).getActiveList())){
+                maxLen = innCustomer.get(0).getActiveList().size();
+            }
         }
         return new ActiveInnDto(innCustomer,pagination,maxLen);
     }

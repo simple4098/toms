@@ -19,7 +19,7 @@ function obt(tagId,innId,url){
 			}
 			// 遍历获取客栈列表
 			function getInnName(num){
-				aList = "";
+				aList = "<option value>--请选择客栈--</option>";
 				for(var innList in json.data[num].bangInnList){
 					var k ='';
 					if(innId==json.data[num].bangInnList[innList].innId){

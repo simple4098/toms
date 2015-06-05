@@ -45,21 +45,21 @@
                     </a>
 
                     <ul class="submenu">
-                        <li>
+                        <li <c:if test="${fn:contains(url,'/operate/qs')}">class="active"</c:if>>
                             <a href="<c:url value='/operate/qs'/>">
                                 <i class="icon-double-angle-right"></i>
                                 运营趋势
                             </a>
                         </li>
 
-                        <li>
+                        <li <c:if test="${fn:contains('/operate/kf',url)}">class="active"</c:if>>
                             <a href="<c:url value='/operate/kf?page=1'/>">
                                 <i class="icon-double-angle-right"></i>
                                 客户资料分析
                             </a>
                         </li>
 
-                        <li>
+                        <li <c:if test="${fn:contains(url,'/operate/order')}">class="active"</c:if>>
                             <a href="<c:url value='/operate/order'/>">
                                 <i class="icon-double-angle-right"></i>
                                 订单来源分析

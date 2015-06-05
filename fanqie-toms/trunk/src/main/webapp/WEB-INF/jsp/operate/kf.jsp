@@ -11,7 +11,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>客服资料分析</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
 </head>
 <body>
@@ -151,53 +150,6 @@
         $("#pageId").attr("value",page);
         $("#kfId").submit();
     }
-
-   /* function obt(){
-        var tagId ='${paramDto.tagId}';
-        var innId ='${paramDto.innId}';
-        var url= $('.data-url').attr('data-url');
-        $.ajax({
-            type:'GET',
-            url:url+"?v"+new Date().getTime(),
-            dataType:'json',
-            success:function(json){
-                var aLabel = ""; //存放客栈标签
-                var aList = "";  //存放客栈列表
-                // 遍历获取客栈标签
-                for(var attr in json.data){
-                    var k ='';
-                    if(tagId==json.data[attr].innLabelId){
-                        k ='selected';
-                    }
-                    aLabel += "<option "+k+" value='"+json.data[attr].innLabelId+"'>"+json.data[attr].innLabelName+"</option>";
-                }
-                // 遍历获取客栈列表
-                function getInnName(num){
-                    aList = "";
-                    for(var innList in json.data[num].bangInnList){
-                        var k ='';
-                        if(innId==json.data[num].bangInnList[innList].innId){
-                            k ='selected';
-                        }
-                        aList += "<option "+k+" value='"+json.data[num].bangInnList[innList].innId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
-                    };
-                }
-                // 默认加载第一个列表
-                getInnName(0);
-                // 联动刷新客栈列表
-                $('#kz-tags').change(function(){
-                    var num = $(this).children(':selected').index();
-                    getInnName(num);
-                    $('#kz_item').html(aList);
-                })
-                // 写入DOM
-                $('#kz-tags-kf').html(aLabel);
-                $('#kz_item-kf').html(aList);
-                //加载运营概况数据；
-
-            }
-        });
-    }*/
 
 </script>
 </body>

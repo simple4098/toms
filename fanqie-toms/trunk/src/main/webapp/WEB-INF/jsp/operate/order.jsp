@@ -10,7 +10,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>订单来源分析</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
 </head>
 <body>
