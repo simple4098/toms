@@ -34,7 +34,7 @@ public class OrderService implements IOrderService {
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto,UserInfo userInfo)throws  Exception{
         paramDto.setUserId(userInfo.getId());
         paramDto.setCompanyId(userInfo.getCompanyId());
-        String  order = HttpClientUtil.httpPost(CommonApi.ORDER, paramDto);
+        String  order = HttpClientUtil.httpGets(CommonApi.ORDER, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(order);
         List<OrderDto> data = new ArrayList<OrderDto>();
         Map<String,Object> map = new HashMap<String, Object>();

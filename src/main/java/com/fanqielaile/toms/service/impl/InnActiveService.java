@@ -3,10 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.domain.InnCustomer;
 import com.fanqie.core.dto.InnActiveDto;
 import com.fanqie.core.dto.ParamDto;
-import com.fanqie.util.DcUtil;
-import com.fanqie.util.HttpClientUtil;
-import com.fanqie.util.JacksonUtil;
-import com.fanqie.util.Pagination;
+import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dto.ActiveInnDto;
@@ -16,6 +13,8 @@ import com.fanqielaile.toms.service.IInnActiveService;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,7 +46,11 @@ public class InnActiveService implements IInnActiveService {
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setDataPermission(userInfo.getDataPermission() == 1);
         paramDto.setUserId(userInfo.getId());
-        String post = HttpClientUtil.httpPost(CommonApi.ActiveInn, paramDto);
+        if (StringUtils.isEmpty(paramDto.getStartDate())){
+            DateTime dateTime = DateUtil.addDate(-1);
+            paramDto.setStartDate(DateUtil.formatDateToString(dateTime.toDate(),"yyyy-MM-dd"));
+        }
+        String post = HttpClientUtil.httpGets(CommonApi.ActiveInn, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(post);
         Object rows = jsonObject.get("rows");
         Object p = jsonObject.get("pagination");

@@ -29,8 +29,8 @@
         </form>
     </div>
     <c:set value="${roomType.list}" var="list"/>
-    <c:if test="${not empty list}">
         <div class="room-status-box" id="roomTypeContainerId">
+            <c:if test="${not empty list}">
             <div class="table-left">
                 <table class="table table-bordered">
                     <tr class="success">
@@ -75,13 +75,13 @@
                     </tbody>
                 </table>
             </div>
+            </c:if>
+            <c:if test="${empty list}">
+                <div class="alert alert-danger center">
+                    没有数据,请选择分类/客栈查询房态房量
+                </div>
+            </c:if>
         </div>
-    </c:if>
-    <c:if test="${empty list}">
-        <div class="alert alert-danger center">
-            没有数据,请选择分类/客栈查询房态房量
-        </div>
-    </c:if>
 
 </div>
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>

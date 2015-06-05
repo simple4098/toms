@@ -33,8 +33,8 @@ public class OperateTrendService implements IOperateTrendService {
         DateTime dateTime = DateUtil.addDate(-1);
         paramDto.setStartDate((paramDto.getStartDate() == null ||paramDto.getStartDate()=="") ? DateUtil.formatDateToString(dateTime.toDate(), "yyyy-MM-dd"):paramDto.getStartDate());
         paramDto.setEndDate((paramDto.getEndDate() == null ||paramDto.getEndDate()=="") ? DateUtil.formatDateToString(dateTime.toDate(), "yyyy-MM-dd"):paramDto.getEndDate());
-        String kf = HttpClientUtil.httpPost(CommonApi.KF, paramDto);
-        String kf_d = HttpClientUtil.httpPost(CommonApi.KF_D, paramDto);
+        String kf = HttpClientUtil.httpGets(CommonApi.KF, paramDto);
+        String kf_d = HttpClientUtil.httpGets(CommonApi.KF_D, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(kf);
         JSONObject kfDObject = JSONObject.fromObject(kf_d);
         Pagination pagination = JacksonUtil.json2obj(kfDObject.get("pagination").toString(), Pagination.class);
@@ -48,7 +48,7 @@ public class OperateTrendService implements IOperateTrendService {
     public OperateTrend findOperateTrend(ParamDto paramDto, UserInfo currentUser) throws Exception {
         paramDto.setUserId(currentUser.getId());
         paramDto.setCompanyId(currentUser.getCompanyId());
-        String gets = HttpClientUtil.httpPost(CommonApi.QS, paramDto);
+        String gets = HttpClientUtil.httpGets(CommonApi.QS, paramDto);
         OperateTrend operateTrend = JacksonUtil.json2obj(gets, OperateTrend.class);
         return operateTrend;
     }
@@ -57,7 +57,7 @@ public class OperateTrendService implements IOperateTrendService {
     public Map<String, Object> findQsDetail(ParamDto paramDto, UserInfo currentUser) throws Exception {
         paramDto.setUserId(currentUser.getId());
         paramDto.setCompanyId(currentUser.getCompanyId());
-        String gets = HttpClientUtil.httpPost(CommonApi.QSDetail, paramDto);
+        String gets = HttpClientUtil.httpGets(CommonApi.QSDetail, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(gets);
         Map<String, Object> result = (Map<String, Object>)jsonObject.get("result");
         return result;
