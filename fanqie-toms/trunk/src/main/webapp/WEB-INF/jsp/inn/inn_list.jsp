@@ -15,8 +15,8 @@
 <html>
 <head>
     <title>客栈列表</title>
-    <script src="<%=basePath%>/js/my-system.js"/>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="<%=basePath%>/js/my-system.js"/>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
 <body>
@@ -45,7 +45,7 @@
 
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
-                            <thead>
+                            <thead style="font-size: 14px;">
                             <form class="form-page" action="<c:url value="/inn_manage/find_inns"/>" method="post">
                                 <input type="hidden" id="pageId" name="page" value="${page.page}"/>
                             <tr>
@@ -86,7 +86,7 @@
                             </form>
                             </thead>
 
-                            <tbody class="table-data">
+                            <tbody class="table-data" style="font-size: 14px;">
                             <c:if test="${not empty data}">
                                 <c:forEach items="${data}" var="d">
                                     <tr>
@@ -115,6 +115,7 @@
                 </div>
             </div>
         </div>
+        <c:if test="${page.pageCount>1}">
         <!-- PAGE CONTENT ENDS -->
         <div class="container">
             <div class="text-center">
@@ -154,6 +155,12 @@
                 </ul>
             </div>
         </div>
+        </c:if>
+        <c:if test="${empty data}">
+            <div class="alert alert-danger center">
+                没有数据,请筛选条件
+            </div>
+        </c:if>
     </div>
     <!-- /.col -->
 

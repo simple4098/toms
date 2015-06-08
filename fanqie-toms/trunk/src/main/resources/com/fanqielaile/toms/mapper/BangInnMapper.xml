@@ -60,7 +60,7 @@
     <select id="selectBangInnByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where user_id = #{userId}
+        from bang_inn where user_id = #{userId} ORDER BY bang_date DESC
     </select>
     <select id="selectBangInnListByUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo"
             resultMap="BangInnDtoResult">
@@ -76,6 +76,7 @@
         <if test="userId != null and userId != ''">
             and user_id = #{userId}
         </if>
+        ORDER BY bang_date DESC
     </select>
     <select id="selectBangInnById" parameterType="java.lang.String" resultMap="BangInnDtoResult">
         SELECT
@@ -100,7 +101,7 @@
     <select id="selectCompanyByInnId" parameterType="java.lang.Integer" resultMap="BangInnDtoResult">
         select bi.inn_id,bi.inn_code,bi.company_id,bi.bang_date,c.company_name,c.company_code from bang_inn bi INNER
         JOIN
-        company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId}
+        company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId} ORDER BY bi.bang_date DESC
     </select>
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
         insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id)
@@ -109,7 +110,7 @@
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from bang_inn where company_id=#{companyId} and inn_id = #{innId}
+        from bang_inn where company_id=#{companyId} and inn_id = #{innId} ORDER BY bang_date DESC
     </select>
     <select id="selectBangInnByStringInnId" resultMap="BangInnDtoResult"
             parameterType="com.fanqielaile.toms.model.BangInn">

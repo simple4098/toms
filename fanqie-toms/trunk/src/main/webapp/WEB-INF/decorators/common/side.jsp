@@ -110,7 +110,8 @@
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_labels')}">class="open active"</c:if>
-                        <c:if test="${fn:contains(url, '/user/find_user')}"> class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/user/find_user') || fn:contains(url, '/system/update_notice_page')}"> class="open active"</c:if>
+
                         >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-tag"></i>

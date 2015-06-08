@@ -25,7 +25,7 @@
         <include refid="Base_Column_List"/>
         FROM inn_label where deleted = 0
         <if test="companyId != null and companyId != ''">
-            and company_id = #{companyId}
+            and company_id = #{companyId} ORDER BY created_date DESC
         </if>
     </select>
     <select id="selectLabelById" parameterType="java.lang.String" resultMap="BaseResultMap">

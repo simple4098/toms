@@ -124,16 +124,16 @@
                 <div class="space-4"></div>
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
+                        &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
                         <button class="btn btn-info bang-inn-update" type="submit">
                             <i class="icon-ok bigger-110"></i>
                             确认
                         </button>
 
-                        &nbsp; &nbsp; &nbsp;
-                        <button class="btn" type="reset">
-                            <i class="icon-undo bigger-110"></i>
-                            清空
-                        </button>
+                        <%--<button class="btn" type="reset">--%>
+                        <%--<i class="icon-undo bigger-110"></i>--%>
+                        <%--清空--%>
+                        <%--</button>--%>
                     </div>
                 </div>
             </form>
