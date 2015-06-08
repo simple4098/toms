@@ -7,9 +7,11 @@ import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
+import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IInnActiveService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
@@ -43,6 +45,8 @@ public class InnManageController extends BaseController {
     private IUserInfoService userInfoService;
     @Resource
     private IInnActiveService innActiveService;
+    @Resource
+    private ICompanyService companyService;
 
     /**
      * 查询标签对应的客栈
@@ -82,6 +86,9 @@ public class InnManageController extends BaseController {
             //管理员
             List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
             model.addAttribute("userInfos", userInfos);
+            //公司信息
+            Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
+            model.addAttribute("company", company);
             //分页对象
             Paginator paginator = ((PageList) bangInnList).getPaginator();
             model.addAttribute("pagination", PaginationHelper.toPagination(paginator));

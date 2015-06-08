@@ -28,14 +28,14 @@
                         <span class="menu-text"> 首页 </span>
                     </a>
                 </li>
-
+                <toms:authorize uri="/oms/obtRoomType">
                 <li <c:if test="${fn:contains(url, '/oms/obtRoomType')}">class="active"</c:if>>
                     <a href="<c:url value='/oms/obtRoomType'/>">
                         <i class="icon-text-width"></i>
                         <span class="menu-text"> 房态数量 </span>
                     </a>
                 </li>
-
+                </toms:authorize>
                 <li <c:if test="${fn:contains(url,'/operate/')}">class="open active"</c:if>>
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-desktop"></i>
@@ -45,26 +45,31 @@
                     </a>
 
                     <ul class="submenu">
+                        <toms:authorize uri="/operate/qs">
                         <li <c:if test="${fn:contains(url,'/operate/qs')}">class="active"</c:if>>
                             <a href="<c:url value='/operate/qs'/>">
                                 <i class="icon-double-angle-right"></i>
                                 运营趋势
                             </a>
                         </li>
-
+                        </toms:authorize>
+                        <toms:authorize uri="/operate/kf">
                         <li <c:if test="${fn:contains('/operate/kf',url)}">class="active"</c:if>>
                             <a href="<c:url value='/operate/kf?page=1'/>">
                                 <i class="icon-double-angle-right"></i>
                                 客户资料分析
                             </a>
                         </li>
+                        </toms:authorize>
 
+                        <toms:authorize uri="/operate/order">
                         <li <c:if test="${fn:contains(url,'/operate/order')}">class="active"</c:if>>
                             <a href="<c:url value='/operate/order'/>">
                                 <i class="icon-double-angle-right"></i>
                                 订单来源分析
                             </a>
                         </li>
+                        </toms:authorize>
 
                     </ul>
                 </li>
@@ -82,19 +87,23 @@
                     </a>
 
                     <ul class="submenu">
+                        <toms:authorize uri="/inn_manage/find_inns">
                         <li <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="active" </c:if> >
                             <a href="<c:url value="/inn_manage/find_inns"/>">
                                 <i class="icon-double-angle-right"></i>
                                 客栈列表
                             </a>
                         </li>
+                        </toms:authorize>
 
+                        <toms:authorize uri="/inn_manage/activeInn">
                         <li <c:if test="${fn:contains(url, '/inn_manage/activeInn')}">class="active" </c:if> >
                             <a href="<c:url value="/inn_manage/activeInn?page=1"/> ">
                                 <i class="icon-double-angle-right"></i>
                                 客栈活跃表
                             </a>
                         </li>
+                        </toms:authorize>
                     </ul>
                 </li>
                 <toms:authorize uri="/notice/find_notices">
