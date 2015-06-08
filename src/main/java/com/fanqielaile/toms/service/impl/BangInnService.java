@@ -119,6 +119,13 @@ public class BangInnService implements IBangInnService {
 
     @Override
     public List<BangInn> findBangInnByStringBangInn(List<BangInn> bangInnList) {
-        return this.bangInnDao.selectBangInnByStringInnId(bangInnList);
+        List<BangInn> bangInns = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(bangInnList.toArray())) {
+            for (BangInn bangInn : bangInnList) {
+                BangInnDto bangInnDto = this.bangInnDao.selectBangInnById(bangInn.getId());
+                bangInns.add(bangInnDto);
+            }
+        }
+        return bangInns;
     }
 }
