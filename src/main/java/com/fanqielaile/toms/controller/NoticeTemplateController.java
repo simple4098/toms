@@ -69,10 +69,12 @@ public class NoticeTemplateController extends BaseController {
                 //TODO 调用短信和系统弹窗接口
             }
         } catch (Exception e) {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
             logger.error("发送消息失败", e);
             throw new TomsRuntimeException("system  is error");
         }
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+
     }
 
     /**
