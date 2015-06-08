@@ -8,6 +8,7 @@ import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.service.IUserInfoService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
@@ -15,7 +16,8 @@ import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +37,7 @@ import java.util.List;
 @Controller
 @RequestMapping("user")
 public class UserController extends BaseController {
+    private static Logger logger = LoggerFactory.getLogger(UserController.class);
     @Resource
     private IUserInfoService userInfoService;
     @Resource
@@ -47,9 +50,13 @@ public class UserController extends BaseController {
      */
     @RequestMapping("company_permission")
     public void findConpanyPermission(Model model) {
-        List<Permission> permissions = this.permissionService.findPermissionByCompanyId(getCurrentUser().getCompanyId());
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, permissions);
+        try {
+            List<Permission> permissions = this.permissionService.findPermissionByCompanyId(getCurrentUser().getCompanyId());
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, permissions);
+        } catch (Exception e) {
+            logger.error("查询当前登录用户所在公司拥有的权限列表，查询错误", e);
+        }
     }
 
     /**
@@ -59,12 +66,16 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_user_by_name")
     public void findUserByName(Model model, String loginName) {
-        UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
-        if (null == userInfo) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "该账号已经注册过");
+        try {
+            UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
+            if (null == userInfo) {
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "该账号已经注册过");
+            }
+        } catch (Exception e) {
+            logger.error("根据登录名称查询用户是否已被注册，查询错误", e);
         }
     }
 
@@ -78,17 +89,16 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/create_user")
     public Model createUser(Model model, @Valid UserInfo userInfo, BindingResult bindingResult, String permissionIds) {
-        if (StringUtils.isNotEmpty(permissionIds)) {
-            userInfo.setCompanyId(getCurrentUser().getCompanyId());
-            //设置普通员工角色，超级管理员采用初始化
-            userInfo.setUserType(UserType.PUBLIC);
-            boolean flag = userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
-            if (flag) {
+        try {
+            if (StringUtils.isNotEmpty(permissionIds)) {
+                userInfo.setCompanyId(getCurrentUser().getCompanyId());
+                //设置普通员工角色，超级管理员采用初始化
+                userInfo.setUserType(UserType.PUBLIC);
+                userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            } else {
-                model.addAttribute(Constants.STATUS, Constants.ERROR);
-                model.addAttribute(Constants.MESSAGE, "新增失败");
             }
+        } catch (Exception e) {
+            logger.error("新增用户失败", e);
         }
         return new JsonModel().getModel(model, bindingResult);
 
@@ -101,18 +111,22 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_users")
     public String findUsers(Model model, @RequestParam(defaultValue = "1", required = false) int page) {
-        List<UserInfoDto> userInfos = this.userInfoService.findUserInfoByPage(getCurrentUser().getCompanyId(), new PageBounds(page, defaultRows));
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, userInfos);
-        if (null != userInfos) {
-            model.addAttribute("company", userInfos.get(0).getCompanyName());
+        try {
+            List<UserInfoDto> userInfos = this.userInfoService.findUserInfoByPage(getCurrentUser().getCompanyId(), new PageBounds(page, defaultRows));
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, userInfos);
+            if (null != userInfos) {
+                model.addAttribute("company", userInfos.get(0).getCompanyName());
+            }
+            //封装分页信息
+            Paginator paginator = ((PageList) userInfos).getPaginator();
+            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+            //封装权限信息
+            List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(getCurrentUser().getCompanyId());
+            model.addAttribute("permissions", permissionList);
+        } catch (Exception e) {
+            logger.error("查询当前公司下属员工,查询失败", e);
         }
-        //封装分页信息
-        Paginator paginator = ((PageList) userInfos).getPaginator();
-        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
-        //封装权限信息
-        List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(getCurrentUser().getCompanyId());
-        model.addAttribute("permissions", permissionList);
         return "/system/user_list";
     }
 
@@ -124,8 +138,12 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_user")
     public String findUser(Model model, String id) {
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.userInfoService.findUserInfoById(id));
+        try {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, this.userInfoService.findUserInfoById(id));
+        } catch (Exception e) {
+            logger.error("根据ID查询用户信息，查询失败", e);
+        }
         return "system/update_user";
     }
 
@@ -137,13 +155,12 @@ public class UserController extends BaseController {
      */
     @RequestMapping("update_user")
     public String updateUser(Model model, UserInfo userInfo) {
-        boolean flag = this.userInfoService.modifyUserInfo(userInfo);
-        if (flag) {
+        try {
+            this.userInfoService.modifyUserInfo(userInfo);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.MESSAGE, "修改成功");
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "修改失败");
+        } catch (Exception e) {
+            logger.error("修改员工失败", e);
         }
         return redirectUrl("/user/find_users");
     }
@@ -155,13 +172,17 @@ public class UserController extends BaseController {
      */
     @RequestMapping("find_other_user")
     public void findOtherUser(Model model, UserInfo userInfo) {
-        UserInfo userInfo1 = this.userInfoService.findUserInfoById(userInfo.getId());
-        if (null != userInfo1) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            model.addAttribute(Constants.DATA, this.userInfoService.findOtherUserInfoById(userInfo1));
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "查询错误");
+        try {
+            UserInfo userInfo1 = this.userInfoService.findUserInfoById(userInfo.getId());
+            if (null != userInfo1) {
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                model.addAttribute(Constants.DATA, this.userInfoService.findOtherUserInfoById(userInfo1));
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "查询错误");
+            }
+        } catch (Exception e) {
+            logger.error("查询公司其他员工，查询错误", e);
         }
     }
 
@@ -173,13 +194,12 @@ public class UserController extends BaseController {
      */
     @RequestMapping("delete_user")
     public String deleteUser(Model model, String id, String replaceUserId) {
-        boolean flag = this.userInfoService.removeUserInfo(id, replaceUserId);
-        if (flag) {
+        try {
+            this.userInfoService.removeUserInfo(id, replaceUserId);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.MESSAGE, "删除成功");
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "删除失败");
+        } catch (Exception e) {
+            logger.error("删除员工失败", e);
         }
         return redirectUrl("/user/find_users");
     }
@@ -192,14 +212,14 @@ public class UserController extends BaseController {
      */
     @RequestMapping("only_delete_user")
     public void deleteOnlyUser(Model model, String id) {
-        boolean flag = this.userInfoService.removeUserInfo(id);
-        if (flag) {
+        try {
+            this.userInfoService.removeUserInfo(id);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.MESSAGE, "删除成功");
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "删除失败");
+        } catch (Exception e) {
+            logger.error("删除员工失败", e);
         }
+
     }
     /**
      * 查询用户的权限列表
@@ -216,8 +236,7 @@ public class UserController extends BaseController {
             model.addAttribute(Constants.DATA, permissions);
             model.addAttribute("user", userInfo);
         } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "该用户不存在");
+            throw new TomsRuntimeException("查询用户权限列表，该用户不存在");
         }
     }
 
@@ -230,15 +249,19 @@ public class UserController extends BaseController {
      */
     @RequestMapping("update_permission")
     public void updatePermission(Model model, String userId, String permissionIds, int dataPermission) {
-        if (StringUtils.isNotEmpty(permissionIds)) {
-            UserInfo userInfo = this.userInfoService.findUserInfoById(userId);
-            if (null != userInfo) {
-                this.userInfoService.modifyUserPermission(userInfo, PermissionHelper.dealPermissionString(permissionIds), dataPermission);
-                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        try {
+            if (StringUtils.isNotEmpty(permissionIds)) {
+                UserInfo userInfo = this.userInfoService.findUserInfoById(userId);
+                if (null != userInfo) {
+                    this.userInfoService.modifyUserPermission(userInfo, PermissionHelper.dealPermissionString(permissionIds), dataPermission);
+                    model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                }
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "修改错误");
             }
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "修改错误");
+        } catch (Exception e) {
+            logger.error("修改员工权限，修改失败", e);
         }
     }
 
@@ -251,22 +274,26 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/check_user")
     public void checkUser(Model model, String id, String loginName) {
-        UserInfo userInfo = this.userInfoService.findUserInfoById(id);
-        if (userInfo != null) {
-            if (userInfo.getLoginName().equals(loginName)) {
-                model.addAttribute("status", true);
-            } else {
-                UserInfo userInfo1 = this.userInfoService.findUserInfoByLoginName(loginName);
-                if (null != userInfo1) {
-                    model.addAttribute("status", false);
-                    model.addAttribute("message", "登录名已存在，请重新修改");
-                } else {
+        try {
+            UserInfo userInfo = this.userInfoService.findUserInfoById(id);
+            if (userInfo != null) {
+                if (userInfo.getLoginName().equals(loginName)) {
                     model.addAttribute("status", true);
+                } else {
+                    UserInfo userInfo1 = this.userInfoService.findUserInfoByLoginName(loginName);
+                    if (null != userInfo1) {
+                        model.addAttribute("status", false);
+                        model.addAttribute("message", "登录名已存在，请重新修改");
+                    } else {
+                        model.addAttribute("status", true);
+                    }
                 }
+            } else {
+                model.addAttribute("status", false);
+                model.addAttribute("message", "该用户不存在");
             }
-        } else {
-            model.addAttribute("status", false);
-            model.addAttribute("message", "该用户不存在");
+        } catch (Exception e) {
+            logger.error("检查用户修改用户基本信息,查询失败", e);
         }
     }
 
@@ -278,11 +305,15 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/check_user_name")
     public void checkUserLoginName(Model model, String loginName) {
-        UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
-        if (userInfo == null) {
-            model.addAttribute("status", true);
-        } else {
-            model.addAttribute("status", false);
+        try {
+            UserInfo userInfo = this.userInfoService.findUserInfoByLoginName(loginName);
+            if (userInfo == null) {
+                model.addAttribute("status", true);
+            } else {
+                model.addAttribute("status", false);
+            }
+        } catch (Exception e) {
+            logger.error("创建用户检查用户的登录名是否重复，查询错误", e);
         }
     }
 
@@ -295,9 +326,13 @@ public class UserController extends BaseController {
      */
     @RequestMapping("update_password")
     public String updatePassword(Model model, String password) {
-        UserInfo userInfo = getCurrentUser();
-        userInfo.setPassword(password);
-        this.userInfoService.modifyUserInfo(userInfo);
+        try {
+            UserInfo userInfo = getCurrentUser();
+            userInfo.setPassword(password);
+            this.userInfoService.modifyUserInfo(userInfo);
+        } catch (Exception e) {
+            logger.error("修改用户密码，修改失败", e);
+        }
         return "login";
     }
 

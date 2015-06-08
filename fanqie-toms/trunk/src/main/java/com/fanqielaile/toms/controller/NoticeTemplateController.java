@@ -14,6 +14,8 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.tomasky.msp.client.service.IMessageManageService;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,8 @@ import java.util.List;
 @Controller
 @RequestMapping("notice")
 public class NoticeTemplateController extends BaseController {
+
+    private static Logger logger = LoggerFactory.getLogger(NoticeTemplateController.class);
     @Resource
     private INoticeTemplateService noticeTemplateService;
     @Resource
@@ -50,6 +54,7 @@ public class NoticeTemplateController extends BaseController {
     @RequestMapping("send_message")
     public void sendMessage(Model model, @RequestParam String noticeContent, @RequestParam String innId, @RequestParam String sendType) throws IOException {
         try {
+            logger.info("发送消息通知传入参数:noticeContent=" + noticeContent + " innId=" + innId + " +sendType=" + sendType);
             //构建发送短信对象
             UserInfo currentUser = getCurrentUser();
             //公司信息
@@ -64,6 +69,7 @@ public class NoticeTemplateController extends BaseController {
                 //TODO 调用短信和系统弹窗接口
             }
         } catch (Exception e) {
+            logger.error("发送消息失败", e);
             throw new TomsRuntimeException("系统内部错误");
         }
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);

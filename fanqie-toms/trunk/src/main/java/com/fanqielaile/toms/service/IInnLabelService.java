@@ -38,7 +38,7 @@ public interface IInnLabelService {
      * @param innLabel 标签
      * @return
      */
-    boolean modifyLableById(InnLabel innLabel);
+    void modifyLableById(InnLabel innLabel);
 
     /**
      * 删除标签
@@ -46,5 +46,5 @@ public interface IInnLabelService {
      * @param id 标签ID
      * @return
      */
-    boolean removeLabelById(String id);
+    void removeLabelById(String id);
 }

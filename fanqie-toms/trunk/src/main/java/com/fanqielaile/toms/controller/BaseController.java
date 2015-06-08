@@ -2,6 +2,8 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import java.net.URLEncoder;
 @Controller
 @RequestMapping(value = "/")
 public class BaseController {
+    private static Logger logger = LoggerFactory.getLogger(BaseController.class);
     //每页显示数量
     public static final int defaultRows = 5;
     /*
@@ -28,10 +31,12 @@ public class BaseController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication == null) {
+            logger.info("登录超时");
             throw new TomsRuntimeException("The login timeout, please login again!");
         }
         Object principal = authentication.getPrincipal();
         if (!(principal instanceof UserInfo)) {
+            logger.info("登录超时");
             throw new TomsRuntimeException("The login timeout, please login again!");
         }
         return (UserInfo) principal;

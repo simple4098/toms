@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqielaile.toms.dao.NoticeTemplateDao;
 import com.fanqielaile.toms.model.NoticeTemplate;
 import com.fanqielaile.toms.service.INoticeTemplateService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,24 +35,22 @@ public class NoticeTemplateService implements INoticeTemplateService {
     }
 
     @Override
-    public boolean modifyNoticeTemplate(NoticeTemplate noticeTemplate) {
+    public void modifyNoticeTemplate(NoticeTemplate noticeTemplate) {
         NoticeTemplate noticeTemplate1 = this.noticeTemplateDao.selectNoticeTemplateById(noticeTemplate.getId());
         if (null != noticeTemplate1) {
             this.noticeTemplateDao.updateNoticeTemplate(noticeTemplate);
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("修改客栈通知模板错误，没有找到该模板");
         }
     }
 
     @Override
-    public boolean removeNoticeTemplateById(String id) {
+    public void removeNoticeTemplateById(String id) {
         NoticeTemplate noticeTemplate = this.noticeTemplateDao.selectNoticeTemplateById(id);
         if (null != noticeTemplate) {
             this.noticeTemplateDao.deleteNoticeTemplateById(id);
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("删除客栈通知模板错误，没有找到该模板");
         }
     }
 }
