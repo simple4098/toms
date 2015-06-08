@@ -10,6 +10,7 @@ import com.fanqielaile.toms.model.Role;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.event.TomsApplicationEvent;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.listener.RolePermissionChangeListener;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
@@ -41,35 +42,38 @@ public class UserInfoService implements IUserInfoService {
     private RolePermissionChangeListener rolePermissionChangeListener;
 
     @Override
-    public boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdlist) {
-        if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
-            UserInfo userInfo1 = userInfoDao.selectUserInfoByLoginName(userInfo.getLoginName());
-            if (null == userInfo1) {
-                //创建角色
-                this.roleDao.insertRole(completeRole());
-                //创建用户
-                userInfo.setId(userInfo.getUuid());
-                userInfo.setRoleId(completeRole().getId());
-                //设置密码
-                String passwordEncode = passwordEncoder.encodePassword(userInfo.getPassword(), null);
-                userInfo.setPassword(passwordEncode);
-                userInfoDao.insertUserInfo(userInfo);
-                //删除角色与权限的关系
-                this.roleDao.deletePermissionsOfRole(completeRole().getId());
-                //新增角色与权限关系
-                this.roleDao.insertPermissionsForRole(completeRolePermission(permissionIdlist));
-                rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(completeRolePermission(permissionIdlist)));
-                return true;
+    public void createUserInfo(UserInfo userInfo, List<Permission> permissionIdlist) {
+        try {
+            if (StringUtils.isNotEmpty(userInfo.getLoginName())) {
+                UserInfo userInfo1 = userInfoDao.selectUserInfoByLoginName(userInfo.getLoginName());
+                if (null == userInfo1) {
+                    //创建角色
+                    Role role = completeRole();
+                    this.roleDao.insertRole(role);
+                    //创建用户
+                    userInfo.setId(userInfo.getUuid());
+                    userInfo.setRoleId(role.getId());
+                    //设置密码
+                    String passwordEncode = passwordEncoder.encodePassword(userInfo.getPassword(), null);
+                    userInfo.setPassword(passwordEncode);
+                    userInfoDao.insertUserInfo(userInfo);
+                    //删除角色与权限的关系
+                    this.roleDao.deletePermissionsOfRole(role.getId());
+                    //新增角色与权限关系
+                    this.roleDao.insertPermissionsForRole(completeRolePermission(permissionIdlist, role));
+                    rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(completeRolePermission(permissionIdlist, role)));
+                }
             }
+        } catch (Exception e) {
+            throw new TomsRuntimeException("新增用户失败", e);
         }
-        return false;
     }
 
     /*新增角色与权限关系的处理方法*/
-    private Role completeRolePermission(List<Permission> permissionIdlist) {
+    private Role completeRolePermission(List<Permission> permissionIdlist, Role role) {
         Role rolePermission = new Role();
         rolePermission.setId(rolePermission.getUuid());
-        rolePermission.setRolePermissionRoleId(completeRole().getId());
+        rolePermission.setRolePermissionRoleId(role.getId());
         rolePermission.setPermissionList(permissionIdlist);
         rolePermission.setCreatedDate(new Date());
         rolePermission.setUpdatedDate(new Date());
@@ -119,28 +123,26 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
-    public boolean modifyUserInfo(UserInfo userInfo) {
+    public void modifyUserInfo(UserInfo userInfo) {
         UserInfo userInfo1 = userInfoDao.selectUserInfoById(userInfo.getId());
         if (null != userInfo1) {
             userInfo.setPassword(passwordEncoder.encodePassword(userInfo.getPassword(), null));
             userInfoDao.updateUserInfo(userInfo);
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("修改员工信息失败，没有找到员工信息");
         }
     }
 
     @Override
-    public boolean removeUserInfo(String id, String replaceUserId) {
+    public void removeUserInfo(String id, String replaceUserId) {
         UserInfo userInfo = userInfoDao.selectUserInfoById(id);
         if (userInfo != null) {
             //删除员工之前将员工名下的管理客栈转移
             this.bangInnDao.updateBangInnUserId(id, replaceUserId);
             //删除员工
             userInfoDao.deleteUserInfo(id);
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("删除员工失败,没有该员工信息");
         }
     }
 
@@ -164,13 +166,13 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
-    public boolean removeUserInfo(String id) {
+    public void removeUserInfo(String id) {
         UserInfo userInfo = this.userInfoDao.selectUserInfoById(id);
         if (userInfo != null) {
             this.userInfoDao.deleteUserInfo(id);
-            return true;
+        } else {
+            throw new TomsRuntimeException("删除员工失败，没有该员工信息");
         }
-        return false;
     }
 
     @Override

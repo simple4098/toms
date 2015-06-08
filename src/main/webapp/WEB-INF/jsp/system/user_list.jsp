@@ -475,9 +475,11 @@
                     } else {
                         $('.dataPermission1').attr('checked', true);
                     }
-                    for (var i = 0; i < data.data.length; i++) {
-                        var checkClass = data.data[i].id;
-                        $('.' + checkClass).attr('checked', true);
+                    if (data.data.length != 0) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            var checkClass = data.data[i].id;
+                            $('.' + checkClass).attr('checked', true);
+                        }
                     }
                     $('#jurisdiction').modal();
                 }

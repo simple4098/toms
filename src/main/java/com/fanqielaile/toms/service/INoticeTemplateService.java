@@ -38,7 +38,7 @@ public interface INoticeTemplateService {
      * @param noticeTemplate
      * @return
      */
-    boolean modifyNoticeTemplate(NoticeTemplate noticeTemplate);
+    void modifyNoticeTemplate(NoticeTemplate noticeTemplate);
 
     /**
      * 删除通知模板
@@ -46,5 +46,5 @@ public interface INoticeTemplateService {
      * @param id
      * @return
      */
-    boolean removeNoticeTemplateById(String id);
+    void removeNoticeTemplateById(String id);
 }

@@ -51,10 +51,14 @@ public class InnManageController extends BaseController {
      */
     @RequestMapping("find_label_inn")
     public void findLabelInn(Model model) {
-        UserInfo currentUser = getCurrentUser();
-        List<BangInn> bangInnAndLabel = this.bangInnService.findBangInnAndLabel(currentUser);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, bangInnAndLabel);
+        try {
+            UserInfo currentUser = getCurrentUser();
+            List<BangInn> bangInnAndLabel = this.bangInnService.findBangInnAndLabel(currentUser);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, bangInnAndLabel);
+        } catch (Exception e) {
+            logger.error("查询标签对应的客栈，查询出错", e);
+        }
     }
 
     /**
@@ -65,24 +69,28 @@ public class InnManageController extends BaseController {
      */
     @RequestMapping("find_inns")
     public String findInns(Model model, String innLabelId, String userId, @RequestParam(defaultValue = "1", required = false) int page) {
-        UserInfo currentUser = getCurrentUser();
-        currentUser.setInnLabelId(innLabelId);
-        currentUser.setUserId(userId);
-        List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
-        model.addAttribute(Constants.DATA, bangInnList);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        //客栈标签
-        List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
-        model.addAttribute("labels", innLabels);
-        //管理员
-        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
-        model.addAttribute("userInfos", userInfos);
-        //分页对象
-        Paginator paginator = ((PageList) bangInnList).getPaginator();
-        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
-        //保存查询条件
-        model.addAttribute("innLabel", innLabelId);
-        model.addAttribute("userId", userId);
+        try {
+            UserInfo currentUser = getCurrentUser();
+            currentUser.setInnLabelId(innLabelId);
+            currentUser.setUserId(userId);
+            List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
+            model.addAttribute(Constants.DATA, bangInnList);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            //客栈标签
+            List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
+            model.addAttribute("labels", innLabels);
+            //管理员
+            List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
+            model.addAttribute("userInfos", userInfos);
+            //分页对象
+            Paginator paginator = ((PageList) bangInnList).getPaginator();
+            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+            //保存查询条件
+            model.addAttribute("innLabel", innLabelId);
+            model.addAttribute("userId", userId);
+        } catch (Exception e) {
+            logger.error("查询客栈列表，列表内容查询错误", e);
+        }
         return "/inn/inn_list";
     }
 
@@ -95,28 +103,35 @@ public class InnManageController extends BaseController {
      */
     @RequestMapping("to_update_inn")
     public String toUpdateInn(Model model, String id) {
-        UserInfo currentUser = getCurrentUser();
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.bangInnService.findBangInnById(id));
-        //客栈标签
-        List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
-        model.addAttribute("labels", innLabels);
-        //管理员
-        List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
-        model.addAttribute("userInfos", userInfos);
+        try {
+            UserInfo currentUser = getCurrentUser();
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, this.bangInnService.findBangInnById(id));
+            //客栈标签
+            List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
+            model.addAttribute("labels", innLabels);
+            //管理员
+            List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
+            model.addAttribute("userInfos", userInfos);
+        } catch (Exception e) {
+            logger.error("根据客栈ID查询客栈信息，跳转到客栈编辑页面，查询错误", e);
+        }
         return "/inn/inn_update";
     }
 
     /**
      * 更新绑定客栈
      *
-     * @param model
      * @param bangInnDto
      * @return
      */
     @RequestMapping("update_inn")
-    public String updateInn(Model model, BangInnDto bangInnDto) {
-        this.bangInnService.modifiyBangInn(bangInnDto);
+    public String updateInn(BangInnDto bangInnDto) {
+        try {
+            this.bangInnService.modifiyBangInn(bangInnDto);
+        } catch (Exception e) {
+            logger.error("更新绑定客栈失败", e);
+        }
         return redirectUrl("/inn_manage/find_inns");
     }
 

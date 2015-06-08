@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqielaile.toms.dao.InnLabelDao;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.service.IInnLabelService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,26 +35,24 @@ public class InnLabelService implements IInnLabelService {
     }
 
     @Override
-    public boolean modifyLableById(InnLabel innLabel) {
+    public void modifyLableById(InnLabel innLabel) {
         InnLabel innLabel1 = this.innLabelDao.selectLabelById(innLabel.getId());
         if (null != innLabel1) {
             if (!innLabel1.getLabelName().equals(innLabel.getLabelName())) {
                 this.innLabelDao.updateLabelById(innLabel);
             }
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("修改客栈分类失败，没有找到该分类信息");
         }
     }
 
     @Override
-    public boolean removeLabelById(String id) {
+    public void removeLabelById(String id) {
         InnLabel innLabel = this.innLabelDao.selectLabelById(id);
         if (null != innLabel) {
             this.innLabelDao.deletedLabelId(id);
-            return true;
         } else {
-            return false;
+            throw new TomsRuntimeException("删除客栈分类错误，没有找到该分类信息");
         }
     }
 }

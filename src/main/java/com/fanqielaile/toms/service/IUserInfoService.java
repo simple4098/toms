@@ -18,7 +18,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param userInfo
      * @return
      */
-    boolean createUserInfo(UserInfo userInfo, List<Permission> permissionIdList);
+    void createUserInfo(UserInfo userInfo, List<Permission> permissionIdList);
 
     /**
      * 根据登陆账户查询用户
@@ -50,7 +50,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param userInfo
      * @return
      */
-    boolean modifyUserInfo(UserInfo userInfo);
+    void modifyUserInfo(UserInfo userInfo);
 
     /**
      * 删除员工
@@ -58,7 +58,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param id
      * @return
      */
-    boolean removeUserInfo(String id, String replaceUserid);
+    void removeUserInfo(String id, String replaceUserid);
 
     /**
      * 更新用户权限
@@ -82,7 +82,7 @@ public interface IUserInfoService extends UserDetailsService {
      * @param id
      * @return
      */
-    boolean removeUserInfo(String id);
+    void removeUserInfo(String id);
 
     /**
      * 分页查询公司下属

@@ -9,6 +9,8 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +31,7 @@ import java.util.List;
 @Controller
 @RequestMapping("system")
 public class SystemController extends BaseController {
+    private Logger logger = LoggerFactory.getLogger(SystemController.class);
     @Resource
     private IInnLabelService iInnLabelService;
     @Resource
@@ -45,36 +48,48 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("login_success")
     public String loginSuccess(Model model) {
-        UserInfo currentUser = getCurrentUser();
-        List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
-        model.addAttribute(Constants.DATA, permissionList);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        try {
+            UserInfo currentUser = getCurrentUser();
+            List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
+            model.addAttribute(Constants.DATA, permissionList);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } catch (Exception e) {
+            logger.error("用户登录失败", e);
+        }
         return "welcome";
     }
 
     /**
-     * 查询当前登陆用户所在的客栈标签
+     * 查询当前登陆用户所在公司客栈标签
      *
      * @param model
      */
     @RequestMapping("find_labels")
     public String findLabels(Model model) {
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.iInnLabelService.findLabelsByCompanyId(getCurrentUser().getCompanyId()));
+        try {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, this.iInnLabelService.findLabelsByCompanyId(getCurrentUser().getCompanyId()));
+        } catch (Exception e) {
+            logger.error("查询当前登录用户所在公司的标签，查询错误", e);
+        }
         return "/system/label_list";
     }
 
     /**
      * 创建客栈标签
      *
-     * @param model
      * @param innLabel
      */
     @RequestMapping("create_inn_label")
-    public String createInnLabel(Model model, @Valid InnLabel innLabel, BindingResult result) {
-        UserInfo currentUser = getCurrentUser();
-        innLabel.setCompanyId(currentUser.getCompanyId());
+    public String createInnLabel(@Valid InnLabel innLabel) {
+        try {
+            UserInfo currentUser = getCurrentUser();
+            innLabel.setCompanyId(currentUser.getCompanyId());
             this.iInnLabelService.createInnLabel(innLabel);
+        } catch (Exception e) {
+            logger.error("创建客栈标签失败", e);
+        }
+
         return redirectUrl("/system/find_labels");
     }
 
@@ -86,13 +101,17 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("find_label")
     public void findLabelById(Model model, String id) {
-        InnLabel innLabel = this.iInnLabelService.findLabelById(id);
-        if (null != innLabel) {
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            model.addAttribute(Constants.DATA, innLabel);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "没有找到标签");
+        try {
+            InnLabel innLabel = this.iInnLabelService.findLabelById(id);
+            if (null != innLabel) {
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                model.addAttribute(Constants.DATA, innLabel);
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "没有找到标签");
+            }
+        } catch (Exception e) {
+            logger.error("根据客栈标签ID，查询客栈标签信息，查询出错", e);
         }
     }
 
@@ -104,12 +123,11 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("update_label")
     public String updateLabel(Model model, InnLabel innLabel) {
-        boolean flag = this.iInnLabelService.modifyLableById(innLabel);
-        if (flag) {
+        try {
+            this.iInnLabelService.modifyLableById(innLabel);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "修改失败,没有找到该标签信息");
+        } catch (Exception e) {
+            logger.error("更新客栈标签失败", e);
         }
         return redirectUrl("/system/find_labels");
     }
@@ -122,20 +140,20 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("delete_label")
     public void deleteLabel(Model model, String id) {
-        //判断该标签下是否存在绑定的客栈
-        List<BangInn> bangInnList = this.bangInnService.findBangInnByInnLabelId(id);
-        if (null == bangInnList || bangInnList.size() == 0) {
-            boolean flag = this.iInnLabelService.removeLabelById(id);
-            if (flag) {
+        try {
+            //判断该标签下是否存在绑定的客栈
+            List<BangInn> bangInnList = this.bangInnService.findBangInnByInnLabelId(id);
+            if (null == bangInnList || bangInnList.size() == 0) {
+                this.iInnLabelService.removeLabelById(id);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             } else {
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
-                model.addAttribute(Constants.MESSAGE, "删除失败，不存在该标签");
+                model.addAttribute(Constants.MESSAGE, "删除失败，该标签下有绑定客栈，不能删除");
             }
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "删除失败，该标签下有绑定客栈，不能删除");
+        } catch (Exception e) {
+            logger.error("删除客栈标签失败", e);
         }
+
     }
 
     /**
@@ -145,21 +163,29 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("find_notices")
     public String findNotices(Model model) {
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(getCurrentUser().getCompanyId()));
+        try {
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, this.noticeTemplateService.findNoticeTemplates(getCurrentUser().getCompanyId()));
+        } catch (Exception e) {
+            logger.error("查询通知模板错误", e);
+        }
         return "/system/notice_list";
     }
 
     /**
      * 新增通知模板
      *
-     * @param model
      * @param noticeTemplate
      */
     @RequestMapping("create_notice")
-    public String createNotice(Model model, @Valid NoticeTemplate noticeTemplate, BindingResult result) {
-        noticeTemplate.setCompanyId(getCurrentUser().getCompanyId());
+    public String createNotice(@Valid NoticeTemplate noticeTemplate) {
+        try {
+            noticeTemplate.setCompanyId(getCurrentUser().getCompanyId());
             this.noticeTemplateService.createNoticeTemplate(noticeTemplate);
+        } catch (Exception e) {
+            logger.error("创建客栈通知模板失败", e);
+        }
+
         return redirectUrl("/system/find_notices");
     }
 
@@ -171,14 +197,14 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("find_notice")
     public void findNotice(Model model, String id) {
-        NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(id);
-        if (noticeTemplate == null) {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "没有改通知模板信息");
-        } else {
+        try {
+            NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(id);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.DATA, noticeTemplate);
+        } catch (Exception e) {
+            logger.error("根据ID查询客栈通知模板，查询错误", e);
         }
+
     }
 
     /**
@@ -192,6 +218,7 @@ public class SystemController extends BaseController {
     public String updateNoticePage(Model model, String id) {
         NoticeTemplate noticeTemplate = this.noticeTemplateService.findNoticeTemplateById(id);
         if (noticeTemplate == null) {
+            logger.error("根据ID查询客栈模板，跳转到编辑页面，查询错误", id);
             throw new TomsRuntimeException("没有找到该模板信息");
         } else {
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -207,12 +234,11 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("update_notice")
     public String updateNotice(Model model, NoticeTemplate noticeTemplate) {
-        boolean flag = this.noticeTemplateService.modifyNoticeTemplate(noticeTemplate);
-        if (flag) {
+        try {
+            this.noticeTemplateService.modifyNoticeTemplate(noticeTemplate);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "修改失败");
+        } catch (Exception e) {
+            logger.error("修改通知模板错误", e);
         }
         return redirectUrl("/system/find_notices");
     }
@@ -225,17 +251,16 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("delete_notice")
     public void deleteNotice(Model model, String id) {
-        boolean flag = this.noticeTemplateService.removeNoticeTemplateById(id);
-        if (flag) {
+        try {
+            this.noticeTemplateService.removeNoticeTemplateById(id);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "删除失败");
+        } catch (Exception e) {
+            logger.error("删除客栈通知模板错误", e);
         }
     }
 
     /**
-     * 跳转到创建权限页面
+     * 跳转到创建权限页面:初始化使用
      *
      * @return
      */
@@ -245,7 +270,7 @@ public class SystemController extends BaseController {
     }
 
     /**
-     * 新增权限
+     * 新增权限：初始化使用
      *
      * @param permission
      * @return
