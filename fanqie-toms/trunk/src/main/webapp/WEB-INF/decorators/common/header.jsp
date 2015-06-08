@@ -50,7 +50,7 @@
                         <li>
                             <a data-toggle="modal" data-target="#updatePassword" class="update-password">
                                 <i class="icon-cog"></i>
-                                设置
+                                重置密码
                             </a>
                         </li>
                         <li class="divider"></li>
