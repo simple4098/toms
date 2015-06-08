@@ -11,6 +11,7 @@ import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,14 @@ import java.util.List;
  */
 @Service
 public class RoomTypeService implements IRoomTypeService {
+    private static  final Logger log = Logger.getLogger(RoomTypeService.class);
     @Resource
     private CompanyDao companyDao;
     @Override
     public RoomTypeInfoDto findRoomType(ParamDto paramDto,UserInfo userInfo)throws  Exception{
         Company company = companyDao.selectCompanyById(userInfo.getCompanyId());
         String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
-        System.out.println("=========:"+roomTypeUrl);
+        log.info("=========:" + roomTypeUrl);
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
         String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+paramDto.getAccountId()+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;

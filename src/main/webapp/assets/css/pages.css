@@ -112,7 +112,12 @@ select.form-control{
 	height: 350px;
 }
 /* ------------------房态房量------------------ */
-
+.ftfl-content{
+	margin-left: 200px;
+	margin-right: 0;
+	margin-top: 0;
+	padding: 0;
+}
 .room-status-box{
 	position: relative;
 }

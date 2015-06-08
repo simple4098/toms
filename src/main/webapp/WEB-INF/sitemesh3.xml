@@ -10,6 +10,6 @@
     <mapping path="/inn_manage/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <!--调用数据中心接口页面-->
     <mapping path="/operate/*" decorator="/WEB-INF/decorators/main-dc.jsp"/>
-    <mapping path="/oms/obtRoomType" decorator="/WEB-INF/decorators/main-dc.jsp"/>
+    <mapping path="/oms/obtRoomType" decorator="/WEB-INF/decorators/main-room-type.jsp"/>
     <mapping path="/inn_manage/activeInn" decorator="/WEB-INF/decorators/main-dc.jsp"/>
 </sitemesh>
