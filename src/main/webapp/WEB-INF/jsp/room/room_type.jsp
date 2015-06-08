@@ -55,7 +55,7 @@
                     <thead>
                     <tr>
                         <c:forEach items="${roomType.roomDates}" var="vv">
-                            <th><fmt:formatDate value="${vv}" pattern="MM-dd" /> </th>
+                            <th>${vv}</th>
                         </c:forEach>
                     </tr>
                     <tr>

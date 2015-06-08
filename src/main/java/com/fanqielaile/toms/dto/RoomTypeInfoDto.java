@@ -13,7 +13,7 @@ import java.util.List;
 public class RoomTypeInfoDto {
 
     public List<RoomTypeInfo> list;
-    public List<Date> roomDates;
+    public List<String> roomDates;
 
     public List<RoomTypeInfo> getList() {
         return list;
@@ -23,11 +23,11 @@ public class RoomTypeInfoDto {
         this.list = list;
     }
 
-    public List<Date> getRoomDates() {
+    public List<String> getRoomDates() {
         return roomDates;
     }
 
-    public void setRoomDates(List<Date> roomDates) {
+    public void setRoomDates(List<String> roomDates) {
         this.roomDates = roomDates;
     }
 }

@@ -11,6 +11,7 @@ import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import net.sf.json.JSONObject;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,8 +38,8 @@ public class RoomTypeService implements IRoomTypeService {
         System.out.println("=========:"+roomTypeUrl);
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
-        String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+paramDto.getAccountId()+"&from=2015-04-02&to=2015-05-01"+"&signature="+signature;
-        String httpGets = HttpClientUtil.httpGets(roomTypeUrl,null);
+        String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+paramDto.getAccountId()+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;
+        String httpGets = HttpClientUtil.httpGets(url,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         RoomTypeInfoDto roomTypeInfoDto = null;
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
@@ -47,9 +48,19 @@ public class RoomTypeService implements IRoomTypeService {
             List<RoomDetail> roomDetail = list.get(0).getRoomDetail();
             roomTypeInfoDto.setList(list);
             if (roomDetail!=null){
-                List<Date> dates = new ArrayList<Date>();
+                List<String> dates = new ArrayList<String>();
+                Date today = DateUtil.parseDate(DateUtil.formatDateToString(new Date(), "yyyy-MM-dd"));
                 for (RoomDetail detail:roomDetail){
-                    dates.add(DateUtil.parseDate(detail.getRoomDate()));
+                    Date parseDate = DateUtil.parseDate(detail.getRoomDate());
+                    String dateToString = DateUtil.formatDateToString(parseDate, "MM/dd");
+                    String t="";
+                    if (parseDate.equals(today)){
+                        t=Constants.TODAY;
+                    }else {
+                        t=String.valueOf(new DateTime(parseDate).getDayOfWeek());
+                    }
+                    String v = dateToString+" "+t;
+                    dates.add(v);
                 }
                 roomTypeInfoDto.setRoomDates(dates);
             }
