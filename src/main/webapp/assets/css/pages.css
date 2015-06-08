@@ -3,6 +3,9 @@
  body{
  	background: #fff;
  }
+table{
+	font-size: 12px;
+}
 .data-count-container{
 	border: 1px solid #ccc;
 	padding: 5px 0;
@@ -109,6 +112,7 @@ select.form-control{
 	height: 350px;
 }
 /* ------------------房态房量------------------ */
+
 .room-status-box{
 	position: relative;
 }

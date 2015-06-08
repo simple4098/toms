@@ -52,14 +52,14 @@ public class RoomTypeService implements IRoomTypeService {
                 Date today = DateUtil.parseDate(DateUtil.formatDateToString(new Date(), "yyyy-MM-dd"));
                 for (RoomDetail detail:roomDetail){
                     Date parseDate = DateUtil.parseDate(detail.getRoomDate());
-                    String dateToString = DateUtil.formatDateToString(parseDate, "MM/dd");
+                    String dateToString = DateUtil.formatDateToString(parseDate, "MM-dd");
                     String t="";
                     if (parseDate.equals(today)){
                         t=Constants.TODAY;
                     }else {
-                        t=String.valueOf(new DateTime(parseDate).getDayOfWeek());
+                        t=DcUtil.dayOfWeek(new DateTime(parseDate).getDayOfWeek());//String.valueOf(new DateTime(parseDate).getDayOfWeek());
                     }
-                    String v = dateToString+" "+t;
+                    String v = dateToString+t;
                     dates.add(v);
                 }
                 roomTypeInfoDto.setRoomDates(dates);
