@@ -60,6 +60,7 @@
               <if test="companyId != null and companyId != ''">
                      and u.company_id = #{companyId}
               </if>
+              ORDER BY u.created_date DESC
        </select>
        <select id="selectUserInfoById" parameterType="java.lang.String" resultMap="BaseResultMap">
               SELECT
@@ -102,7 +103,7 @@
                parameterType="com.fanqielaile.toms.model.UserInfo">
               SELECT
               <include refid="Base_Column_List"/>
-              from user_info where id !=#{id} and company_id = #{companyId} and deleted =0
+              from user_info where id !=#{id} and company_id = #{companyId} and deleted =0 ORDER BY created_date DESC
        </select>
        <select id="selectUserInfoByPage" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
               SELECT * from user_info
@@ -115,5 +116,6 @@
               <if test="companyId != null and companyId != ''">
                      and u.company_id = #{companyId}
               </if>
+              ORDER BY u.created_date DESC
        </select>
 </mapper>

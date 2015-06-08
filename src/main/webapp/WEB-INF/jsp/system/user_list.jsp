@@ -36,7 +36,7 @@
 
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
-                            <thead>
+                            <thead style="font-size: 14px;">
                             <tr>
                                 <th>类型</th>
                                 <th>登陆账号</th>
@@ -50,7 +50,7 @@
                             </tr>
                             </thead>
 
-                            <tbody>
+                            <tbody style="font-size: 14px;">
                             <c:if test="${not empty data}">
                                 <c:forEach items="${data}" var="d">
                                     <tr>
@@ -96,6 +96,7 @@
                 </div>
             </div>
         </div>
+        <c:if test="${not empty data && page.pageCount>1}">
         <!-- PAGE CONTENT ENDS -->
         <div class="container">
             <div class="text-center">
@@ -136,6 +137,12 @@
                 </ul>
             </div>
         </div>
+        </c:if>
+        <c:if test="${empty data}">
+            <div class="alert alert-danger center">
+                没有数据,请筛选条件
+            </div>
+        </c:if>
     </div>
     <!-- /.col -->
 
