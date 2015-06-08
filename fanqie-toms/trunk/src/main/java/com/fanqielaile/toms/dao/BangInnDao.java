@@ -106,5 +106,5 @@ public interface BangInnDao {
      * @param bangInnList
      * @return
      */
-    List<BangInn> selectBangInnByStringInnId(List<BangInn> bangInnList);
+    List<BangInn> selectBangInnByStringInnId(@Param("bangInnList") List<BangInn> bangInnList);
 }

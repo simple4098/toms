@@ -52,7 +52,7 @@ public class NoticeTemplateController extends BaseController {
      * @param sendType
      */
     @RequestMapping("send_message")
-    public void sendMessage(Model model, @RequestParam String noticeContent, @RequestParam String innId, @RequestParam String sendType) throws IOException {
+    public void sendMessage(Model model, String noticeContent, String innId, String sendType) throws IOException {
         try {
             logger.info("发送消息通知传入参数:noticeContent=" + noticeContent + " innId=" + innId + " +sendType=" + sendType);
             //构建发送短信对象
@@ -70,7 +70,7 @@ public class NoticeTemplateController extends BaseController {
             }
         } catch (Exception e) {
             logger.error("发送消息失败", e);
-            throw new TomsRuntimeException("系统内部错误");
+            throw new TomsRuntimeException("system  is error");
         }
         model.addAttribute(Constants.STATUS, Constants.SUCCESS);
     }

@@ -26,7 +26,7 @@
         </h1>
     </div>
     <!-- /.page-header -->
-    <form name="data-form" class="data-form" action="<c:url value="/notice/send_message.json"/>">
+    <form name="data-form" class="data-form">
     <div class="row">
         <div class="col-xs-12 col-sm-4 widget-container-span">
             <!-- PAGE CONTENT BEGINS -->
@@ -50,8 +50,8 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <p class="alert alert-info">
-                            <textarea class="notice-content" maxlength="70" rows="10" cols="65"
-                                      style="resize: none"></textarea>
+                            <textarea class="notice-content" maxlength="70" name="noticeContent"
+                                      style="width: 350px;height: 100px;"></textarea>
                         </p>
                     </div>
                 </div>
@@ -89,7 +89,7 @@
                                             <div class="checkbox">
                                                 <label>
                                                     <input type="checkbox" name="innId" data-name="${bi.innLabelName}"
-                                                           value="${inn}"
+                                                           value="${inn.id}"
                                                            class="checkbox sub">${inn.innName}
                                                 </label>
                                             </div>
@@ -116,7 +116,7 @@
           <input name="sendType" value="POPUP" type="checkbox" style="padding-left: 20%"/>系统弹窗
             </span>
           <span style="padding-left: 100px;">
-          <button class="btn btn-success btn-send">确认发送</button>
+          <button class="btn btn-success btn-send" type="button">确认发送</button>
           </span>
                 </div>
 
@@ -132,16 +132,17 @@
             url: '<c:url value="/notice/send_message.json"/>',
             type: 'post',
             dataType: 'json',
-            data: $('.form-data').serialize(),
+            data: $('.data-form').serialize(),
             success: function (data) {
                 if (data.status) {
                     layer.alert('提示信息：发送成功！', {icon: 6});
+                    window.location.reload();
                 }
             },
             error: function () {
-                layer.msg("系统错误!");
+                layer.alert('系统错误', {icaon: 5})
             }
-        })
+        });
     });
     $(function () {
         // 全选&&反选 所有客栈
