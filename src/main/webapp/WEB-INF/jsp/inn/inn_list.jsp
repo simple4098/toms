@@ -38,7 +38,7 @@
               </span>
                         <span style="float: right;">
                             <button type="button" class="btn btn-sm btn-success btn-new-inn" data-toggle="modal"
-                                    data-target="#myModal">新增客栈
+                                    data-target="#myModal" data-value="${company.companyCode}">新增客栈
                             </button>
                         </span>
                     </div>
@@ -168,7 +168,19 @@
 <!-- /.row -->
 <script type="text/javascript">
     $('.btn-new-inn').on('click', function () {
-        layer.alert('提示信息：新增绑定客栈的文案', {icon: 6});
+        var code = $(this).attr('data-value');
+        layer.open({
+            type: 1,
+            shift: 1,
+            shadeClose: true, //开启遮罩关闭
+            content: '<div>' +
+            '<div>您的唯一标识码：' + code + '</div>' +
+            '<div> 使用方式：</div>' +
+            '<div>1、将您的唯一标识码给到客栈</div>' +
+            '<div>2、客栈在番茄分销系统中，在【分销对接】—【我要开店直销】模块中，申请开通 【开放平台】，将这唯一标识码添加到对应地方即可。</div>' +
+            '</div>'
+        });
+
     });
     $('.inn-label').on('change', function () {
         $("#pageId").attr("value", 1);
