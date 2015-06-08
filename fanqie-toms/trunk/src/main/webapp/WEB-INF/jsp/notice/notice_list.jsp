@@ -137,6 +137,9 @@
                 if (data.status) {
                     layer.alert('提示信息：发送成功！', {icon: 6});
                     window.location.reload();
+                } else {
+                    layer.alert('提示信息：发送失败！', {icon: 5});
+                    window.location.reload();
                 }
             },
             error: function () {
