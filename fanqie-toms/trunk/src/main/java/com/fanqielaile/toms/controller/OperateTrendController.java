@@ -39,7 +39,7 @@ public class OperateTrendController extends BaseController  {
         return "/operate/qs";
     }
 
-    //ajax 读取运营大概信息
+    /*//ajax 读取运营大概信息
     @RequestMapping("/ajax/qs")
     public void ajaxQs(Model model,ParamDto paramDto){
         try {
@@ -49,7 +49,7 @@ public class OperateTrendController extends BaseController  {
         } catch (Exception e) {
             logger.error("趋势报表异常",e);
         }
-    }
+    }*/
 
     //运营趋势折线图
     @RequestMapping("/qsDetail")
