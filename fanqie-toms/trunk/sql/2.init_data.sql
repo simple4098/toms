@@ -33,8 +33,7 @@ INSERT INTO role_permission VALUES ('c63afe86-d231-4011-9658-9e3d442e0571', '4a2
 --公司权限初始化
 insert into company_permission(id,company_id,permission_id,created_date,updated_date) 
 values('1','d0392bc8-131c-48a4-846e-c81c66097781','499cbd11-a80e-4fc5-a38e-3d503fc3eb40',now(),now());
-insert into company_permission(id,company_id,permission_id,created_date,updated_date) 
-values('2','d0392bc8-131c-48a4-846e-c81c66097781','499cbd11-a80e-4fc5-a38e-3d503fc3eb40',now(),now());
+
 insert into company_permission(id,company_id,permission_id,created_date,updated_date) 
 values('3','d0392bc8-131c-48a4-846e-c81c66097781','d8c49677-e86a-4a10-abf4-d5a6a2d3e8f9',now(),now());
 insert into company_permission(id,company_id,permission_id,created_date,updated_date) 
