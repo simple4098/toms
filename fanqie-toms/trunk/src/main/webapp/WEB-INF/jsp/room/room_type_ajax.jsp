@@ -1,6 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%
+  String path = request.getContextPath();
+  String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
+%>
 <c:set value="${roomType.list}" var="list"/>
 <c:if test="${not empty roomType.list}">
   <div class="table-left">
@@ -53,57 +57,5 @@
     没有数据,请选择分类/客栈查询房态房量
   </div>
 </c:if>
-<script type="text/javascript">
-  /**
-   * 房态房量
-   */
-  /*function getRoomType(postData){
-    var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
-    $.ajax({
-      type:'POST',
-      data:postData,
-      url:url,
-      dataType:'html',
-      success:function(data){
-        $("#roomTypeContainerId").empty();
-        $("#roomTypeContainerId").html(data);
-      }
-    })
-  }*/
-  $('#from_datepicker').change(function(){
-    var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
-    var date = $(this).val();
-    var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-    $('#to_datepicker').val( TC.plusDate(date, '30', 'd', 'yyyy-MM-dd') );
-    var postDate = {'startDate': $('#from_datepicker').val(), 'endDate': $('#to_datepicker').val(),'tagId':tagId,'accountId':accountId};
-    $.ajax({
-      type:'POST',
-      data: postDate,
-      url:url,
-      dataType:'html',
-      success:function(data){
-        $("#roomTypeContainerId").empty();
-        $("#roomTypeContainerId").html(data);
-      }
-    })
-  })
-  //上一月
-  $('#prevM').on('click',function(){
-    var date = $('#from_datepicker').val();
-    $('#from_datepicker').val( TC.plusDate(date, '-1', 'M', 'yyyy-MM-dd') ).change();
-  })
-  // 下一月
-  $('#nextM').on('click',function(){
-    var date = $('#from_datepicker').val();
-    $('#from_datepicker').val( TC.plusDate(date, '1', 'M', 'yyyy-MM-dd') ).change();
-  })
-
- /* $('#myButton').on('click', function(){
-    var startDate = $('#from_datepicker').val(),
-            endDate = $('#to_datepicker').val(),
-            tagId = $('#kz-tags-r').val(),
-            accountId = $('#kz_item-r').val(),
-            postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
-    getRoomType( postData );
-  })*/
-</script>
+<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
+<script src="<%=basePath%>/assets/js/room-type-ajax.js"></script>

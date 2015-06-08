@@ -11,11 +11,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>房态房量</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
+    <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
 </head>
 <body>
-<div class="container">
+<div >
     <div class="select-area">
         <form>
             <input type="hidden" id="dataUrlId" data-url="<c:url value="/oms/ajax/obtRoomType"/>">
@@ -82,114 +82,12 @@
                 </div>
             </c:if>
         </div>
-
 </div>
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<%--<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>--%>
+<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/assets/js/tomato.min.js"></script>
-<%--<script src="<%=basePath%>/assets/js/dateSelecter.js"></script>--%>
-<%--<script src="<%=basePath%>/assets/js/roomNum.js"></script>--%>
-<script type="text/javascript">
-    //ajax 获取标签楼盘
-    $(function(){
-        var url= $('.data-url').attr('data-url');
-        $.ajax({
-            type:'GET',
-            url:url+"?v"+new Date().getTime(),
-            dataType:'json',
-            success:function(json){
-                var aLabel = ""; //存放客栈标签
-                var aList = "";  //存放客栈列表
-                // 遍历获取客栈标签
-                for(var attr in json.data){
-                    aLabel += "<option value='"+json.data[attr].innLabelId+"'>"+json.data[attr].innLabelName+"</option>";
-                }
-                // 遍历获取客栈列表
-                function getInnName(num){
-                    aList = "<option value>--请选择客栈--</option>";
-                    for(var innList in json.data[num].bangInnList){
-                        aList += "<option value='"+json.data[num].bangInnList[innList].accountId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
-                    };
-                }
-                // 默认加载第一个列表
-                getInnName(0);
-                // 联动刷新客栈列表
-                $('#kz-tags-r').change(function(){
-                    var num = $(this).children(':selected').index();
-                    getInnName(num);
-                    $('#kz_item-r').html(aList);
-                })
-                // 写入DOM
-                $('#kz-tags-r').html(aLabel);
-                $('#kz_item-r').html(aList);
-                var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-                var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
-                getRoomType(postData);
-            }
-        });
-    })
-    $(function(){
-        // datepicker
-        $( "#from_datepicker, #to_datepicker" ).datepicker({
-            showOtherMonths: true,
-            selectOtherMonths: true,
-            dateFormat: 'yy-mm-dd',
-            maxDate: new Date()
-        });
-        // 日期初始化，默认选择昨天
-        $('#from_datepicker, #to_datepicker').val( TC.plusDate(new Date(), '-1', 'd', 'yyyy-MM-dd'));
-    })
-    /**
-     * 房态房量
-     */
-    function getRoomType(postData){
-        var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
-        $.ajax({
-            type:'POST',
-            data:postData,
-            url:url,
-            dataType:'html',
-            success:function(data){
-                $("#roomTypeContainerId").empty();
-                $("#roomTypeContainerId").html(data);
-            }
-        })
-    }
-    $('#from_datepicker').change(function(){
-        var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
-        var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-        var date = $(this).val();
-        $('#to_datepicker').val( TC.plusDate(date, '30', 'd', 'yyyy-MM-dd') );
-        var postDate = {'startDate': $('#from_datepicker').val(), 'endDate': $('#to_datepicker').val(),'tagId':tagId,'accountId':accountId};
-        $.ajax({
-            type:'POST',
-            data: postDate,
-            url:url,
-            dataType:'html',
-            success:function(data){
-                $("#roomTypeContainerId").empty();
-                $("#roomTypeContainerId").html(data);
-            }
-        })
-    })
-    //上一月
-    $('#prevM').on('click',function(){
-        var date = $('#from_datepicker').val();
-        $('#from_datepicker').val( TC.plusDate(date, '-1', 'M', 'yyyy-MM-dd') ).change();
-    })
-    // 下一月
-    $('#nextM').on('click',function(){
-        var date = $('#from_datepicker').val();
-        $('#from_datepicker').val( TC.plusDate(date, '1', 'M', 'yyyy-MM-dd') ).change();
-    })
+<script src="<%=basePath%>/assets/js/room-type.js"></script>
 
-    $('#myButton').on('click', function(){
-        var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-        var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
-        getRoomType( postData );
-    })
-
-</script>
 </body>
 </html>

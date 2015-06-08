@@ -31,7 +31,7 @@
             <sitemesh:write property="side"/>
             <jsp:include page="/WEB-INF/decorators/common/side.jsp"/>
 
-            <div class="main-content">
+            <div class="ftfl-content">
                 <sitemesh:write property="body"/>
             </div>
         <%--</div>--%>
