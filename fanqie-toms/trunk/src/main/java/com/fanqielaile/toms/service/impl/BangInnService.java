@@ -128,4 +128,9 @@ public class BangInnService implements IBangInnService {
         }
         return bangInns;
     }
+
+    @Override
+    public List<BangInn> findBangInnByCompanyId(String companyId) {
+        return this.bangInnDao.selectBangInnByCompanyId(companyId);
+    }
 }

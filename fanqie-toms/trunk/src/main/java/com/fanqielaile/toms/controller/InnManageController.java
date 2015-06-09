@@ -80,6 +80,8 @@ public class InnManageController extends BaseController {
             List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
             model.addAttribute(Constants.DATA, bangInnList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            List<BangInn> bangInns = this.bangInnService.findBangInnByCompanyId(currentUser.getCompanyId());
+            model.addAttribute("bangs", bangInns);
             //客栈标签
             List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
             model.addAttribute("labels", innLabels);
