@@ -44,13 +44,13 @@
 
                 <div class="space-4"></div>
 
-                <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 番茄账户名： </label>
+                <%--<div class="form-group">--%>
+                <%--<label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 番茄账户名： </label>--%>
 
-                    <div class="col-sm-9">
-                        <label class=" control-label no-padding-left ">${data.innCode}</label>
-                    </div>
-                </div>
+                <%--<div class="col-sm-9">--%>
+                <%--<label class=" control-label no-padding-left ">${data.innCode}</label>--%>
+                <%--</div>--%>
+                <%--</div>--%>
 
                 <div class="space-4"></div>
 
@@ -65,7 +65,7 @@
                 <div class="space-4"></div>
 
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客栈标签：</label>
+                    <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客栈分类：</label>
 
                     <div class="col-sm-9">
                         <select name="innLabelId">
@@ -89,9 +89,10 @@
                     <label class="col-sm-3 control-label no-padding-right" for="form-field-4">加盟编号：</label>
 
                     <div class="col-sm-9">
-                        <input type="text" class="col-xs-3 col-sm-3 ace tel" name="code"
+                        <input type="text" class="col-xs-3 col-sm-3 ace code" name="code"
+                               data-url="<c:url value="/inn_manage/check_code.json?id=${data.id}"/>"
                                value="${data.code}"/>
-                   <span class="help-notice-code col-xs-12 col-sm-7">
+                   <span class="help-code col-xs-12 col-sm-7">
 
 											</span>
 

@@ -15,6 +15,7 @@ import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IInnActiveService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,5 +158,31 @@ public class InnManageController extends BaseController {
             logger.error("活跃报表错误",e);
         }
         return "/inn/active_inn";
+    }
+
+    /**
+     * 检查加盟编号是否重复
+     *
+     * @param model
+     * @param code
+     */
+    @RequestMapping("check_code")
+    public void checkCode(Model model, String code, String id) {
+        BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);
+        if (null != bangInnDto) {
+            if (bangInnDto.getCode().equals(code)) {
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            } else {
+                BangInn bangInn = this.bangInnService.findBangInnByUserAndCode(getCurrentUser(), code);
+                if (null != bangInn) {
+                    model.addAttribute(Constants.STATUS, Constants.ERROR);
+                } else {
+                    model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                }
+            }
+        } else {
+            logger.error("检查加盟号，查询出错");
+            throw new TomsRuntimeException("系统内部错误");
+        }
     }
 }

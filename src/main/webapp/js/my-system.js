@@ -257,4 +257,26 @@ $('.bang-inn-update').on('click', function () {
     $('.update-inn').submit();
 });
 
-
+/*加盟编号*/
+$('.code').on('blur', function () {
+    var span = '<span class="middle" name="middle" disabled="false" style="color: red">该加盟编号已经存在，请重新填写</span>';
+    var data = $(this).val();
+    var url = $(this).attr('data-url');
+    $('.help-code .middle').remove();
+    $('.bang-inn-update').attr('disabled', false);
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        data: '&code=' + data,
+        success: function (data) {
+            if (!data.status) {
+                $('.help-code').append(span);
+                $('.bang-inn-update').attr('disabled', true);
+            } else {
+                $('.help-code .middle').remove();
+                $('.bang-inn-update').attr('disabled', false);
+            }
+        }
+    });
+})

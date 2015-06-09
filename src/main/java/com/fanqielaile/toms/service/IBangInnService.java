@@ -99,4 +99,13 @@ public interface IBangInnService {
      * @return
      */
     List<BangInn> findBangInnByCompanyId(String companyId);
+
+    /**
+     * 根据code查询绑定客栈
+     *
+     * @param userInfo
+     * @param code
+     * @return
+     */
+    BangInn findBangInnByUserAndCode(UserInfo userInfo, String code);
 }
