@@ -157,6 +157,7 @@ public class UserInfoService implements IUserInfoService {
         this.roleDao.insertPermissionsForRole(rolePermission);
         //修改用户数据权限
         this.userInfoDao.updateUserDataPermission(userInfo.getId(), dataPermission);
+        rolePermission.setDataPermission(dataPermission);
         rolePermissionChangeListener.onApplicationEvent(new TomsApplicationEvent(rolePermission));
     }
 

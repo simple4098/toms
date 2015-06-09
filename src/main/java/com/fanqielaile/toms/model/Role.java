@@ -25,6 +25,16 @@ public class Role extends Domain implements ConfigAttribute {
     private String rolePermissionRoleId;
     //权限
     private List<Permission> permissionList;
+    //数据权限
+    private int dataPermission;
+
+    public int getDataPermission() {
+        return dataPermission;
+    }
+
+    public void setDataPermission(int dataPermission) {
+        this.dataPermission = dataPermission;
+    }
 
     public List<Permission> getPermissionList() {
         return permissionList;

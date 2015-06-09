@@ -38,7 +38,6 @@ public class DBRequestMapResolver implements ReloadableRequestMapResolver, Initi
         try {
             lock.lock();
             load();
-            refreshCurrenter();
         } finally {
             lock.unlock();
         }
@@ -54,19 +53,6 @@ public class DBRequestMapResolver implements ReloadableRequestMapResolver, Initi
                 configAttributes.addAll(roles);
             } else {
                 requestMap.put(permission.getUrl(), new ArrayList<ConfigAttribute>(roles));
-            }
-        }
-    }
-
-    private void refreshCurrenter() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (null != authentication) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserInfo) {
-                if (null != userInfoService) {
-                    this.userInfoService.loadUserByUsername(((UserInfo) principal).getLoginName());
-                }
             }
         }
     }
