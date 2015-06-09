@@ -56,7 +56,7 @@
 
                                 <p class="alert alert-info">
                                     <textarea readonly rows="5" cols="40"
-                                              style="width: 240px;height: 100px;">${d.noticeContent}</textarea>
+                                              style="width: 90%;height: 10%;">${d.noticeContent}</textarea>
 
                                 </p>
                             </div>
