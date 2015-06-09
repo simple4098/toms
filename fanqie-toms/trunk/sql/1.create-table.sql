@@ -127,7 +127,7 @@ DROP TABLE IF EXISTS "public"."inn_active";
 CREATE TABLE "public"."inn_active" (
 "id" varchar(64) COLLATE "default" NOT NULL,
 "inn_id" int4,
-"inn_name" varchar(20) COLLATE "default",
+"inn_name" varchar(60) COLLATE "default",
 "mobile" varchar(20) COLLATE "default",
 "create_date" date,
 "order_num" int4,
@@ -157,8 +157,8 @@ DROP TABLE IF EXISTS "public"."inn_customer";
 CREATE TABLE "public"."inn_customer" (
 "id" varchar(64) COLLATE "default" NOT NULL,
 "num" int4,
-"province" varchar(4) COLLATE "default",
-"city" varchar(4) COLLATE "default",
+"province" varchar(15) COLLATE "default",
+"city" varchar(10) COLLATE "default",
 "percent" varchar(5) COLLATE "default",
 "inn_id" int4,
 "create_date" date
@@ -274,7 +274,7 @@ DROP TABLE IF EXISTS "public"."order_source";
 CREATE TABLE "public"."order_source" (
 "id" varchar(64) COLLATE "default" NOT NULL,
 "inn_id" int4,
-"from_name" varchar(10) COLLATE "default",
+"from_name" varchar(30) COLLATE "default",
 "live_num" int4,
 "income" numeric(8,2),
 "create_date" date,
