@@ -41,7 +41,7 @@ public class RoomTypeService implements IRoomTypeService {
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
         String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+paramDto.getAccountId()+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;
-        String httpGets = HttpClientUtil.httpGets(url,null);
+        String httpGets = HttpClientUtil.httpGets(roomTypeUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         RoomTypeInfoDto roomTypeInfoDto = null;
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
