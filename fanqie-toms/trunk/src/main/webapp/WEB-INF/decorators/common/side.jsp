@@ -153,7 +153,7 @@
                                 <c:if test="${fn:contains(url, '/system/find_labels')}">class="active" </c:if> >
                             <a href="<c:url value="/system/find_labels"/>">
                                 <i class="icon-double-angle-right"></i>
-                                客栈标签
+                                客栈分类
                             </a>
                         </li>
                         </toms:authorize>
