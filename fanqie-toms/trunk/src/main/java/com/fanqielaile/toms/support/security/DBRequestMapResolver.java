@@ -4,10 +4,16 @@ package com.fanqielaile.toms.support.security;
 import com.fanqielaile.toms.dao.PermissionDao;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.Role;
+import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.IUserInfoService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,6 +25,8 @@ public class DBRequestMapResolver implements ReloadableRequestMapResolver, Initi
     private PermissionDao permissionDao;
     private Map<String, Collection<ConfigAttribute>> requestMap;
     private Lock lock = new ReentrantLock();
+    @Resource
+    private IUserInfoService userInfoService;
 
     @Override
     public Map<String, Collection<ConfigAttribute>> requestMap() {
@@ -30,6 +38,7 @@ public class DBRequestMapResolver implements ReloadableRequestMapResolver, Initi
         try {
             lock.lock();
             load();
+            refreshCurrenter();
         } finally {
             lock.unlock();
         }
@@ -45,6 +54,19 @@ public class DBRequestMapResolver implements ReloadableRequestMapResolver, Initi
                 configAttributes.addAll(roles);
             } else {
                 requestMap.put(permission.getUrl(), new ArrayList<ConfigAttribute>(roles));
+            }
+        }
+    }
+
+    private void refreshCurrenter() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (null != authentication) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserInfo) {
+                if (null != userInfoService) {
+                    this.userInfoService.loadUserByUsername(((UserInfo) principal).getLoginName());
+                }
             }
         }
     }

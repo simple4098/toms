@@ -12,7 +12,7 @@ public class RolePermissionChangeListener implements ApplicationListener<TomsApp
     private ReloadableRequestMapResolver requestMapResolver;
 
     /**
-     * 时间的处理方法
+     * 事件的处理方法
      *
      * @param event
      */
