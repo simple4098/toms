@@ -74,7 +74,7 @@ public class InnManageController extends BaseController {
     @RequestMapping("find_inns")
     public String findInns(Model model, String innLabelId, String userId, @RequestParam(defaultValue = "1", required = false) int page) {
         try {
-            UserInfo currentUser = this.userInfoService.findUserInfoById(getCurrentUser().getId());
+            UserInfo currentUser = getCurrentUser();
             currentUser.setInnLabelId(innLabelId);
             currentUser.setUserId(userId);
             List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
