@@ -91,4 +91,12 @@ public interface IBangInnService {
      * @return
      */
     List<BangInn> findBangInnByStringBangInn(List<BangInn> bangInnList);
+
+    /***
+     * 根据公司ID查询绑定的客栈
+     *
+     * @param companyId
+     * @return
+     */
+    List<BangInn> findBangInnByCompanyId(String companyId);
 }
