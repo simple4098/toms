@@ -361,10 +361,10 @@
             <div class="modal-body">
                 <form class="new-permission-form" id="permission-form-new" action="<c:url value="/user/create_user"/>"
                       method="post">
-                    <input type="text" class="login-name-permission" name="loginName"/>
-                    <input type="text" class="password-permission" name="password"/>
-                    <input type="text" class="telephone-permission" name="telephone"/>
-                    <input type="text" class="user-name-permission" name="userName"/>
+                    <input type="hidden" class="login-name-permission" name="loginName"/>
+                    <input type="hidden" class="password-permission" name="password"/>
+                    <input type="hidden" class="telephone-permission" name="telephone"/>
+                    <input type="hidden" class="user-name-permission" name="userName"/>
 
                     <div class="checkbox">
                         <label>
