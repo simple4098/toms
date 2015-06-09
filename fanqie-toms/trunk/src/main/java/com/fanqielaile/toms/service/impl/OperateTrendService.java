@@ -48,6 +48,7 @@ public class OperateTrendService implements IOperateTrendService {
     public OperateTrend findOperateTrend(ParamDto paramDto, UserInfo currentUser) throws Exception {
         paramDto.setUserId(currentUser.getId());
         paramDto.setCompanyId(currentUser.getCompanyId());
+        paramDto.setDataPermission(currentUser.getDataPermission() == 1);
         String gets = HttpClientUtil.httpGets(CommonApi.QS, paramDto);
         OperateTrend operateTrend = JacksonUtil.json2obj(gets, OperateTrend.class);
         return operateTrend;
@@ -57,6 +58,7 @@ public class OperateTrendService implements IOperateTrendService {
     public Map<String, Object> findQsDetail(ParamDto paramDto, UserInfo currentUser) throws Exception {
         paramDto.setUserId(currentUser.getId());
         paramDto.setCompanyId(currentUser.getCompanyId());
+        paramDto.setDataPermission(currentUser.getDataPermission() == 1);
         String gets = HttpClientUtil.httpGets(CommonApi.QSDetail, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(gets);
         Map<String, Object> result = (Map<String, Object>)jsonObject.get("result");
