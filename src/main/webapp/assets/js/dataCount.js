@@ -1,4 +1,5 @@
-var _data ='' //{"date":["05-1","05-2","05-3","05-4","05-5","05-6","05-7","05-8","05-9","05-10","05-11","05-12","05-13","05-13","05-14","05-15","05-15","05-16","05-17","05-17","05-18","05-18","05-19","05-19","05-20","05-20","05-21","05-21","05-22","05-23","05-24","05-25","05-25","05-25","05-26","05-26","05-27","05-28","05-29","05-30","05-31"],"visit":[0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,1,0,0,3,0,3,0,8,0,20,0,11,0,0,0,0,10,10,0,3,0,0,0,0,0,0]}
+var _data ={'result':{'avgPriceList':[], 'totalRooms': [], 'livePercentList': [], 'income': [], 'emptyRooms': [],'data':[],'realLiveNum':[]}}
+
 
 // 营业收入
 var init_yingYeShouRu = function(){
@@ -256,7 +257,6 @@ function getData(postData){
 var timer = setInterval(function(){
     if($('#kz_item').html()){
         var  postData = $("#qsId").serialize();
-        /*opt(postData);*/
         getData(postData);
         clearInterval(timer);
     }
@@ -275,35 +275,10 @@ function opt(ope){
         $("#livePercent").html(0);
         $("#avgId").html(0);
     }
-    /*var qs_url= $('.qs-url').attr('data-url');
-    $.ajax({
-        type:'post',
-        url:qs_url+"?v"+new Date().getTime(),
-        dataType:'json',
-        data:obj,
-        success:function(json) {
-            var ope = json.operateTrend;
-            if(ope){
-                $("#totalIncome").html(ope.totalIncome);
-                $("#realLiveNum").html(ope.realLiveNum);
-                $("#emptyAndTotalRoom").html("总数"+ope.totalRoomNum+"间夜;空置"+ope.emptyRoomNum+"间夜");
-                $("#livePercent").html((ope.livePercent*100).toFixed(2));
-                $("#avgId").html((ope.totalIncome/ope.realLiveNum).toFixed(2));
-            }else{
-                $("#totalIncome").html(0);
-                $("#realLiveNum").html(0);
-                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
-                $("#livePercent").html(0);
-                $("#avgId").html(0);
-            }
-
-        }
-    });*/
 }
 
 $('#myButton').on('click', function(){
     var postData = $("#qsId").serialize();
-   /* opt(postData);*/
     getData( postData );
 })
 

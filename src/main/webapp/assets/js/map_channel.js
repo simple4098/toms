@@ -107,29 +107,7 @@ var timer = setInterval(function(){
         clearInterval(timer);
     }
 },500);
-/*function opt(obj){
-    $.ajax({
-        type:'post',
-        url:order_url+"?v"+new Date().getTime(),
-        dataType:'json',
-        data:obj,
-        success:function(json) {
-            var order = json.orderSource;
-            if(order){
-                $("#orderNum").html(order.orderNum);
-                $("#realLiveNum").html(order.liveNum);
-                $("#emptyAndTotalRoom").html("总数"+order.totalRoomNum+"间夜;空置"+order.emptyRoomNum+"间夜");
-                $("#incomeId").html(order.income);
-            }else{
-                $("#orderNum").html(0);
-                $("#realLiveNum").html(0);
-                $("#emptyAndTotalRoom").html("总数"+0+"间夜;空置"+0+"间夜");
-                $("#incomeId").html(0);
-            }
 
-        }
-    });
-}*/
 
 
 

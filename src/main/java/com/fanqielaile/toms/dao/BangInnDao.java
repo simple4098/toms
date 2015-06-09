@@ -26,7 +26,9 @@ public interface BangInnDao {
      * @param innLabelId
      * @return
      */
-    List<BangInn> selectBangInnByInnLabelId(String innLabelId);
+    List<BangInn> selectBangInnByInnLabelId(@Param("innLabelId")String innLabelId,@Param("userInfo")UserInfo userInfo);
+
+    List<BangInn> selectBangInnByInnLabelId(@Param("innLabelId")String innLabelId);
 
     /**
      * 更新客栈的管理者

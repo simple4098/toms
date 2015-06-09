@@ -42,10 +42,13 @@
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type)
               values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type})
        </insert>
-    <select id="selectBangInnByInnLabelId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <select id="selectBangInnByInnLabelId" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         from bang_inn where inn_label_id = #{innLabelId}
+        <if test="userInfo.dataPermission == 0">
+            and user_id = #{userInfo.id}
+        </if>
     </select>
     <update id="updateBangInnUserId">
               update bang_inn set user_id = #{newUserId} where user_id = #{oldUserId}

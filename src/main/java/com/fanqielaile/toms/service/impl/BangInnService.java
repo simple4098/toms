@@ -47,7 +47,7 @@ public class BangInnService implements IBangInnService {
         List<BangInn> labels = this.bangInnDao.selectBangInnByUser(userInfo);
         if (null != labels) {
             for (BangInn bangInn : labels) {
-                List<BangInn> inns = this.bangInnDao.selectBangInnByInnLabelId(bangInn.getInnLabelId());
+                List<BangInn> inns = this.bangInnDao.selectBangInnByInnLabelId(bangInn.getInnLabelId(),userInfo);
                 InnLabel innLabel = this.innLabelDao.selectLabelById(bangInn.getInnLabelId());
                 if (null != innLabel && null != inns) {
                     BangInn inn = new BangInn();
