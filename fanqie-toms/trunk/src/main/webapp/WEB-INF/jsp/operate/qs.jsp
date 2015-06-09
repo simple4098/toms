@@ -89,7 +89,7 @@
 </div>
 
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
+<%--<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>--%>
 <script src="<%=basePath%>/assets/js/echarts-all.js"></script>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/assets/js/tomato.min.js"></script>
