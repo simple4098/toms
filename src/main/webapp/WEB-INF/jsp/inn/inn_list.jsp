@@ -18,6 +18,7 @@
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/js/my-system.js"/>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
+    <link rel="stylesheet" href="<%=basePath%>/assets/css/pages.css"/>
 </head>
 <body>
 <div class="page-content">
@@ -172,8 +173,9 @@
         layer.open({
             type: 1,
             shift: 1,
+            area: ['516px', '200px'],
             shadeClose: true, //开启遮罩关闭
-            content: '<div>' +
+            content: '<div class="kz-plus">' +
             '<div>您的唯一标识码：' + code + '</div>' +
             '<div> 使用方式：</div>' +
             '<div>1、将您的唯一标识码给到客栈</div>' +
