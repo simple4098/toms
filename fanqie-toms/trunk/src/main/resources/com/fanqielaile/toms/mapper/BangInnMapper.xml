@@ -128,4 +128,9 @@
         <include refid="Base_Column_List"/>
         from bang_inn where company_id =#{companyId}
     </select>
+    <select id="selectBangInnByUserAndCode" resultMap="BangInnDtoResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where company_id = #{userInfo.companyId} and code=#{code} limit 1
+    </select>
 </mapper>

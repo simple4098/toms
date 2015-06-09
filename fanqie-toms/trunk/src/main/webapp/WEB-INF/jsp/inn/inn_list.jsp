@@ -50,13 +50,13 @@
                                 <input type="hidden" id="pageId" name="page" value="${page.page}"/>
                             <tr>
                                 <th>客栈名称</th>
-                                <th>番茄账户名</th>
+                                <%--<th>番茄账户名</th>--%>
                                 <th class="hidden-480">联系号码</th>
 
                                 <th width="200">
                                     <select name="innLabelId" class="inn-label"
                                             data-url="<c:url value="/inn_manage/find_inns.json"/>">
-                                        <option value="" selected>客栈标签</option>
+                                        <option value="" selected>客栈分类</option>
                                         <c:if test="${not empty labels}">
                                             <c:forEach items="${labels}" var="l">
                                                 <option
@@ -91,7 +91,7 @@
                                 <c:forEach items="${data}" var="d">
                                     <tr>
                                         <td>${d.innName}</td>
-                                        <td>${d.innCode}</td>
+                                            <%--<td>${d.innCode}</td>--%>
                                         <td>${d.mobile}</td>
                                         <td>${d.labelName}</td>
                                         <td>${d.code}</td>
