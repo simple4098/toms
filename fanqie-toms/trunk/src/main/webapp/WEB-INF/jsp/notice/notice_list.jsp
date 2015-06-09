@@ -31,7 +31,7 @@
         <div class="col-xs-12 col-sm-4 widget-container-span">
             <!-- PAGE CONTENT BEGINS -->
 
-            <div class="widget-box">
+            <div class="widget-box" onselectstart="return false">
                 <div class="widget-header" style="text-align: center">
                     <h5>通知模板：</h5>
                     <select name="noticeId" class="notice" data-url="<c:url value="/system/find_notice.json?id="/>">
@@ -59,7 +59,7 @@
         </div>
 
         <div class="col-xs-12 col-sm-4 widget-container-span">
-            <div class="widget-box">
+            <div class="widget-box" onselectstart="return false">
                 <div class="widget-header" style="text-align: center">
                     <h5>选择接收的客栈</h5>
 
@@ -86,11 +86,11 @@
                                     </div>
                                     <c:if test="${not empty bi.bangInnList}">
                                         <c:forEach items="${bi.bangInnList}" var="inn">
-                                            <div class="checkbox">
+                                            <div class="checkbox check-inn">
                                                 <label>
                                                     <input type="checkbox" name="innId" data-name="${bi.innLabelName}"
                                                            value="${inn.id}"
-                                                           class="checkbox sub">${inn.innName}
+                                                           class="checkbox sub innId">${inn.innName}
                                                 </label>
                                             </div>
                                         </c:forEach>
@@ -110,10 +110,10 @@
                 <div class="widget-header" style="text-align: center">
                     <h5>请选择发送的方式：</h5>
           <span style="padding-left: 60px;">
-          <input type="checkbox" name="sendType" value="MESSAGE"/>短信发送
+          <input type="checkbox" name="sendType" class="send-type1" value="MESSAGE"/>短信发送
             </span>
           <span style="padding-left: 80px">
-          <input name="sendType" value="POPUP" type="checkbox" style="padding-left: 20%"/>系统弹窗
+          <input name="sendType" value="POPUP" type="checkbox" class="send-type2" style="padding-left: 20%"/>系统弹窗
             </span>
           <span style="padding-left: 100px;">
           <button class="btn btn-success btn-send" type="button">确认发送</button>
@@ -128,24 +128,46 @@
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script>
     $('.btn-send').on('click', function () {
-        $.ajax({
-            url: '<c:url value="/notice/send_message.json"/>',
-            type: 'post',
-            dataType: 'json',
-            data: $('.data-form').serialize(),
-            success: function (data) {
-                if (data.status) {
-                    layer.alert('提示信息：发送成功！', {icon: 6});
-                    window.location.reload();
-                } else {
-                    layer.alert('提示信息：发送失败！', {icon: 5});
-                    window.location.reload();
-                }
-            },
-            error: function () {
-                layer.alert('系统错误', {icaon: 5})
+        var flag = false;
+        var checkGroup = $(".checkUnit input[type='checkbox']");
+        for (var i = 0; i < checkGroup.length; i++) {
+            if (checkGroup.eq(i).prop("checked")) {
+                flag = true;
+                break;
             }
-        });
+        }
+        var flag1 = false;
+        if ($('.send-type1').prop('checked') || $('.send-type2').prop('checked')) {
+            flag1 = true;
+        }
+        if ($('.notice-content').val() == null || $('.notice-content').val() == '') {
+            layer.alert('提示信息：请填写通知内容', {icon: 5});
+        } else if (!flag) {
+            layer.alert('提示信息：请选择接收的客栈', {icon: 5});
+        } else if (!flag1) {
+            layer.alert('提示信息：请选择发送方式', {icon: 5});
+        }
+        if ($('.notice-content').val() != null && $('.notice-content').val() != '' && flag && flag1) {
+            $.ajax({
+                url: '<c:url value="/notice/send_message.json"/>',
+                type: 'post',
+                dataType: 'json',
+                data: $('.data-form').serialize(),
+                success: function (data) {
+                    if (data.status) {
+                        layer.alert('提示信息：发送成功！', {icon: 6});
+                        window.location.reload();
+                    } else {
+                        layer.alert('提示信息：发送失败！', {icon: 5});
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    layer.alert('系统错误', {icaon: 5})
+                }
+            });
+        }
+
     });
     $(function () {
         // 全选&&反选 所有客栈
