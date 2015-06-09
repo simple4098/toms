@@ -31,18 +31,19 @@ function obt(tagId,innId,url){
 					aList += "<option "+k+" value='"+json.data[num].bangInnList[innList].innId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
 				};
 			}
+			// 写入DOM
+			$('#kz-tags-ac').html(aLabel);
 			// 默认加载第一个列表
-			getInnName(0);
+			var num1 = $('#kz-tags-ac').children(':selected').index();
+			getInnName(num1);
+			$('#kz_item-ac').html(aList);
 			// 联动刷新客栈列表
 			$('#kz-tags-ac').change(function(){
 				var num = $(this).children(':selected').index();
 				getInnName(num);
 				$('#kz_item-ac').html(aList);
 			})
-			// 写入DOM
-			$('#kz-tags-ac').html(aLabel);
-			$('#kz_item-ac').html(aList);
-			//加载运营概况数据；
+
 		}
 	});
 }
