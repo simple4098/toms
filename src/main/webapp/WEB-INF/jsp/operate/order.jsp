@@ -45,7 +45,7 @@
         <div class="row data-count-box">
             <div class="col-md-4">
                 <p>订单总量</p>
-                <p class="text-center color-green"><span id="orderNum">0</span>元</p>
+                <p class="text-center color-green"><span id="orderNum">0</span></p>
             </div>
             <div class="col-md-4">
                 <p>实住间夜数</p>
