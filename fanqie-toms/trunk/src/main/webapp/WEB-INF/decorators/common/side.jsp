@@ -21,7 +21,7 @@
             </script>
             <!-- #sidebar-shortcuts -->
 
-            <ul class="nav nav-list">
+            <ul class="nav nav-list ul-parent">
                 <li <c:if test="${fn:contains(url, '/system/login_success')}">class="active"</c:if>>
                     <a href="<c:url value="/system/login_success"/>">
                         <i class="icon-dashboard"></i>
@@ -36,7 +36,7 @@
                     </a>
                 </li>
                 </toms:authorize>
-                <li <c:if test="${fn:contains(url,'/operate/')}">class="open active"</c:if>>
+                <li data-name="li-parent" <c:if test="${fn:contains(url,'/operate/')}">class="open active"</c:if>>
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-desktop"></i>
                         <span class="menu-text"> 运营报表 </span>
@@ -74,7 +74,7 @@
                     </ul>
                 </li>
 
-                <li
+                <li data-name="li-parent-1"
                         <c:if test="${fn:contains(url, '/inn_manage/find_inns')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/inn_manage/to_update_inn')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/inn_manage/activeInn')}">class="open active"</c:if>
@@ -115,7 +115,7 @@
                     </a>
                 </li>
                 </toms:authorize>
-                <li
+                <li data-name="li-parent-2"
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/system/find_labels')}">class="open active"</c:if>
@@ -174,4 +174,14 @@
                 }
             </script>
         </div>
-
+<script>
+    if ($('li[data-name="li-parent"]').find('ul').find('li').length == 0) {
+        $('li[data-name="li-parent"]').remove();
+    }
+    if ($('li[data-name="li-parent-1"]').find('ul').find('li').length == 0) {
+        $('li[data-name="li-parent-1"]').remove();
+    }
+    if ($('li[data-name="li-parent-2"]').find('ul').find('li').length == 0) {
+        $('li[data-name="li-parent-2"]').remove();
+    }
+</script>
