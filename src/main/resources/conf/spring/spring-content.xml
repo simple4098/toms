@@ -93,24 +93,12 @@
        </bean>
        <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
-       <!--<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">-->
-       <!--<property name="driverClassName" value="${jdbc.driver}"/>-->
-       <!--<property name="url" value="${jdbc.url}"/>-->
-       <!--<property name="username" value="${jdbc.username}"/>-->
-       <!--<property name="password" value="${jdbc.password}"/>-->
-       <!--</bean>-->
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
                      <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
                      <property name="password" value="ota"/>
-                     <!--<property name="username" value="ota"/>-->
-                     <!--<property name="password" value="ota"/>-->
-                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
-                     <property name="username" value="root"/>
-                     <property name="password" value="123456"/>-->
                      <property name="maxWait" value="1000" />
                      <property name="initialSize" value="5" />
                      <property name="maxActive" value="20" />
@@ -139,16 +127,37 @@
                      <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
               </bean>
        </beans>
+       <beans profile="staging">
+              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                     <property name="driverClassName" value="org.postgresql.Driver"/>
+                     <property name="url"  value="jdbc:postgresql://10.163.227.13:9999/oms_db"/>
+                     <property name="username" value="ota"/>
+                     <property name="password" value="ota"/>
+                     <property name="maxWait" value="1000" />
+                     <property name="initialSize" value="5" />
+                     <property name="maxActive" value="20" />
+                     <property name="testWhileIdle" value="false" />
+                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
+                     <property name="removeAbandoned" value="true" />
+                     <property name="removeAbandonedTimeout" value="1800" />
+                     <property name="validationQuery" value="select 1"/>
+              </bean>
+              <bean class="com.fanqielaile.toms.common.CommonApi">
+                     <property name="QS" value="http://dc.test.fanqiele.com/api/toms/operate.json"></property>
+                     <property name="QSDetail" value="http://dc.test.fanqiele.com/api/toms/opeDetail.json"></property>
+                     <property name="KF" value="http://dc.test.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://dc.test.fanqiele.com/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://dc.test.fanqiele.com/api/toms/order.json"></property>
+                     <property name="ActiveInn" value="http://dc.test.fanqiele.com/api/toms/innActive.json"></property>
+                     <property name="roomType" value="http://openapi.test.fanqielaile.com/api/getRoomType"></property>
+              </bean>
+       </beans>
        <beans profile="test">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
                      <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
                      <property name="password" value="ota"/>
-                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
-                     <property name="username" value="root"/>
-                     <property name="password" value="123456"/>-->
                      <property name="maxWait" value="1000" />
                      <property name="initialSize" value="5" />
                      <property name="maxActive" value="20" />
@@ -171,10 +180,6 @@
                      <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
                      <property name="password" value="ota"/>
-                     <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-                     <property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/>
-                     <property name="username" value="root"/>
-                     <property name="password" value="123456"/>-->
                      <property name="maxWait" value="1000" />
                      <property name="initialSize" value="5" />
                      <property name="maxActive" value="20" />
