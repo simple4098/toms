@@ -14,21 +14,15 @@ INSERT INTO permission VALUES ('d8c49677-e86a-4a10-abf4-d5a6a2d3e8f9', null, nul
 INSERT INTO permission VALUES ('e37849ca-c47c-4558-a48d-2b2c6b53b0f4', null, null, null, null, null, '消息通知', '/notice/find_notices', null, '0', '0');
 
 --角色初始化数据
-INSERT INTO role VALUES ('4a26fe8d-db59-4a2e-82f4-90f668e74188', null, '2015-06-04', null, 'ROLE_1', 'ROLE_1', 'ROLE_1', '1');
-INSERT INTO role VALUES ('6f659012-b5e8-4b8b-804b-5560089ae4cd', null, '2015-05-14', null, null, 'admin', 'ROLE_ADMIN', '0');
-INSERT INTO role VALUES ('6f9e7ba6-eb13-4933-b81e-74d6472c500e', null, '2015-05-14', null, null, 'admin', 'ROLE_ADMIN', '0');
-INSERT INTO role VALUES ('804d0e27-c63b-4b25-9972-653bbfc0877a', null, '2015-05-14', null, null, 'admin', 'ROLE_ADMIN', '0');
+
 INSERT INTO role VALUES ('8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', null, '2015-05-14', null, null, 'admin', 'ROLE_ADMIN', '0');
 
 --角色与权限关联数据
 
-INSERT INTO  role_permission VALUES ('20146416-d906-4c79-986c-a51eb4479668', '4a26fe8d-db59-4a2e-82f4-90f668e74188', '499cbd11-a80e-4fc5-a38e-3d503fc3eb40', '2015-06-04', '2015-06-04');
 INSERT INTO role_permission VALUES ('5782550b-bc1b-4df1-8927-93aac58f77a1', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', '6e3a7472-e62e-4cfa-bff6-5a30218a4c95', '2015-06-05', '2015-06-05');
 INSERT INTO role_permission VALUES ('661da333-7c0a-44ad-8916-4d61e2764829', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', 'e37849ca-c47c-4558-a48d-2b2c6b53b0f4', '2015-06-05', '2015-06-05');
 INSERT INTO role_permission VALUES ('99fa9e99-b17c-4ba8-8ce9-d37aa0b1e2b8', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', '499cbd11-a80e-4fc5-a38e-3d503fc3eb40', '2015-06-05', '2015-06-05');
-INSERT INTO role_permission VALUES ('b6604352-1f4e-4266-816a-fd5e40dde5a2', '4a26fe8d-db59-4a2e-82f4-90f668e74188', '6e3a7472-e62e-4cfa-bff6-5a30218a4c95', '2015-06-04', '2015-06-04');
 INSERT INTO role_permission VALUES ('bdee23f4-2d31-4648-87b7-cefc3deedd92', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', 'd8c49677-e86a-4a10-abf4-d5a6a2d3e8f9', '2015-06-05', '2015-06-05');
-INSERT INTO role_permission VALUES ('c63afe86-d231-4011-9658-9e3d442e0571', '4a26fe8d-db59-4a2e-82f4-90f668e74188', 'd8c49677-e86a-4a10-abf4-d5a6a2d3e8f9', '2015-06-04', '2015-06-04');
 
 --公司权限初始化
 insert into company_permission(id,company_id,permission_id,created_date,updated_date) 
@@ -54,5 +48,4 @@ insert into company_permission(id,company_id,permission_id,created_date,updated_
 values('11','d0392bc8-131c-48a4-846e-c81c66097781','26c5ceb0-a1ca-4600-bf54-eff51066fd7c',now(),now());
 
 --用户数据
-INSERT INTO user_info VALUES ('2df7667a-6cf4-4320-8449-6483c643ea62', null, '2015-05-14', '2015-05-28', null, '21', 'ADMIN', 'test', '13800138000', 'superMan', '96e79218965eb72c92a549dd5a330112', '1                               ', 'd0392bc8-131c-48a4-846e-c81c66097781', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', '0');
-INSERT INTO user_info VALUES ('839cca94-32d9-4df3-95d6-87fcfb8fee29', null, '2015-05-22', '2015-05-27', null, '1', 'ADMIN', 'test1', '138001380000', 'test', '96e79218965eb72c92a549dd5a330112', '1                               ', 'd0392bc8-131c-48a4-846e-c81c66097781', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', '0');
+INSERT INTO user_info VALUES ('2df7667a-6cf4-4320-8449-6483c643ea62', null, '2015-05-14', '2015-05-28', null, '21', 'ADMIN', 'mtadmin', '13800138000', '超级管理员', '96e79218965eb72c92a549dd5a330112', '1                               ', 'd0392bc8-131c-48a4-846e-c81c66097781', '8a0219eb-88e8-4cd9-9b25-a6ebd6ada402', '0');
