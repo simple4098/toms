@@ -34,7 +34,7 @@
                     <div class="table-header">
             <span style="text-align: center">
             已加盟客栈：<span style="color:red;font-size: x-large">
-              <c:if test="${not empty bangs}">${bangs.size()}</c:if>
+                ${bangs.size()}
             </span>家
               </span>
                         <span style="float: right;">
