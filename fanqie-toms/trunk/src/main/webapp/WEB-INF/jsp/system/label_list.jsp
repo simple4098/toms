@@ -22,6 +22,9 @@
     <div class="page-header">
         <h1>
             客栈分类
+            <a class="add-label" data-toggle="modal" data-target="#addLabel">
+                <i class="icon-plus"></i>
+            </a>
         </h1>
     </div>
     <!-- /.page-header -->
