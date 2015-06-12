@@ -6,6 +6,9 @@ $(function(){
 		url:url+"?v"+new Date().getTime(),
 		dataType:'json',
 		success:function(json){
+			if(json.data.length==0){
+				return false;
+			}
 			var aLabel = ""; //存放客栈标签
 			var aList = "";  //存放客栈列表
 			// 遍历获取客栈标签
