@@ -21,6 +21,9 @@
     <div class="page-header">
         <h1>
             通知模板
+            <a class="add-notice" data-toggle="modal" data-target="#addNotice">
+                <i class="icon-plus"></i>
+            </a>
         </h1>
     </div>
     <!-- /.page-header -->
