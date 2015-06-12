@@ -24,12 +24,7 @@
 
     <div class="navbar-container" id="navbar-container">
         <div class="navbar-header pull-left">
-            <a href="#" class="navbar-brand">
-                <small>
-                    <i class="icon-leaf"></i>
-                    第三方运营管理系统
-                </small>
-            </a><!-- /.brand -->
+            <div class="logo">第三方运营管理系统</div>
         </div>
         <!-- /.navbar-header -->
 
