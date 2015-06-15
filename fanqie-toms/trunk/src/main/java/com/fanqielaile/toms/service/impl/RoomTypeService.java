@@ -37,6 +37,7 @@ public class RoomTypeService implements IRoomTypeService {
     public RoomTypeInfoDto findRoomType(ParamDto paramDto,UserInfo userInfo)throws  Exception{
         Company company = companyDao.selectCompanyById(userInfo.getCompanyId());
         String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
+        log.debug("=========:" + roomTypeUrl);
         System.out.println("=========:" + roomTypeUrl);
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
