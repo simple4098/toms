@@ -62,7 +62,9 @@ public class NoticeTemplateController extends BaseController {
             //绑定客栈信息
             List<BangInn> bangInns = this.bangInnService.findBangInnByStringBangInn(BangInnDataCheckHelper.dealStringInnIds(innId));
             if (SendType.MESSAGE.name().equals(sendType)) {
+                System.out.println("Seed message begin=========>");
                 messageManageService.sendMessage(MessageHelper.createSmsMessage(company, bangInns, noticeContent));
+                System.out.println("Seed message end=========>");
             } else if (SendType.POPUP.name().equals(sendType)) {
                 //TODO 调用系统弹窗接口
             } else {
