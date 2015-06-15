@@ -4,12 +4,11 @@
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
-                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
        <context:component-scan base-package="com.fanqielaile.toms" use-default-filters="true">
               <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
        </context:component-scan>
@@ -169,7 +168,7 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>-->
-              <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
+              <jee:jndi-lookup jndi-name="java:comp/env/jdbc/tomato-toms"/>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
