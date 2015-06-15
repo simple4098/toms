@@ -5,6 +5,7 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
@@ -142,7 +143,7 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>
-              <bean class="com.fanqielaile.toms.common.CommonApi">
+              <bean  class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://dc.test.fanqiele.com/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://dc.test.fanqiele.com/api/toms/opeDetail.json"></property>
                      <property name="KF" value="http://dc.test.fanqiele.com/api/toms/obtCustomerNum.json"></property>
@@ -152,8 +153,9 @@
                      <property name="roomType" value="http://openapi.test.fanqielaile.com/api/getRoomType"></property>
               </bean>
        </beans>
-       <beans profile="test">
-              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+
+       <beans profile="production">
+             <!-- <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
                      <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
@@ -166,34 +168,16 @@
                      <property name="removeAbandoned" value="true" />
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
-              </bean>
-              <bean class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
-                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
-              </bean>
-       </beans>
-       <beans profile="pro">
-              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-                     <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
-                     <property name="username" value="ota"/>
-                     <property name="password" value="ota"/>
-                     <property name="maxWait" value="1000" />
-                     <property name="initialSize" value="5" />
-                     <property name="maxActive" value="20" />
-                     <property name="testWhileIdle" value="false" />
-                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
-                     <property name="removeAbandoned" value="true" />
-                     <property name="removeAbandonedTimeout" value="1800" />
-                     <property name="validationQuery" value="select 1"/>
-              </bean>
-              <bean class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://localhost:8083/api/toms/operate.json"></property>
-                     <property name="KF" value="http://localhost:8083/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://localhost:8083/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://localhost:8083/api/toms/order.json"></property>
+              </bean>-->
+              <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
+              <bean  class="com.fanqielaile.toms.common.CommonApi">
+                     <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
+                     <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
+                     <property name="KF" value="http://dc.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+                     <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
+                     <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
+                     <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
+                     <property name="roomType" value="http://openapi.fanqielaile.com/api/getRoomType"></property>
               </bean>
        </beans>
 </beans>
