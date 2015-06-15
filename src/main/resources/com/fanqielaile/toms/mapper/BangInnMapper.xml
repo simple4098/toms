@@ -113,7 +113,7 @@
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from bang_inn where company_id=#{companyId} and inn_id = #{innId} ORDER BY bang_date DESC
+        from bang_inn where company_id=#{companyId} and inn_id = #{innId} ORDER BY bang_date DESC limit 1
     </select>
     <select id="selectBangInnByStringInnId" resultMap="BangInnDtoResult"
             parameterType="com.fanqielaile.toms.model.BangInn">
