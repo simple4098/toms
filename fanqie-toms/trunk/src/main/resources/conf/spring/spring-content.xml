@@ -154,20 +154,6 @@
        </beans>
 
        <beans profile="production">
-             <!-- <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-                     <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url" value="jdbc:postgresql://192.168.1.158:5432/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
-                     <property name="username" value="ota"/>
-                     <property name="password" value="ota"/>
-                     <property name="maxWait" value="1000" />
-                     <property name="initialSize" value="5" />
-                     <property name="maxActive" value="20" />
-                     <property name="testWhileIdle" value="false" />
-                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
-                     <property name="removeAbandoned" value="true" />
-                     <property name="removeAbandonedTimeout" value="1800" />
-                     <property name="validationQuery" value="select 1"/>
-              </bean>-->
               <jee:jndi-lookup jndi-name="java:comp/env/jdbc/tomato-toms"/>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
@@ -176,7 +162,7 @@
                      <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
                      <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
                      <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
-                     <property name="roomType" value="http://openapi.fanqielaile.com/api/getRoomType"></property>
+                     <property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
               </bean>
        </beans>
 </beans>
