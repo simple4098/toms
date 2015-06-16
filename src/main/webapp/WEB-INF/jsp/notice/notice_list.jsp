@@ -113,7 +113,7 @@
           <input type="checkbox" name="sendType" class="send-type1" value="MESSAGE"/>短信发送
             </span>
           <span style="padding-left: 80px">
-          <input name="sendType" value="POPUP" type="checkbox" class="send-type2" style="padding-left: 20%"/>系统弹窗
+              <%--<input name="sendType" value="POPUP" type="checkbox" class="send-type2" style="padding-left: 20%"/>系统弹窗--%>
             </span>
           <span style="padding-left: 100px;">
           <button class="btn btn-success btn-send" type="button">确认发送</button>
