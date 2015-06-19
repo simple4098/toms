@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.OrderGuestsDao">
+    <resultMap id="BaseResultsMap" type="com.fanqielaile.toms.model.OrderGuests">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="name" property="name"/>
+        <result column="room_pos" property="roomPos"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,created_date,creator_id,order_id,name,room_pos
+    </sql>
+    <insert id="insertDailyInfos" parameterType="com.fanqielaile.toms.model.OrderGuests">
+        INSERT INTO ota_daily_infos(id,created_date,creator_id,order_id,name,room_pos)
+        VALUES
+        (#{uuid},#{createdDate},#{creatorId},#{orderId},#{name},#{roomPos})
+    </insert>
+</mapper>

@@ -51,6 +51,18 @@
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
+    <!--dom4j-->
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <!--xml-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-oxm</artifactId>
+      <version>3.1.2.RELEASE</version>
+    </dependency>
     <!-- 消息通知-->
     <dependency>
       <groupId>com.tomasky.framework</groupId>
