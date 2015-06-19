@@ -3,25 +3,30 @@ package com.fanqielaile.toms.controller;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.CompanyAjaxDto;
 import com.fanqielaile.toms.helper.BangInnDataCheckHelper;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import org.dom4j.Document;
 
 /**
  * DESC : ajax请求控制器
@@ -80,5 +85,19 @@ public class AjaxLabelInnController extends BaseController{
         } else {
             return new JsonModel(false, "请检查传递的参数!");
         }
+    }
+
+    /**
+     * 测试xml返回
+     *
+     * @return
+     */
+    @RequestMapping("xml")
+    @ResponseBody
+    public Object test(String xmlStr) throws Exception {
+        Order order = new Order();
+        order.setGuestName("客人");
+        order.setTotalPrice(new BigDecimal(12.12));
+        return order;
     }
 }
