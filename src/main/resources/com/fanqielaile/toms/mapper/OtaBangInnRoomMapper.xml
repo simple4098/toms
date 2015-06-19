@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.UserInfoDao" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.OtaBangInnRoomDto">
+              <id column="id" property="id" />
+              <result column="inn_id" property="innId"/>
+              <result column="room_type_id" property="roomTypeId"/>
+              <result column="room_type_name" property="roomTypeName"/>
+              <result column="company_id" property="companyId"/>
+              <result column="rid" property="rId"/>
+              <result column="price_model_id" property="priceModelId"/>
+              <result column="ota_wg_id" property="otaWgId"/>
+       </resultMap>
+
+
+</mapper>

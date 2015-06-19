@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.UserInfoDao" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.OtaTaoBaoArea">
+              <id column="id" property="id" />
+              <result column="province_code" property="provinceCode"/>
+              <result column="province_name" property="provinceName"/>
+              <result column="city_code" property="cityCode"/>
+              <result column="city_name" property="cityName"/>
+              <result column="area_code" property="areaCode"/>
+              <result column="area_name" property="areaName"/>
+       </resultMap>
+
+       <select id="findCityAndArea" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT * from ota_taobao_area where 1=1 and (area_name like concat('%',#{value},'%') or  city_name like concat('%',#{value},'%'))
+       </select>
+
+</mapper>
