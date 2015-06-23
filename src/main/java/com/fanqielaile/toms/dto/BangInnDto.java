@@ -1,7 +1,10 @@
 package com.fanqielaile.toms.dto;
 
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.common.TBParam;
 import com.fanqielaile.toms.model.BangInn;
+
+import java.util.Date;
 
 /**
  * Created by wangdayin on 2015/5/29.
@@ -59,5 +62,16 @@ public class BangInnDto extends BangInn {
 
     public void setLabelName(String labelName) {
         this.labelName = labelName;
+    }
+
+    public static BangInnDto toDto(String companyId,TBParam tbParam,String otaInnOtaId,String innName){
+        BangInnDto bangInnDto = new BangInnDto();
+        bangInnDto.setCompanyId(companyId);
+        bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
+        bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));
+        bangInnDto.setOtaWgId(otaInnOtaId);
+        bangInnDto.setInnName(innName);
+        bangInnDto.setBangDate(new Date());
+        return  bangInnDto;
     }
 }

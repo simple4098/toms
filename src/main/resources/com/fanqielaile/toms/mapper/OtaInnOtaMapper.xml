@@ -2,16 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fanqielaile.toms.dao.IOtaInnOtaDao" >
 
-       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.OtaTaoBaoArea">
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.OtaInnOtaDto">
               <id column="id" property="id" />
-              <result column="province_code" property="provinceCode"/>
-              <result column="province_name" property="provinceName"/>
-              <result column="city_code" property="cityCode"/>
-              <result column="city_name" property="cityName"/>
-              <result column="area_code" property="areaCode"/>
-              <result column="area_name" property="areaName"/>
+              <result column="wg_hid" property="wgHid"/>
+              <result column="commission_percent" property="commissionPercent"/>
+              <result column="company_id" property="companyId"/>
+              <result column="alias_inn_name" property="aliasInnName"/>
+              <result column="ota_id" property="otaId"/>
+              <result column="price_model" property="priceModel"/>
+              <result column="sjia_model" property="sJiaModel"/>
        </resultMap>
 
+       <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
+              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model)
+              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel})
+       </insert>
 
+       <select id="findOtaInnOta" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT  * from ota_inn_ota WHERE  deleted=0 AND  id='${value}'
+       </select>
 
 </mapper>

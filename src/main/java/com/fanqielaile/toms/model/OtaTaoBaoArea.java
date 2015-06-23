@@ -1,12 +1,14 @@
 package com.fanqielaile.toms.model;
 
+import com.fanqie.core.Domain;
+
 /**
  * DESC : 淘宝区域表
  * @author : 番茄木-ZLin
  * @data : 2015/6/19
  * @version: v1.0.0
  */
-public class OtaTaoBaoArea {
+public class OtaTaoBaoArea extends Domain {
     //省份code
     private String provinceCode;
     //省份名称

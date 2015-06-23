@@ -7,8 +7,14 @@
               <result column="price_model_value" property="priceModelValue"/>
               <result column="price_model" property="priceModelEnum"/>
               <result column="ota_wg_id" property="otaWgId"/>
+              <result column="createdDate" property="created_date"/>
+              <result column="deleted" property="otaWgId"/>
        </resultMap>
 
 
+       <insert id="savePriceModel" parameterType="com.fanqielaile.toms.dto.OtaPriceModelDto">
+            insert into ota_price_model(id,deleted,created_date,price_model_value,price_model,ota_wg_id)
+            values (#{uuid},0,now(),#{priceModelValue},#{priceModelEnum},#{otaWgId})
+       </insert>
 
 </mapper>

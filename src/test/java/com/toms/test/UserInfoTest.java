@@ -26,7 +26,7 @@ public class UserInfoTest {
     private Md5PasswordEncoder passwordEncoder;
 
     @Test
-    @Ignore
+//    @Ignore
     public void testPage() {
         Map<String, String> map = new HashMap<>();
         map.put("name", "ok");

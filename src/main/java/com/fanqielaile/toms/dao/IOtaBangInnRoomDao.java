@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
+
 /**
  * DESC :
  *
@@ -8,4 +10,6 @@ package com.fanqielaile.toms.dao;
  * @version: v1.0.0
  */
 public interface IOtaBangInnRoomDao {
+
+    void saveBangInnRoom(OtaBangInnRoomDto otaBangInnRoomDto);
 }

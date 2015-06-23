@@ -18,9 +18,14 @@
         <result column="ota_id" property="otaId"/>
         <result column="user_account" property="userAccount"/>
         <result column="user_password" property="userPassword"/>
+        <result column="appkey" property="appKey"/>
+        <result column="appsecret" property="appSecret"/>
+        <result column="sessionkey" property="sessionKey"/>
+        <result column="expired_time" property="expiredTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password,
+        appkey,appsecret,sessionkey,expired_time
     </sql>
     <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
         insert into

@@ -7,5 +7,5 @@ package com.fanqielaile.toms.model;
  * @version: v1.0.0
  */
 public enum PriceModelEnum {
-    LUO,MAI
+    GU_B,GU_E
 }
