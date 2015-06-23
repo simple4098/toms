@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
+import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 
@@ -30,6 +31,6 @@ public interface IOrderService {
      *
      * @param xmlStr
      */
-    void addOrder(String xmlStr, Order order) throws Exception;
+    void addOrder(String xmlStr, ChannelSource channelSource) throws Exception;
 
 }
