@@ -2,6 +2,7 @@ package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +24,43 @@ public class Company extends Domain {
     private String userPassword;
     //区别公司来源
     private int type = 1;
+    //appkey, appSecret
+    private String appKey;
+    private String appSecret;
+    private String sessionKey;
+    private Date expiredTime;
+
+    public Date getExpiredTime() {
+        return expiredTime;
+    }
+
+    public void setExpiredTime(Date expiredTime) {
+        this.expiredTime = expiredTime;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public void setAppKey(String appKey) {
+        this.appKey = appKey;
+    }
+
+    public String getAppSecret() {
+        return appSecret;
+    }
+
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
+    }
+
+    public String getSessionKey() {
+        return sessionKey;
+    }
+
+    public void setSessionKey(String sessionKey) {
+        this.sessionKey = sessionKey;
+    }
 
     public int getType() {
         return type;

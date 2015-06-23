@@ -15,6 +15,24 @@ public class CommonApi {
     public static   String ORDER = "";
     public static   String ActiveInn = "";
     public static   String ROOM_TYPE="";
+    public static   String INN_INFO="";
+    public static   String TB_URL="";
+
+    public static String getTbUrl() {
+        return TB_URL;
+    }
+
+    public  void setTbUrl(String tbUrl) {
+        TB_URL = tbUrl;
+    }
+
+    public static String getInnInfo() {
+        return INN_INFO;
+    }
+
+    public  void setInnInfo(String innInfo) {
+        INN_INFO = innInfo;
+    }
 
     public static String getRoomType() {
         return ROOM_TYPE;

@@ -11,8 +11,7 @@ import java.math.BigDecimal;
  * @version: v1.0.0
  */
 public class OtaInnOta extends Domain {
-   //价格模式id
-   private String priceModelId;
+
    //第三方系统中的客栈id
     private String wgHid;
     //佣金比例
@@ -28,13 +27,9 @@ public class OtaInnOta extends Domain {
     //上架模式
     private String sJiaModel;
 
-    public String getPriceModelId() {
-        return priceModelId;
-    }
 
-    public void setPriceModelId(String priceModelId) {
-        this.priceModelId = priceModelId;
-    }
+
+
 
     public String getWgHid() {
         return wgHid;

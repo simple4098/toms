@@ -10,5 +10,7 @@ import com.fanqielaile.toms.dto.OtaInnOtaDto;
  */
 public interface IOtaInnOtaDao {
 
-    String saveOtaInnOta(OtaInnOtaDto otaInnOtaDto);
+    void saveOtaInnOta(OtaInnOtaDto otaInnOtaDto);
+
+    OtaInnOtaDto findOtaInnOta(String id);
 }

@@ -12,5 +12,9 @@
               <result column="ota_wg_id" property="otaWgId"/>
        </resultMap>
 
+       <insert id="saveBangInnRoom" parameterType="com.fanqielaile.toms.dto.OtaBangInnRoomDto">
+               insert into ota_bang_inn_room(id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id)
+              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{rId},#{priceModelId},#{otaWgId})
+       </insert>
 
 </mapper>

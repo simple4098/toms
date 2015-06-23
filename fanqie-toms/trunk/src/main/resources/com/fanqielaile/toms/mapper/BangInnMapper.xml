@@ -34,9 +34,10 @@
         <result column="company_name" property="companyName"/>
         <result column="company_code" property="companyCode"/>
         <result column="account_id" property="accountId"/>
+        <result column="ota_wg_id" property="otaWgId"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id
+        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id
        </sql>
     <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type)
@@ -107,8 +108,8 @@
         company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId} ORDER BY bi.bang_date DESC
     </select>
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
-        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id)
-        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId})
+        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id)
+        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId})
     </insert>
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select
