@@ -1,10 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
-import com.fanqielaile.toms.enums.ChannelSource;
-import com.fanqielaile.toms.enums.FeeStatus;
-import com.fanqielaile.toms.enums.OrderStatus;
-import com.fanqielaile.toms.enums.PaymentType;
+import com.fanqielaile.toms.enums.*;
 import org.dom4j.Element;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -43,12 +40,10 @@ public class Order extends Domain {
     private BigDecimal prepayPrice;
     //成本价
     private BigDecimal costPrice;
-    //OTA佣金
+    //TOMS佣金
     private BigDecimal OTAPrice;
     //下单时间（订单下单时间）
     private Date orderTime;
-    //TOMS收益策略ID
-    private String incomeId;
     //ota房间类型ID
     private String OTARoomTypeId;
     //ota酒店id
@@ -58,11 +53,11 @@ public class Order extends Domain {
     //ota的商品ID
     private String OTAGid;
     //最早到店时间
-    private Date earilestArriveTime;
+    private Date eariestArriveTime;
     //最晚到店时间
-    private Date lastetArriveTime;
+    private Date lastestArriveTime;
     //支付货币
-    private String currency;
+    private CurrencyType currency;
     //支付方式
     private PaymentType paymentType;
     //客人联系电话
@@ -75,6 +70,16 @@ public class Order extends Domain {
     private List<DailyInfos> dailyInfoses;
     //入住人信息
     private List<OrderGuests> orderGuestses;
+    //备注
+    private String comment;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public List<DailyInfos> getDailyInfoses() {
         return dailyInfoses;
@@ -205,15 +210,6 @@ public class Order extends Domain {
     public void setOrderTime(Date orderTime) {
         this.orderTime = orderTime;
     }
-
-    public String getIncomeId() {
-        return incomeId;
-    }
-
-    public void setIncomeId(String incomeId) {
-        this.incomeId = incomeId;
-    }
-
     public String getOTARoomTypeId() {
         return OTARoomTypeId;
     }
@@ -246,27 +242,27 @@ public class Order extends Domain {
         this.OTAGid = OTAGid;
     }
 
-    public Date getEarilestArriveTime() {
-        return earilestArriveTime;
+    public Date getEariestArriveTime() {
+        return eariestArriveTime;
     }
 
-    public void setEarilestArriveTime(Date earilestArriveTime) {
-        this.earilestArriveTime = earilestArriveTime;
+    public void setEariestArriveTime(Date eariestArriveTime) {
+        this.eariestArriveTime = eariestArriveTime;
     }
 
-    public Date getLastetArriveTime() {
-        return lastetArriveTime;
+    public Date getLastestArriveTime() {
+        return lastestArriveTime;
     }
 
-    public void setLastetArriveTime(Date lastetArriveTime) {
-        this.lastetArriveTime = lastetArriveTime;
+    public void setLastestArriveTime(Date lastestArriveTime) {
+        this.lastestArriveTime = lastestArriveTime;
     }
 
-    public String getCurrency() {
+    public CurrencyType getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(CurrencyType currency) {
         this.currency = currency;
     }
 

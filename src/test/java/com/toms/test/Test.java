@@ -6,6 +6,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -15,12 +16,14 @@ import java.util.UUID;
 public class Test {
     public static void main(String[] args) throws DocumentException {
 //        System.out.println(UUID.randomUUID());
-        String xmlstr = "<BookRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password></AuthenticationToken></BookRQ>";
+        String xmlstr = "<BookRQ><DailyInfos><DailyInfo><Day>2013-12-24</Day><Price>17800</Price></DailyInfo><DailyInfo><Day>2013-12-25</Day><Price>46050</Price></DailyInfo></DailyInfos></BookRQ>";
         Document document = DocumentHelper.parseText(xmlstr);
         Element element = document.getRootElement();
         System.out.println(element.getName());
-        Element authenticationToken = element.element("AuthenticationToken");
-        String username = authenticationToken.elementText("Username");
-        System.out.println(username);
+        List<Element> authenticationToken = element.element("DailyInfos").elements("DailyInfo");
+        for (Element e : authenticationToken) {
+            System.out.println(e.element("Day").getText());
+        }
+
     }
 }

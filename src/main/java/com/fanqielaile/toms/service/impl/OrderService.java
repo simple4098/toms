@@ -7,8 +7,12 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dao.DailyInfosDao;
 import com.fanqielaile.toms.dao.OrderDao;
+import com.fanqielaile.toms.dao.OrderGuestsDao;
 import com.fanqielaile.toms.dto.OrderDto;
+import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
@@ -19,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * DESC :
@@ -35,6 +36,10 @@ import java.util.Map;
 public class OrderService implements IOrderService {
     @Resource
     private OrderDao orderDao;
+    @Resource
+    private DailyInfosDao dailyInfosDao;
+    @Resource
+    private OrderGuestsDao orderGuestsDao;
 
 
     @Override
@@ -69,9 +74,22 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void addOrder(String xmlStr, Order order) throws Exception {
+    public void addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         //解析xml
         Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
-        //转换成对象
+        //转换成对象只针对淘宝传递的参数
+        //TODO 需要计算的价格，下单时间，
+        Order order = OrderMethodHelper.getOrder(dealXmlStr);
+        //TODO 查询策略,然后计算相应的价格
+
+        //设置渠道来源
+        order.setChannelSource(channelSource);
+        order.setOrderTime(new Date());
+        //创建订单
+        this.orderDao.insertOrder(order);
+        //创建每日价格信息
+        this.dailyInfosDao.insertDailyInfos(order);
+        //创建入住人信息
+        this.orderGuestsDao.insertOrderGuests(order);
     }
 }

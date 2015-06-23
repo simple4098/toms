@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -36,12 +39,13 @@ public class OTAManageController {
     /**
      * 淘宝调用的接口
      *
-     * @param xmlStr
      * @return
      */
     @RequestMapping("taobaoService")
     @ResponseBody
-    public Object TBService(String xmlStr) throws Exception {
+    public Object TBService(HttpServletRequest request) throws Exception {
+        //TODO 如果采用流的方式传递参数，需要处理成字符串
+        String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
         Result result = new Result();
         if (StringUtils.isNotEmpty(xmlStr)) {
             //接口调用验证用户
@@ -57,10 +61,7 @@ public class OTAManageController {
                     //根据根节点判断执行的方法
                     if (rootElementString.equals(OrderMethod.BookRQ.name())) {
                         //创建订单
-                        // 设置订单来源
-                        Order order = new Order();
-                        order.setChannelSource(ChannelSource.TAOBAO);
-                        orderService.addOrder(xmlStr, order);
+                        orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
                     } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
                         //取消订单
                     } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
