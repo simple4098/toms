@@ -40,9 +40,11 @@ public class RoomTypeService implements IRoomTypeService {
         log.debug("=========:" + roomTypeUrl);
         System.out.println("=========:" + roomTypeUrl);
         String s = String.valueOf(new Date().getTime());
-        String signature = DcUtil.obtMd5("105"+s+"MT"+"mt123456");
-        String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+paramDto.getAccountId()+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;
-        String httpGets = HttpClientUtil.httpGets(roomTypeUrl,null);
+        String signature = DcUtil.obtMd5("105" + s + "MT" + "mt123456");
+        String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+105+"&accountId="+14339+"&signature="+signature;
+        String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+14339+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;
+        String httpGets1 = HttpClientUtil.httpGets(inn_info,null);
+        String httpGets = HttpClientUtil.httpGets(url,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         RoomTypeInfoDto roomTypeInfoDto = null;
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){

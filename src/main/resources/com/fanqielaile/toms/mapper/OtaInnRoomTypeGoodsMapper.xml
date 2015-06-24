@@ -12,5 +12,9 @@
        </resultMap>
 
 
+       <insert id="saveRoomTypeGoodsRp" parameterType="com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto" >
+           insert into ota_inn_roomtype_goods(id,room_type_id,inn_id,company_id,rpid,gid,ota_wg_id)
+           values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId})
+       </insert>
 
 </mapper>

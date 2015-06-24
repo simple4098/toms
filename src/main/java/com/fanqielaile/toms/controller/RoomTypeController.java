@@ -34,9 +34,9 @@ public class RoomTypeController extends BaseController {
         UserInfo userInfo = getCurrentUser();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
-     /*   paramDto.setStartDate("2015-04-02");
+        paramDto.setStartDate("2015-04-02");
         paramDto.setEndDate("2015-05-01");
-        paramDto.setAccountId("14339");*/
+        paramDto.setAccountId("14339");
         try {
             RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
             model.addAttribute("roomType",roomType);

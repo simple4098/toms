@@ -33,6 +33,6 @@ public class OtaInnOtaDto extends OtaInnOta {
         otaInnOta.setInnId(Integer.valueOf(tbParam.getInnId()));
         otaInnOta.setWgHid(String.valueOf(hid));
         otaInnOta.setOtaId(tbParam.getOtaId());
-        return null;
+        return otaInnOta;
     }
 }
