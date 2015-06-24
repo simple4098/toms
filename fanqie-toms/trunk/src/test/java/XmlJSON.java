@@ -29,11 +29,37 @@ public class XmlJSON {
         String xml =  new XMLSerializer().write(jobj);
         return xml;
     }
+class A{
+    private String k1;
+    private String k2;
 
+    public String getK1() {
+        return k1;
+    }
+
+    public void setK1(String k1) {
+        this.k1 = k1;
+    }
+
+    public String getK2() {
+        return k2;
+    }
+
+    public void setK2(String k2) {
+        this.k2 = k2;
+    }
+}
     public static void main(String[] args) {
-        String xml = json2XML(STR_JSON);
+        /*String xml = json2XML(STR_JSON);
         System.out.println("xml = "+xml);
         String json = xml2JSON(xml);
-        System.out.println("json="+json);
+        System.out.println("json="+json);*/
+        JSONObject js = new JSONObject();
+        js.put("k1", "v1");
+        js.put("k2", "v2");
+        System.out.println(js.toString());
+        String xml = json2XML(js.toString());
+        System.out.println("xml = "+xml);
+
     }
 }
