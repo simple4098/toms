@@ -5,6 +5,8 @@ import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.support.util.JsonModel;
+import net.sf.json.JSONObject;
 
 import java.util.Map;
 
@@ -41,7 +43,7 @@ public interface IOrderService {
      * @param channelSource
      * @throws Exception
      */
-    boolean cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception;
+    JsonModel cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception;
 
     /**
      * 付款成功回调
@@ -51,5 +53,5 @@ public interface IOrderService {
      * @return
      * @throws Exception
      */
-    boolean paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception;
+    JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception;
 }
