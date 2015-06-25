@@ -19,6 +19,7 @@ import com.fanqielaile.toms.model.Dictionary;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONObject;
 import org.dom4j.Element;
@@ -53,31 +54,31 @@ public class OrderService implements IOrderService {
 
 
     @Override
-    public Map<String, Object> findOrderSourceDetail(ParamDto paramDto,UserInfo userInfo)throws  Exception{
+    public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
         paramDto.setCompanyId(userInfo.getCompanyId());
-        String  order = HttpClientUtil.httpGets(CommonApi.ORDER, paramDto);
+        String order = HttpClientUtil.httpGets(CommonApi.ORDER, paramDto);
         JSONObject jsonObject = JSONObject.fromObject(order);
         List<OrderDto> data = new ArrayList<OrderDto>();
-        Map<String,Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
         Object rows = jsonObject.get("rows");
         Object obj = jsonObject.get("obj");
-        OrderSourceDto orderSource=null;
-        if (obj!=null){
-             orderSource  = JacksonUtil.json2obj(obj.toString(), OrderSourceDto.class);
+        OrderSourceDto orderSource = null;
+        if (obj != null) {
+            orderSource = JacksonUtil.json2obj(obj.toString(), OrderSourceDto.class);
         }
-        if (rows!=null){
-            List<OrderSource> list  = JacksonUtil.json2list(rows.toString(), OrderSource.class);
-            OrderDto orderDto=null;
-            for (OrderSource o:list){
-                orderDto= new OrderDto();
+        if (rows != null) {
+            List<OrderSource> list = JacksonUtil.json2list(rows.toString(), OrderSource.class);
+            OrderDto orderDto = null;
+            for (OrderSource o : list) {
+                orderDto = new OrderDto();
                 orderDto.setValue(o.getIncome());
                 orderDto.setName(o.getFromName());
                 data.add(orderDto);
             }
-            map.put("data",data);
-            map.put("list",list);
-            map.put("orderSource",orderSource);
+            map.put("data", data);
+            map.put("list", list);
+            map.put("orderSource", orderSource);
             return map;
         }
         return null;
@@ -105,13 +106,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public boolean cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+    public JsonModel cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         //解析取消订单的xml
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
         if (null == order) {
-            return false;
+            return new JsonModel(false, "订单不存在");
         }
         order.setReason(XmlDeal.getOrder(xmlStr).getReason());
         order.setOrderStatus(OrderStatus.REFUSE);
@@ -124,18 +125,18 @@ public class OrderService implements IOrderService {
                 String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
                 JSONObject jsonObject = JSONObject.fromObject(respose);
                 if (jsonObject.get("status") != 200) {
-                    return false;
+                    return new JsonModel(false, jsonObject.get("status").toString() + ":" + jsonObject.get("message"));
                 } else {
                     //同步成功后在修改数据库
                     this.orderDao.updateOrderStatusAndReason(order);
                 }
             }
         }
-        return true;
+        return new JsonModel(true, "取消订单成功");
     }
 
     @Override
-    public boolean paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception {
+    public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
@@ -143,7 +144,7 @@ public class OrderService implements IOrderService {
         List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
         order.setOrderGuestses(orderGuestses);
         if (null == order) {
-            return false;
+            return new JsonModel(false, "订单不存在");
         }
         //获取每日房价信息
         List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
@@ -163,10 +164,10 @@ public class OrderService implements IOrderService {
                 order.setFeeStatus(FeeStatus.NOT_PAY);
                 Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
                 String result = TBXHotelUtil.orderUpdate(order, company);
-                if (result.equals("success")) {
+                if (null != result && result.equals("success")) {
                     this.orderDao.updateOrderStatusAndFeeStatus(order);
                 }
-                return false;
+                return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
             } else {
                 //同步成功后在修改数据库
                 order.setFeeStatus(FeeStatus.PAID);
@@ -176,11 +177,11 @@ public class OrderService implements IOrderService {
                 order.setAlipayTradeNo(order1.getAlipayTradeNo());
                 order.setPayment(order1.getPayment());
                 this.orderDao.updateOrderStatusAndFeeStatus(order);
-                return true;
+                return new JsonModel(true, "付款成功");
             }
 
         } else {
-            return false;
+            return new JsonModel(false, "系统内部错误");
         }
     }
 }
