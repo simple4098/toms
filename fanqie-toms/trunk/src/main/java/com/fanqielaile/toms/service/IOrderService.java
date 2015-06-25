@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
@@ -31,6 +32,24 @@ public interface IOrderService {
      *
      * @param xmlStr
      */
-    void addOrder(String xmlStr, ChannelSource channelSource) throws Exception;
+    Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception;
 
+    /**
+     * 取消订单
+     *
+     * @param xmlStr
+     * @param channelSource
+     * @throws Exception
+     */
+    boolean cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception;
+
+    /**
+     * 付款成功回调
+     *
+     * @param xmlStr
+     * @param channelSource
+     * @return
+     * @throws Exception
+     */
+    boolean paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception;
 }

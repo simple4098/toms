@@ -126,4 +126,12 @@ public interface BangInnDao {
      * @return
      */
     BangInn selectBangInnByUserAndCode(@Param("userInfo") UserInfo userInfo, @Param("code") String code);
+
+    /**
+     * 根据客栈ID查询客栈信息
+     *
+     * @param innId
+     * @return
+     */
+    BangInn selectBangInnByInnId(@Param("innId") int innId);
 }
