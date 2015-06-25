@@ -29,14 +29,14 @@ public class OrderTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void testCancelOrder() throws Exception {
         String xml = "<CancelRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>d0500e54-1365-4859-8909-74982a3c8a07</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></CancelRQ>";
         this.orderService.cancelOrder(xml, ChannelSource.TAOBAO);
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void testCreateOrder() throws Exception {
         String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao1230123213-1387792484913</CreateToken></AuthenticationToken><OrderId>ec49aba0-dfed-4759-bfa3-9895c24d0d86</OrderId><TaoBaoOrderId>1230123213</TaoBaoOrderId><AlipayTradeNo>2013123111001001020000378012</AlipayTradeNo><Payment>10000</Payment></PaySuccessRQ>";
         this.orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO, new UserInfo());
