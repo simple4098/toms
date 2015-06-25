@@ -107,18 +107,16 @@ public class OrderService implements IOrderService {
     @Override
     public boolean cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         //解析取消订单的xml
-        Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
-        String orderId = dealXmlStr.elementText("OrderId");
+        String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
         if (null == order) {
             return false;
         }
-        order.setReason(dealXmlStr.elementText("Reason"));
+        order.setReason(XmlDeal.getOrder(xmlStr).getReason());
         order.setOrderStatus(OrderStatus.REFUSE);
         //判断订单是否需要同步OMS,条件根据订单是否付款
         if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
-            //TODO  调用OMS取消订单接口
             // 查询调用的url
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
             if (null != dictionary) {
@@ -138,8 +136,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public boolean paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception {
-        Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
-        String orderId = dealXmlStr.elementText("OrderId");
+        String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
         //获取入住人信息
@@ -151,12 +148,6 @@ public class OrderService implements IOrderService {
         //获取每日房价信息
         List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
         order.setDailyInfoses(dailyInfoses);
-        //获取到淘宝订单号
-        String taoBaoOrderId = dealXmlStr.elementText("TaoBaoOrderId");
-        //获取支付宝交易号
-        String alipayTradeNo = dealXmlStr.elementText("AlipayTradeNo");
-        //支付金额
-        BigDecimal payment = new BigDecimal(dealXmlStr.elementText("Payment"));
         //判断订单是否同步OMS
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
             //查询字典表中同步OMS需要的数据
@@ -180,6 +171,10 @@ public class OrderService implements IOrderService {
                 //同步成功后在修改数据库
                 order.setFeeStatus(FeeStatus.PAID);
                 order.setOrderStatus(OrderStatus.ACCEPT);
+                //解析xml得到的order
+                Order order1 = XmlDeal.getOrder(xmlStr);
+                order.setAlipayTradeNo(order1.getAlipayTradeNo());
+                order.setPayment(order1.getPayment());
                 this.orderDao.updateOrderStatusAndFeeStatus(order);
                 return true;
             }
