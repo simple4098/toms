@@ -137,4 +137,9 @@
         <include refid="Base_Column_List"/>
         from bang_inn where company_id = #{userInfo.companyId} and code=#{code} limit 1
     </select>
+    <select id="selectBangInnByInnId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where inn_id=#{innId}
+    </select>
 </mapper>

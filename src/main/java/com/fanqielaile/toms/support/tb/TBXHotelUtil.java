@@ -4,6 +4,7 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -204,5 +205,20 @@ public class TBXHotelUtil {
             log.error(e.getErrMsg());
         }
         return  null;
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param order
+     * @param company
+     */
+    public static String orderUpdate(Order order, Company company) throws ApiException {
+        TaobaoClient client = new DefaultTaobaoClient(url, company.getAppKey(), company.getAppSecret());
+        XhotelOrderUpdateRequest req = new XhotelOrderUpdateRequest();
+        req.setTid((long) Integer.parseInt(order.getChannelOrderCode()));
+        req.setOptType(1L);
+        XhotelOrderUpdateResponse response = client.execute(req, company.getSessionKey());
+        return response.getResult();
     }
 }

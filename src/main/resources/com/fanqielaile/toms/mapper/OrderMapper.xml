@@ -35,11 +35,14 @@
         <result column="guest_mobile" property="guestMobile"/>
         <result column="OTA_rate_code" property="OTARateCode"/>
         <result column="fee_status" property="feeStatus"/>
+        <result column="reason" property="reason"/>
+        <result property="alipayTradeNo" column="alipay_trade_no"/>
+        <result property="payment" column="payment"/>
     </resultMap>
     <sql id="Base_Column_List">
               id, creator_id, created_date, updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,live_time,leave_time,
         total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,currency,payment_type,
-              guest_mobile,OTA_rate_code,fee_status
+        guest_mobile,OTA_rate_code,fee_status,reason,alipay_trade_no,payment
        </sql>
     <insert id="insertOrder" parameterType="com.fanqielaile.toms.model.Order">
               INSERT INTO ota_toms_order(id, creator_id, created_date, updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,
@@ -50,10 +53,21 @@
         #{liveTime},#{leaveTime},#{totalPrice},#{prepayPrice},#{costPrice},#{OTAPrice},#{orderTime},#{comment},#{OTARoomTypeId},#{OTAHotelId},#{OTARatePlanId},#{OTAGid},#{eariestArriveTime},
                 #{lastestArriveTime},#{currency},#{paymentType},#{guestMobile},#{OTARateCode},#{feeStatus})
        </insert>
-    <select id="selectOrderByChannelSourceAndChannelOrderCode" resultMap="BaseResultsMap">
+    <select id="selectOrderByChannelSourceAndOrderId" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
         from ota_toms_order where deleted = 0 and channel_source = #{channelSource} and channel_order_code =
         #{channelOrderCode} limit 1
     </select>
+    <select id="selectOrderByIdAndChannelSource" resultMap="BaseResultsMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ota_toms_order where deleted = 0 and channel_source = #{channelSource} and id = #{orderId} limit 1
+    </select>
+    <update id="updateOrderStatusAndReason" parameterType="com.fanqielaile.toms.model.Order">
+        UPDATE ota_toms_order set order_status =  #{orderStatus} and reason = #{reason} where deleted = 0 and id=#{id}
+    </update>
+    <update id="updateOrderStatusAndFeeStatus" parameterType="com.fanqielaile.toms.model.Order">
+        UPDATE ota_toms_order set order_status=#{orderStatus} and fee_status = #{feeStatus} where deleted 0 and id=#{id}
+    </update>
 </mapper>

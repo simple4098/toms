@@ -7,15 +7,18 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dao.DailyInfosDao;
-import com.fanqielaile.toms.dao.OrderDao;
-import com.fanqielaile.toms.dao.OrderGuestsDao;
+import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.OrderDto;
 import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.DictionaryType;
+import com.fanqielaile.toms.enums.FeeStatus;
+import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
-import com.fanqielaile.toms.model.Order;
-import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.model.Dictionary;
 import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONObject;
 import org.dom4j.Element;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -39,7 +43,13 @@ public class OrderService implements IOrderService {
     @Resource
     private DailyInfosDao dailyInfosDao;
     @Resource
+    private DictionaryDao dictionaryDao;
+    @Resource
+    private BangInnDao bangInnDao;
+    @Resource
     private OrderGuestsDao orderGuestsDao;
+    @Resource
+    private CompanyDao companyDao;
 
 
     @Override
@@ -74,7 +84,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+    public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         //解析xml
         Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
         //转换成对象只针对淘宝传递的参数
@@ -91,5 +101,91 @@ public class OrderService implements IOrderService {
         this.dailyInfosDao.insertDailyInfos(order);
         //创建入住人信息
         this.orderGuestsDao.insertOrderGuests(order);
+        return order;
+    }
+
+    @Override
+    public boolean cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+        //解析取消订单的xml
+        Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
+        String orderId = dealXmlStr.elementText("OrderId");
+        //验证此订单是否存在
+        Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        if (null == order) {
+            return false;
+        }
+        order.setReason(dealXmlStr.elementText("Reason"));
+        order.setOrderStatus(OrderStatus.REFUSE);
+        //判断订单是否需要同步OMS,条件根据订单是否付款
+        if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
+            //TODO  调用OMS取消订单接口
+            // 查询调用的url
+            Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
+            if (null != dictionary) {
+                //发送请求
+                String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
+                JSONObject jsonObject = JSONObject.fromObject(respose);
+                if (jsonObject.get("status") != 200) {
+                    return false;
+                } else {
+                    //同步成功后在修改数据库
+                    this.orderDao.updateOrderStatusAndReason(order);
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception {
+        Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
+        String orderId = dealXmlStr.elementText("OrderId");
+        //获取订单号，判断订单是否存在
+        Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        //获取入住人信息
+        List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
+        order.setOrderGuestses(orderGuestses);
+        if (null == order) {
+            return false;
+        }
+        //获取每日房价信息
+        List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
+        order.setDailyInfoses(dailyInfoses);
+        //获取到淘宝订单号
+        String taoBaoOrderId = dealXmlStr.elementText("TaoBaoOrderId");
+        //获取支付宝交易号
+        String alipayTradeNo = dealXmlStr.elementText("AlipayTradeNo");
+        //支付金额
+        BigDecimal payment = new BigDecimal(dealXmlStr.elementText("Payment"));
+        //判断订单是否同步OMS
+        if (order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
+            //查询字典表中同步OMS需要的数据
+            Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
+            //查询客栈信息
+            BangInn bangInn = this.bangInnDao.selectBangInnByInnId(order.getInnId());
+            order.setAccountId(bangInn.getAccountId());
+            //TODO 查询roomType信息
+            String respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
+            JSONObject jsonObject = JSONObject.fromObject(respose);
+            if (jsonObject.get("status") != 200) {
+                order.setOrderStatus(OrderStatus.REFUSE);
+                order.setFeeStatus(FeeStatus.NOT_PAY);
+                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
+                String result = TBXHotelUtil.orderUpdate(order, company);
+                if (result.equals("success")) {
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                }
+                return false;
+            } else {
+                //同步成功后在修改数据库
+                order.setFeeStatus(FeeStatus.PAID);
+                order.setOrderStatus(OrderStatus.ACCEPT);
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+                return true;
+            }
+
+        } else {
+            return false;
+        }
     }
 }

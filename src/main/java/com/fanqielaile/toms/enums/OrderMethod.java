@@ -7,6 +7,7 @@ package com.fanqielaile.toms.enums;
 public enum OrderMethod {
     BookRQ("创建订单"),
     CancelRQ("取消订单"),
+    PaySuccessRQ("付款成功回调"),
     QueryStatusRQ("查询订单状态");
     private String text;
 

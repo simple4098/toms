@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping("")
-public class OTAManageController {
+public class OTAManageController extends BaseController {
     @Resource
     private IOrderService orderService;
     @Resource
@@ -54,18 +54,34 @@ public class OTAManageController {
             if (null != userInfo) {
                 //验证用户密码
                 if (userInfo.getPassword().equals(passwordEncoder.encodePassword(userNameAndPassword.getPassword(), ""))) {
-                    result.setResultCode("1");
-                    result.setMessage("订单创建成功");
                     //得到跟节点
                     String rootElementString = XmlDeal.getRootElementString(xmlStr);
                     //根据根节点判断执行的方法
                     if (rootElementString.equals(OrderMethod.BookRQ.name())) {
                         //创建订单
-                        orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
+                        Order order = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
+                        result.setResultCode("1");
+                        result.setMessage(order.getId());
                     } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
                         //取消订单
-                    } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
-                        //查询订单
+                        boolean flag = orderService.cancelOrder(xmlStr, ChannelSource.TAOBAO);
+                        if (flag) {
+                            result.setResultCode("0");
+                            result.setMessage("取消订单成功");
+                        } else {
+                            result.setResultCode("-209");
+                            result.setMessage("取消订单失败");
+                        }
+                    } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
+                        //付款成功回调
+                        boolean flag = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO, getCurrentUser());
+                        if (flag) {
+                            result.setResultCode("0");
+                            result.setMessage("付款成功");
+                        } else {
+                            result.setResultCode("-400");
+                            result.setMessage("付款失败");
+                        }
                     } else {
                         throw new TomsRuntimeException("xml参数错误");
                     }
@@ -75,7 +91,7 @@ public class OTAManageController {
                 result.setResultCode("-400");
             }
         } else {
-            result.setMessage("创建订单失败，原因参数不正确");
+            result.setMessage("创建订单失败，原因：参数不正确");
             result.setResultCode("-400");
         }
         return result;
