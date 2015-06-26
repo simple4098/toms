@@ -157,7 +157,7 @@ public class OrderService implements IOrderService {
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             //查询客栈信息
-            BangInn bangInn = this.bangInnDao.selectBangInnByInnId(order.getInnId());
+            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndInnId(userInfo.getCompanyId(), order.getInnId());
             order.setAccountId(bangInn.getAccountId());
             List<OtaBangInnRoomDto> otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()));
             order.setRoomTypeName(otaBangInnRoomDtos.get(0).getRoomTypeName());
@@ -166,12 +166,12 @@ public class OrderService implements IOrderService {
             if (jsonObject.get("status") != 200) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-//                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
-//                //TODO 必须登录
-//                String result = TBXHotelUtil.orderUpdate(order, company);
-//                if (null != result && result.equals("success")) {
-//                    this.orderDao.updateOrderStatusAndFeeStatus(order);
-//                }
+                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
+                //TODO 必须登录
+                String result = TBXHotelUtil.orderUpdate(order, company);
+                if (null != result && result.equals("success")) {
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                }
                 return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
             } else {
                 //同步成功后在修改数据库
