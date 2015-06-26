@@ -9,6 +9,7 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.OrderDto;
+import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.DictionaryType;
 import com.fanqielaile.toms.enums.FeeStatus;
@@ -51,6 +52,8 @@ public class OrderService implements IOrderService {
     private OrderGuestsDao orderGuestsDao;
     @Resource
     private CompanyDao companyDao;
+    @Resource
+    private IOtaBangInnRoomDao bangInnRoomDao;
 
 
     @Override
@@ -156,18 +159,19 @@ public class OrderService implements IOrderService {
             //查询客栈信息
             BangInn bangInn = this.bangInnDao.selectBangInnByInnId(order.getInnId());
             order.setAccountId(bangInn.getAccountId());
-            //TODO 查询roomType信息
+            List<OtaBangInnRoomDto> otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()));
+            order.setRoomTypeName(otaBangInnRoomDtos.get(0).getRoomTypeName());
             String respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
             JSONObject jsonObject = JSONObject.fromObject(respose);
             if (jsonObject.get("status") != 200) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
-                //TODO 必须登录
-                String result = TBXHotelUtil.orderUpdate(order, company);
-                if (null != result && result.equals("success")) {
-                    this.orderDao.updateOrderStatusAndFeeStatus(order);
-                }
+//                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
+//                //TODO 必须登录
+//                String result = TBXHotelUtil.orderUpdate(order, company);
+//                if (null != result && result.equals("success")) {
+//                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+//                }
                 return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
             } else {
                 //同步成功后在修改数据库
