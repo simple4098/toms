@@ -437,8 +437,7 @@ public class Order extends Domain {
                 childOrder.setCheckInAt(new SimpleDateFormat("yyyy-MM-dd").format(dailyInfos.getDay()));
                 childOrder.setCheckOutAt(new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.addDay(dailyInfos.getDay(), 1)));
                 childOrder.setRoomTypeId(order.getRoomTypeId());
-                //需要根据ROOMTYPEID
-                childOrder.setRoomTypeName("BIG_HOME");
+                childOrder.setRoomTypeName(order.getRoomTypeName());
                 childOrders.add(childOrder);
             }
         }
