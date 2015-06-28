@@ -21,5 +21,9 @@
               SELECT id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id from
               ota_bang_inn_room where inn_id = #{innId} and room_type_id=#{roomTypeId}
        </select>
+       <select id="findOtaBangInnRoom"  resultMap="BaseResultMap">
+              SELECT id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id from
+              ota_bang_inn_room where ota_wg_id = #{wgOtaId} and room_type_id=#{roomTypeId}
+       </select>
 
 </mapper>

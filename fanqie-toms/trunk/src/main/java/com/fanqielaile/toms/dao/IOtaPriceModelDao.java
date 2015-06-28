@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.OtaPriceModelDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * DESC :
@@ -11,4 +12,6 @@ import com.fanqielaile.toms.dto.OtaPriceModelDto;
 public interface IOtaPriceModelDao {
 
     void  savePriceModel(OtaPriceModelDto otaPriceModelDto);
+
+    OtaPriceModelDto findOtaPriceModelByWgOtaId(@Param("wgOtaId")String id);
 }

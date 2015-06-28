@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.dto;
 
-import com.fanqielaile.toms.common.TBParam;
+import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.model.OtaInnOta;
 
 import java.math.BigDecimal;

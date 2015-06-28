@@ -13,8 +13,12 @@
 
 
        <insert id="saveRoomTypeGoodsRp" parameterType="com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto" >
-           insert into ota_inn_roomtype_goods(id,room_type_id,inn_id,company_id,rpid,gid,ota_wg_id)
-           values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId})
+           insert into ota_inn_roomtype_goods(id,room_type_id,inn_id,company_id,rpid,gid,ota_wg_id,rid)
+           values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId},#{rid})
        </insert>
+
+       <select id="findRoomTypeByRid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+              SELECT  o.* from ota_inn_roomtype_goods o where o.rid='${rid}'
+       </select>
 
 </mapper>

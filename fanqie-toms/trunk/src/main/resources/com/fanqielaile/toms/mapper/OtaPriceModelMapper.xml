@@ -17,4 +17,8 @@
             values (#{uuid},0,now(),#{priceModelValue},#{priceModelEnum},#{otaWgId})
        </insert>
 
+       <select id="findOtaPriceModelByWgOtaId" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT  o.* from ota_price_model o where o.ota_wg_id=#{wgOtaId}
+       </select>
+
 </mapper>

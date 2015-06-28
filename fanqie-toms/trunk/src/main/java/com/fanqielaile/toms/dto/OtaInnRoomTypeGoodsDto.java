@@ -11,7 +11,7 @@ import com.fanqielaile.toms.model.OtaInnRoomTypeGoods;
  */
 public class OtaInnRoomTypeGoodsDto extends OtaInnRoomTypeGoods {
 
-    public static OtaInnRoomTypeGoodsDto toDto(String innId,Integer roomTypeId,Long rpid,Long gid,String companyId,String otaWgId){
+    public static OtaInnRoomTypeGoodsDto toDto(String innId,Integer roomTypeId,Long rpid,Long gid,String companyId,String otaWgId,String rid){
         OtaInnRoomTypeGoodsDto goodsDto = new OtaInnRoomTypeGoodsDto();
         goodsDto.setCompanyId(companyId);
         goodsDto.setGid(String.valueOf(gid));
@@ -19,6 +19,7 @@ public class OtaInnRoomTypeGoodsDto extends OtaInnRoomTypeGoods {
         goodsDto.setOtaWgId(otaWgId);
         goodsDto.setRpid(String.valueOf(rpid));
         goodsDto.setRoomTypeId(Integer.valueOf(roomTypeId));
+        goodsDto.setRid(rid);
         return goodsDto;
     }
 }

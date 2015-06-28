@@ -17,4 +17,6 @@ public interface IOtaBangInnRoomDao {
     void saveBangInnRoom(OtaBangInnRoomDto otaBangInnRoomDto);
 
     List<OtaBangInnRoomDto> selectBangInnRoomByInnIdAndRoomTypeId(@Param("innId") int innId, @Param("roomTypeId") int roomTypeId);
+
+    OtaBangInnRoomDto findOtaBangInnRoom(@Param("wgOtaId")String id, @Param("roomTypeId")Integer roomTypeId);
 }

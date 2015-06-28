@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.dto;
 
+import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
-import com.fanqielaile.toms.common.TBParam;
 import com.fanqielaile.toms.model.BangInn;
 
 import java.util.Date;
