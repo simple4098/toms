@@ -1,14 +1,17 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.dao.IOtaTaoBaoAreaDao;
 import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.support.util.JsonModel;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.request.XhotelAddRequest;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 
 /**
  * DESC : 淘宝对接 API
@@ -20,11 +23,9 @@ public interface ITBService {
 
     /**
      * 添加酒店
-     * @param company
-     * @param innDto
-     * @return
+     * @param tbParam 绿番茄传过来的参数
      */
-    XHotel hotelAdd(Company company,InnDto innDto);
+    JsonModel hotelAdd(TBParam tbParam) throws IOException;
 
     /**
      * 获取酒店

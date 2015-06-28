@@ -1,10 +1,12 @@
 package com.toms.test;
 
+import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.*;
-import com.fanqielaile.toms.common.TBParam;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.ITBService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.taobao.api.DefaultTaobaoClient;
@@ -55,13 +57,14 @@ public class TBTest {
     private IOtaInnRoomTypeGoodsDao goodsDao;
 
     @Test
+    @Ignore
     public void test() throws IOException {
         //String innId = "7060";
-        String innId = "11186";
+        String innId = "22490";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "15525";
-        String otaId = "105";
+        String accountId = "16310";
+        String otaId = "101";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
         boolean deleted=false;
@@ -73,9 +76,12 @@ public class TBTest {
         tbParam.setPriceModel(priceModel);
         tbParam.setSj(isSj);
         tbParam.setsJiaModel(shangJiaModel);
+        tbParam.setCompanyCode(companyCode);
         Company company = companyDao.selectCompanyByCompanyCode(companyCode);
+        String roomTypeUrl = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),accountId, CommonApi.ROOM_TYPE);
+        String innInfoUrl = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),accountId, CommonApi.INN_INFO);
         String s = String.valueOf(new Date().getTime());
-        String signature = DcUtil.obtMd5("105" + s + "MT" + "mt123456");
+        String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
         String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-06-24&to=2015-07-23"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
@@ -100,31 +106,57 @@ public class TBTest {
                 priceModelDao.savePriceModel(otaPriceModel);
                 BangInnDto bangInnDto = BangInnDto.toDto(company.getId(),tbParam,otaInnOta.getUuid(),omsInnDto.getInnName());
                 bangInnDao.createBangInn(bangInnDto);
+            }else {
+                otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
+                otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
+                xHotel = TBXHotelUtil.hotelGet(Long.valueOf(otaInnOta.getWgHid()),company);
             }
         }
 
         //房型
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-            //String priceModelId = "098356aa-5c02-430b-b4ac-d436f7fcaa6f";
-            //String wgOtaId = "a44b3d2f-bb26-4ed8-8c53-000ee40c8455";
-           for (RoomTypeInfo r:list){
-               XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), xHotel.getHid(), r, company);
-               if (xRoomType!=null){
-                   OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
-                   otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
-                   //添加商品 //todo
-                   Long gid = TBXHotelUtil.roomAdd(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
-                   //创建酒店rp
-                   Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
-                   OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid());
-                   goodsDao.saveRoomTypeGoodsRp(goodsDto);
-                   //保存商品关联信息 //todo
-                    TBXHotelUtil.rateUpdate(company, gid, rpid, r);
-               }
-           }
+            for (RoomTypeInfo r:list){
+                XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), xHotel.getHid(), r, company);
+                if (xRoomType!=null){
+                    OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
+                    otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
+                    //添加商品
+                    Long gid = TBXHotelUtil.roomAdd(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
+                    //创建酒店rp
+                    Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
+                    OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
+                    goodsDao.saveRoomTypeGoodsRp(goodsDto);
+                    //保存商品关联信息
+                    TBXHotelUtil.rateUpdate(company, gid, rpid, r,otaPriceModel);
+                }else {
+                    OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
+                    XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
+                    OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(roomType.getRid());
+                    //保存商品关联信息
+                    TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel);
+                }
+            }
         }
 
     }
 
+
+
+    @Test
+    public void  test1(){
+        TBParam tbParam = new TBParam();
+        tbParam.setCompanyCode("11111111");
+        tbParam.setCommissionPercent(new BigDecimal(3.5));
+        tbParam.setCommissionType("MAI,DI");
+        List<String> list = otaInnOtaDao.findOtaInnOtaIdsByCompanyCode(tbParam.getCompanyCode());
+        if (!CollectionUtils.isEmpty(list) && tbParam.getCommissionPercent()!=null){
+            StringBuilder listIds = new StringBuilder();
+            for (String v:list){
+                listIds.append("\'").append(v).append("\'").append(",");
+            }
+            listIds.deleteCharAt(listIds.length()-1);
+            otaInnOtaDao.updateOtaInnOtaCommission(listIds.toString(),tbParam.getCommissionPercent(),tbParam.getCommissionType());
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.support.tb;
 
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,6 +110,24 @@ public class TBXHotelUtil {
     }
 
     /**
+     * 获取房型信息
+     * @param rid rid tp店房型id
+     */
+    public static XRoomType getRoomType(Long rid,Company company){
+        TaobaoClient client=new DefaultTaobaoClient(url, company.getAppKey(), company.getAppSecret());
+        XhotelRoomtypeGetRequest req=new XhotelRoomtypeGetRequest();
+        req.setRid(rid);
+        try {
+            XhotelRoomtypeGetResponse response = client.execute(req , company.getSessionKey());
+            System.out.println("==getRoomType:"+response.getBody());
+            return response.getXroomtype();
+        } catch (ApiException e) {
+            log.error(e.getErrMsg());
+        }
+        return  null;
+    }
+
+    /**
      * 添加商品
      * @param outerId pms系统中的房型id
      * @param hid 酒店id
@@ -175,7 +195,7 @@ public class TBXHotelUtil {
         return  null;
     }
 
-    public static String rateUpdate(Company company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo){
+    public static String rateUpdate(Company company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto){
         TaobaoClient client=new DefaultTaobaoClient(url, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
         req.setGid(gid);
@@ -189,7 +209,8 @@ public class TBXHotelUtil {
                 InventoryRate rate = new InventoryRate();
                 rate.setDate(r.getRoomDate());
                 rate.setQuota(r.getRoomNum());
-                rate.setPrice(r.getRoomPrice());
+                rate.setPrice(new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue());
+
                 list.add(rate);
             }
             inventory.setInventory_price(list);

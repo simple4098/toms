@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * DESC :
@@ -12,4 +13,6 @@ import com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto;
 public interface IOtaInnRoomTypeGoodsDao {
 
     void saveRoomTypeGoodsRp(OtaInnRoomTypeGoodsDto goodsDto);
+
+    OtaInnRoomTypeGoodsDto findRoomTypeByRid(@Param("rid")Long rid);
 }

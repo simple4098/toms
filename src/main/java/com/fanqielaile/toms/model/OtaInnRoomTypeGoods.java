@@ -15,6 +15,15 @@ public class OtaInnRoomTypeGoods extends Domain {
     private String gid;
     private String companyId;
     private String otaWgId;
+    private String rid;
+
+    public String getRid() {
+        return rid;
+    }
+
+    public void setRid(String rid) {
+        this.rid = rid;
+    }
 
     public Integer getRoomTypeId() {
         return roomTypeId;
