@@ -422,7 +422,7 @@ public class Order extends Domain {
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
         omsOrder.setOtaOrderNo(order.getId());
-        omsOrder.setPaidAmount(order.getPayment());
+        omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
         omsOrder.setRoomTypeNum(order.getHomeAmount());
