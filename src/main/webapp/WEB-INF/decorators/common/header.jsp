@@ -51,7 +51,7 @@
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="<c:url value="/logout" />">
+                            <a href="<c:url value="/system/logout" />">
                                 <i class="icon-off"></i>
                                 退出
                             </a>
