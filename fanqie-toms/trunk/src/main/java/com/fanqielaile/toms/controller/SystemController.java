@@ -11,6 +11,7 @@ import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -57,6 +58,16 @@ public class SystemController extends BaseController {
             logger.error("用户登录失败", e);
         }
         return "welcome";
+    }
+
+    /**
+     * 退出
+     * @return
+     */
+    @RequestMapping("logout")
+    public String logout() {
+        SecurityContextHolder.clearContext();
+        return "login";
     }
 
     /**

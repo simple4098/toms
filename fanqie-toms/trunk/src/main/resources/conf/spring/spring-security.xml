@@ -14,7 +14,7 @@
                              authentication-failure-url="/login?error=true"
                              default-target-url="/system/login_success"/>
         <security:custom-filter ref="filterSecurityInterceptor" before="FILTER_SECURITY_INTERCEPTOR"/>
-        <security:logout logout-url="/logout" logout-success-url="/login"/>
+        <security:logout logout-url="/system/logout" logout-success-url="/login"/>
         <security:access-denied-handler error-page="/denied"/>
         <!--<security:session-management invalid-session-url="/login">-->
         <!--&lt;!&ndash;不限制同一个用户同时登录次数，属性max-sessions 设置为一个不会轻易超出的数值 &ndash;&gt;-->
@@ -54,4 +54,5 @@
     <bean id="rolePermissionChangeListener" class="com.fanqielaile.toms.support.listener.RolePermissionChangeListener">
         <property name="requestMapResolver" ref="requestMapResolver"/>
     </bean>
+
 </beans>
