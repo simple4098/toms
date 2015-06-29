@@ -51,6 +51,12 @@
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
+    <!--日志-->
+    <dependency>
+      <groupId>com.tomato.framework</groupId>
+      <artifactId>framework-log</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
     <!--dom4j-->
     <dependency>
       <groupId>dom4j</groupId>
@@ -474,6 +480,52 @@
       <dependenciesAsLibraries>true</dependenciesAsLibraries>
       </configuration>
       </plugin>
+      <!--日志-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>compile_with_aspectj</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-compile_with_aspectj</id>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <aspectLibraries>
+            <aspectLibrary>
+              <groupId>com.tomato.framework</groupId>
+              <artifactId>framework-log</artifactId>
+            </aspectLibrary>
+          </aspectLibraries>
+
+          <complianceLevel>1.7</complianceLevel>
+          <outxml>true</outxml>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjtools</artifactId>
+            <version>${aspectj.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
     </plugins>
   </build>
 </project>

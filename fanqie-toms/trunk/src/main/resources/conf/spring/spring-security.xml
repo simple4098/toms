@@ -54,5 +54,6 @@
     <bean id="rolePermissionChangeListener" class="com.fanqielaile.toms.support.listener.RolePermissionChangeListener">
         <property name="requestMapResolver" ref="requestMapResolver"/>
     </bean>
-
+    <bean id="businLogClient" class="com.tomato.framework.log.client.BusinLogClient"/>
+    <bean id="sysLogClient" class="com.tomato.framework.log.client.SysLogClient"/>
 </beans>

@@ -12,6 +12,7 @@ import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.tomato.framework.log.client.SysLogClient;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +41,8 @@ public class OTAManageController extends BaseController {
     private IUserInfoService userInfoService;
     @Resource
     private Md5PasswordEncoder passwordEncoder;
-
+    @Resource
+    private SysLogClient sysLogClient;
     /**
      * 淘宝调用的接口
      *
