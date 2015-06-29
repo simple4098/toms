@@ -8,6 +8,7 @@ import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.tomato.framework.log.support.UserInfoContext;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ public class SystemController extends BaseController {
             List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
             model.addAttribute(Constants.DATA, permissionList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            UserInfoContext.setUserInfo(currentUser.getId());
         } catch (Exception e) {
             logger.error("用户登录失败", e);
         }
@@ -66,6 +68,9 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("logout")
     public String logout() {
+        //日志
+        UserInfoContext.release();
+        //清空session
         SecurityContextHolder.clearContext();
         return "login";
     }
