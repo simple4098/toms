@@ -37,12 +37,22 @@ public class BangInn extends Domain {
     private BangType type;
     //标签名称
     private String innLabelName;
-    //account id
+    //account id （卖价）
     private Integer accountId;
+    //account id （低价）
+    private Integer accountIdDi;
     //绑定关联id
     private String otaWgId;
 
     private List<BangInn> bangInnList;
+
+    public Integer getAccountIdDi() {
+        return accountIdDi;
+    }
+
+    public void setAccountIdDi(Integer accountIdDi) {
+        this.accountIdDi = accountIdDi;
+    }
 
     public String getOtaWgId() {
         return otaWgId;

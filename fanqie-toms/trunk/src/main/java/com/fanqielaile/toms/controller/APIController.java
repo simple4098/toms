@@ -42,7 +42,7 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         try {
-            tbService.hotelAdd(tbParam);
+            tbService.hotelAddOrUpdate(tbParam);
         } catch (IOException e) {
             log.error(e.getMessage());
         }

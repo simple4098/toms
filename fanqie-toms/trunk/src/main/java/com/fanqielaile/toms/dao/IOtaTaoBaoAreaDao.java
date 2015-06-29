@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * DESC :
@@ -11,4 +12,6 @@ import com.fanqielaile.toms.model.OtaTaoBaoArea;
 public interface IOtaTaoBaoAreaDao {
 
     OtaTaoBaoArea findCityAndArea(String name);
+
+    OtaTaoBaoArea findCountyAndCity(@Param("cityCode")String cityCode, @Param("county")String county);
 }
