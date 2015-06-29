@@ -1,10 +1,12 @@
 package com.fanqielaile.toms.dto;
 
+import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.model.BangInn;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by wangdayin on 2015/5/29.
@@ -65,6 +67,7 @@ public class BangInnDto extends BangInn {
     }
 
     public static BangInnDto toDto(String companyId,TBParam tbParam,String otaInnOtaId,String innName){
+        List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId(companyId);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
@@ -72,6 +75,14 @@ public class BangInnDto extends BangInn {
         bangInnDto.setOtaWgId(otaInnOtaId);
         bangInnDto.setInnName(innName);
         bangInnDto.setBangDate(new Date());
+        for (PriceModel p:priceModelArray){
+            if(p.getPm().equals("DI")){
+                bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
+            }
+            if(p.getPm().equals("MAI")){
+                bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
+            }
+        }
         return  bangInnDto;
     }
 }

@@ -49,13 +49,13 @@ public class TBXHotelUtil {
         req.setName(innDto.getBrandName());
         req.setUsedName(innDto.getInnName());
         if (andArea!=null){
-            req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):null);
-            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : null);
+            req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000l);
+            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100l);
         }
         req.setAddress(innDto.getAddr());
         try {
             XhotelAddResponse response = client.execute(req , company.getSessionKey());
-            System.out.println("==========response.getBody()=" + response.getBody());
+            System.out.println("hotelAdd:" + response.getBody());
             return response.getXhotel();
         } catch (ApiException e) {
             log.error(e.getErrMsg());
@@ -164,7 +164,7 @@ public class TBXHotelUtil {
 
         try {
             XhotelRoomAddResponse response = client.execute(req , company.getSessionKey());
-            System.out.println("response.getBody()=" + response.getBody());
+            System.out.println("roomAdd:" + response.getBody());
             return response.getGid();
         } catch (ApiException e) {
             log.error(e.getErrMsg());
@@ -195,7 +195,7 @@ public class TBXHotelUtil {
         return  null;
     }
 
-    public static String rateUpdate(Company company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto){
+    public static String rateUpdate(Company company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted){
         TaobaoClient client=new DefaultTaobaoClient(url, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
         req.setGid(gid);
@@ -204,18 +204,25 @@ public class TBXHotelUtil {
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             List<InventoryRate> list = new ArrayList<InventoryRate>();
+            List<RateSwitchCal> rateSwitchCalList = new ArrayList<RateSwitchCal>();
             InventoryPrice inventory = new InventoryPrice();
+            RateSwitchCal rateSwitchCal = null;
+            InventoryRate rate = null;
             for (RoomDetail  r:roomTypeInfo.getRoomDetail()){
-                InventoryRate rate = new InventoryRate();
+                rate = new InventoryRate();
+                rateSwitchCal = new RateSwitchCal(r.getRoomDate(),deleted?0:1);
                 rate.setDate(r.getRoomDate());
                 rate.setQuota(r.getRoomNum());
-                rate.setPrice(new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue());
-
+                double price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                rate.setPrice(price*10);
                 list.add(rate);
+                rateSwitchCalList.add(rateSwitchCal);
             }
             inventory.setInventory_price(list);
             String json = JacksonUtil.obj2json(inventory);
+            String rateSwitchCalJson = JacksonUtil.obj2json(rateSwitchCalList);
             req.setInventoryPrice(json);
+            req.setRateSwitchCal(rateSwitchCalJson);
         }
 
         try {
