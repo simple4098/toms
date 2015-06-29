@@ -127,7 +127,7 @@ public class OrderService implements IOrderService {
                 //发送请求
                 String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
                 JSONObject jsonObject = JSONObject.fromObject(respose);
-                if (jsonObject.get("status") != 200) {
+                if (!jsonObject.get("status").equals(200)) {
                     return new JsonModel(false, jsonObject.get("status").toString() + ":" + jsonObject.get("message"));
                 } else {
                     //同步成功后在修改数据库
@@ -157,13 +157,19 @@ public class OrderService implements IOrderService {
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             //查询客栈信息
-            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndInnId(userInfo.getCompanyId(), order.getInnId());
+            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndInnId("88888888", order.getInnId());
+            if (null == bangInn) {
+                return new JsonModel(false, "绑定客栈不存在");
+            }
             order.setAccountId(bangInn.getAccountId());
             List<OtaBangInnRoomDto> otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()));
+            if (otaBangInnRoomDtos.isEmpty()) {
+                return new JsonModel(false, "房型不存在");
+            }
             order.setRoomTypeName(otaBangInnRoomDtos.get(0).getRoomTypeName());
             String respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
             JSONObject jsonObject = JSONObject.fromObject(respose);
-            if (jsonObject.get("status") != 200) {
+            if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
                 Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());

@@ -51,7 +51,7 @@
                     <div class="widget-main">
                         <p class="alert alert-info">
                             <textarea class="notice-content" maxlength="70" name="noticeContent"
-                                      style="width: 90%;height: 20%;"></textarea>
+                                      style="width: 90%;height: 37%;"></textarea>
                         </p>
                     </div>
                 </div>
