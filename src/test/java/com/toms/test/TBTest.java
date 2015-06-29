@@ -147,7 +147,7 @@ public class TBTest {
     public void  test1(){
         TBParam tbParam = new TBParam();
         tbParam.setCompanyCode("11111111");
-        tbParam.setCommissionPercent(new BigDecimal(3.5));
+        tbParam.setCommissionPercent(new BigDecimal(1.5));
         tbParam.setCommissionType("MAI,DI");
         List<String> list = otaInnOtaDao.findOtaInnOtaIdsByCompanyCode(tbParam.getCompanyCode());
         if (!CollectionUtils.isEmpty(list) && tbParam.getCommissionPercent()!=null){
@@ -156,7 +156,7 @@ public class TBTest {
                 listIds.append("\'").append(v).append("\'").append(",");
             }
             listIds.deleteCharAt(listIds.length()-1);
-            otaInnOtaDao.updateOtaInnOtaCommission(listIds.toString(),tbParam.getCommissionPercent(),tbParam.getCommissionType());
+            otaInnOtaDao.updateOtaInnOtaCommission(list,tbParam.getCommissionPercent(),tbParam.getCommissionType());
         }
     }
 }

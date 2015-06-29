@@ -25,7 +25,7 @@ public interface IOtaInnOtaDao {
      */
     List<String> findOtaInnOtaIdsByCompanyCode(String companyCode);
 
-    void updateOtaInnOtaCommission(@Param("listIds")String ids,@Param("commissionPercent")BigDecimal commissionPercent,@Param("commissionType")String type);
+    void updateOtaInnOtaCommission(@Param("listIds")List<String> ids,@Param("commissionPercent")BigDecimal commissionPercent,@Param("commissionType")String type);
 
     /**
      * 根据参数查询 客栈往TP店推的一些信息 比如 hid

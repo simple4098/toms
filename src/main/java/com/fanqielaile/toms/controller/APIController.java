@@ -11,9 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * DESC : 对接TB controller
@@ -48,7 +50,11 @@ public class APIController extends BaseController {
     }
 
     @RequestMapping("/commission/update")
-    public JsonModel commissionUpdate(TBParam tbParam){
+    @ResponseBody
+    public Object commissionUpdate(TBParam tbParam){
+        tbParam.setCompanyCode("11111111");
+        tbParam.setCommissionPercent(new BigDecimal(0.5));
+        tbParam.setCommissionType("MAI,DI");
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         if(!StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getCommissionType())){
             commissionService.updateCommission(tbParam);

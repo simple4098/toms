@@ -29,7 +29,10 @@
        </select>
 
        <update id="updateOtaInnOtaCommission" >
-              update ota_inn_ota set commission_percent=${commissionPercent},price_model='${commissionType}' where  id in (#{listIds})
+              update ota_inn_ota set commission_percent='${commissionPercent}',price_model='${commissionType}' where  id in
+              <foreach collection="listIds" index="index" item="item" open="(" close=")" separator=",">
+                     #{item}
+              </foreach>
 
        </update>
 
