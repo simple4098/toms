@@ -147,9 +147,7 @@ public class UserInfo extends Domain implements UserDetails {
         this.password = password;
     }
 
-    public Integer isDataPermission() {
-        return dataPermission;
-    }
+
 
     public void setDataPermission(Integer dataPermission) {
         this.dataPermission = dataPermission;
