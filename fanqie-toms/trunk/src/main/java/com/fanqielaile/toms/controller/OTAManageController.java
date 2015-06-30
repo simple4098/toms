@@ -55,7 +55,6 @@ public class OTAManageController extends BaseController {
     @RequestMapping("taobaoService")
     @ResponseBody
     public Object TBService(HttpServletRequest request) throws Exception {
-        //TODO 如果采用流的方式传递参数，需要处理成字符串
         String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
         Result result = new Result();
         if (StringUtils.isNotEmpty(xmlStr)) {
