@@ -53,5 +53,5 @@ public interface IOrderService {
      * @return
      * @throws Exception
      */
-    JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception;
+    JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception;
 }

@@ -12,7 +12,11 @@ import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.tomato.framework.log.annotation.Log;
+import com.tomato.framework.log.annotation.LogModule;
+import com.tomato.framework.log.client.BusinLogClient;
 import com.tomato.framework.log.client.SysLogClient;
+import com.tomato.log.model.BusinLog;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +46,7 @@ public class OTAManageController extends BaseController {
     @Resource
     private Md5PasswordEncoder passwordEncoder;
     @Resource
-    private SysLogClient sysLogClient;
+    private BusinLogClient businLogClient;
     /**
      * 淘宝调用的接口
      *
@@ -82,7 +86,7 @@ public class OTAManageController extends BaseController {
                         }
                     } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
                         //付款成功回调
-                        JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO, getCurrentUser());
+                        JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
                         if (jsonModel.isSuccess()) {
                             result.setResultCode("0");
                             result.setMessage("付款成功");

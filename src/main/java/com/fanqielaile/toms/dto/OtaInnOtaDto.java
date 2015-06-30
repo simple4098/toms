@@ -14,6 +14,16 @@ import java.math.BigDecimal;
 public class OtaInnOtaDto extends OtaInnOta {
 
     private Integer innId;
+    //价格模式的值
+    private BigDecimal priceModelValue;
+
+    public BigDecimal getPriceModelValue() {
+        return priceModelValue;
+    }
+
+    public void setPriceModelValue(BigDecimal priceModelValue) {
+        this.priceModelValue = priceModelValue;
+    }
 
     public Integer getInnId() {
         return innId;
