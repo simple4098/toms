@@ -5,6 +5,7 @@ import com.fanqie.util.Constants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Company;
@@ -36,6 +37,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 @Service
+@LogModule("TP 推酒店房型service")
 public class TBService implements ITBService {
     private static  final Logger log = LoggerFactory.getLogger(TBService.class);
     @Resource
@@ -60,12 +62,11 @@ public class TBService implements ITBService {
      * @param tbParam 参数
      */
     @Override
-    public Object hotelAddOrUpdate(TBParam tbParam) throws IOException {
-        /*BusinLog businLog = new BusinLog();
-        businLogClient.save(businLog);*/
-       JsonModel jsonModel = new JsonModel();
+    @Log(descr ="酒店更新、增加")
+    public JsonModel hotelAddOrUpdate(TBParam tbParam,BusinLog businLog) throws IOException {
+        JsonModel jsonModel = new JsonModel();
         //String innId = "7060";
-        String innId = "22490";
+        /*String innId = "22490";
         String companyCode = "11111111";
         //String accountId = "14339";
         String accountId = "16310";
@@ -80,14 +81,14 @@ public class TBService implements ITBService {
         tbParam.setPriceModel(priceModel);
         tbParam.setSj(isSj);
         tbParam.setsJiaModel(shangJiaModel);
-        tbParam.setDeleted(deleted);
+        tbParam.setDeleted(deleted);*/
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
-        //String room_type = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-        //String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
-        String s = String.valueOf(new Date().getTime());
-        String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
-        String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+tbParam.getOtaId()+"&accountId="+tbParam.getAccountId()+"&signature="+signature;
-        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+tbParam.getOtaId()+"&accountId="+tbParam.getAccountId()+"&from=2015-06-30&to=2015-07-23"+"&signature="+signature;
+        String room_type = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+        String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
+        //String s = String.valueOf(new Date().getTime());
+        //String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
+        //String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+tbParam.getOtaId()+"&accountId="+tbParam.getAccountId()+"&signature="+signature;
+        //String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+tbParam.getOtaId()+"&accountId="+tbParam.getAccountId()+"&from=2015-06-30&to=2015-07-23"+"&signature="+signature;
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
         String roomTypeGets = HttpClientUtil.httpGets(room_type,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
@@ -129,7 +130,7 @@ public class TBService implements ITBService {
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
-                    Long gid = TBXHotelUtil.roomAdd(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
@@ -145,7 +146,13 @@ public class TBService implements ITBService {
                 }
             }
         }
-        return null;
+        try {
+            businLog.setDescr("TP推酒店");
+            businLogClient.save(businLog);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return jsonModel;
 
     }
 

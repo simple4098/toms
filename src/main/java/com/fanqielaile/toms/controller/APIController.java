@@ -6,6 +6,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.ITBService;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.tomato.log.model.BusinLog;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class APIController extends BaseController {
     private ICommissionService commissionService;
 
     @RequestMapping("/hotel/update")
-    public JsonModel hotel(TBParam tbParam){
+    public JsonModel hotel(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         if (!validateParam){
@@ -42,7 +43,7 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         try {
-            tbService.hotelAddOrUpdate(tbParam);
+            tbService.hotelAddOrUpdate(tbParam,businLog);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -52,9 +53,9 @@ public class APIController extends BaseController {
     @RequestMapping("/commission/update")
     @ResponseBody
     public Object commissionUpdate(TBParam tbParam){
-        tbParam.setCompanyCode("11111111");
+       /* tbParam.setCompanyCode("11111111");
         tbParam.setCommissionPercent(new BigDecimal(0.5));
-        tbParam.setCommissionType("MAI,DI");
+        tbParam.setCommissionType("MAI,DI");*/
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         if(!StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getCommissionType())){
             commissionService.updateCommission(tbParam);

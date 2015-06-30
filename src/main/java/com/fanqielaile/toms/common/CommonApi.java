@@ -18,7 +18,7 @@ public class CommonApi {
     public static   String ROOM_TYPE="";
     public static   String INN_INFO="";
     public static   String TB_URL="";
-    public static   String IMG_URL="http://img.fanqiele.com/";
+    public static   String IMG_URL="http://img.fanqiele.com";
 
     public static String getTbUrl() {
         return TB_URL;
