@@ -5,6 +5,7 @@ import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.taobao.api.domain.XHotel;
+import com.tomato.log.model.BusinLog;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public interface ITBService {
      * 添加酒店
      * @param tbParam 绿番茄传过来的参数
      */
-    Object hotelAddOrUpdate(TBParam tbParam) throws IOException;
+    JsonModel hotelAddOrUpdate(TBParam tbParam,BusinLog businLog) throws IOException;
 
     /**
      * 获取酒店

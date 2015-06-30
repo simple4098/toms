@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,7 +31,6 @@ import java.util.List;
 
 /**
  * DESC :
- *
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
@@ -37,6 +38,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml","/conf/spring/spring-security.xml"})
 public class TBTest {
+    private static  final Logger log = LoggerFactory.getLogger(TBXHotelUtil.class);
     @Resource
     private ITBService tbService;
     @Resource
@@ -57,10 +59,10 @@ public class TBTest {
     @Test
     public void test() throws IOException {
         //String innId = "7060";
-        String innId = "13073";
+        String innId = "5901";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "8054";
+        String accountId = "8400";
         String otaId = "101";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -68,7 +70,7 @@ public class TBTest {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("8056");
+        price1.setAccountId("8400");
         price1.setPm("MAI");
         PriceModel price2 = new PriceModel();
         price2.setAccountId("8056");
@@ -135,7 +137,7 @@ public class TBTest {
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
-                    Long gid = TBXHotelUtil.roomAdd(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
@@ -147,7 +149,10 @@ public class TBTest {
                     XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(roomType.getRid());
                     //保存商品关联信息
-                    TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel,tbParam.isDeleted());
+                    //if (innRoomTypeGoodsDto.getGid()!=StringUtils.EMPTY && innRoomTypeGoodsDto.getRpid()!=null){
+                    if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())){
+                        TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel,tbParam.isDeleted());
+                    }
                 }
             }
         }
