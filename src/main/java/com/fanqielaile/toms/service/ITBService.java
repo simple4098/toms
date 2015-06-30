@@ -20,7 +20,7 @@ public interface ITBService {
      * 添加酒店
      * @param tbParam 绿番茄传过来的参数
      */
-    JsonModel hotelAddOrUpdate(TBParam tbParam) throws IOException;
+    Object hotelAddOrUpdate(TBParam tbParam) throws IOException;
 
     /**
      * 获取酒店
