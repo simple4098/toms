@@ -32,4 +32,7 @@ public interface IOtaInnOtaDao {
      * @param tbParam
      */
     OtaInnOtaDto findOtaInnOtaByParams(TBParam tbParam);
+
+    OtaInnOtaDto selectOtaInnOtaByTBHotelId(@Param("otaHotelId") String otaHotelId);
+
 }

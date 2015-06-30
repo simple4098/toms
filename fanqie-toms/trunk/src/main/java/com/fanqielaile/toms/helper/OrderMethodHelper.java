@@ -55,11 +55,11 @@ public class OrderMethodHelper {
         order.setOTARoomTypeId(element.elementText("TaoBaoRoomTypeId"));
         order.setRoomTypeId(element.elementText("RoomTypeId"));
         order.setGuestName(element.elementText("ContactName"));
-        order.setTotalPrice(new BigDecimal(element.elementText("TotalPrice")));
+        order.setTotalPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
         order.setHomeAmount(Integer.parseInt(element.elementText("RoomNum")));
         order.setLiveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckIn")));
         order.setLeaveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckOut")));
-        order.setPrepayPrice(new BigDecimal(element.elementText("TotalPrice")));
+        order.setPrepayPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
         order.setOrderTime(new Date());
         order.setOTAHotelId(element.elementText("TaoBaoHotelId"));
         order.setOTARatePlanId(element.elementText("TaoBaoRatePlanId"));
@@ -100,7 +100,7 @@ public class OrderMethodHelper {
                 DailyInfos infos = new DailyInfos();
                 infos.setOrderId(orderId);
                 infos.setDay(new SimpleDateFormat("yyyy-MM-dd").parse(e.elementText("Day")));
-                infos.setPrice(new BigDecimal(e.elementText("Price")));
+                infos.setPrice(new BigDecimal(e.elementText("Price")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
                 dailyInfoses.add(infos);
             }
         }

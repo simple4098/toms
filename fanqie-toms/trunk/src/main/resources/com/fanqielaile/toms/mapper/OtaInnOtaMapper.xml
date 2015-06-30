@@ -11,6 +11,7 @@
               <result column="ota_id" property="otaId"/>
               <result column="price_model" property="priceModel"/>
               <result column="sjia_model" property="sJiaModel"/>
+              <result column="price_model_value" property="priceModelValue"/>
        </resultMap>
 
        <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
@@ -40,6 +41,11 @@
               SELECT o.* from ota_inn_ota o
               INNER JOIN bang_inn b ON b.ota_wg_id = o.id   INNER JOIN company c ON c.id = b.company_id
               where c.company_code = '${companyCode}' and b.inn_id ='${innId}' and b.account_id='${accountId}' and o.ota_id=#{otaId}
+       </select>
+
+       <select id="selectOtaInnOtaByTBHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT oo.*,om.price_model_value from ota_inn_ota oo inner JOIN ota_price_model om on oo.id = om.ota_wg_id
+              where oo.wg_hid=#{otaHotelId} and oo.deleted = 0
        </select>
 
 </mapper>

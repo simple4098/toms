@@ -8,8 +8,10 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
+import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.OrderDto;
 import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
+import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.DictionaryType;
 import com.fanqielaile.toms.enums.FeeStatus;
@@ -23,6 +25,7 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +57,8 @@ public class OrderService implements IOrderService {
     private CompanyDao companyDao;
     @Resource
     private IOtaBangInnRoomDao bangInnRoomDao;
+    @Resource
+    private IOtaInnOtaDao otaInnOtaDao;
 
 
     @Override
@@ -92,10 +97,14 @@ public class OrderService implements IOrderService {
         //解析xml
         Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
         //转换成对象只针对淘宝传递的参数
-        //TODO 需要计算的价格，下单时间，
         Order order = OrderMethodHelper.getOrder(dealXmlStr);
-        //TODO 查询策略,然后计算相应的价格
-
+        OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+        //设置每日价格
+        if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+            for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+            }
+        }
         //设置渠道来源
         order.setChannelSource(channelSource);
         order.setOrderTime(new Date());
@@ -139,7 +148,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource, UserInfo userInfo) throws Exception {
+    public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
@@ -157,11 +166,17 @@ public class OrderService implements IOrderService {
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             //查询客栈信息
-            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndInnId("88888888", order.getInnId());
+            BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId());
             if (null == bangInn) {
                 return new JsonModel(false, "绑定客栈不存在");
             }
-            order.setAccountId(bangInn.getAccountId());
+            //查询当前酒店以什么模式发布thi
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            if (otaInnOtaDto.getsJiaModel().equals("MAI")) {
+                order.setAccountId(bangInn.getAccountId());
+            } else {
+                order.setAccountId(bangInn.getAccountIdDi());
+            }
             List<OtaBangInnRoomDto> otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()));
             if (otaBangInnRoomDtos.isEmpty()) {
                 return new JsonModel(false, "房型不存在");
@@ -172,8 +187,7 @@ public class OrderService implements IOrderService {
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-                Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
-                //TODO 必须登录
+                Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
                 String result = TBXHotelUtil.orderUpdate(order, company);
                 if (null != result && result.equals("success")) {
                     this.orderDao.updateOrderStatusAndFeeStatus(order);

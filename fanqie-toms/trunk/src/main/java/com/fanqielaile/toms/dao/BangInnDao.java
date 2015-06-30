@@ -134,4 +134,12 @@ public interface BangInnDao {
      * @return
      */
     BangInn selectBangInnByInnId(@Param("innId") int innId);
+
+    /**
+     * 根据tb酒店ID查询绑定客栈信息
+     *
+     * @param otaHotelId
+     * @return
+     */
+    BangInnDto selectBangInnByTBHotelId(@Param("otaHotelId") String otaHotelId);
 }

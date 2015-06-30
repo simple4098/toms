@@ -16,6 +16,7 @@
         <result column="user_id" property="userId"/>
         <result column="type" property="type"/>
         <result column="account_id" property="accountId"/>
+        <result column="account_id_di" property="accountIdDi"/>
     </resultMap>
     <resultMap id="BangInnDtoResult" type="com.fanqielaile.toms.dto.BangInnDto">
         <id column="id" property="id"/>
@@ -35,6 +36,8 @@
         <result column="company_code" property="companyCode"/>
         <result column="account_id" property="accountId"/>
         <result column="ota_wg_id" property="otaWgId"/>
+        <result column="account_id_di" property="accountIdDi"/>
+
     </resultMap>
     <sql id="Base_Column_List">
         id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id
@@ -141,5 +144,9 @@
         SELECT
         <include refid="Base_Column_List"/>
         from bang_inn where inn_id=#{innId}
+    </select>
+    <select id="selectBangInnByTBHotelId" parameterType="java.lang.String" resultMap="BangInnDtoResult">
+        SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.ota_wg_id = oo.id where oo.wg_hid=#{otaHotelId} and
+        oo.deleted = 0
     </select>
 </mapper>

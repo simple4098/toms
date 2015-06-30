@@ -59,7 +59,7 @@ public class XmlDeal {
         String alipayTradeNo = element.elementText("AlipayTradeNo");
         order.setAlipayTradeNo(alipayTradeNo);
         //支付金额
-        BigDecimal payment = element.elementText("Payment") == null ? new BigDecimal(0) : new BigDecimal(element.elementText("Payment"));
+        BigDecimal payment = element.elementText("Payment") == null ? new BigDecimal(0) : new BigDecimal(element.elementText("Payment")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
         order.setPayment(payment);
         //取消订单原因
         order.setReason(element.elementText("Reason"));
