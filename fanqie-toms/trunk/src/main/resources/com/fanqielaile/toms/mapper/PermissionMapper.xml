@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.PermissionDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.Permission">
+        <id column="id" property="id"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="modifier_id" property="modifierId"/>
+        <result column="version" property="version"/>
+        <result column="deleted" property="deleted"/>
+        <result column="permission_name" property="permissionName"/>
+        <result column="url" property="url"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="indexed" property="indexed"/>
+    </resultMap>
+    <resultMap id="permissionRoleResultMap" type="com.fanqielaile.toms.model.Permission">
+        <id column="id" property="id"/>
+        <result column="permission_name" property="permissionName"/>
+        <result column="url" property="url"/>
+        <collection property="roles" ofType="com.fanqielaile.toms.model.Role">
+            <id property="id" column="role_id"/>
+            <result column="role_name" property="roleName"/>
+            <result column="role_key" property="roleKey"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, permission_name, url,parent_id,indexed
+    </sql>
+    <select id="selectPermissions" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from permission
+    </select>
+    <select id="selectPermissionByCompanyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT p.id,p.permission_name,p.url,p.parent_id,p.indexed from permission p left join company_permission cp on p.id = cp.permission_id
+        where company_id = #{companyId}
+    </select>
+    <select id="selectPermissionRoles" resultMap="permissionRoleResultMap">
+        SELECT p.id,p.permission_name,p.url,r.role_name,r.role_key,r.id role_id FROM permission p
+        left JOIN role_permission rp on p.id = rp.permission_id LEFT JOIN role r ON rp.role_id=r.id
+    </select>
+    <insert id="insertPermission" parameterType="com.fanqielaile.toms.model.Permission">
+        insert into permission(id,permission_name,url,parent_id,indexed,deleted) values
+        (#{id},#{permissionName},#{url},#{parentId},#{indexed},#{deleted})
+    </insert>
+    <select id="selectPermissionByUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT p.id,p.permission_name,p.url,p.parent_id,p.indexed from user_info u
+        left join role_permission rp on u.role_id=rp.role_id
+        LEFT join permission p on p.id = rp.permission_id
+        where u.deleted = 0 and u.id= #{userId}
+    </select>
+</mapper>

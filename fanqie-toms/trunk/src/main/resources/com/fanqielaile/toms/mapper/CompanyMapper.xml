@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.CompanyDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.Company">
+        <id column="id" property="id"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="modifier_id" property="modifierId"/>
+        <result column="version" property="version"/>
+        <result column="deleted" property="deleted"/>
+        <result column="company_name" property="companyName"/>
+        <result column="ota_id" property="otaId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_password" property="userPassword"/>
+        <result column="company_code" property="companyCode"/>
+        <result column="type" property="type"/>
+        <result column="ota_id" property="otaId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_password" property="userPassword"/>
+        <result column="appkey" property="appKey"/>
+        <result column="appsecret" property="appSecret"/>
+        <result column="sessionkey" property="sessionKey"/>
+        <result column="expired_time" property="expiredTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password,
+        appkey,appsecret,sessionkey,expired_time
+    </sql>
+    <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
+        insert into
+        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password)
+        values
+        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type},#{otaId},#{userAccount},#{userPassword})
+       </insert>
+    <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM company where deleted = 0
+        and id = #{id}
+    </select>
+    <insert id="insertCompanyPermission" parameterType="com.fanqielaile.toms.model.Company">
+        INSERT INTO company_permission (id,company_id,permission_id,created_date,updated_date)
+        VALUES
+        <foreach collection="permissionList" item="p" separator=",">
+            (#{p.uuid},#{id},#{p.id},#{p.createdDate},#{p.updatedDate})
+        </foreach>
+    </insert>
+    <select id="selectCompanyByCompany" parameterType="com.fanqielaile.toms.model.Company" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM company where deleted =0
+        <if test="companyName != null and companyName != ''">
+            and company_name like concat('%',#{companyName},'%')
+        </if>
+        <if test="companyCode != null and companyCode != ''">
+            and company_code = #{companyCode}
+        </if>
+    </select>
+    <select id="selectCompanyByCompanyCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from company where company_code = #{companyCode} and type = 1 and deleted = 0 limit 1
+    </select>
+</mapper>

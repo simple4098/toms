@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.UserInfoDao" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.UserInfoDto">
+              <id column="id" property="id" />
+              <result column="creator_id" property="creatorId"/>
+              <result column="created_date" property="createdDate"/>
+              <result column="updated_date" property="updatedDate"/>
+              <result column="modifier_id" property="modifierId"/>
+              <result column="version" property="version"/>
+              <result column="deleted" property="deleted"/>
+              <result column="login_name" property="loginName"/>
+              <result column="user_type" property="userType"/>
+              <result column="telephone" property="telephone"/>
+              <result column="user_name" property="userName"/>
+              <result column="password" property="password"/>
+              <result column="data_permission" property="dataPermission"/>
+              <result column="company_id" property="companyId"/>
+              <result column="role_id" property="roleId"/>
+              <result column="company_name" property="companyName"/>
+       </resultMap>
+       <resultMap id="userResultMap" type="com.fanqielaile.toms.model.UserInfo">
+              <id column="id" property="id"/>
+              <result column="login_name" property="loginName"/>
+              <result column="user_name" property="userName"/>
+              <result column="user_type" property="userType"/>
+              <result column="telephone" property="telephone"/>
+              <result column="password" property="password"/>
+              <result column="data_permission" property="dataPermission"/>
+              <result column="role_id" property="roleId"/>
+              <result column="company_id" property="companyId"/>
+              <result column="created_date" property="createdDate"/>
+              <association property="role" resultMap="roleOfUserMap"/>
+       </resultMap>
+       <resultMap id="roleOfUserMap" type="com.fanqielaile.toms.model.Role">
+              <id column="role_id" property="id"/>
+              <result column="role_name" property="roleName"/>
+              <result column="role_key" property="roleKey"/>
+       </resultMap>
+       <sql id="Base_Column_List">
+              id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id,user_name
+       </sql>
+       <insert id="insertUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
+              insert into
+              user_info(id,creator_id,created_date,updated_date,modifier_id,version,deleted,login_name,user_type,telephone,password,data_permission,company_id,role_id,user_name)
+              values
+              (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{loginName},#{userType},#{telephone},#{password},#{dataPermission},#{companyId},#{roleId},#{userName})
+       </insert>
+       <select id="selectUserInfoByLoginName" parameterType="java.lang.String" resultMap="userResultMap">
+              select u.id,u.login_name, u.telephone, u.user_type, u.password, u.data_permission, u.role_id,
+              u.created_date,u.company_id,
+              r.role_name,r.role_key,u.user_name
+        from user_info u left join role r on u.role_id= r.id where u.deleted = 0 and  u.login_name=#{loginName}
+       </select>
+       <select id="selectUserInfos" parameterType="java.lang.String" resultMap="BaseResultMap">
+              select
+              u.id,u.user_name,u.user_type,u.login_name,u.telephone,u.data_permission,u.company_id,u.role_id,c.company_name
+              from user_info u LEFT join company c on u.company_id = c.id
+              where u.deleted = 0
+              <if test="companyId != null and companyId != ''">
+                     and u.company_id = #{companyId}
+              </if>
+              ORDER BY u.created_date DESC
+       </select>
+       <select id="selectUserInfoById" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT
+              <include refid="Base_Column_List"/>
+              from user_info where deleted = 0 and id = #{id}
+       </select>
+       <update id="updateUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo">
+              update user_info
+              <trim prefix="SET" suffixOverrides=",">
+                     updated_date=now(),
+                     version=version+1,
+                     <if test="loginName != null and loginName != ''">
+                            login_name = #{loginName},
+                     </if>
+                     <if test="userType != null and userType != ''">
+                            user_type = #{userType},
+                     </if>
+                     <if test="telephone != null and telephone != ''">
+                            telephone = #{telephone},
+                     </if>
+                     <if test="password != null and password != ''">
+                            password = #{password},
+                     </if>
+                     <if test="dataPermission != null and dataPermission != ''">
+                            data_permission = #{dataPermission},
+                     </if>
+                     <if test="userName != null and userName != ''">
+                            user_name = #{userName},
+                     </if>
+              </trim>
+              where deleted = 0 and id = #{id}
+       </update>
+       <update id="deleteUserInfo" parameterType="java.lang.String">
+              update user_info set deleted = 1 where id = #{id}
+       </update>
+       <update id="updateUserDataPermission">
+              update user_info set data_permission =#{dataPermission} where id = #{id}
+       </update>
+       <select id="selectOtherUserInfoById" resultMap="BaseResultMap"
+               parameterType="com.fanqielaile.toms.model.UserInfo">
+              SELECT
+              <include refid="Base_Column_List"/>
+              from user_info where id !=#{id} and company_id = #{companyId} and deleted =0 ORDER BY created_date DESC
+       </select>
+       <select id="selectUserInfoByPage" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
+              SELECT * from user_info
+       </select>
+       <select id="selectUserInfoByPagination" parameterType="java.lang.String" resultMap="BaseResultMap">
+              select
+              u.id,u.user_name,u.user_type,u.login_name,u.telephone,u.data_permission,u.company_id,u.role_id,c.company_name
+              from user_info u LEFT join company c on u.company_id = c.id
+              where u.deleted = 0
+              <if test="companyId != null and companyId != ''">
+                     and u.company_id = #{companyId}
+              </if>
+              ORDER BY u.created_date DESC
+       </select>
+</mapper>

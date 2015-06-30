@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.DailyInfosDao">
+    <resultMap id="BaseResultsMap" type="com.fanqielaile.toms.model.DailyInfos">
+        <id column="id" property="id"/>
+        <result column="day" property="day"/>
+        <result column="price" property="price"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="order_id" property="orderId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,day,price,created_date,order_id
+    </sql>
+    <insert id="insertDailyInfos" parameterType="com.fanqielaile.toms.model.Order">
+        INSERT INTO ota_daily_infos(id,day,price,created_date,order_id)
+        VALUES
+        <foreach collection="dailyInfoses" item="d" separator=",">
+            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId})
+        </foreach>
+    </insert>
+    <select id="selectDailyInfoByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from ota_daily_infos where order_id = #{orderId}
+    </select>
+</mapper>

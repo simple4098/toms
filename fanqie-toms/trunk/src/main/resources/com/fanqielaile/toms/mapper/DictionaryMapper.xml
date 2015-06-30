@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.DictionaryDao">
+    <resultMap id="BaseResultsMap" type="com.fanqielaile.toms.model.Dictionary">
+        <id column="id" property="id"/>
+        <result column="desc" property="desc"/>
+        <result column="type" property="type"/>
+        <result column="value" property="value"/>
+        <result column="url" property="url"/>
+        <result column="v_name" property="vName"/>
+        <result column="v_pwd" property="vPWD"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id,type,value,url,v_name,v_pwd,"desc"
+    </sql>
+    <select id="selectDictionaryByType" parameterType="java.lang.String" resultMap="BaseResultsMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from dictionary where type = #{type}
+    </select>
+
+</mapper>

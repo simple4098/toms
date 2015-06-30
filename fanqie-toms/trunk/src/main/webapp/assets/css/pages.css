@@ -1,0 +1,234 @@
+@charset "UTF-8";
+/* ------------------运营趋势报表------------------ */
+ body{
+ 	background: #fff;
+ }
+table{
+	font-size: 12px;
+}
+.data-count-container{
+	border: 1px solid #ccc;
+	padding: 5px 0;
+	height: 130px;
+}
+
+.data-count-box > div{
+	border-right: 1px solid #ccc;
+	height: 118px;
+}
+.data-count-box > div:last-child{
+	border: none;
+}
+.color-green span{
+	color: #5cb85c;
+	font-size: 34px;
+	padding-right: 2px;
+}
+.color-gray{
+	color: #ccc;
+}
+.data-map-container{
+	padding: 0;
+	margin-top: 10px;
+}
+.data-map-box{
+	min-height: 400px;
+	border: 1px solid #ccc;
+	border-top: none;
+	padding-top: 20px;
+}
+.data-map-area{
+	width: 100%;
+	height: 400px;
+}
+.select-area{
+	margin:10px 0;
+	z-index: 10000;
+	height: 44px;
+}
+/* 下拉框 */
+select.form-control{
+	display: inline-block;
+	width: 165px;
+	min-width: 165px;
+	padding: 3px 6px;
+	height: 30px;
+}
+
+/* 日历选择框 */
+.date-input[readonly]{
+	line-height: inherit!important;
+	height: 30px;
+	cursor: pointer;
+}
+
+/*搜索按钮*/
+.search-btn{
+	height: 29px;
+}
+/* ------------------客户资料分析------------------ */
+#myTab{
+	height: 34px;
+}
+.table-wrap thead th:nth-child(2){
+	width: 7%;
+}
+.table-wrap thead th:nth-child(3){
+	width: 50%;
+}
+.table-wrap td, .table-wrap th{
+	vertical-align: middle!important;
+	font-size: 18px;
+}
+.table-wrap thead th:nth-child(4),
+.table-wrap tbody>tr>td:nth-child(4){
+	text-align: center!important;
+}
+.progress{
+	margin-bottom: 0!important; /* 进度条样式重置 */
+}
+.chosen-select{
+	width: 100px;
+}
+
+/* ------------------订单来源分析------------------ */
+/* 表格样式重置 */
+.row{
+	margin: 0;
+}
+.table tbody > tr > td{
+	border-top: none;
+	border-bottom: 1px solid #ddd;
+}
+.map-channel-box{
+	padding: 10px 0;
+	border: 1px solid #ccc;
+}
+.map-channel-box:first-child{
+	border-right: 1px solid #ccc;
+}
+#map_channel{
+	width: 100%;
+	height: 350px;
+}
+/* ------------------房态房量------------------ */
+.ftfl-content{
+	margin-left: 200px;
+	margin-right: 0;
+	margin-top: 0;
+	padding: 0;
+}
+.room-status-box{
+	position: relative;
+}
+.table-left{
+	width: 130px;
+	overflow-x: scroll;
+}
+.table-right{
+	overflow-x: scroll;
+	position: absolute;
+	top: 0;
+	left: 130px;
+	width: 100%;
+}
+.room-status-table{
+	width: 2500px;
+	border-left: none;
+}
+.room-status-table tr td,
+.room-status-table tr th{
+	border-left: none!important;
+	text-align: center;
+}
+.room-status-table thead > tr:first-child{
+	height: 47px;
+}
+.room-status-table thead > tr > th{
+	border-bottom-width: 1px;
+	font-weight: normal;
+}
+.date-input-2[readonly]{
+	line-height: inherit!important;
+	height: 30px;
+	width: 80px;
+	cursor: pointer;
+}
+#prevM, #nextM{
+	cursor: pointer;
+}
+/* ------------------客栈活跃表------------------ */
+.table-box{
+	padding: 0;
+}
+.table-user-active thead tr{
+	color: #fff;
+	border-color: #fff;
+}
+.table-user-active tbody tr td{
+	border-color: #fff;
+}
+.table-user-active thead tr th{
+	border-color: #fff;
+	border-bottom-width: 1px;
+	background-color: #328aa4;
+}
+.table-user-active .color-0{
+	background-color: #f8f8f8;
+}
+.table-user-active .color-1{
+	background-color: #6cd3ff;
+}
+.table-user-active .color-2{
+	background-color: #95ebbc;
+}
+.table-user-active .color-3{
+	background-color: #f8ecca;
+}
+.head-tip {
+	font-size: 14px;
+	font-weight: normal;
+	background-color: darksalmon;
+	color: #fff;
+	display: inline;
+	padding: 8px;
+	border-radius: 5px;
+}
+
+.kz-plus {
+	padding: 15px 0;
+}
+
+.kz-plus div {
+	padding: 2px 10px;
+}
+
+.logo {
+	line-height: 45px;
+	color: #fff;
+	background: url("../css/images/logos.png") 8px 8px no-repeat;
+	text-indent: 60px;
+	font-size: 24px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.RoleDao">
+    <resultMap id="RoleResultMap" type="com.fanqielaile.toms.model.Role">
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_desc" property="roleDesc"/>
+        <result column="role_key" property="roleKey"/>
+        <result column="created_date" property="createdDate" javaType="java.util.Date"/>
+        <result column="creator_id" property="creatorId"/>
+    </resultMap>
+    <resultMap id="rolePermissionResultMap" type="com.fanqielaile.toms.model.Role">
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_desc" property="roleDesc"/>
+        <result column="role_key" property="roleKey"/>
+        <collection property="permissions" ofType="java.lang.String">
+            <result column="permission_id"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, role_name, role_desc, role_key
+    </sql>
+
+    <select id="selectRoles" parameterType="String" resultMap="RoleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from role
+    </select>
+    <select id="selectRoleByRoleKey" parameterType="java.lang.String" resultMap="RoleResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from role where role_key = #{roleKey}
+    </select>
+    <select id="selectRoleById" resultMap="rolePermissionResultMap" parameterType="java.lang.String">
+        select r.id, r.role_name, r.role_desc, r.role_key,rp.permission_id
+        from role r left join role_permission rp on r.id=rp.role_id where r.id=#{id}
+    </select>
+    <select id="selectMaxIndex" resultType="java.lang.Integer">
+        select max(indexed) from role
+    </select>
+    <insert id="insertRole" parameterType="com.fanqielaile.toms.model.Role">
+        insert into role (id, role_name, role_desc, role_key,created_date,creator_id,indexed)
+        values (#{id}, #{roleName}, #{roleDesc}, #{roleKey},#{createdDate},#{creatorId},#{indexed})
+    </insert>
+    <delete id="deletePermissionsOfRole" parameterType="java.lang.String">
+        delete from role_permission where role_id =#{roleId}
+    </delete>
+
+    <insert id="insertPermissionsForRole" parameterType="com.fanqielaile.toms.model.Role">
+        insert into role_permission(id, role_id, permission_id,created_date,updated_date) values
+        <foreach collection="permissionList" item="p" separator=",">
+            (#{p.uuid},#{rolePermissionRoleId},#{p.id},#{p.createdDate},#{p.updatedDate})
+        </foreach>
+    </insert>
+</mapper>
