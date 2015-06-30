@@ -16,6 +16,8 @@ import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
 import com.tomato.framework.log.annotation.Log;
 import com.tomato.framework.log.annotation.LogModule;
+import com.tomato.framework.log.client.BusinLogClient;
+import com.tomato.log.model.BusinLog;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +36,6 @@ import java.util.List;
  * @version: v1.0.0
  */
 @Service
-@LogModule("淘宝TP店推酒店、房型、库存")
 public class TBService implements ITBService {
     private static  final Logger log = LoggerFactory.getLogger(TBService.class);
     @Resource
@@ -51,16 +52,19 @@ public class TBService implements ITBService {
     private IOtaBangInnRoomDao otaBangInnRoomDao;
     @Resource
     private IOtaInnRoomTypeGoodsDao goodsDao;
+    @Resource
+    private BusinLogClient businLogClient;
 
     /**
      * 想淘宝添加/更新酒店
      * @param tbParam 参数
      */
     @Override
-    @Log(descr = "酒店添加、更新")
-    public JsonModel hotelAddOrUpdate(TBParam tbParam) throws IOException {
-        JsonModel jsonModel = new JsonModel();
-      /*  //String innId = "7060";
+    public Object hotelAddOrUpdate(TBParam tbParam) throws IOException {
+        /*BusinLog businLog = new BusinLog();
+        businLogClient.save(businLog);*/
+       JsonModel jsonModel = new JsonModel();
+        //String innId = "7060";
         String innId = "22490";
         String companyCode = "11111111";
         //String accountId = "14339";
@@ -76,7 +80,7 @@ public class TBService implements ITBService {
         tbParam.setPriceModel(priceModel);
         tbParam.setSj(isSj);
         tbParam.setsJiaModel(shangJiaModel);
-        tbParam.setDeleted(deleted);*/
+        tbParam.setDeleted(deleted);
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         //String room_type = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
         //String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
@@ -141,7 +145,8 @@ public class TBService implements ITBService {
                 }
             }
         }
-        return jsonModel;
+        return null;
+
     }
 
     @Override
