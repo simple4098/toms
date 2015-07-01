@@ -76,10 +76,10 @@ public class BangInnDto extends BangInn {
         bangInnDto.setInnName(innName);
         bangInnDto.setBangDate(new Date());
         for (PriceModel p:priceModelArray){
-            if(p.getPm().equals("DI")){
+            if(p.getPattern().equals("DI")){
                 bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
             }
-            if(p.getPm().equals("MAI")){
+            if(p.getPattern().equals("MAI")){
                 bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
             }
         }

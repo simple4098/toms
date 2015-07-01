@@ -9,6 +9,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.ITBService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.taobao.api.ApiException;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
@@ -59,10 +60,10 @@ public class TBTest {
     @Test
     public void test() throws IOException {
         //String innId = "7060";
-        String innId = "5901";
+        String innId = "10329";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "8400";
+        String accountId = "4824";
         String otaId = "101";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -70,11 +71,11 @@ public class TBTest {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("8400");
-        price1.setPm("MAI");
+        price1.setAccountId("4824");
+        price1.setPattern("MAI");
         PriceModel price2 = new PriceModel();
-        price2.setAccountId("8056");
-        price2.setPm("DI");
+        price2.setAccountId("4162");
+        price2.setPattern("DI");
         priceModelArray.add(price1);
         priceModelArray.add(price2);
         TBParam tbParam = new TBParam();
@@ -93,7 +94,7 @@ public class TBTest {
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-06-30&to=2015-07-29"+"&signature="+signature;
+        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-1&to=2015-07-31"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
         String httpGets = HttpClientUtil.httpGets(room_type,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
@@ -124,7 +125,7 @@ public class TBTest {
             }else {
                 otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                 otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-                xHotel = TBXHotelUtil.hotelGet(Long.valueOf(otaInnOta.getWgHid()),company);
+                //xHotel = TBXHotelUtil.hotelGet(Long.valueOf(otaInnOta.getWgHid()),company);
             }
         }
 
@@ -132,12 +133,12 @@ public class TBTest {
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             for (RoomTypeInfo r:list){
-                XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), xHotel.getHid(), r, company);
+                XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), Long.valueOf(otaInnOta.getWgHid()), r, company);
                 if (xRoomType!=null){
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), xHotel.getHid(), xRoomType.getRid(), r, company);
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), Long.valueOf(otaInnOta.getWgHid()), xRoomType.getRid(), r, company,tbParam.getStatus());
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
@@ -146,10 +147,10 @@ public class TBTest {
                     TBXHotelUtil.rateUpdate(company, gid, rpid, r,otaPriceModel,tbParam.isDeleted());
                 }else {
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
-                    XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
-                    OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(roomType.getRid());
+                    //XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
+                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(),Long.valueOf(otaInnOta.getWgHid()),Long.valueOf(otaBangInnRoomDto.getrId()), r, company, tbParam.getStatus());
+                    OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //保存商品关联信息
-                    //if (innRoomTypeGoodsDto.getGid()!=StringUtils.EMPTY && innRoomTypeGoodsDto.getRpid()!=null){
                     if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())){
                         TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel,tbParam.isDeleted());
                     }

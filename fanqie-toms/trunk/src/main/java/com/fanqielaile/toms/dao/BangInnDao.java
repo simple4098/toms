@@ -142,4 +142,11 @@ public interface BangInnDao {
      * @return
      */
     BangInnDto selectBangInnByTBHotelId(@Param("otaHotelId") String otaHotelId);
+
+    /**
+     * 删除此客栈在此公司的关系
+     * @param id 公司id
+     * @param innId 客栈id
+     */
+    void deleteBangInnByCompanyIdAndInnId(@Param("companyId")String id,@Param("innId") Integer innId);
 }
