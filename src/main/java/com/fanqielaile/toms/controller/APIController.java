@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 /**
  * DESC : 对接TB controller
@@ -33,7 +33,13 @@ public class APIController extends BaseController {
     @Resource
     private ICommissionService commissionService;
 
-    @RequestMapping("/hotel/update")
+    /**
+     * 客栈上架、下架
+     * @param tbParam
+     * @param businLog
+     * @return
+     */
+    @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     public JsonModel hotel(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
@@ -43,13 +49,37 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         try {
-            tbService.hotelAddOrUpdate(tbParam,businLog);
+            tbService.updateOrAddHotel(tbParam, businLog);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
         return  jsonModel;
     }
 
+    /**
+     * 删除客栈
+     * @param tbParam 绿番茄参数
+     */
+    @RequestMapping("/hotel/del")
+    public JsonModel del(TBParam tbParam,BusinLog businLog){
+        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        if (tbParam!=null && !StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getInnId())){
+            jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
+            jsonModel.setSuccess(false);
+            return jsonModel;
+        }
+        try {
+            tbService.deleteHotel(tbParam, businLog);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return  jsonModel;
+    }
+
+    /**
+     * 更新客栈的佣金
+     * @param tbParam
+     */
     @RequestMapping("/commission/update")
     @ResponseBody
     public Object commissionUpdate(TBParam tbParam){

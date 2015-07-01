@@ -149,4 +149,8 @@
         SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.ota_wg_id = oo.id where oo.wg_hid=#{otaHotelId} and
         oo.deleted = 0
     </select>
+
+    <update id="deleteBangInnByCompanyIdAndInnId">
+        UPDATE bang_inn SET deleted=1 where company_id='${companyId}' and inn_id =#{innId}
+    </update>
 </mapper>

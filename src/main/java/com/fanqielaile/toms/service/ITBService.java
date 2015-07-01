@@ -18,20 +18,14 @@ import java.io.IOException;
 public interface ITBService {
 
     /**
-     * 添加酒店
+     * 添加/更新酒店
      * @param tbParam 绿番茄传过来的参数
      */
-    JsonModel hotelAddOrUpdate(TBParam tbParam,BusinLog businLog) throws IOException;
+    void updateOrAddHotel(TBParam tbParam, BusinLog businLog) throws IOException;
 
     /**
-     * 获取酒店
-     * @param company
-     * @param innDto
-     * @return
+     * 从淘宝下架、解除绑定
+     * @param tbParam
      */
-    XHotel hotelGet(Long hid,Company company,InnDto innDto);
-
-
-
-
+    void deleteHotel(TBParam tbParam, BusinLog businLog) throws IOException;
 }
