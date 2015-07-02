@@ -54,4 +54,13 @@ public interface IOrderService {
      * @throws Exception
      */
     JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception;
+
+    /**
+     * 查询订单状态
+     *
+     * @param xmlStr
+     * @param channelSource
+     * @return
+     */
+    Map<String, String> findOrderStatus(String xmlStr, ChannelSource channelSource) throws Exception;
 }
