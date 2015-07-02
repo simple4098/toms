@@ -30,6 +30,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -65,13 +69,13 @@ public class OTAManageController extends BaseController {
                 //验证用户密码
                 if (userInfo.getPassword().equals(passwordEncoder.encodePassword(userNameAndPassword.getPassword(), ""))) {
                     //得到跟节点
-                    logger.info("xml参数：", xmlStr);
+                    logger.info("xml参数：" + xmlStr);
                     String rootElementString = XmlDeal.getRootElementString(xmlStr);
                     //根据根节点判断执行的方法
                     if (rootElementString.equals(OrderMethod.BookRQ.name())) {
                         //创建订单
                         Order order = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
-                        result.setResultCode("1");
+                        result.setResultCode("0");
                         result.setMessage(order.getId());
                     } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
                         //取消订单
@@ -93,9 +97,16 @@ public class OTAManageController extends BaseController {
                             result.setResultCode("-400");
                             result.setMessage(jsonModel.getMessage());
                         }
+                        //查询订单状态
+                    } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
+                        Map<String, String> orderStatus = orderService.findOrderStatus(xmlStr, ChannelSource.TAOBAO);
+                        result.setMessage(orderStatus.get("message"));
+                        result.setResultCode(orderStatus.get("code"));
+                        if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
+                            result.setStatus(orderStatus.get("status"));
+                        }
                     } else {
                         logger.error("xml参数错误");
-                        throw new TomsRuntimeException("xml参数错误");
                     }
                 } else {
                     logger.error("创建订单失败,验证用户不通过", userInfo);
@@ -112,6 +123,7 @@ public class OTAManageController extends BaseController {
             result.setMessage("创建订单失败，原因：参数不正确");
             result.setResultCode("-400");
         }
+        logger.info("返回淘宝的xml值=>" + result.toString());
         return result;
     }
 }

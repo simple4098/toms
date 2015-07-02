@@ -302,11 +302,11 @@ public class TBXHotelUtil {
      * @param order
      * @param company
      */
-    public static String orderUpdate(Order order, Company company) throws ApiException {
+    public static String orderUpdate(Order order, Company company, long optType) throws ApiException {
         TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelOrderUpdateRequest req = new XhotelOrderUpdateRequest();
-        req.setTid((long) Integer.parseInt(order.getChannelOrderCode()));
-        req.setOptType(1L);
+        req.setTid(Long.parseLong(order.getChannelOrderCode()));
+        req.setOptType(optType);
         XhotelOrderUpdateResponse response = client.execute(req, company.getSessionKey());
         return response.getResult();
     }

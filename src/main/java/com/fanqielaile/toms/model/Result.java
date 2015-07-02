@@ -11,6 +11,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Result {
     private String message;
     private String resultCode;
+    private String status;
+
+    @XmlElement(name = "Status")
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @XmlElement(name = "Message")
     public String getMessage() {
@@ -28,5 +38,14 @@ public class Result {
 
     public void setResultCode(String resultCode) {
         this.resultCode = resultCode;
+    }
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "message='" + message + '\'' +
+                ", resultCode='" + resultCode + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }
