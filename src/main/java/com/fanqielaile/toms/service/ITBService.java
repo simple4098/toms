@@ -21,11 +21,11 @@ public interface ITBService {
      * 添加/更新酒店
      * @param tbParam 绿番茄传过来的参数
      */
-    void updateOrAddHotel(TBParam tbParam, BusinLog businLog) throws IOException;
+    void updateOrAddHotel(TBParam tbParam, BusinLog businLog) throws Exception;
 
     /**
      * 从淘宝下架、解除绑定
      * @param tbParam
      */
-    void deleteHotel(TBParam tbParam, BusinLog businLog) throws IOException;
+    void deleteHotel(TBParam tbParam, BusinLog businLog) throws Exception;
 }

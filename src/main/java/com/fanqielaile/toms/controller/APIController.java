@@ -40,7 +40,8 @@ public class APIController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
-    public JsonModel hotel(TBParam tbParam,BusinLog businLog){
+    @ResponseBody
+    public Object hotel(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         if (!validateParam){
@@ -50,8 +51,10 @@ public class APIController extends BaseController {
         }
         try {
             tbService.updateOrAddHotel(tbParam, businLog);
-        } catch (IOException e) {
-            log.error(e.getMessage());
+        } catch (Exception e) {
+            jsonModel.setMessage(e.getMessage());
+            jsonModel.setSuccess(false);
+            log.error(e.getMessage(),e);
         }
         return  jsonModel;
     }
@@ -70,7 +73,9 @@ public class APIController extends BaseController {
         }
         try {
             tbService.deleteHotel(tbParam, businLog);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            jsonModel.setMessage(e.getMessage());
+            jsonModel.setSuccess(false);
             log.error(e.getMessage());
         }
         return  jsonModel;
