@@ -64,9 +64,10 @@ public class APIController extends BaseController {
      * @param tbParam 绿番茄参数
      */
     @RequestMapping("/hotel/del")
-    public JsonModel del(TBParam tbParam,BusinLog businLog){
+    @ResponseBody
+    public Object del(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
-        if (tbParam!=null && !StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getInnId())){
+        if ( StringUtils.isEmpty(tbParam.getCompanyCode()) || StringUtils.isEmpty(tbParam.getInnId())){
             jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;

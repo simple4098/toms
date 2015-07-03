@@ -67,7 +67,16 @@ public class TBService implements ITBService {
     @Log(descr ="酒店更新、增加")
     public void updateOrAddHotel(TBParam tbParam, BusinLog businLog) throws Exception {
         String event = TomsUtil.event(tbParam);
+        log.info("event:"+event);
+        try {
+            businLog.setDescr("TP推酒店");
+            businLog.setEvent(event);
+            businLogClient.save(businLog);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
         String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
@@ -113,7 +122,7 @@ public class TBService implements ITBService {
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), Long.valueOf(otaInnOta.getWgHid()), xRoomType.getRid(), r, company,tbParam.getStatus());
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company,tbParam.getStatus());
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
@@ -123,7 +132,7 @@ public class TBService implements ITBService {
                 }else {
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
                    // XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
-                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(),Long.valueOf(otaInnOta.getWgHid()),Long.valueOf(otaBangInnRoomDto.getrId()), r, company, tbParam.getStatus());
+                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company, tbParam.getStatus());
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //保存商品关联信息
                     if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
@@ -134,13 +143,7 @@ public class TBService implements ITBService {
         }else {
             throw new TomsRuntimeException("无房型信息!");
         }
-        try {
-            businLog.setDescr("TP推酒店");
-            businLog.setEvent(event);
-            businLogClient.save(businLog);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+
 
     }
 
@@ -166,7 +169,7 @@ public class TBService implements ITBService {
                 List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
                 for (RoomTypeInfo r:list){
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
-                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(),Long.valueOf(otaInnOta.getWgHid()),Long.valueOf(otaBangInnRoomDto.getrId()), r, company, RoomSwitchCalStatus.DEL);
+                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company, RoomSwitchCalStatus.DEL);
                     //XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //更新库存

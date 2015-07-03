@@ -26,7 +26,7 @@
        <select id="findOtaInnOtaIdsByCompanyCode" parameterType="java.lang.String" resultType="java.lang.String">
               SELECT oo.id from ota_inn_ota oo LEFT JOIN bang_inn bi ON bi.ota_wg_id = oo.id
               LEFT JOIN company c ON c.id=oo.company_id
-              where c.company_code='${value}';
+              where c.company_code='${value}' and  bi.deleted=0;
        </select>
 
        <update id="updateOtaInnOtaCommission" >
@@ -40,7 +40,7 @@
        <select id="findOtaInnOtaByParams" parameterType="com.fanqie.core.dto.TBParam" resultMap="BaseResultMap">
               SELECT o.* from ota_inn_ota o
               INNER JOIN bang_inn b ON b.ota_wg_id = o.id   INNER JOIN company c ON c.id = b.company_id
-              where c.company_code = '${companyCode}' and b.inn_id ='${innId}' and b.account_id='${accountId}' and o.ota_id='${otaId}'
+              where  b.deleted=0 and c.company_code = '${companyCode}' and b.inn_id ='${innId}' and b.account_id='${accountId}' and o.ota_id='${otaId}' and b.deleted=0
        </select>
 
        <select id="selectOtaInnOtaByTBHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
