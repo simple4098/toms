@@ -3,8 +3,11 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.ICommissionService;
+import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITBService;
+import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.tomato.log.model.BusinLog;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DESC : 对接TB controller
@@ -29,9 +34,9 @@ import java.io.IOException;
 public class APIController extends BaseController {
     private static  final Logger log = LoggerFactory.getLogger(APIController.class);
     @Resource
-    private ITBService tbService;
-    @Resource
     private ICommissionService commissionService;
+    @Resource
+    private IOtaInfoService otaInfoService;
 
     /**
      * 客栈上架、下架
@@ -49,8 +54,13 @@ public class APIController extends BaseController {
             jsonModel.setSuccess(false);
             return jsonModel;
         }
+        List<OtaInfo> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
         try {
-            tbService.updateOrAddHotel(tbParam, businLog);
+            ITPService service = null;
+            for (OtaInfo o:list){
+                service = o.getOtaType().create();
+                service.updateOrAddHotel(tbParam, businLog,o);
+            }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
@@ -73,7 +83,7 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         try {
-            tbService.deleteHotel(tbParam, businLog);
+           // tbService.deleteHotel(tbParam, businLog);
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
@@ -89,9 +99,6 @@ public class APIController extends BaseController {
     @RequestMapping("/commission/update")
     @ResponseBody
     public Object commissionUpdate(TBParam tbParam){
-       /* tbParam.setCompanyCode("11111111");
-        tbParam.setCommissionPercent(new BigDecimal(0.5));
-        tbParam.setCommissionType("MAI,DI");*/
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         if(!StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getCommissionType())){
             commissionService.updateCommission(tbParam);

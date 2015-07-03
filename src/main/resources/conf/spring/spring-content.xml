@@ -90,7 +90,7 @@
               </property>
        </bean>
        <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
-
+    <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton" />
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>

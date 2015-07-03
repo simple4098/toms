@@ -59,6 +59,7 @@ public class TBTest {
 
     @Test
     public void test() throws IOException {
+        OtaInfo otaInfo = new OtaInfo();
         //String innId = "7060";
         String innId = "15155";
         String companyCode = "11111111";
@@ -114,7 +115,7 @@ public class TBTest {
             if (!StringUtils.isEmpty(omsInnDto.getCounty())){
                 andArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
             }
-            xHotel = TBXHotelUtil.hotelAdd(company, omsInnDto,andArea);
+            xHotel = TBXHotelUtil.hotelAdd(otaInfo, omsInnDto,andArea);
             if (xHotel!=null) {
                 otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam);
                 otaInnOtaDao.saveOtaInnOta(otaInnOta);
@@ -133,18 +134,18 @@ public class TBTest {
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             for (RoomTypeInfo r:list){
-                XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), Long.valueOf(otaInnOta.getWgHid()), r, company);
+                XRoomType xRoomType = TBXHotelUtil.addRoomType(innId,String.valueOf(r.getRoomTypeId()), Long.valueOf(otaInnOta.getWgHid()), r, otaInfo);
                 if (xRoomType!=null){
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
                     Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company,tbParam.getStatus());
                     //创建酒店rp
-                    Long rpid = TBXHotelUtil.ratePlanAdd(company, r.getRoomTypeName()+r.getRoomTypeId());
+                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
                     goodsDao.saveRoomTypeGoodsRp(goodsDto);
                     //保存商品关联信息
-                    TBXHotelUtil.rateUpdate(company, gid, rpid, r,otaPriceModel,!tbParam.isSj());
+                    TBXHotelUtil.rateUpdate(otaInfo, gid, rpid, r,otaPriceModel,!tbParam.isSj());
                 }else {
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
                     //XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
@@ -152,7 +153,7 @@ public class TBTest {
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //保存商品关联信息
                     if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())){
-                        TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel,!tbParam.isSj());
+                        TBXHotelUtil.rateUpdate(otaInfo, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r,otaPriceModel,!tbParam.isSj());
                     }
                 }
             }

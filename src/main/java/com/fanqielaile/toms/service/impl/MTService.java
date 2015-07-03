@@ -1,0 +1,28 @@
+package com.fanqielaile.toms.service.impl;
+
+import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.model.OtaInfo;
+import com.fanqielaile.toms.service.ITPService;
+import com.tomato.log.model.BusinLog;
+import org.springframework.stereotype.Service;
+
+/**
+ * DESC : 美团对接实现类
+ * @author : 番茄木-ZLin
+ * @data : 2015/7/3
+ * @version: v1.0.0
+ */
+@Service("mtService")
+public class MTService implements ITPService {
+
+
+    @Override
+    public void updateOrAddHotel(TBParam tbParam, BusinLog businLog, OtaInfo otaInfo) throws Exception {
+       System.out.println("---------------------MTService---------------------");
+    }
+
+    @Override
+    public void deleteHotel(TBParam tbParam, BusinLog businLog, OtaInfo otaInfo) throws Exception {
+
+    }
+}
