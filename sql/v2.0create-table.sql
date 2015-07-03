@@ -7,6 +7,7 @@ alter table company add column expired_time timestamp(64);
 alter table bang_inn add column deleted int2;
 alter table bang_inn add column ota_wg_id varchar(64);
 alter table bang_inn add column account_id_di int4;
+update bang_inn set deleted=0;
 
 
 CREATE TABLE  ota_inn_ota (

@@ -43,13 +43,13 @@
         id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id
        </sql>
     <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
-              insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type)
-              values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type})
+              insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,deleted)
+              values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},0)
        </insert>
     <select id="selectBangInnByInnLabelId" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where inn_label_id = #{innLabelId}
+        from bang_inn where inn_label_id = #{innLabelId} and deleted=0
         <if test="userInfo.dataPermission == 0">
             and user_id = #{userInfo.id}
         </if>
@@ -58,7 +58,7 @@
               update bang_inn set user_id = #{newUserId} where user_id = #{oldUserId}
        </update>
     <select id="selectBangInnByUser" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="BaseResultMap">
-        SELECT DISTINCT inn_label_id FROM bang_inn where company_id = #{companyId}
+        SELECT DISTINCT inn_label_id FROM bang_inn where company_id = #{companyId} and deleted=0
         <if test="dataPermission == 0">
             and user_id = #{id}
         </if>
@@ -67,13 +67,13 @@
     <select id="selectBangInnByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where user_id = #{userId} ORDER BY bang_date DESC
+        from bang_inn where user_id = #{userId} and deleted=0 ORDER BY bang_date DESC
     </select>
     <select id="selectBangInnListByUserInfo" parameterType="com.fanqielaile.toms.model.UserInfo"
             resultMap="BangInnDtoResult">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where company_id = #{companyId}
+        from bang_inn where company_id = #{companyId} and deleted=0
         <if test="dataPermission == 0">
             and user_id = #{id}
         </if>
@@ -88,7 +88,7 @@
     <select id="selectBangInnById" parameterType="java.lang.String" resultMap="BangInnDtoResult">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where id= #{id}
+        from bang_inn where id= #{id} and deleted=0
     </select>
     <update id="updateBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
         update bang_inn
@@ -108,16 +108,16 @@
     <select id="selectCompanyByInnId" parameterType="java.lang.Integer" resultMap="BangInnDtoResult">
         select bi.inn_id,bi.inn_code,bi.company_id,bi.bang_date,c.company_name,c.company_code from bang_inn bi INNER
         JOIN
-        company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId} ORDER BY bi.bang_date DESC
+        company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId} and bi.deleted=0 ORDER BY bi.bang_date DESC
     </select>
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
-        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,account_id_di)
-        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi})
+        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,account_id_di, deleted)
+        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi},0)
     </insert>
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from bang_inn where company_id=#{companyId} and inn_id = #{innId} ORDER BY bang_date DESC limit 1
+        from bang_inn where company_id=#{companyId} and inn_id = #{innId} and deleted=0 ORDER BY bang_date DESC limit 1
     </select>
     <select id="selectBangInnByStringInnId" resultMap="BangInnDtoResult"
             parameterType="com.fanqielaile.toms.model.BangInn">
@@ -133,7 +133,7 @@
     <select id="selectBangInnByCompanyId" resultMap="BangInnDtoResult" parameterType="java.lang.String">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where company_id =#{companyId}
+        from bang_inn where company_id =#{companyId} and deleted=0
     </select>
     <select id="selectBangInnByUserAndCode" resultMap="BangInnDtoResult">
         SELECT
@@ -143,11 +143,11 @@
     <select id="selectBangInnByInnId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where inn_id=#{innId}
+        from bang_inn where inn_id=#{innId} and deleted=0
     </select>
     <select id="selectBangInnByTBHotelId" parameterType="java.lang.String" resultMap="BangInnDtoResult">
         SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.ota_wg_id = oo.id where oo.wg_hid=#{otaHotelId} and
-        oo.deleted = 0
+        oo.deleted = 0 and bi.deleted=0
     </select>
 
     <update id="deleteBangInnByCompanyIdAndInnId">

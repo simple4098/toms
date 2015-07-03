@@ -177,7 +177,8 @@ public class TBXHotelUtil {
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,Long hid,Long rid,RoomTypeInfo roomTypeInfo,Company company,RoomSwitchCalStatus status){
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,Company company,RoomSwitchCalStatus status){
+        log.info("start roomUpdate roomTypeId:" +outerId );
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
         req.setOutRid(String.valueOf(outerId));
@@ -210,6 +211,7 @@ public class TBXHotelUtil {
             req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
+            log.info("roomSwitchJson:" +roomSwitchJson);
         }
 
         try {
@@ -261,6 +263,7 @@ public class TBXHotelUtil {
         req.setGid(gid);
         req.setRpid(rpid);
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             List<InventoryRate> list = new ArrayList<InventoryRate>();
