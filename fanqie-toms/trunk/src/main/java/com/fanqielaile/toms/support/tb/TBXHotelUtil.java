@@ -6,12 +6,15 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.FileItem;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
+import com.taobao.api.domain.XRoom;
 import com.taobao.api.domain.XRoomType;
 import com.taobao.api.request.*;
 import com.taobao.api.response.*;
@@ -35,10 +38,10 @@ public class TBXHotelUtil {
     private TBXHotelUtil(){}
     /**
      * 想淘宝添加酒店
-     * @param company 公司对象，存放 appKey ，appSecret ... 信息
+     * @param company 渠道信息，存放 appKey ，appSecret ... 信息
      * @param innDto 客栈信息
      */
-    public static XHotel hotelAdd(Company company,InnDto innDto,OtaTaoBaoArea andArea){
+    public static XHotel hotelAdd(OtaInfo company,InnDto innDto,OtaTaoBaoArea andArea){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelAddRequest req=new XhotelAddRequest();
         req.setOuterId(innDto.getInnId());
@@ -65,7 +68,7 @@ public class TBXHotelUtil {
      * @param company
      * @return
      */
-    public static XHotel hotelGet(Long hid,Company company) {
+    public static XHotel hotelGet(Long hid,OtaInfo company) {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelGetRequest req=new XhotelGetRequest();
         req.setHid(hid);
@@ -85,9 +88,9 @@ public class TBXHotelUtil {
      * @param outerId pms系统中房型id
      * @param hid 酒店id
      * @param roomTypeInfo 房型信息
-     * @param company 公司信息
+     * @param company 渠道信息
      */
-    public static XRoomType addRoomType(String innId,String outerId,Long hid,RoomTypeInfo roomTypeInfo,Company company){
+    public static XRoomType addRoomType(String innId,String outerId,Long hid,RoomTypeInfo roomTypeInfo,OtaInfo company){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomtypeAddRequest req=new XhotelRoomtypeAddRequest();
         req.setOuterId(outerId);
@@ -111,7 +114,7 @@ public class TBXHotelUtil {
      * 获取房型信息
      * @param rid rid tp店房型id
      */
-    public static XRoomType getRoomType(Long rid,Company company){
+    public static XRoomType getRoomType(Long rid,OtaInfo company){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomtypeGetRequest req=new XhotelRoomtypeGetRequest();
         req.setRid(rid);
@@ -126,58 +129,29 @@ public class TBXHotelUtil {
     }
 
     /**
-     * 添加商品
-     * @param outerId pms系统中的房型id
-     * @param hid 酒店id
-     * @param roomTypeInfo 房型信息
-     * @param company 公司信息
+     * 获取宝贝信息
+     * @param outerId
+     * @param company
      */
-    @Deprecated
-    public  static Long  roomAdd(Integer outerId,Long hid,Long rid,RoomTypeInfo roomTypeInfo,Company company){
+    public static XRoom roomGet(Integer outerId,OtaInfo company){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelRoomAddRequest req=new XhotelRoomAddRequest();
-        req.setHid(hid);
-        req.setRid(rid);
-        req.setOutRid(String.valueOf(outerId));
-        req.setTitle(roomTypeInfo.getRoomTypeName());
-        req.setGuide(roomTypeInfo.getRoomInfo());
-        req.setDesc(roomTypeInfo.getRoomInfo());
-        //房型图片
-        if (!CollectionUtils.isEmpty(roomTypeInfo.getImgList())){
-            OmsImg omsImg = roomTypeInfo.getImgList().get(0);
-            String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
-            req.setPic(new FileItem(imgUrl));
-        }
-        //库存
-        if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
-            List<Inventory> list = new ArrayList<Inventory>();
-            for (RoomDetail  r:roomTypeInfo.getRoomDetail()){
-                Inventory inventory = new Inventory();
-                inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getRoomNum());
-                list.add(inventory);
-            }
-            String json = JacksonUtil.obj2json(list);
-            req.setInventory(json);
-        }
-
+        XhotelRoomGetRequest req=new XhotelRoomGetRequest();
+        req.setGid(Long.valueOf(outerId));
         try {
-            XhotelRoomAddResponse response = client.execute(req , company.getSessionKey());
-            log.info("roomAdd:" + response.getBody());
-            return response.getGid();
+            XhotelRoomGetResponse response = client.execute(req , company.getSessionKey());
+            return  response.getRoom();
         } catch (ApiException e) {
-            log.error(e.getErrMsg());
+            e.printStackTrace();
         }
-        return  null;
+        return null;
     }
     /**
      * 添加商品
      * @param outerId pms系统中的房型id
-     * @param hid 酒店id
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,Company company,RoomSwitchCalStatus status){
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status){
         log.info("start roomUpdate roomTypeId:" +outerId );
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
@@ -202,7 +176,8 @@ public class TBXHotelUtil {
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
                 inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getRoomNum()==null?0:r.getRoomNum());
+                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                inventory.setRoomSwitchCalStatus(status);
                 list.add(inventory);
                 roomSwitchCals.add(roomSwitchCal);
             }
@@ -211,7 +186,8 @@ public class TBXHotelUtil {
             req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
-            log.info("roomSwitchJson:" +roomSwitchJson);
+            log.info("roomSwitchJson:" + roomSwitchJson);
+            log.info("Inventory:" +json);
         }
 
         try {
@@ -228,7 +204,7 @@ public class TBXHotelUtil {
      * 添加酒店RP
      * @param company
      */
-    public static Long ratePlanAdd(Company company,String innName){
+    public static Long ratePlanAdd(OtaInfo company,String innName){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateplanAddRequest req=new XhotelRateplanAddRequest();
         req.setRateplanCode(innName.concat("ratePlanCode"));
@@ -248,7 +224,50 @@ public class TBXHotelUtil {
     }
 
     /**
-     * 更新库存
+     * 添加商品的库存
+     * @param company 公司信息
+     * @param gid 商品id
+     * @param rpid 商品计划id
+     * @param roomTypeInfo 房型信息
+     * @param priceModelDto 价格策略
+     */
+    public static  String  rateAdd(OtaInfo company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto){
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRateAddRequest req=new XhotelRateAddRequest();
+        req.setGid(gid);
+        req.setRpid(rpid);
+        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())) {
+            List<InventoryRate> list = new ArrayList<InventoryRate>();
+            InventoryPrice inventory = new InventoryPrice();
+            InventoryRate rate = null;
+            double price = 0;
+            for (RoomDetail r : roomTypeInfo.getRoomDetail()) {
+                rate = new InventoryRate();
+                rate.setDate(r.getRoomDate());
+                price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                //tp店价格为分，我们自己系统价格是元
+                rate.setPrice(price * 100);
+                list.add(rate);
+            }
+            inventory.setInventory_price(list);
+            String json = JacksonUtil.obj2json(inventory);
+            req.setInventoryPrice(json);
+            log.info("rateAdd InventoryPrice:" + json);
+        }
+
+        try {
+            XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
+            log.info("rateAdd:" + response.getBody());
+            return  response.getGidAndRpid();
+        } catch (ApiException e) {
+            log.error(e.getErrMsg());
+        }
+        return  null;
+    }
+    /**
+     * 更新库存/ 共享room 库存 ， 不用再rate更新库存
      * @param company
      * @param gid
      * @param rpid
@@ -257,7 +276,9 @@ public class TBXHotelUtil {
      * @param deleted 库存日历开关， true 关闭； false 打开
      * @return
      */
-    public static String rateUpdate(Company company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted){
+    public static String rateUpdate(OtaInfo company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted){
+
+        log.info("rateUpdate gid:" + gid +" rateUpdate rpid:"+rpid);
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
         req.setGid(gid);
@@ -287,12 +308,39 @@ public class TBXHotelUtil {
             String rateSwitchCalJson = JacksonUtil.obj2json(rateSwitchCalList);
             req.setInventoryPrice(json);
             req.setRateSwitchCal(rateSwitchCalJson);
+            log.info("rateUpdate RateSwitchCal:" + rateSwitchCalJson);
+            log.info("rateUpdate inventoryPrice:" + json);
         }
 
         try {
             XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
             log.info("rateUpdate:" + response.getBody());
            return  response.getGidAndRpid();
+        } catch (ApiException e) {
+            log.error(e.getErrMsg());
+        }
+        return  null;
+    }
+    /**
+     * 获取库存
+     * @param company
+     * @param gid
+     * @param rpid
+     * @param roomTypeInfo
+     *
+     * @return
+     */
+    public static Rate rateGet(OtaInfo company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo){
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRateGetRequest req=new XhotelRateGetRequest();
+        req.setGid(gid);
+        req.setRpid(rpid);
+        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        try {
+            XhotelRateGetResponse response = client.execute(req , company.getSessionKey());
+            log.info("rateGet:" + response.getBody());
+           return  response.getRate();
         } catch (ApiException e) {
             log.error(e.getErrMsg());
         }

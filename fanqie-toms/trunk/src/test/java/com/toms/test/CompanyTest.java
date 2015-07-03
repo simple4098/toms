@@ -4,6 +4,7 @@ import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dao.PermissionDao;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Permission;
+import com.fanqielaile.toms.service.impl.TBService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +19,20 @@ import java.util.UUID;
  * Created by wangdayin on 2015/5/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/conf/spring/spring-content.xml", "/conf/mybatis/sqlMapConfig.xml"})
+@ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml", "/conf/spring/spring-security.xml"})
 public class CompanyTest {
     @Resource
     private CompanyDao companyDao;
     @Resource
     private PermissionDao permissionDao;
+    @Resource
+    private TBService tbService;
+
+    @Test
+    public void testTBService(){
+        Company company = this.tbService.testCompany();
+        System.out.println(company.getId());
+    }
 
     @Test
     @Ignore

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IOtaInfoDao" >
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.OtaInfo">
+              <id column="id" property="id" />
+              <result column="ota_info" property="otaInfo"/>
+              <result column="ota_type" property="otaType"/>
+              <result column="appkey" property="appKey"/>
+              <result column="appsecret" property="appSecret"/>
+              <result column="sessionkey" property="sessionKey"/>
+              <result column="company_id" property="companyId"/>
+              <result column="deleted" property="deleted"/>
+       </resultMap>
+
+       <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="BaseResultMap">
+              SELECT o.* from ota_info o left JOIN  company c on c.id = o.company_id
+              where o.deleted = 0 and c.company_code = '${companyCode}'
+       </select>
+
+       <select id="selectAllOtaByCompanyAndType"  resultMap="BaseResultMap">
+          SELECT o.* from ota_info o
+          left JOIN  company c on c.id = o.company_id
+          where o.deleted = 0 and c.id = '${companyId}' and o.ota_type = '${otaType}' limit 1
+       </select>
+
+</mapper>
