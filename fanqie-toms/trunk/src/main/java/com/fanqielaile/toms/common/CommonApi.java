@@ -19,6 +19,15 @@ public class CommonApi {
     public static   String INN_INFO="";
     public static   String TB_URL="";
     public static   String IMG_URL="http://img.fanqiele.com";
+    public static   String ProxySaleList="";
+
+    public static String getProxySaleList() {
+        return ProxySaleList;
+    }
+
+    public  void setProxySaleList(String proxySaleList) {
+        ProxySaleList = proxySaleList;
+    }
 
     public static String getTbUrl() {
         return TB_URL;

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.OtaInfo;
 
@@ -16,4 +17,6 @@ public interface IOtaInfoService {
     List<OtaInfo> findAllOtaByCompany(String companyCode);
 
     OtaInfo findAllOtaByCompanyAndType(String companyCode,OtaType otaType);
+
+    List<OtaInfoDto> findOtaInfoList();
 }

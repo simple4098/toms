@@ -40,8 +40,7 @@ import java.util.List;
 @ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml","/conf/spring/spring-security.xml"})
 public class TBTest {
     private static  final Logger log = LoggerFactory.getLogger(TBXHotelUtil.class);
-    @Resource
-    private ITBService tbService;
+
     @Resource
     private CompanyDao companyDao;
     @Resource
@@ -56,8 +55,11 @@ public class TBTest {
     private IOtaBangInnRoomDao otaBangInnRoomDao;
     @Resource
     private IOtaInnRoomTypeGoodsDao goodsDao;
+    @Resource
+    private IOtaInfoDao otaInfoDao;
 
     @Test
+    @Ignore
     public void test() throws IOException {
         OtaInfo otaInfo = new OtaInfo();
         //String innId = "7060";
@@ -141,7 +143,7 @@ public class TBTest {
                     //添加商品
                     Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo,tbParam.getStatus());
                     //创建酒店rp
-                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r.getRoomTypeName()+r.getRoomTypeId());
+                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
                     goodsDao.saveRoomTypeGoodsRp(goodsDto);
                     //保存商品关联信息
@@ -178,6 +180,40 @@ public class TBTest {
             }
             listIds.deleteCharAt(listIds.length()-1);
             otaInnOtaDao.updateOtaInnOtaCommission(list,tbParam.getCommissionPercent(),tbParam.getCommissionType());
+        }
+    }
+
+    @Test
+    public void  test3() throws IOException {
+        List<OtaInfoDto> infoDtoList = otaInfoDao.selectOtaInfoList();
+        for (OtaInfoDto o:infoDtoList) {
+            TBParam tbParam = new TBParam();
+            tbParam.setCompanyCode(o.getCompanyCode());
+            tbParam.setOtaId(String.valueOf(o.getOtaId()));
+            String saleListUrl = DcUtil.omsQueryProxySaleListUrl(o.getOtaId(), o.getUserAccount(), o.getUserPassword(), CommonApi.ProxySaleList);
+            String roomTypeGets = HttpClientUtil.httpGets(saleListUrl, null);
+            JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+            if (Constants.SUCCESS.equals(jsonObject.get("status").toString())) {
+                List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
+                List<PricePattern> pricePatterns = null;
+                for (ProxyInns proxyInns : list) {
+                    pricePatterns = proxyInns.getPricePatterns();
+                    tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
+                    for (PricePattern p : pricePatterns) {
+                        if (p.getPattern().equals(1)) {
+                            tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
+                            tbParam.setsJiaModel("DI");
+                        }
+                        if (p.getPattern().equals(2)) {
+                            tbParam.setAccountId(String.valueOf(p.getAccountId()));
+                            tbParam.setsJiaModel("MAI");
+                        }
+                    }
+                    //更新酒店
+                    //updateOrAddHotel( tbParam,  businLog, o);
+
+                }
+            }
         }
     }
 }

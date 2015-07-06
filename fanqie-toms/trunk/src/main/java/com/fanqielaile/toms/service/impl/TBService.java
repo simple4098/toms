@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -133,7 +134,7 @@ public class TBService implements ITPService {
                     //添加商品
                     Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo,tbParam.getStatus());
                     //创建酒店rp
-                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r.getRoomTypeName()+r.getRoomTypeId());
+                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
                     goodsDao.saveRoomTypeGoodsRp(goodsDto);
                     TBXHotelUtil.rateAdd(otaInfo, gid, rpid, r, otaPriceModel);
@@ -154,6 +155,15 @@ public class TBService implements ITPService {
     @Override
     @Log(descr ="酒店酒店删除、解绑")
     public void deleteHotel(TBParam tbParam, BusinLog businLog,OtaInfo otaInfo) throws Exception {
+        String event = TomsUtil.event(tbParam);
+        log.info("event:"+event);
+        try {
+            businLog.setDescr("酒店酒店删除、解绑");
+            businLog.setEvent(event);
+            businLogClient.save(businLog);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         //公司基本信息
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         //客栈绑定信息
@@ -163,18 +173,16 @@ public class TBService implements ITPService {
             bangInnDao.deleteBangInnByCompanyIdAndInnId(company.getId(), bangInn.getInnId());
             DcUtil.hotelParam(tbParam,bangInn.getAccountId(),company.getOtaId());
             //
-            OtaInnOtaDto otaInnOta = otaInnOtaDao.findOtaInnOtaByParams(tbParam);
+            //OtaInnOtaDto otaInnOta = otaInnOtaDao.findOtaInnOtaByParams(tbParam);
             //XHotel xHotel = TBXHotelUtil.hotelGet(Long.valueOf(otaInnOta.getWgHid()), company);
-            OtaPriceModelDto otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-            String room_type = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+            //OtaPriceModelDto otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
+            String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
             String roomTypeGets = HttpClientUtil.httpGets(room_type,null);
             JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
             if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
                 List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
                 for (RoomTypeInfo r:list){
-                    //OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
                     TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
-                    //OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //更新库存 --删除不用更新库存
                     /*if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
                         TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r, otaPriceModel, true);
@@ -185,6 +193,36 @@ public class TBService implements ITPService {
             throw new TomsRuntimeException("删除失败,此客栈没有绑定此企业!");
         }
 
+    }
+
+    @Override
+    public void updateHotel(OtaInfoDto o, BusinLog businLog,TBParam tbParam) throws Exception {
+        tbParam.setCompanyCode(o.getCompanyCode());
+        tbParam.setOtaId(String.valueOf(o.getOtaId()));
+        String saleListUrl = DcUtil.omsQueryProxySaleListUrl(o.getOtaId(), o.getUserAccount(), o.getUserPassword(), CommonApi.ProxySaleList);
+        String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+            List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
+            List<PricePattern> pricePatterns = null;
+            for (ProxyInns proxyInns:list){
+                pricePatterns = proxyInns.getPricePatterns();
+                tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
+                for (PricePattern p:pricePatterns){
+                    if (p.getPattern().equals(1)){
+                        tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
+                        tbParam.setsJiaModel("DI");
+                    }
+                    if (p.getPattern().equals(2)){
+                        tbParam.setAccountId(String.valueOf(p.getAccountId()));
+                        tbParam.setsJiaModel("MAI");
+                    }
+                }
+                //更新酒店
+                updateOrAddHotel( tbParam,  businLog, o);
+
+            }
+        }
     }
 
 

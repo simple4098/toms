@@ -3,6 +3,7 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOtaInfoService;
@@ -82,12 +83,37 @@ public class APIController extends BaseController {
             jsonModel.setSuccess(false);
             return jsonModel;
         }
+        List<OtaInfo> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
         try {
-           // tbService.deleteHotel(tbParam, businLog);
+            ITPService service = null;
+            for (OtaInfo o:list){
+                service = o.getOtaType().create();
+                service.deleteHotel(tbParam, businLog,o);
+            }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
             log.error(e.getMessage());
+        }
+        return  jsonModel;
+    }
+
+    /**
+     * 定时更新酒店
+     */
+    @RequestMapping("/hotel/timer")
+    @ResponseBody
+    public Object hotelTimer(BusinLog businLog,TBParam tbParam){
+        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
+        try {
+            ITPService service = null;
+            for (OtaInfoDto o:infoDtoList){
+                service = o.getOtaType().create();
+                service.updateHotel(o, businLog, tbParam);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return  jsonModel;
     }

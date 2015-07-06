@@ -201,17 +201,19 @@ public class TBXHotelUtil {
     }
 
     /**
-     * 添加酒店RP
+     * 添加酒店RP,7天以内可以取消， 7天以外不可以取消
      * @param company
      */
-    public static Long ratePlanAdd(OtaInfo company,String innName){
+    public static Long ratePlanAdd(OtaInfo company,RoomTypeInfo r){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateplanAddRequest req=new XhotelRateplanAddRequest();
-        req.setRateplanCode(innName.concat("ratePlanCode"));
-        req.setName(innName.concat("[不含早],价格优惠哟"));
+        req.setRateplanCode((r.getRoomTypeName() + r.getRoomTypeId()).concat("ratePlanCode"));
+        req.setName("[不含早],价格优惠哟".concat(r.getRoomTypeName()));
+        //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
         req.setPaymentType(1L);
+        //0：不含早1：含单早2：含双早N：含N早（1-99可选）
         req.setBreakfastCount(0L);
-        req.setCancelPolicy("{\"cancelPolicyType\":1}");
+        req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":168}}");
         req.setStatus(1L);
         try {
             XhotelRateplanAddResponse response = client.execute(req , company.getSessionKey());

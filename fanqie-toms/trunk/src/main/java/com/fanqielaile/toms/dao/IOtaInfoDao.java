@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.OtaInfo;
 import org.apache.ibatis.annotations.Param;
@@ -14,7 +15,10 @@ import java.util.List;
  */
 public interface IOtaInfoDao {
 
-    public List<OtaInfo> selectAllOtaByCompany(@Param("companyCode")String companyCode) ;
+     List<OtaInfo> selectAllOtaByCompany(@Param("companyCode")String companyCode) ;
 
-    public OtaInfo selectAllOtaByCompanyAndType(@Param("companyId")String companyId, @Param("otaType") String otaType);
+     OtaInfo selectAllOtaByCompanyAndType(@Param("companyId")String companyId, @Param("otaType") String otaType);
+
+     //查询所有企业开通的ota ，以及OTA_ID
+     List<OtaInfoDto> selectOtaInfoList();
 }
