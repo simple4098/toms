@@ -28,11 +28,7 @@ public class CompanyTest {
     @Resource
     private TBService tbService;
 
-    @Test
-    public void testTBService(){
-        Company company = this.tbService.testCompany();
-        System.out.println(company.getId());
-    }
+
 
     @Test
     @Ignore

@@ -139,7 +139,7 @@ public class TBTest {
                     OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(innId, r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
                     otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company,tbParam.getStatus());
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo,tbParam.getStatus());
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r.getRoomTypeName()+r.getRoomTypeId());
                     OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(innId, r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(),String.valueOf(xRoomType.getRid()));
@@ -149,7 +149,7 @@ public class TBTest {
                 }else {
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
                     //XRoomType roomType = TBXHotelUtil.getRoomType(Long.valueOf(otaBangInnRoomDto.getrId()), company);
-                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, company, tbParam.getStatus());
+                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus());
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
                     //保存商品关联信息
                     if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())){
