@@ -12,10 +12,7 @@ import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.OrderDto;
 import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
-import com.fanqielaile.toms.enums.ChannelSource;
-import com.fanqielaile.toms.enums.DictionaryType;
-import com.fanqielaile.toms.enums.FeeStatus;
-import com.fanqielaile.toms.enums.OrderStatus;
+import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.Dictionary;
@@ -72,6 +69,8 @@ public class OrderService implements IOrderService {
     @Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();
+    @Resource
+    private IOtaInfoDao otaInfoDao;
 
 
     @Override
@@ -221,7 +220,8 @@ public class OrderService implements IOrderService {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
                 Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                String result = TBXHotelUtil.orderUpdate(order, company, 1L);
+                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                 logger.info("淘宝取消订单接口返回值=>" + result);
                 if (null != result && result.equals("success")) {
                     this.orderDao.updateOrderStatusAndFeeStatus(order);
@@ -230,8 +230,9 @@ public class OrderService implements IOrderService {
             } else {
                 //更新淘宝订单状态
                 Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                String result = TBXHotelUtil.orderUpdate(order, company, 2L);
-                logger.info("淘宝更新订单返回值=>" + result.toString());
+                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
+                logger.info("淘宝更新订单返回值=>" + result);
                 if (null != result && result.equals("success")) {
                     //同步成功后在修改数据库
                     order.setFeeStatus(FeeStatus.PAID);
