@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.IOtaInfoService;
@@ -28,5 +29,10 @@ public class OtaInfoService implements IOtaInfoService {
     @Override
     public OtaInfo findAllOtaByCompanyAndType(String companyId, OtaType otaType) {
         return otaInfoDao.selectAllOtaByCompanyAndType(companyId,otaType.name());
+    }
+
+    @Override
+    public List<OtaInfoDto> findOtaInfoList() {
+        return otaInfoDao.selectOtaInfoList();
     }
 }

@@ -1,8 +1,11 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.tomato.log.model.BusinLog;
+
+import java.io.IOException;
 
 /**
  * DESC : 对接接口
@@ -26,4 +29,8 @@ public interface ITPService {
      */
     void deleteHotel(TBParam tbParam, BusinLog businLog,OtaInfo otaInfo) throws Exception;
 
+    /**
+     * 定时更新淘宝上的房型信息
+     */
+    void updateHotel(OtaInfoDto o, BusinLog businLog,TBParam tbParam) throws Exception;
 }
