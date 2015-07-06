@@ -353,7 +353,7 @@ public class TBXHotelUtil {
      * @param order
      * @param company
      */
-    public static String orderUpdate(Order order, Company company, long optType) throws ApiException {
+    public static String orderUpdate(Order order, OtaInfo company, long optType) throws ApiException {
         TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelOrderUpdateRequest req = new XhotelOrderUpdateRequest();
         req.setTid(Long.parseLong(order.getChannelOrderCode()));
