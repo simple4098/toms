@@ -182,6 +182,7 @@ public class OrderService implements IOrderService {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        //TODO 房态更新时间
         //获取入住人信息
         List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
         order.setOrderGuestses(orderGuestses);

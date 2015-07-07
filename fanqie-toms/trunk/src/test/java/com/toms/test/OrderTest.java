@@ -35,16 +35,18 @@ public class OrderTest {
     }
 
     @Test
+    @Ignore
     public void testFindOrderStatus() throws Exception {
         String xml = "<QueryStatusRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao1230123213-1387792484913</CreateToken></AuthenticationToken><OrderId>436e4b4f-c0b4-4c81-a6d9-08af74e85a64</OrderId><TaoBaoOrderId>1230123213</TaoBaoOrderId></QueryStatusRQ>";
         this.orderService.findOrderStatus(xml, ChannelSource.TAOBAO);
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void testCreateOrder() throws Exception {
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao1230123213-1387792484913</CreateToken></AuthenticationToken><OrderId>b8f5096b-c4ef-44f2-9414-91b56b032dd0</OrderId><TaoBaoOrderId>1387784033263</TaoBaoOrderId><AlipayTradeNo>2013123111001001020000378012</AlipayTradeNo><Payment>10000</Payment></PaySuccessRQ>";
-        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao193617029605469-1435806074926</CreateToken></AuthenticationToken><OrderId>436e4b4f-c0b4-4c81-a6d9-08af74e85a64</OrderId><TaoBaoOrderId>193617029605469</TaoBaoOrderId><Payment>120000</Payment></PaySuccessRQ>";
+//        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao193617029605469-1435806074926</CreateToken></AuthenticationToken><OrderId>436e4b4f-c0b4-4c81-a6d9-08af74e85a64</OrderId><TaoBaoOrderId>193617029605469</TaoBaoOrderId><Payment>120000</Payment></PaySuccessRQ>";
+        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao1137788503530651-1436252626566</CreateToken></AuthenticationToken><OrderId>7908a6ee-2495-4796-91b9-0e158af11deb</OrderId><TaoBaoOrderId>1137788503530651</TaoBaoOrderId><AlipayTradeNo>2015070721001001390223142895</AlipayTradeNo><Payment>30000</Payment></PaySuccessRQ>";
         this.orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
     }
 }
