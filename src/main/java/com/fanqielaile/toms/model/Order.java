@@ -97,6 +97,16 @@ public class Order extends Domain {
     private BigDecimal payment;
     //客栈与OMS唯一标识
     private int accountId;
+    //房态更新时间
+    private Date orderCreateTime;
+
+    public Date getOrderCreateTime() {
+        return orderCreateTime;
+    }
+
+    public void setOrderCreateTime(Date orderCreateTime) {
+        this.orderCreateTime = orderCreateTime;
+    }
 
     public int getAccountId() {
         return accountId;
@@ -428,6 +438,8 @@ public class Order extends Domain {
         omsOrder.setRoomTypeNum(order.getHomeAmount());
         omsOrder.setTypePay(1);
         omsOrder.setUserName(order.getGuestName());
+        //TODO需要传入房态更新时间
+        omsOrder.setProductTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderTime()));
         //子订单
         List<ChildOrder> childOrders = new ArrayList<>();
         if (null != order.getDailyInfoses()) {
