@@ -93,5 +93,18 @@
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
     </bean>
+    <bean class="com.fanqielaile.toms.common.CommonApi">
+        <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
+        <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
+        <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
+        <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
+        <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
+        <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
+        <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
+        <property name="innInfo" value="http://192.168.1.158:8888/api/getInnInfo"></property>
+       <!-- <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>-->
+        <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
+        <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
+    </bean>
 
 </beans>
