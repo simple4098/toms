@@ -2,6 +2,8 @@ package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
 
+import java.util.Date;
+
 /**
  * DESC : 房型商品关联表
  * @author : 番茄木-ZLin
@@ -16,6 +18,7 @@ public class OtaInnRoomTypeGoods extends Domain {
     private String companyId;
     private String otaWgId;
     private String rid;
+    private Date productDate;
 
     public String getRid() {
         return rid;

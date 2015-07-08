@@ -15,4 +15,10 @@ public interface IOtaInnRoomTypeGoodsDao {
     void saveRoomTypeGoodsRp(OtaInnRoomTypeGoodsDto goodsDto);
 
     OtaInnRoomTypeGoodsDto findRoomTypeByRid(@Param("rid")Long rid);
+
+    /**
+     * 更新 商品推送时间
+     * @param id ota_inn_roomtype_goods id
+     */
+    void updateRoomTypeGoodsProductDate(@Param("id")String id);
 }

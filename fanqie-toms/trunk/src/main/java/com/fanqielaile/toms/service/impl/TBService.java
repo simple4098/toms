@@ -142,6 +142,7 @@ public class TBService implements ITPService {
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.findOtaBangInnRoom(otaInnOta.getId(), r.getRoomTypeId());
                     Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus());
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(Long.valueOf(otaBangInnRoomDto.getrId()));
+                    goodsDao.updateRoomTypeGoodsProductDate(innRoomTypeGoodsDto.getId());
                     //保存商品关联信息
                     if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) && DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
                         TBXHotelUtil.rateUpdate(otaInfo, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r, otaPriceModel, !tbParam.isSj());

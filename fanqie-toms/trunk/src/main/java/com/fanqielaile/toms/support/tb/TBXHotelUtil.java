@@ -1,10 +1,11 @@
 package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.core.dto.RoomSwitchCalStatus;
+import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
+import com.fanqie.util.PropertiesUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
@@ -20,9 +21,13 @@ import com.taobao.api.request.*;
 import com.taobao.api.response.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.util.ByteArrayBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.FileImageOutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,19 +156,36 @@ public class TBXHotelUtil {
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status){
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws IOException {
         log.info("start roomUpdate roomTypeId:" +outerId );
+        String receiptOtherTypeDesc = null;
+        try {
+            receiptOtherTypeDesc = PropertiesUtil.readFile("/data.properties", "tb.receiptOtherTypeDesc");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
         req.setOutRid(String.valueOf(outerId));
         req.setTitle(roomTypeInfo.getRoomTypeName());
-        req.setGuide(roomTypeInfo.getRoomInfo());
         req.setDesc(roomTypeInfo.getRoomInfo());
+        //提供发票
+        req.setHasReceipt(true);
+        req.setReceiptType("B");
+        req.setReceiptOtherTypeDesc(receiptOtherTypeDesc);
         //房型图片
         if (!CollectionUtils.isEmpty(roomTypeInfo.getImgList())){
             OmsImg omsImg = roomTypeInfo.getImgList().get(0);
             String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
-            req.setPic(new FileItem(imgUrl));
+            String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
+            byte[] bytes = null;
+            try {
+                log.info("图片地址:" +imgUrl );
+                bytes = HttpClientUtil.readImg(imgUrl);
+            } catch (Exception e) {
+                log.error("获取宝贝图片异常:" + e.getMessage());
+            }
+            req.setPic(new FileItem(imgName,bytes,"image/jpeg"));
         }
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
