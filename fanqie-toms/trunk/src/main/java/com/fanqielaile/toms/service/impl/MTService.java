@@ -19,7 +19,7 @@ public class MTService implements ITPService {
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, BusinLog businLog, OtaInfo otaInfo) throws Exception {
-       System.out.println("---------------------MTService---------------------");
+
     }
 
     @Override

@@ -25,12 +25,12 @@ public class Company extends Domain {
     //区别公司来源
     private int type = 1;
     //appkey, appSecret
-    private String appKey;
+    /*private String appKey;
     private String appSecret;
     private String sessionKey;
-    private Date expiredTime;
+    private Date expiredTime;*/
 
-    public Date getExpiredTime() {
+    /*public Date getExpiredTime() {
         return expiredTime;
     }
 
@@ -60,7 +60,7 @@ public class Company extends Domain {
 
     public void setSessionKey(String sessionKey) {
         this.sessionKey = sessionKey;
-    }
+    }*/
 
     public int getType() {
         return type;

@@ -99,7 +99,7 @@ public class TBTest {
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-7&to=2015-08-06"+"&signature="+signature;
+        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-09&to=2015-08-06"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
         String httpGets = HttpClientUtil.httpGets(room_type,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DESC : 对接TB controller
+ * DESC : 对接TB ... controller
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
