@@ -8,10 +8,7 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
-import com.fanqielaile.toms.dto.BangInnDto;
-import com.fanqielaile.toms.dto.OrderDto;
-import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
-import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
@@ -71,6 +68,8 @@ public class OrderService implements IOrderService {
     private BusinLog businLog = new BusinLog();
     @Resource
     private IOtaInfoDao otaInfoDao;
+    @Resource
+    private IOtaInnRoomTypeGoodsDao otaInnRoomTypeGoodsDao;
 
 
     @Override
@@ -182,7 +181,12 @@ public class OrderService implements IOrderService {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
-        //TODO 房态更新时间
+        // 房态更新时间
+        OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
+        if (null != roomTypeGoodsDto) {
+            order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
+        }
+
         //获取入住人信息
         List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
         order.setOrderGuestses(orderGuestses);

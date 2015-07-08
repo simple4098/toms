@@ -20,6 +20,14 @@ public class OtaInnRoomTypeGoods extends Domain {
     private String rid;
     private Date productDate;
 
+    public Date getProductDate() {
+        return productDate;
+    }
+
+    public void setProductDate(Date productDate) {
+        this.productDate = productDate;
+    }
+
     public String getRid() {
         return rid;
     }
