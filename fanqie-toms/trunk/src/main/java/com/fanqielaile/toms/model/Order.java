@@ -439,7 +439,7 @@ public class Order extends Domain {
         omsOrder.setTypePay(1);
         omsOrder.setUserName(order.getGuestName());
         //TODO需要传入房态更新时间
-        omsOrder.setProductTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderTime()));
+        omsOrder.setProductTime(order.getOrderCreateTime() == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderTime()) : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderCreateTime()));
         //子订单
         List<ChildOrder> childOrders = new ArrayList<>();
         if (null != order.getDailyInfoses()) {
