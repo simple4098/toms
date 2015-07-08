@@ -35,4 +35,5 @@ public interface IOtaInnOtaDao {
 
     OtaInnOtaDto selectOtaInnOtaByTBHotelId(@Param("otaHotelId") String otaHotelId);
 
+    void deletedOtaInnOtaById(String otaWgId);
 }

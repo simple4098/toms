@@ -19,4 +19,7 @@ public interface IOtaBangInnRoomDao {
     List<OtaBangInnRoomDto> selectBangInnRoomByInnIdAndRoomTypeId(@Param("innId") int innId, @Param("roomTypeId") int roomTypeId);
 
     OtaBangInnRoomDto findOtaBangInnRoom(@Param("wgOtaId")String id, @Param("roomTypeId")Integer roomTypeId);
+
+    //删除客栈房型关系
+    void deletedBangInnRoom(@Param("wgOtaId")String otaWgId);
 }

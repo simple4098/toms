@@ -172,11 +172,13 @@ public class TBService implements ITPService {
         if (bangInn!=null){
             //解除此客在此企业的绑定关系
             bangInnDao.deleteBangInnByCompanyIdAndInnId(company.getId(), bangInn.getInnId());
+            //删除客栈与渠道绑定关系
+            otaInnOtaDao.deletedOtaInnOtaById(bangInn.getOtaWgId());
+            //删除客栈房型关系
+            otaBangInnRoomDao.deletedBangInnRoom(bangInn.getOtaWgId());
+            //删除客栈宝贝关系
+            goodsDao.deletedGoods(bangInn.getOtaWgId());
             DcUtil.hotelParam(tbParam,bangInn.getAccountId(),company.getOtaId());
-            //
-            //OtaInnOtaDto otaInnOta = otaInnOtaDao.findOtaInnOtaByParams(tbParam);
-            //XHotel xHotel = TBXHotelUtil.hotelGet(Long.valueOf(otaInnOta.getWgHid()), company);
-            //OtaPriceModelDto otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
             String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
             String roomTypeGets = HttpClientUtil.httpGets(room_type,null);
             JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
