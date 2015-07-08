@@ -10,20 +10,22 @@
               <result column="rid" property="rId"/>
               <result column="price_model_id" property="priceModelId"/>
               <result column="ota_wg_id" property="otaWgId"/>
+              <result column="ota_wg_id" property="otaWgId"/>
+              <result column="deleted" property="deleted"/>
        </resultMap>
 
        <insert id="saveBangInnRoom" parameterType="com.fanqielaile.toms.dto.OtaBangInnRoomDto">
-               insert into ota_bang_inn_room(id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id)
-              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{rId},#{priceModelId},#{otaWgId})
+               insert into ota_bang_inn_room(id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id,deleted)
+              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{rId},#{priceModelId},#{otaWgId},0)
        </insert>
 
        <select id="selectBangInnRoomByInnIdAndRoomTypeId" resultMap="BaseResultMap">
               SELECT id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id from
-              ota_bang_inn_room where inn_id = #{innId} and room_type_id=#{roomTypeId}
+              ota_bang_inn_room where inn_id = #{innId} and room_type_id=#{roomTypeId} and deleted=0
        </select>
        <select id="findOtaBangInnRoom"  resultMap="BaseResultMap">
               SELECT id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id from
-              ota_bang_inn_room where ota_wg_id = #{wgOtaId} and room_type_id=#{roomTypeId}
+              ota_bang_inn_room where ota_wg_id = #{wgOtaId} and room_type_id=#{roomTypeId} and deleted=0
        </select>
 
        <update id="deletedBangInnRoom" parameterType="java.lang.String">
