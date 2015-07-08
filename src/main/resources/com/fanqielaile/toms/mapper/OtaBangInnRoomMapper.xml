@@ -26,4 +26,8 @@
               ota_bang_inn_room where ota_wg_id = #{wgOtaId} and room_type_id=#{roomTypeId}
        </select>
 
+       <update id="deletedBangInnRoom" parameterType="java.lang.String">
+              UPDATE  ota_bang_inn_room SET  deleted=1 where ota_wg_id='${wgOtaId}'
+       </update>
+
 </mapper>

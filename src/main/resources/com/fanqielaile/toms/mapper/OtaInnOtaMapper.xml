@@ -12,6 +12,7 @@
               <result column="price_model" property="priceModel"/>
               <result column="sjia_model" property="sJiaModel"/>
               <result column="price_model_value" property="priceModelValue"/>
+              <result column="deleted" property="deleted"/>
        </resultMap>
 
        <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
@@ -35,6 +36,9 @@
                      #{item}
               </foreach>
 
+       </update>
+       <update id="deletedOtaInnOtaById" parameterType="java.lang.String">
+              update ota_inn_ota set deleted=1  where  id ='${id}'
        </update>
 
        <select id="findOtaInnOtaByParams" parameterType="com.fanqie.core.dto.TBParam" resultMap="BaseResultMap">
