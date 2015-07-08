@@ -10,12 +10,13 @@
               <result column="company_id" property="companyId"/>
               <result column="ota_wg_id" property="otaWgId"/>
               <result column="product_date" property="productDate"/>
+              <result column="deleted" property="deleted"/>
        </resultMap>
 
 
        <insert id="saveRoomTypeGoodsRp" parameterType="com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto" >
-           insert into ota_inn_roomtype_goods(id,room_type_id,inn_id,company_id,rpid,gid,ota_wg_id,rid,product_date)
-           values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId},#{rid},now())
+           insert into ota_inn_roomtype_goods(id,room_type_id,inn_id,company_id,rpid,gid,ota_wg_id,rid,product_date,deleted)
+           values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId},#{rid},now(),0)
        </insert>
 
        <update id="updateRoomTypeGoodsProductDate" parameterType="java.lang.String" >
@@ -26,7 +27,7 @@
        </update>
 
        <select id="findRoomTypeByRid" parameterType="java.lang.Long" resultMap="BaseResultMap">
-              SELECT  o.* from ota_inn_roomtype_goods o where o.rid='${rid}'
+              SELECT  o.* from ota_inn_roomtype_goods o where o.rid='${rid}' and deleted =0
        </select>
 
 </mapper>
