@@ -9,6 +9,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.support.util.TPServiceUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.FileItem;
@@ -105,6 +106,9 @@ public class TBXHotelUtil {
         req.setArea(String.valueOf(roomTypeInfo.getRoomArea()));
         req.setFloor(String.valueOf(roomTypeInfo.getFloorNum()));
         req.setBedSize(String.valueOf(roomTypeInfo.getBedLen()));
+        List<FacilitiesVo> facilitiesMap = roomTypeInfo.getFacilitiesMap();
+        //服务设施
+        req.setService(TPServiceUtil.jsonService(facilitiesMap));
         try {
             XhotelRoomtypeAddResponse response = client.execute(req , company.getSessionKey());
             log.info("addRoomType:" + response.getBody());
