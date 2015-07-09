@@ -203,6 +203,7 @@ public class OrderService implements IOrderService {
             //查询客栈信息
             BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId());
             if (null == bangInn) {
+                logger.info("绑定客栈不存在" + order.getOTAHotelId());
                 return new JsonModel(false, "绑定客栈不存在");
             }
             //查询当前酒店以什么模式发布thi
