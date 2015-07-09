@@ -40,6 +40,6 @@ public class TPServiceUtil {
             }
             return  JacksonUtil.obj2json(map);
         }
-        return "";
+        return null;
     }
 }
