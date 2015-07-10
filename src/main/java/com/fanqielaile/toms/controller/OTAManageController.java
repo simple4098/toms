@@ -9,30 +9,18 @@ import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IUserInfoService;
-import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
-import com.tomato.framework.log.annotation.Log;
-import com.tomato.framework.log.annotation.LogModule;
-import com.tomato.framework.log.client.BusinLogClient;
-import com.tomato.framework.log.client.SysLogClient;
-import com.tomato.log.model.BusinLog;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -49,8 +37,8 @@ public class OTAManageController extends BaseController {
     private IUserInfoService userInfoService;
     @Resource
     private Md5PasswordEncoder passwordEncoder;
-    @Resource
-    private BusinLogClient businLogClient;
+    /*@Resource
+    private BusinLogClient businLogClient;*/
     /**
      * 淘宝调用的接口
      *

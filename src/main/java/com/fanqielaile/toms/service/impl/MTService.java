@@ -4,7 +4,6 @@ import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.dto.OtaInfoDto;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.ITPService;
-import com.tomato.log.model.BusinLog;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,17 +17,17 @@ public class MTService implements ITPService {
 
 
     @Override
-    public void updateOrAddHotel(TBParam tbParam, BusinLog businLog, OtaInfo otaInfo) throws Exception {
+    public void updateOrAddHotel(TBParam tbParam,  OtaInfo otaInfo) throws Exception {
 
     }
 
     @Override
-    public void deleteHotel(TBParam tbParam, BusinLog businLog, OtaInfo otaInfo) throws Exception {
+    public void deleteHotel(TBParam tbParam,  OtaInfo otaInfo) throws Exception {
 
     }
 
     @Override
-    public void updateHotel(OtaInfoDto o, BusinLog businLog,TBParam tbParam) {
+    public void updateHotel(OtaInfoDto o, TBParam tbParam) {
 
     }
 }

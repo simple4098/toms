@@ -1,6 +1,5 @@
 package com.fanqielaile.toms.enums;
 
-import com.fanqielaile.toms.service.ITBService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.service.impl.MTService;
 import com.fanqielaile.toms.service.impl.TBService;
