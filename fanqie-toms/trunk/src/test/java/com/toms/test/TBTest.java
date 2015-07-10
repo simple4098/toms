@@ -63,20 +63,20 @@ public class TBTest {
         OtaInfo otaInfo = new OtaInfo();
         otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6101b18257c78317663b9abc941627d6c2d95bbf865cc402555889376");
+        otaInfo.setSessionKey("61020029981c0bc9a0d28328c154c869258136962d6557e2555889376");
         //String innId = "7060";
-        String innId = "9591";
+        String innId = "22634";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "3624";
-        String otaId = "101";
+        String accountId = "1000721";
+        String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
         boolean deleted=false;
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("3624");
+        price1.setAccountId("1000721");
         price1.setPattern("MAI");
         PriceModel price2 = new PriceModel();
         price2.setAccountId("4162");
@@ -95,13 +95,13 @@ public class TBTest {
         tbParam.setPriceModelArray(priceModelArray);
         Company company = companyDao.selectCompanyByCompanyCode(companyCode);
         String roomTypeUrl = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),accountId, CommonApi.ROOM_TYPE);
-        String innInfoUrl = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),accountId, CommonApi.INN_INFO);
+        String innInfoUrl = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), accountId, CommonApi.INN_INFO);
         String s = String.valueOf(new Date().getTime());
-        String signature = DcUtil.obtMd5("101" + s + "XZ" + "xz123456");
+        String signature = DcUtil.obtMd5("903" + s + "TB" + "tb");
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
         String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-09&to=2015-08-06"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
-        String httpGets = HttpClientUtil.httpGets(room_type,null);
+        String httpGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         JSONObject jsonInn = JSONObject.fromObject(httpGets1);
         XHotel xHotel = null;
@@ -186,37 +186,37 @@ public class TBTest {
         }
     }
 
+
+
     @Test
     @Ignore
-    public void  test3() throws IOException {
-        List<OtaInfoDto> infoDtoList = otaInfoDao.selectOtaInfoList();
-        for (OtaInfoDto o:infoDtoList) {
-            TBParam tbParam = new TBParam();
-            tbParam.setCompanyCode(o.getCompanyCode());
-            tbParam.setOtaId(String.valueOf(o.getOtaId()));
-            String saleListUrl = DcUtil.omsQueryProxySaleListUrl(o.getOtaId(), o.getUserAccount(), o.getUserPassword(), CommonApi.ProxySaleList);
-            String roomTypeGets = HttpClientUtil.httpGets(saleListUrl, null);
-            JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-            if (Constants.SUCCESS.equals(jsonObject.get("status").toString())) {
-                List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
-                List<PricePattern> pricePatterns = null;
-                for (ProxyInns proxyInns : list) {
-                    pricePatterns = proxyInns.getPricePatterns();
-                    tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
-                    for (PricePattern p : pricePatterns) {
-                        if (p.getPattern().equals(1)) {
-                            tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
-                            tbParam.setsJiaModel("DI");
-                        }
-                        if (p.getPattern().equals(2)) {
-                            tbParam.setAccountId(String.valueOf(p.getAccountId()));
-                            tbParam.setsJiaModel("MAI");
-                        }
-                    }
-                    //更新酒店
-                    //updateOrAddHotel( tbParam,  businLog, o);
+    public void  test4() throws IOException {
 
+        TBParam tbParam  =  new TBParam();
+        tbParam.setCompanyCode("11111111");
+        Company company = companyDao.selectCompanyByCompanyCode("11111111");
+        String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
+        String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+            List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
+            List<PricePattern> pricePatterns = null;
+            for (ProxyInns proxyInns:list){
+                pricePatterns = proxyInns.getPricePatterns();
+                tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
+                for (PricePattern p:pricePatterns){
+                    if (p.getPattern().equals(1)){
+                        tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
+                        tbParam.setsJiaModel("DI");
+                    }
+                    if (p.getPattern().equals(2)){
+                        tbParam.setAccountId(String.valueOf(p.getAccountId()));
+                        tbParam.setsJiaModel("MAI");
+                    }
                 }
+                //更新酒店
+                //updateOrAddHotel( tbParam,  businLog, o);
+
             }
         }
     }
