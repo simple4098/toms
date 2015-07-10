@@ -7,23 +7,16 @@ import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.JsonModel;
-import com.tomato.framework.log.support.UserInfoContext;
-import org.apache.commons.lang3.StringUtils;
+/*import com.tomato.framework.log.support.UserInfoContext;*/
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -55,7 +48,7 @@ public class SystemController extends BaseController {
             List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(currentUser.getCompanyId());
             model.addAttribute(Constants.DATA, permissionList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            UserInfoContext.setUserInfo(currentUser.getId());
+         /*   UserInfoContext.setUserInfo(currentUser.getId());*/
         } catch (Exception e) {
             logger.error("用户登录失败", e);
         }
@@ -69,7 +62,7 @@ public class SystemController extends BaseController {
     @RequestMapping("logout")
     public String logout() {
         //日志
-        UserInfoContext.release();
+       /* UserInfoContext.release();*/
         //清空session
         SecurityContextHolder.clearContext();
         return "login";
