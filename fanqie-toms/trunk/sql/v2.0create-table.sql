@@ -336,7 +336,7 @@ INSERT INTO "public"."dictionary" VALUES ('3', '查询订单状态', 'http://192
 
 
 -- ota info配置信息
-CREATE TABLE "public"."ota_info" (
+CREATE TABLE ota_info (
 "id" varchar COLLATE "default" NOT NULL,
 "ota_info" varchar(20) COLLATE "default",
 "ota_type" varchar(10) COLLATE "default",
