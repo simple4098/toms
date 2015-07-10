@@ -65,6 +65,7 @@ public class TBTest {
     private IOtaInfoDao otaInfoDao;
 
     @Test
+    @Ignore
     public void test() throws IOException {
         OtaInfo otaInfo = new OtaInfo();
         otaInfo.setAppKey("23192376");

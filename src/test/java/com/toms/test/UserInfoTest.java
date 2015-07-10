@@ -18,7 +18,7 @@ import java.util.*;
  * Created by wangdayin on 2015/5/11.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml"})
+@ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml", "/conf/spring/spring-security.xml"})
 public class UserInfoTest {
     @Resource
     private UserInfoDao userInfoDao;
