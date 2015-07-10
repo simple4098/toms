@@ -1,15 +1,19 @@
+/*
 package com.toms.test;
 
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.*;
+import com.fanqie.util.Constants;
+import com.fanqie.util.DcUtil;
+import com.fanqie.util.HttpClientUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.model.*;
-import com.fanqielaile.toms.service.ITBService;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaInfo;
+import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
-import com.taobao.api.ApiException;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
@@ -30,12 +34,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+*/
 /**
  * DESC :
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
- */
+ *//*
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml","/conf/spring/spring-security.xml"})
 public class TBTest {
@@ -221,3 +227,4 @@ public class TBTest {
         }
     }
 }
+*/
