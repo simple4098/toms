@@ -13,7 +13,6 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
-import com.fanqielaile.toms.service.ITBService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
@@ -28,11 +27,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -200,9 +196,10 @@ public class TBService implements ITPService {
 
     @Override
     public void updateHotel(OtaInfoDto o, BusinLog businLog,TBParam tbParam) throws Exception {
+        Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         tbParam.setCompanyCode(o.getCompanyCode());
-        tbParam.setOtaId(String.valueOf(o.getOtaId()));
-        String saleListUrl = DcUtil.omsQueryProxySaleListUrl(o.getOtaId(), o.getUserAccount(), o.getUserPassword(), CommonApi.ProxySaleList);
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
         String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
