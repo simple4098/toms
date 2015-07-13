@@ -30,5 +30,7 @@ public class Test {
         Date date = new Date();
         System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
         System.out.println(date.getTime());
+        System.out.println(new Timestamp(new Date().getTime()).getTime());
+        System.out.println(new Date().getTime() + "" + new Random().nextInt(10));
     }
 }

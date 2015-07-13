@@ -99,6 +99,16 @@ public class Order extends Domain {
     private int accountId;
     //房态更新时间
     private Date orderCreateTime;
+    //toms订单编号
+    private String orderCode;
+
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
 
     public Date getOrderCreateTime() {
         return orderCreateTime;
@@ -431,7 +441,7 @@ public class Order extends Domain {
         omsOrder.setAccountId(order.getAccountId());
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
-        omsOrder.setOtaOrderNo(order.getId());
+        omsOrder.setOtaOrderNo(order.getOrderCode());
         omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());

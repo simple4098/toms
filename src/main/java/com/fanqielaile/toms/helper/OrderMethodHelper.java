@@ -13,11 +13,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -126,5 +128,16 @@ public class OrderMethodHelper {
             }
         }
         return orderGuestses;
+    }
+
+    /**
+     * 得到订单号
+     *
+     * @return
+     */
+    public static String getOrderCode() {
+        String orderCode = "";
+        orderCode = new Date().getTime() + "" + new Random().nextInt(10);
+        return orderCode;
     }
 }
