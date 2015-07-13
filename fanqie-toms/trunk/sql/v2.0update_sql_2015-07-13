@@ -1,0 +1,4 @@
+ALTER TABLE "public"."ota_toms_order"
+ADD COLUMN "order_code" varchar(100);
+
+COMMENT ON COLUMN "public"."ota_toms_order"."order_code" IS 'TOMS订单号';

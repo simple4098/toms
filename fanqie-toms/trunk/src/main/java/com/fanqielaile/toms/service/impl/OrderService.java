@@ -116,6 +116,8 @@ public class OrderService implements IOrderService {
         order.setOrderTime(new Date());
         //设置订单总价
         order.setTotalPrice(order.getTotalPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+        //设置订单号
+        order.setOrderCode(OrderMethodHelper.getOrderCode());
         //创建订单
         this.orderDao.insertOrder(order);
         //创建每日价格信息
