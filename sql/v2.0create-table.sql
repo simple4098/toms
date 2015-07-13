@@ -4,6 +4,9 @@ alter table bang_inn add column ota_wg_id varchar(64);
 alter table bang_inn add column account_id_di int4;
 update bang_inn set deleted=0;
 
+--初始化公司
+INSERT INTO company VALUES ('d0392bc8-131c-8989-846e-c81c66011111', null, '2015-07-13', '2015-07-13', null, '0', '飞鸟', '0', '89894098', '1', '903', 'TB', 'tb');
+
 
 CREATE TABLE  ota_inn_ota (
 "id" varchar(64) COLLATE "default" NOT NULL,
@@ -370,4 +373,3 @@ COMMENT ON COLUMN "public"."ota_info"."sessionkey" IS '第三方 sessionkey';
 COMMENT ON COLUMN "public"."ota_info"."expired_time" IS '失效时间';
 
 INSERT INTO "public"."ota_info" VALUES ('1', '淘宝', 'TB', '0', '88888888', '23192376', 'c2e9acffbdf281c93b167601781cd228', '61014230a6162d458a44a75692d98da13f11ab9d397ac672555889376', null);
-INSERT INTO "public"."ota_info" VALUES ('2', '美团', 'MT', '1', '88888888', '1', '122', '233', null);
