@@ -52,7 +52,7 @@ public class OTAManageController extends BaseController {
             UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
             if (null != userNameAndPassword) {
                 //验证用户密码
-                if (userNameAndPassword.getPassword().equals(Constants.TBPassword) && userNameAndPassword.getUserName().equals(Constants.TBUserName)) {
+                if (Constants.TBUserName.equals(userNameAndPassword.getUserName()) && Constants.TBPassword.equals(userNameAndPassword.getPassword())) {
                     //得到跟节点
                     logger.info("xml参数：" + xmlStr);
                     String rootElementString = XmlDeal.getRootElementString(xmlStr);
