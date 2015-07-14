@@ -186,7 +186,7 @@ public class TBXHotelUtil {
             String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
             byte[] bytes = null;
             try {
-                log.info("图片地址:" +imgUrl );
+                log.info("图片地址:" +imgUrl +" imgName:"+imgName);
                 bytes = HttpClientUtil.readImg(imgUrl);
             } catch (Exception e) {
                 log.error("获取宝贝图片异常:" + e.getMessage());
