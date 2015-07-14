@@ -216,9 +216,24 @@ public class OrderService implements IOrderService {
             }
             order.setRoomTypeName(otaBangInnRoomDtos.get(0).getRoomTypeName());
             logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, dictionary).toString());
-            String respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
+            String respose = "";
+            JSONObject jsonObject = null;
+            try {
+                respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
+                jsonObject = JSONObject.fromObject(respose);
+            } catch (Exception e) {
+                order.setOrderStatus(OrderStatus.REFUSE);
+                order.setFeeStatus(FeeStatus.NOT_PAY);
+                Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
+                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
+                logger.info("淘宝取消订单接口返回值=>" + result);
+                if (null != result && result.equals("success")) {
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                }
+                return new JsonModel(false, "OMS系统异常");
+            }
             logger.info("OMS接口响应=>" + respose);
-            JSONObject jsonObject = JSONObject.fromObject(respose);
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);

@@ -1,8 +1,14 @@
 package com.toms.test;
 
+import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dao.OrderDao;
 import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import org.junit.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +25,10 @@ import javax.annotation.Resource;
 public class OrderTest {
     @Resource
     private IOrderService orderService;
+    @Resource
+    private OrderDao orderDao;
+    @Resource
+    private IOtaInfoDao otaInfoDao;
 
     @Test
     @Ignore
@@ -42,7 +52,7 @@ public class OrderTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void testCreateOrder() throws Exception {
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao1230123213-1387792484913</CreateToken></AuthenticationToken><OrderId>b8f5096b-c4ef-44f2-9414-91b56b032dd0</OrderId><TaoBaoOrderId>1387784033263</TaoBaoOrderId><AlipayTradeNo>2013123111001001020000378012</AlipayTradeNo><Payment>10000</Payment></PaySuccessRQ>";
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao193617029605469-1435806074926</CreateToken></AuthenticationToken><OrderId>436e4b4f-c0b4-4c81-a6d9-08af74e85a64</OrderId><TaoBaoOrderId>193617029605469</TaoBaoOrderId><Payment>120000</Payment></PaySuccessRQ>";
@@ -50,5 +60,13 @@ public class OrderTest {
         String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao1145176960720651-1436413019307</CreateToken></AuthenticationToken><OrderId>d7f9d6a8-23b3-4bb8-80ec-69367b8006a4</OrderId><TaoBaoOrderId>1145176960720651</TaoBaoOrderId><AlipayTradeNo>2015070921001001390225055373</AlipayTradeNo><Payment>200</Payment></PaySuccessRQ>";
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao1145774889820651-1436422573079</CreateToken></AuthenticationToken><OrderId>ff6597b9-fac0-49ec-8310-11f662df1b65</OrderId><TaoBaoOrderId>1145774889820651</TaoBaoOrderId><AlipayTradeNo>2015070921001001390224890600</AlipayTradeNo><Payment>100</Payment></PaySuccessRQ>";
         this.orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
+    }
+
+    @Test
+    public void testUpdateOrder() throws Exception {
+        Order order = this.orderDao.selectOrderByIdAndChannelSource("d959bcfe-f10f-42a5-aa2c-6f5dcb02ca6e", ChannelSource.TAOBAO);
+        OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());
+        String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
+        System.out.println(result.toString());
     }
 }
