@@ -98,6 +98,7 @@ public class TBService implements ITPService {
                 BangInnDto bangInnDto = BangInnDto.toDto(company.getId(),tbParam,otaInnOta.getUuid(),omsInnDto.getInnName());
                 bangInnDao.createBangInn(bangInnDto);
             }else {
+                log.info("更新 --  tbParam:"+tbParam.toString());
                 otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                 otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
             }
