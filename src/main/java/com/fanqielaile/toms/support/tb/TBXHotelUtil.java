@@ -9,6 +9,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.support.util.ImgUtil;
 import com.fanqielaile.toms.support.util.TPServiceUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
@@ -187,7 +188,8 @@ public class TBXHotelUtil {
             byte[] bytes = null;
             try {
                 log.info("图片地址:" +imgUrl +" imgName:"+imgName);
-                bytes = HttpClientUtil.readImg(imgUrl);
+                //bytes = HttpClientUtil.readImg(imgUrl);
+                bytes = ImgUtil.compressionImg(imgUrl);
             } catch (Exception e) {
                 log.error("获取宝贝图片异常:" + e.getMessage());
             }
