@@ -100,9 +100,14 @@ public class TBXHotelUtil {
         req.setOutHid(innId);
         req.setHid(hid);
         req.setName(roomTypeInfo.getRoomTypeName());
-        req.setArea(String.valueOf(roomTypeInfo.getRoomArea()));
+        //面积
+        if (roomTypeInfo.getRoomArea()!=null){
+            req.setArea(String.valueOf(roomTypeInfo.getRoomArea()).concat("平方米"));
+        }
+        //楼层
         req.setFloor(String.valueOf(roomTypeInfo.getFloorNum()));
-        req.setBedSize(String.valueOf(roomTypeInfo.getBedLen()));
+        //床宽
+        req.setBedSize(String.valueOf(roomTypeInfo.getBedWid()));
         List<FacilitiesVo> facilitiesMap = roomTypeInfo.getFacilitiesMap();
         //服务设施
         req.setService(TPServiceUtil.jsonService(facilitiesMap));
