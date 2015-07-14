@@ -62,7 +62,7 @@ public class XmlDeal {
         BigDecimal payment = element.elementText("Payment") == null ? new BigDecimal(0) : new BigDecimal(element.elementText("Payment")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
         order.setPayment(payment);
         //取消订单原因
-        order.setReason(element.elementText("Reason"));
+        order.setReason(element.elementText("Reason") == null ? "" : element.elementText("Reason"));
         return order;
     }
 }
