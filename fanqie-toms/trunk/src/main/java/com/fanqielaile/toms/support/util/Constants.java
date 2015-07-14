@@ -14,4 +14,8 @@ public class Constants {
     public static final boolean ERROR = false;
     //数据
     public static final String DATA = "data";
+    //TB用户名
+    public static final String TBUserName = "TaoBao";
+    //TB密码
+    public static final String TBPassword = "TB123taobao";
 }

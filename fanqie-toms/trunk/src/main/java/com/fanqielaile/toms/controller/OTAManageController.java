@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.util.HttpClientUtil;
+import com.fanqielaile.toms.dao.DictionaryDao;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
@@ -9,6 +10,7 @@ import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IUserInfoService;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +35,6 @@ public class OTAManageController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(OTAManageController.class);
     @Resource
     private IOrderService orderService;
-    @Resource
-    private IUserInfoService userInfoService;
-    @Resource
-    private Md5PasswordEncoder passwordEncoder;
     /*@Resource
     private BusinLogClient businLogClient;*/
     /**
@@ -52,10 +50,9 @@ public class OTAManageController extends BaseController {
         if (StringUtils.isNotEmpty(xmlStr)) {
             //接口调用验证用户
             UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
-            UserInfo userInfo = (UserInfo) userInfoService.loadUserByUsername(userNameAndPassword.getUsername());
-            if (null != userInfo) {
+            if (null != userNameAndPassword) {
                 //验证用户密码
-                if (userInfo.getPassword().equals(passwordEncoder.encodePassword(userNameAndPassword.getPassword(), ""))) {
+                if (userNameAndPassword.getPassword().equals(Constants.TBPassword) && userNameAndPassword.getUserName().equals(Constants.TBUserName)) {
                     //得到跟节点
                     logger.info("xml参数：" + xmlStr);
                     String rootElementString = XmlDeal.getRootElementString(xmlStr);
@@ -97,12 +94,12 @@ public class OTAManageController extends BaseController {
                         logger.error("xml参数错误");
                     }
                 } else {
-                    logger.error("创建订单失败,验证用户不通过", userInfo);
+                    logger.error("创建订单失败,验证用户不通过", userNameAndPassword);
                     result.setMessage("创建订单失败,验证用户不通过");
                     result.setResultCode("-400");
                 }
             } else {
-                logger.error("创建订单失败,用户不存在", userInfo);
+                logger.error("创建订单失败,用户不存在", userNameAndPassword);
                 result.setMessage("创建订单失败,用户不存在");
                 result.setResultCode("-400");
             }
