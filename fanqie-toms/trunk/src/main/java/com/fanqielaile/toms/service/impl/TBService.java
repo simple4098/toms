@@ -202,21 +202,28 @@ public class TBService implements ITPService {
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
             List<PricePattern> pricePatterns = null;
+            StringBuilder stringBuilder = null;
             for (ProxyInns proxyInns:list){
+                stringBuilder = new StringBuilder();
                 pricePatterns = proxyInns.getPricePatterns();
                 tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
                 for (PricePattern p:pricePatterns){
                     if (p.getPattern().equals(1)){
                         tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
                         tbParam.setsJiaModel("DI");
+                        stringBuilder.append("DI,");
                     }
                     if (p.getPattern().equals(2)){
                         tbParam.setAccountId(String.valueOf(p.getAccountId()));
                         tbParam.setsJiaModel("MAI");
+                        stringBuilder.append("MAI,");
                     }
                 }
+                if (stringBuilder.toString().lastIndexOf(",")!=-1){
+                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
+                }
                 //更新酒店
-                updateOrAddHotel( tbParam,   o);
+                updateOrAddHotel(tbParam, o);
 
             }
         }
