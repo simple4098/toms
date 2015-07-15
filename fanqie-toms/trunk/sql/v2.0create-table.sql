@@ -1,12 +1,3 @@
---增加bang_inn表字段
-alter table bang_inn add column deleted int2;
-alter table bang_inn add column ota_wg_id varchar(64);
-alter table bang_inn add column account_id_di int4;
-update bang_inn set deleted=0;
-
---初始化公司
-INSERT INTO company VALUES ('d0392bc8-131c-8989-846e-c81c66011111', null, '2015-07-13', '2015-07-13', null, '0', '飞鸟', '0', '89894098', '1', '903', 'TB', 'tb');
-
 
 CREATE TABLE  ota_inn_ota (
 "id" varchar(64) COLLATE "default" NOT NULL,
@@ -338,38 +329,5 @@ INSERT INTO "public"."dictionary" VALUES ('2', '创建订单', 'http://192.168.1
 INSERT INTO "public"."dictionary" VALUES ('3', '查询订单状态', 'http://192.168.1.158:8888/api/queryOrder', 'ORDER_STATUS', '903', 'TB', 'tb');
 
 
--- ota info配置信息
-CREATE TABLE ota_info (
-"id" varchar COLLATE "default" NOT NULL,
-"ota_info" varchar(20) COLLATE "default",
-"ota_type" varchar(10) COLLATE "default",
-"deleted" int2,
-"company_id" varchar(64) COLLATE "default",
-"appkey" varchar COLLATE "default",
-"appsecret" varchar COLLATE "default",
-"sessionkey" varchar COLLATE "default",
-"expired_time" timestamp(6),
-CONSTRAINT "pk_ota_info" PRIMARY KEY ("id")
-)
-WITH (OIDS=FALSE)
-;
 
-ALTER TABLE "public"."ota_info" OWNER TO "ota";
 
-COMMENT ON COLUMN "public"."ota_info"."ota_info" IS 'OTA 描述';
-
-COMMENT ON COLUMN "public"."ota_info"."ota_type" IS 'OTA 类型';
-
-COMMENT ON COLUMN "public"."ota_info"."deleted" IS '是否删除';
-
-COMMENT ON COLUMN "public"."ota_info"."company_id" IS '公司id';
-
-COMMENT ON COLUMN "public"."ota_info"."appkey" IS '第三方 key';
-
-COMMENT ON COLUMN "public"."ota_info"."appsecret" IS '第三方 secret';
-
-COMMENT ON COLUMN "public"."ota_info"."sessionkey" IS '第三方 sessionkey';
-
-COMMENT ON COLUMN "public"."ota_info"."expired_time" IS '失效时间';
-
-INSERT INTO "public"."ota_info" VALUES ('1', '淘宝', 'TB', '0', '88888888', '23192376', 'c2e9acffbdf281c93b167601781cd228', '61014230a6162d458a44a75692d98da13f11ab9d397ac672555889376', null);
