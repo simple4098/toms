@@ -160,7 +160,7 @@
        </beans>
 
        <beans profile="production">
-              <jee:jndi-lookup jndi-name="java:comp/env/jdbc/tomato-toms"/>
+           <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
