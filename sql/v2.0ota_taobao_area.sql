@@ -1,4 +1,6 @@
 
+drop SEQUENCE  if exists ota_taobao_area_id_seq;
+create SEQUENCE ota_taobao_area_id_seq start 100;
 DROP TABLE IF EXISTS "public"."ota_taobao_area";
 CREATE TABLE "public"."ota_taobao_area" (
 "id" int4 DEFAULT nextval('ota_taobao_area_id_seq'::regclass) NOT NULL,
