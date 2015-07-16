@@ -18,9 +18,9 @@ public interface IOtaInnRoomTypeGoodsDao {
 
     /**
      * 更新 商品推送时间
-     * @param id ota_inn_roomtype_goods id
+     * @param innRoomTypeGoodsDto
      */
-    void updateRoomTypeGoodsProductDate(@Param("id")String id);
+    void updateRoomTypeGoodsProductDate(OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto);
 
     //删除客栈宝贝关系
     void deletedGoods(@Param("otaWgId")String otaWgId);

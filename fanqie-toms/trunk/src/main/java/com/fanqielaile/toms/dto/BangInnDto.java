@@ -66,14 +66,14 @@ public class BangInnDto extends BangInn {
         this.labelName = labelName;
     }
 
-    public static BangInnDto toDto(String companyId,TBParam tbParam,String otaInnOtaId,String innName){
+    public static BangInnDto toDto(String companyId,TBParam tbParam,String otaInnOtaId,InnDto omsInnDto){
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId(companyId);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
         bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));
         bangInnDto.setOtaWgId(otaInnOtaId);
-        bangInnDto.setInnName(innName);
+        bangInnDto.setInnName(omsInnDto.getInnName());
         bangInnDto.setBangDate(new Date());
         for (PriceModel p:priceModelArray){
             if(p.getPattern().equals("DI")){
@@ -84,5 +84,20 @@ public class BangInnDto extends BangInn {
             }
         }
         return  bangInnDto;
+    }
+
+    public static void toUpdateDto(BangInn bangInnDto, TBParam tbParam, String uuid, InnDto omsInnDto) {
+        List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
+        bangInnDto.setOtaWgId(uuid);
+        bangInnDto.setMobile(omsInnDto.getFrontPhone());
+        bangInnDto.setInnName(omsInnDto.getInnName());
+        for (PriceModel p:priceModelArray){
+            if(p.getPattern().equals("DI")){
+                bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
+            }
+            if(p.getPattern().equals("MAI")){
+                bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
+            }
+        }
     }
 }
