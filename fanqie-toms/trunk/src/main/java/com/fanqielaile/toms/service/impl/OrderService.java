@@ -18,6 +18,7 @@ import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import com.tomato.framework.log.annotation.Log;
+import com.tomato.framework.log.annotation.LogModule;
 import com.tomato.framework.log.client.BusinLogClient;
 import com.tomato.log.model.BusinLog;
 import net.sf.json.JSONObject;
@@ -39,7 +40,7 @@ import java.util.*;
  * @version: v1.0.0
  */
 @Service
-/*@LogModule("订单Service:OrderService")*/
+@LogModule("订单Service:OrderService")
 public class OrderService implements IOrderService {
     private static Logger logger = LoggerFactory.getLogger(OrderService.class);
 
@@ -100,7 +101,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-//    @Log(descr = "创建订单")
+    @Log(descr = "创建订单")
     public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         String logStr = "创建订单传递参数=>" + xmlStr;
         //解析xml
@@ -137,7 +138,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    /*@Log(descr = "取消订单")*/
+    @Log(descr = "取消订单")
     public JsonModel cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         String logStr = "取消订单传递的=>" + xmlStr;
         //解析取消订单的xml
@@ -166,19 +167,19 @@ public class OrderService implements IOrderService {
                 }
             }
         }
-       /* businLog.setDescr(logStr + "取消的订单信息=>" + order.toString());
+        businLog.setDescr(logStr + "取消的订单信息=>" + order.toString());
         //保存日志
-        businLogClient.save(businLog);*/
+        businLogClient.save(businLog);
         return new JsonModel(true, "取消订单成功");
     }
 
     @Override
-    /*@Log(descr = "付款成功回调")*/
+    @Log(descr = "付款成功回调")
     public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
         //日志
-      /*  String logStr = "付款成功回调传递参数" + xmlStr;
+        String logStr = "付款成功回调传递参数" + xmlStr;
         businLog.setDescr(logStr);
-        businLogClient.save(businLog);*/
+        businLogClient.save(businLog);
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //获取订单号，判断订单是否存在
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
@@ -278,7 +279,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-   /* @Log(descr = "查询订单状态")*/
+    @Log(descr = "查询订单状态")
     public Map<String, String> findOrderStatus(String xmlStr, ChannelSource channelSource) throws Exception {
         String logStr = "查询订单状态传入参数=>" + xmlStr;
         Map<String, String> result = new HashMap<>();
@@ -323,8 +324,8 @@ public class OrderService implements IOrderService {
             result.put("message", order.getId());
             result.put("code", "0");
         }
-     /*   businLog.setDescr(logStr);
-        businLogClient.save(businLog);*/
+        businLog.setDescr(logStr);
+        businLogClient.save(businLog);
         return result;
     }
 }

@@ -13,6 +13,8 @@ import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.tomato.framework.log.client.BusinLogClient;
+import com.tomato.log.model.BusinLog;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +37,9 @@ public class OTAManageController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(OTAManageController.class);
     @Resource
     private IOrderService orderService;
-    /*@Resource
-    private BusinLogClient businLogClient;*/
+    @Resource
+    private BusinLogClient businLogClient;
+    private BusinLog businLog = new BusinLog();
     /**
      * 淘宝调用的接口
      *
@@ -48,6 +51,8 @@ public class OTAManageController extends BaseController {
         String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
         Result result = new Result();
         if (StringUtils.isNotEmpty(xmlStr)) {
+            businLog.setDescr("淘宝接口传入XML参数：" + xmlStr);
+            businLogClient.save(businLog);
             //接口调用验证用户
             UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
             if (null != userNameAndPassword) {
