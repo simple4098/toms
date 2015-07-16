@@ -13,10 +13,6 @@
        </resultMap>
 
        <resultMap id="otaInfoDtoId" type="com.fanqielaile.toms.dto.OtaInfoDto" extends="BaseResultMap">
-              <result column="ota_id" property="otaId"/>
-              <result column="user_account" property="userAccount"/>
-              <result column="user_password" property="userPassword"/>
-              <result column="company_code" property="companyCode"/>
        </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="BaseResultMap">

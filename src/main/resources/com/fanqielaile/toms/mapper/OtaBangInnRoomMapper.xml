@@ -28,6 +28,11 @@
               ota_bang_inn_room where ota_wg_id = #{wgOtaId} and room_type_id=#{roomTypeId} and deleted=0
        </select>
 
+       <select id="selectBangInnRoomByRidAndCompanyId"  resultMap="BaseResultMap">
+              SELECT id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id from
+              ota_bang_inn_room where company_id = '${companyId}' and rid='${rid}' and deleted=0
+       </select>
+
        <update id="deletedBangInnRoom" parameterType="java.lang.String">
               UPDATE  ota_bang_inn_room SET  deleted=1 where ota_wg_id='${wgOtaId}'
        </update>

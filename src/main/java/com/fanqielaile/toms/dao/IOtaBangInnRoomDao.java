@@ -22,4 +22,6 @@ public interface IOtaBangInnRoomDao {
 
     //删除客栈房型关系
     void deletedBangInnRoom(@Param("wgOtaId")String otaWgId);
+    //根据rid companyId 查询
+    OtaBangInnRoomDto selectBangInnRoomByRidAndCompanyId(@Param("rid")String rid, @Param("companyId")String CompanyId);
 }

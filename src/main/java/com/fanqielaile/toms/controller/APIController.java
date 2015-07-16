@@ -9,6 +9,7 @@ import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.tomato.log.model.BusinLog;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class APIController extends BaseController {
      */
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody
-    public Object hotel(TBParam tbParam){
+    public Object hotel(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         if (!validateParam){
@@ -55,7 +56,7 @@ public class APIController extends BaseController {
             ITPService service = null;
             for (OtaInfo o:list){
                 service = o.getOtaType().create();
-                service.updateOrAddHotel(tbParam,o);
+                service.updateOrAddHotel(tbParam,o,businLog);
             }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
@@ -71,7 +72,7 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/hotel/del")
     @ResponseBody
-    public Object del(TBParam tbParam){
+    public Object del(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         if ( StringUtils.isEmpty(tbParam.getCompanyCode()) || StringUtils.isEmpty(tbParam.getInnId())){
             jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
@@ -83,7 +84,7 @@ public class APIController extends BaseController {
             ITPService service = null;
             for (OtaInfo o:list){
                 service = o.getOtaType().create();
-                service.deleteHotel(tbParam,o);
+                service.deleteHotel(tbParam,o,businLog);
             }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
@@ -98,14 +99,14 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/hotel/timer")
     @ResponseBody
-    public Object hotelTimer(TBParam tbParam){
+    public Object hotelTimer(TBParam tbParam,BusinLog businLog){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
         List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
         try {
             ITPService service = null;
             for (OtaInfoDto o:infoDtoList){
                 service = o.getOtaType().create();
-                service.updateHotel(o,  tbParam);
+                service.updateHotel(o,  tbParam,businLog);
             }
         } catch (Exception e) {
             e.printStackTrace();

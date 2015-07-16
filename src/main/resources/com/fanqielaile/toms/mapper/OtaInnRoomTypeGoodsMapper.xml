@@ -19,8 +19,16 @@
            values (#{uuid},#{roomTypeId},#{innId},#{companyId},#{rpid},#{gid},#{otaWgId},#{rid},now(),0)
        </insert>
 
-       <update id="updateRoomTypeGoodsProductDate" parameterType="java.lang.String" >
-           update ota_inn_roomtype_goods set product_date=now() where id='${id}'
+       <update id="updateRoomTypeGoodsProductDate" parameterType="com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto" >
+           update ota_inn_roomtype_goods set product_date=now()
+              <if test="gid != null and gid != ''">
+                     , gid= '${gid}'
+              </if><if test="rpid != null and rpid != ''">
+                     , rpid= '${rpid}'
+              </if><if test="rid != null and rid != ''">
+                     , rid= '${rid}'
+              </if>
+           where id='${id}'
        </update>
        <update id="deletedGoods" parameterType="java.lang.String" >
            update ota_inn_roomtype_goods set deleted=1 where ota_wg_id='${otaWgId}'

@@ -105,6 +105,29 @@
         </trim>
         where id= #{id}
     </update>
+
+    <update id="updateBangInnTp" parameterType="com.fanqielaile.toms.model.BangInn">
+        update bang_inn
+        <trim prefix="SET" suffixOverrides=",">
+             updated_date = now(),
+            <if test="mobile != null and mobile != ''">
+                mobile= #{mobile},
+            </if>
+            <if test="innName != null and innName != ''">
+                inn_name= #{innName},
+            </if>
+            <if test="otaWgId != null and otaWgId != ''">
+                ota_wg_id = #{otaWgId},
+            </if>
+            <if test="accountIdDi != null and accountIdDi != ''">
+                account_id_di = #{accountIdDi},
+            </if>
+            <if test="accountId != null and accountId != ''">
+                account_id = #{accountId},
+            </if>
+        </trim>
+        where id= #{id}
+    </update>
     <select id="selectCompanyByInnId" parameterType="java.lang.Integer" resultMap="BangInnDtoResult">
         select bi.inn_id,bi.inn_code,bi.company_id,bi.bang_date,c.company_name,c.company_code from bang_inn bi INNER
         JOIN

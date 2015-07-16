@@ -47,6 +47,10 @@
               where  b.deleted=0 and c.company_code = '${companyCode}' and b.inn_id ='${innId}' and b.account_id='${accountId}' and o.ota_id='${otaId}' and b.deleted=0
        </select>
 
+       <select id="selectOtaInnOtaByHid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+                SELECT o.* from ota_inn_ota o where  o.deleted=0 and o.wg_hid='${hid}' and o.company_id='${companyId}'
+       </select>
+
        <select id="selectOtaInnOtaByTBHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
               SELECT oo.*,om.price_model_value from ota_inn_ota oo inner JOIN ota_price_model om on oo.id = om.ota_wg_id
               where oo.wg_hid=#{otaHotelId} and oo.deleted = 0
