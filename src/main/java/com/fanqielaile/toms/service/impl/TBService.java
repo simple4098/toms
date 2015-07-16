@@ -99,24 +99,22 @@ public class TBService implements ITPService {
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
             if (xHotel!=null) {
                 otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId());
+                BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                 if (otaInnOta==null){
                     otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam);
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                     priceModelDao.savePriceModel(otaPriceModel);
-                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                     if (bangInn==null){
                         BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getUuid(), omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
                         BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getUuid(), omsInnDto);
-                        bangInn.setInnName(omsInnDto.getInnName());
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }else {
                     //otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                     otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                     if (bangInn==null){
                         BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getId(), omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
