@@ -63,6 +63,7 @@ public class OrderTest {
     }
 
     @Test
+    @Ignore
     public void testUpdateOrder() throws Exception {
         Order order = this.orderDao.selectOrderByIdAndChannelSource("d959bcfe-f10f-42a5-aa2c-6f5dcb02ca6e", ChannelSource.TAOBAO);
         OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());

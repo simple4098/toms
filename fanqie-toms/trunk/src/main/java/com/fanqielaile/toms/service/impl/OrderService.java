@@ -17,6 +17,9 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.tomato.framework.log.annotation.Log;
+import com.tomato.framework.log.client.BusinLogClient;
+import com.tomato.log.model.BusinLog;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
@@ -56,9 +59,9 @@ public class OrderService implements IOrderService {
     private IOtaBangInnRoomDao bangInnRoomDao;
     @Resource
     private IOtaInnOtaDao otaInnOtaDao;
-   /* @Resource
+    @Resource
     private BusinLogClient businLogClient;
-    private BusinLog businLog = new BusinLog();*/
+    private BusinLog businLog = new BusinLog();
     @Resource
     private IOtaInfoDao otaInfoDao;
     @Resource
@@ -97,7 +100,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-   /* @Log(descr = "创建订单")*/
+//    @Log(descr = "创建订单")
     public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
         String logStr = "创建订单传递参数=>" + xmlStr;
         //解析xml
@@ -118,6 +121,9 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(order.getTotalPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
         //设置订单号
         order.setOrderCode(OrderMethodHelper.getOrderCode());
+        //算成本价与OTA收益
+        order.setCostPrice(order.getTotalPrice());
+        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
         //创建订单
         this.orderDao.insertOrder(order);
         //创建每日价格信息
@@ -125,8 +131,8 @@ public class OrderService implements IOrderService {
         //创建入住人信息
         this.orderGuestsDao.insertOrderGuests(order);
         //保存日志
-       /* businLog.setDescr(logStr + order.toString());
-        businLogClient.save(businLog);*/
+        businLog.setDescr(logStr + order.toString());
+        businLogClient.save(businLog);
         return order;
     }
 
