@@ -1,5 +1,2 @@
 --bang_inn 更新字段
 alter table bang_inn add column updated_date timestamp(6);
-
---增加ota_bang_inn_room表索引
-CREATE INDEX "ota_bang_inn_room_company_id_ota_wg_id_idx" ON "public"."ota_bang_inn_room" USING btree (company_id, ota_wg_id);
