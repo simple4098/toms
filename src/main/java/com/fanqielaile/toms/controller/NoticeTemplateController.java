@@ -2,7 +2,6 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.enums.SendType;
 import com.fanqielaile.toms.helper.BangInnDataCheckHelper;
-import com.fanqielaile.toms.helper.MessageHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.NoticeTemplate;
@@ -12,8 +11,6 @@ import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.INoticeTemplateService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
-import com.tomasky.msp.client.service.IMessageManageService;
-import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -40,8 +37,8 @@ public class NoticeTemplateController extends BaseController {
     private IBangInnService bangInnService;
     @Resource
     private ICompanyService companyService;
-    @Resource
-    private IMessageManageService messageManageService;
+//    @Resource
+//    private IMessageManageService messageManageService;
 
     /**
      * 发送短信或者系统弹窗
@@ -63,7 +60,7 @@ public class NoticeTemplateController extends BaseController {
             List<BangInn> bangInns = this.bangInnService.findBangInnByStringBangInn(BangInnDataCheckHelper.dealStringInnIds(innId));
             if (SendType.MESSAGE.name().equals(sendType)) {
                 System.out.println("Seed message begin=========>");
-                messageManageService.sendMessage(MessageHelper.createSmsMessage(company, bangInns, noticeContent));
+//                messageManageService.sendMessage(MessageHelper.createSmsMessage(company, bangInns, noticeContent));
                 System.out.println("Seed message end=========>");
             } else if (SendType.POPUP.name().equals(sendType)) {
                 //TODO 调用系统弹窗接口

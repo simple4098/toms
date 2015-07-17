@@ -50,7 +50,7 @@
     <bean id="requestMapResolver" class="com.fanqielaile.toms.support.security.DBRequestMapResolver">
         <property name="permissionDao" ref="permissionDao"/>
     </bean>
-    <bean id="messageManageService" class="com.tomasky.msp.client.service.impl.MessageManageServiceImpl"/>
+    <!--<bean id="messageManageService" class="com.tomasky.msp.client.service.impl.MessageManageServiceImpl"/>-->
     <bean id="rolePermissionChangeListener" class="com.fanqielaile.toms.support.listener.RolePermissionChangeListener">
         <property name="requestMapResolver" ref="requestMapResolver"/>
     </bean>

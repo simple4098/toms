@@ -1,3 +1,4 @@
+/*
 package com.fanqielaile.toms.helper;
 
 import com.fanqielaile.toms.model.BangInn;
@@ -16,23 +17,27 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * 发送消息
  * Created by wangdayin on 2015/6/4.
- */
+ *//*
+
 public class MessageHelper {
     public static boolean sendMessageHelper() {
         return true;
     }
 
-    /**
+    */
+/**
      * 创建短信发送对象
      *
      * @param company
      * @param bangInns
      * @param noticeContent
      * @return
-     */
+ *//*
+
     public static SmsMessage createSmsMessage(Company company, List<BangInn> bangInns, String noticeContent) {
         List<String> receiver = new ArrayList<>();
         try {
@@ -53,3 +58,4 @@ public class MessageHelper {
 
 //    public static ImsMessage createImsMessage(){}
 }
+*/
