@@ -19,10 +19,7 @@ import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
-import com.tomato.framework.log.annotation.Log;
-import com.tomato.framework.log.annotation.LogModule;
-import com.tomato.framework.log.client.BusinLogClient;
-import com.tomato.log.model.BusinLog;
+
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +36,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 @Service("tbService")
-@LogModule("TP 推酒店房型service")
+/*@LogModule("TP 推酒店房型service")*/
 public class TBService implements ITPService {
     private static  final Logger log = LoggerFactory.getLogger(TBService.class);
     @Resource
@@ -56,17 +53,17 @@ public class TBService implements ITPService {
     private IOtaBangInnRoomDao otaBangInnRoomDao;
     @Resource
     private IOtaInnRoomTypeGoodsDao goodsDao;
-    @Resource
-    private BusinLogClient businLogClient;
+  /*  @Resource
+    private BusinLogClient businLogClient;*/
 
     /**
      * 想淘宝添加/更新酒店
      * @param tbParam 参数
      */
     @Override
-    @Log(descr ="酒店更新、增加")
-    public void updateOrAddHotel(TBParam tbParam, OtaInfo otaInfo, BusinLog businLog) throws Exception {
-        String event = TomsUtil.event(tbParam);
+    /*@Log(descr ="酒店更新、增加")*/
+    public void updateOrAddHotel(TBParam tbParam, OtaInfo otaInfo) throws Exception {
+       /* String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("TP推酒店");
@@ -74,7 +71,7 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }
+        }*/
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
@@ -196,8 +193,8 @@ public class TBService implements ITPService {
     }
     @Override
    /* @Log(descr ="酒店酒店删除、解绑")*/
-    public void deleteHotel(TBParam tbParam, OtaInfo otaInfo, BusinLog businLog) throws Exception {
-        String event = TomsUtil.event(tbParam);
+    public void deleteHotel(TBParam tbParam, OtaInfo otaInfo) throws Exception {
+     /*   String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("酒店酒店删除、解绑");
@@ -205,7 +202,7 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }
+        }*/
         //公司基本信息
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         //客栈绑定信息
@@ -240,8 +237,8 @@ public class TBService implements ITPService {
     }
 
     @Override
-    public void updateHotel(OtaInfoDto o,TBParam tbParam, BusinLog businLog) throws Exception {
-        String event = TomsUtil.event(tbParam);
+    public void updateHotel(OtaInfoDto o,TBParam tbParam) throws Exception {
+       /* String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("定时更新房型信息");
@@ -249,7 +246,7 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }
+        }*/
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         tbParam.setCompanyCode(o.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
@@ -284,7 +281,7 @@ public class TBService implements ITPService {
                     break;
                 }
                 //更新酒店
-                updateOrAddHotel(tbParam, o,businLog);
+                updateOrAddHotel(tbParam, o);
             }
         }
     }
