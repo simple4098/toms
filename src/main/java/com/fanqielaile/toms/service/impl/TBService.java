@@ -171,7 +171,7 @@ public class TBService implements ITPService {
                     Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
                     if (innRoomTypeGoodsDto==null){
-                        OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(), String.valueOf(xRoomType.getRid()));
+                        OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOtaId, String.valueOf(xRoomType.getRid()));
                         goodsDao.saveRoomTypeGoodsRp(goodsDto);
                     }else {
                         if (gid!=null){
