@@ -120,7 +120,6 @@ public class TBService implements ITPService {
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
                         BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
-                        bangInn.setInnName(omsInnDto.getInnName());
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }
@@ -136,6 +135,19 @@ public class TBService implements ITPService {
 
     //添加更新宝贝
     private   void updateOrAddRoom(TBParam tbParam,OtaInfo otaInfo,OtaPriceModelDto otaPriceModel,OtaInnOtaDto otaInnOta)throws Exception{
+        String otaPriceModelId="";
+        String otaInnOtaId="";
+        if (StringUtils.isEmpty(otaPriceModel.getId())){
+            otaPriceModelId = otaPriceModel.getUuid();
+        }else {
+            otaPriceModelId = otaPriceModel.getId();
+        }
+
+        if (StringUtils.isEmpty(otaInnOta.getId())){
+            otaInnOtaId = otaInnOta.getUuid();
+        }else {
+            otaInnOtaId = otaInnOta.getId();
+        }
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
@@ -150,7 +162,7 @@ public class TBService implements ITPService {
                 if (xRoomType!=null){
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.selectBangInnRoomByRidAndCompanyId(String.valueOf( xRoomType.getRid()),company.getId());
                     if (otaBangInnRoomDto==null){
-                        OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
+                        OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModelId, otaInnOtaId, xRoomType.getRid());
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
                     //添加商品
