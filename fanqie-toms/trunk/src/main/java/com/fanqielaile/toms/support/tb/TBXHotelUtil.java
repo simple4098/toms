@@ -209,6 +209,7 @@ public class TBXHotelUtil {
      * @param company
      */
     public static Long roomGet(Integer outerId,OtaInfo company) throws ApiException {
+        log.info("roomGet outerId:" +outerId );
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomGetRequest req=new XhotelRoomGetRequest();
         req.setGid(Long.valueOf(outerId));
@@ -241,6 +242,7 @@ public class TBXHotelUtil {
         req.setHasReceipt(true);
         req.setReceiptType("B");
         req.setReceiptOtherTypeDesc(receiptOtherTypeDesc);
+        req.setReceiptInfo(receiptOtherTypeDesc);
         //房型图片
         if (!CollectionUtils.isEmpty(roomTypeInfo.getImgList())){
             OmsImg omsImg = roomTypeInfo.getImgList().get(0);
@@ -281,11 +283,11 @@ public class TBXHotelUtil {
             log.info("Inventory:" +json);
         }
             XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
+        log.info("roomUpdate:" + response.getGid());
+        log.info("roomUpdate bady:" + response.getBody());
             if (!StringUtils.isEmpty(response.getSubCode())) {
                 return  roomGet(outerId, company);
             }
-            log.info("roomUpdate:" + response.getGid());
-            log.info("roomUpdate bady:" + response.getBody());
             return response.getGid();
     }
 
