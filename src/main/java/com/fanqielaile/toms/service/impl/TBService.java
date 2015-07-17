@@ -267,17 +267,21 @@ public class TBService implements ITPService {
                 for (PricePattern p:pricePatterns){
                     if (p.getPattern().equals(1)){
                         tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
-                        tbParam.setsJiaModel("DI");
                         stringBuilder.append("DI,");
                     }
                     if (p.getPattern().equals(2)){
                         tbParam.setAccountId(String.valueOf(p.getAccountId()));
-                        tbParam.setsJiaModel("MAI");
                         stringBuilder.append("MAI,");
                     }
                 }
                 if (stringBuilder.toString().lastIndexOf(",")!=-1){
                     stringBuilder.deleteCharAt(stringBuilder.length()-1);
+                }
+                tbParam.setPriceModel(stringBuilder.toString());
+                if (stringBuilder.indexOf("MAI")!=-1){
+                    tbParam.setsJiaModel("MAI");
+                }else {
+                    break;
                 }
                 //更新酒店
                 updateOrAddHotel(tbParam, o,businLog);
