@@ -78,6 +78,9 @@ public class TBXHotelUtil {
         }
         req.setAddress(innDto.getAddr());
         XhotelUpdateResponse response = client.execute(req , company.getSessionKey());
+        if (!StringUtils.isEmpty(response.getSubCode())) {
+            return hotelGet(company,innDto.getInnId());
+        }
         log.info("hotelUpdate:" + response.getXhotel());
         return response.getXhotel();
     }
@@ -111,7 +114,7 @@ public class TBXHotelUtil {
      * @param company
      * @return
      */
-    @Deprecated
+
     public static XHotel hotelGet(OtaInfo company,String innId) {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelGetRequest req=new XhotelGetRequest();
@@ -205,17 +208,15 @@ public class TBXHotelUtil {
      * @param outerId
      * @param company
      */
-    public static XRoom roomGet(Integer outerId,OtaInfo company){
+    public static Long roomGet(Integer outerId,OtaInfo company) throws ApiException {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomGetRequest req=new XhotelRoomGetRequest();
         req.setGid(Long.valueOf(outerId));
-        try {
-            XhotelRoomGetResponse response = client.execute(req , company.getSessionKey());
-            return  response.getRoom();
-        } catch (ApiException e) {
-            e.printStackTrace();
+        XhotelRoomGetResponse response = client.execute(req , company.getSessionKey());
+        if (!StringUtils.isEmpty(response.getSubCode())){
+            return null;
         }
-        return null;
+        return  response.getRoom().getGid();
     }
     /**
      * 添加商品
@@ -223,7 +224,7 @@ public class TBXHotelUtil {
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws IOException {
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws IOException, ApiException {
         log.info("start roomUpdate roomTypeId:" +outerId );
         String receiptOtherTypeDesc = null;
         try {
@@ -279,15 +280,13 @@ public class TBXHotelUtil {
             log.info("roomSwitchJson:" + roomSwitchJson);
             log.info("Inventory:" +json);
         }
-
-        try {
             XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
+            if (!StringUtils.isEmpty(response.getSubCode())) {
+                return  roomGet(outerId, company);
+            }
             log.info("roomUpdate:" + response.getGid());
+            log.info("roomUpdate bady:" + response.getBody());
             return response.getGid();
-        } catch (ApiException e) {
-            log.error(e.getErrMsg());
-        }
-        return  null;
     }
 
     /**

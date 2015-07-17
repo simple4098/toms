@@ -17,6 +17,7 @@
         <result column="type" property="type"/>
         <result column="account_id" property="accountId"/>
         <result column="account_id_di" property="accountIdDi"/>
+        <result column="ota_wg_id" property="otaWgId"/>
     </resultMap>
     <resultMap id="BangInnDtoResult" type="com.fanqielaile.toms.dto.BangInnDto">
         <id column="id" property="id"/>
