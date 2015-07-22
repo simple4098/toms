@@ -80,11 +80,12 @@ public class TBService implements ITPService {
         XHotel xHotel = null;
         OtaPriceModelDto otaPriceModel = null;
         OtaInnOtaDto otaInnOta = null;
+        OtaTaoBaoArea andArea = null;
         //客栈
         if (Constants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
             InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
             omsInnDto.setInnId(tbParam.getInnId());
-            OtaTaoBaoArea andArea = null;
+
             if (!StringUtils.isEmpty(omsInnDto.getCity())){
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
@@ -127,11 +128,11 @@ public class TBService implements ITPService {
             throw new TomsRuntimeException("无客栈信息!");
         }
         //添加更新宝贝
-        updateOrAddRoom(tbParam,otaInfo,otaPriceModel,otaInnOta);
+        updateOrAddRoom(tbParam,otaInfo,otaPriceModel,otaInnOta,andArea);
     }
 
     //添加更新宝贝
-    private   void updateOrAddRoom(TBParam tbParam,OtaInfo otaInfo,OtaPriceModelDto otaPriceModel,OtaInnOtaDto otaInnOta)throws Exception{
+    private   void updateOrAddRoom(TBParam tbParam,OtaInfo otaInfo,OtaPriceModelDto otaPriceModel,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea)throws Exception{
         String otaPriceModelId="";
         String otaInnOtaId="";
         if (StringUtils.isEmpty(otaPriceModel.getId())){
@@ -163,7 +164,7 @@ public class TBService implements ITPService {
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus());
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus(),otaInnOta,andArea);
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
@@ -223,7 +224,7 @@ public class TBService implements ITPService {
             if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
                 List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
                 for (RoomTypeInfo r:list){
-                    TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
+                    TBXHotelUtil.roomDel(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
                     //更新库存 --删除不用更新库存
                     /*if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
                         TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r, otaPriceModel, true);

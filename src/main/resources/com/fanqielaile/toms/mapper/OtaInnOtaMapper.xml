@@ -47,7 +47,7 @@
               where  b.deleted=0 and c.company_code = '${companyCode}' and b.inn_id ='${innId}' and b.account_id='${accountId}' and o.ota_id='${otaId}' and b.deleted=0
        </select>
 
-       <select id="selectOtaInnOtaByHid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+       <select id="selectOtaInnOtaByHid"  resultMap="BaseResultMap">
                 SELECT o.* from ota_inn_ota o where  o.deleted=0 and o.wg_hid='${hid}' and o.company_id='${companyId}'
        </select>
 

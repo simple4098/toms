@@ -72,6 +72,7 @@ public class TBXHotelUtil {
         req.setOuterId(innDto.getInnId());
         req.setName(innDto.getBrandName());
         req.setUsedName(innDto.getInnName());
+        req.setTel(innDto.getFrontPhone());
         if (andArea!=null){
             req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
             req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
@@ -95,6 +96,7 @@ public class TBXHotelUtil {
         req.setOuterId(innDto.getInnId());
         req.setName(innDto.getBrandName());
         req.setUsedName(innDto.getInnName());
+        req.setTel(innDto.getFrontPhone());
         if (andArea!=null){
             req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
             req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
@@ -199,6 +201,9 @@ public class TBXHotelUtil {
         //服务设施
         req.setService(TPServiceUtil.jsonService(facilitiesMap));
         XhotelRoomtypeUpdateResponse response = client.execute(req ,  company.getSessionKey());
+        if (!StringUtils.isEmpty(response.getSubCode())) {
+            return getRoomType(company,roomTypeInfo);
+        }
         log.info("updateRoomType:" + response.getXroomtype());
         return response.getXroomtype();
     }
@@ -219,25 +224,71 @@ public class TBXHotelUtil {
         }
         return  response.getRoom().getGid();
     }
+
+    public static Long roomDel(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws Exception {
+        log.info("roomDel:" +outerId );
+
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
+        req.setOutRid(String.valueOf(outerId));
+        //库存
+        if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
+            List<Inventory> list = new ArrayList<Inventory>();
+            List<RoomSwitchCal> roomSwitchCals = new ArrayList<RoomSwitchCal>();
+            Inventory inventory =null;
+            RoomSwitchCal roomSwitchCal=null;
+            for (RoomDetail r:roomTypeInfo.getRoomDetail()){
+                inventory = new Inventory();
+                roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
+                roomSwitchCal.setRoomSwitchCalStatus(status);
+                inventory.setDate(r.getRoomDate());
+                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                inventory.setRoomSwitchCalStatus(status);
+                list.add(inventory);
+                roomSwitchCals.add(roomSwitchCal);
+            }
+            String json = JacksonUtil.obj2json(list);
+            String roomSwitchJson = JacksonUtil.obj2json(roomSwitchCals);
+            req.setInventory(json);
+            //开关状态 1 上架  2 下架  3 删除
+            req.setRoomSwitchCal(roomSwitchJson);
+            log.info("roomSwitchJson:" + roomSwitchJson);
+            log.info("Inventory:" +json);
+        }
+        XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
+        log.info("roomDel:" + response.getGid());
+        log.info("roomDel bady:" + response.getBody());
+        if (!StringUtils.isEmpty(response.getSubCode())) {
+            return  roomGet(outerId, company);
+        }
+        return response.getGid();
+    }
     /**
      * 添加商品
      * @param outerId pms系统中的房型id
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws IOException, ApiException {
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea) throws Exception, ApiException {
         log.info("start roomUpdate roomTypeId:" +outerId );
         String receiptOtherTypeDesc = null;
+        String guide = null;
+        StringBuilder builder = new StringBuilder();
+        builder.append( andArea!=null?andArea.getCityName():"").append(" ").append(otaInnOta!=null?otaInnOta.getAliasInnName():"").append(" ").append(roomTypeInfo.getRoomTypeName());
+        log.debug("roomUpdate title:"+builder.toString());
         try {
             receiptOtherTypeDesc = PropertiesUtil.readFile("/data.properties", "tb.receiptOtherTypeDesc");
+            guide = PropertiesUtil.readFile("/data.properties", "tb.guide");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
         req.setOutRid(String.valueOf(outerId));
-        req.setTitle(roomTypeInfo.getRoomTypeName());
+        req.setTitle(builder.toString());
         req.setDesc(roomTypeInfo.getRoomInfo());
+        //购买须知
+        req.setGuide(guide);
         //提供发票
         req.setHasReceipt(true);
         req.setReceiptType("B");
@@ -249,13 +300,9 @@ public class TBXHotelUtil {
             String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
             String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
             byte[] bytes = null;
-            try {
-                log.info("图片地址:" +imgUrl +" imgName:"+imgName);
-                //bytes = HttpClientUtil.readImg(imgUrl);
-                bytes = ImgUtil.compressionImg(imgUrl);
-            } catch (Exception e) {
-                log.error("获取宝贝图片异常:" + e.getMessage());
-            }
+            log.info("图片地址:" +imgUrl +" imgName:"+imgName);
+            //bytes = HttpClientUtil.readImg(imgUrl);
+            bytes = ImgUtil.compressionImg(imgUrl);
             req.setPic(new FileItem(imgName,bytes,"image/jpeg"));
         }
         //库存
@@ -304,7 +351,9 @@ public class TBXHotelUtil {
         req.setPaymentType(1L);
         //0：不含早1：含单早2：含双早N：含N早（1-99可选）
         req.setBreakfastCount(0L);
-        req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":168}}");
+        //req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":168}}");
+        //2.表示不能退{"cancelPolicyType":2}
+        req.setCancelPolicy("{\"cancelPolicyType\":2}");
         req.setStatus(1L);
         XhotelRateplanAddResponse response = client.execute(req , company.getSessionKey());
         if (!StringUtils.isEmpty(response.getSubCode())){
@@ -340,7 +389,7 @@ public class TBXHotelUtil {
         req.setPaymentType(1L);
         //0：不含早1：含单早2：含双早N：含N早（1-99可选）
         req.setBreakfastCount(0L);
-        req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":168}}");
+        req.setCancelPolicy("{\"cancelPolicyType\":2}");
         req.setStatus(1L);
         XhotelRateplanUpdateResponse response = client.execute(req , company.getSessionKey());
         log.info("ratePlanUpdate:" + response.getRpid());
