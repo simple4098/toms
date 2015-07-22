@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/cache
+		http://www.springframework.org/schema/cache/spring-cache-4.0.xsd">
+
+    <description>spring集成缓存配置</description>
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:conf/properties/memcachedCache.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="memcachedClientBuilder" class="net.rubyeye.xmemcached.XMemcachedClientBuilder">
+        <constructor-arg>
+            <list>
+                <!-- memcached客户端地址 支持缓存集群-->
+                <bean class="java.net.InetSocketAddress">
+                    <constructor-arg value="${memcached.addr}"/>
+                    <constructor-arg value="${memcached.port}"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <property name="connectionPoolSize" value="1"/>
+        <property name="commandFactory">
+            <bean class="net.rubyeye.xmemcached.command.BinaryCommandFactory"/>
+        </property>
+        <property name="transcoder">
+            <bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder"/>
+        </property>
+    </bean>
+
+    <bean id="memcachedClient" factory-bean="memcachedClientBuilder" factory-method="build" destroy-method="shutdown"/>
+
+    <!-- <bean id="baseMemCache" class="com.fanqie.oms.cache.memcached.BaseMemCache">
+         <constructor-arg name="name" value="name"/>
+         <constructor-arg name="expire" value="60"/>
+         <constructor-arg name="memcachedClient" ref="memcachedClient"/>
+    </bean> -->
+
+    <bean id="cacheManager" class="com.fanqielaile.toms.support.memcached.MemcachedCacheManager">
+        <property name="memcachedClient" ref="memcachedClient"/>
+        <!-- <property name="configMap">
+            <map>
+                key：@Cacheable、@CachePut、@CacheEvict等的name属性。value：缓存过期时间(单位：秒)，默认值：0
+                <entry key="typeList" value="3600" />
+            </map>
+        </property> -->
+    </bean>
+
+    <!-- 注册基于注解的缓存驱动  -->
+    <cache:annotation-driven cache-manager="cacheManager"/>
+
+</beans>

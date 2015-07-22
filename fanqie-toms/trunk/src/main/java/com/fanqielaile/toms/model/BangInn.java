@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.enums.BangType;
 
 import java.util.Date;
@@ -45,6 +46,16 @@ public class BangInn extends Domain {
     private String otaWgId;
 
     private List<BangInn> bangInnList;
+    //绑定客栈图片信息
+    private InnDto innDto;
+
+    public InnDto getInnDto() {
+        return innDto;
+    }
+
+    public void setInnDto(InnDto innDto) {
+        this.innDto = innDto;
+    }
 
     public Integer getAccountIdDi() {
         return accountIdDi;

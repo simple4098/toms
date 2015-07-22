@@ -1,11 +1,13 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -108,4 +110,20 @@ public interface IBangInnService {
      * @return
      */
     BangInn findBangInnByUserAndCode(UserInfo userInfo, String code);
+
+    /**
+     * 根据公司ID查询绑定客栈的图片信息
+     *
+     * @param companyId
+     * @return
+     */
+    List<BangInn> findBangInnImages(String companyId) throws IOException;
+
+    /**
+     * 绑定客栈房型信息
+     *
+     * @param bangInnDto
+     * @return
+     */
+    List<RoomTypeInfo> findBangInnRoomImage(BangInnDto bangInnDto) throws IOException;
 }

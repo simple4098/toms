@@ -1,5 +1,8 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IInnLabelService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -288,6 +292,37 @@ public class SystemController extends BaseController {
     public String createPermission(Permission permission) {
         permissionService.createPermission(permission);
         return "permission";
+    }
+
+    @RequestMapping("images")
+    public String findImages(Model model) {
+        try {
+            List<BangInn> bangInnList = this.bangInnService.findBangInnImages(getCurrentUser().getCompanyId());
+            model.addAttribute("bangInns", bangInnList);
+            model.addAttribute("imgUrl", CommonApi.IMG_URL);
+        } catch (IOException e) {
+            logger.debug("查询绑定客栈图片信息出错", e);
+            throw new TomsRuntimeException("查询绑定客栈图片信息出错");
+        }
+        return "system/images";
+    }
+
+    @RequestMapping("find_room_images")
+    public String findRoomImages(Model model, String id) {
+        //查询绑定客栈是否存在
+        BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);
+        if (null != bangInnDto) {
+            try {
+                List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage(bangInnDto);
+                model.addAttribute("roomImages", roomTypeInfos);
+                model.addAttribute("bangInn", bangInnDto);
+                model.addAttribute("imgUrl", CommonApi.IMG_URL);
+            } catch (IOException e) {
+                logger.debug("获取房型图片出错", e);
+                throw new TomsRuntimeException("获取房型图片出错");
+            }
+        }
+        return "system/room_image";
     }
 
 }

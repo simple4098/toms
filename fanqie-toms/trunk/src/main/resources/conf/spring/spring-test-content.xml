@@ -17,6 +17,7 @@
         <property name="locations">
             <list>
                 <value>classpath:conf/properties/datasource.properties</value>
+                <value>classpath:conf/properties/memcachedCache.properties</value>
             </list>
         </property>
     </bean>
