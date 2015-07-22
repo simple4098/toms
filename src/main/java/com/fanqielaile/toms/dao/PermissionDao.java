@@ -22,7 +22,7 @@ public interface PermissionDao {
      * @param companyId
      * @return
      */
-    List<Permission> selectPermissionByCompanyId(String companyId);
+    List<Permission> selectPermissionByCompanyId(@Param("companyId") String companyId);
 
     /**
      * 根据用户id查询权限列表
