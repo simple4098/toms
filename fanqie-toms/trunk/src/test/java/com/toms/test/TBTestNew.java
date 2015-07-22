@@ -67,16 +67,17 @@ public class TBTestNew {
     private IOtaInfoDao otaInfoDao;
 
     @Test
+    @Ignore
     public void test() throws Exception {
         OtaInfo otaInfo = new OtaInfo();
-        otaInfo.setAppKey("1023192376");
-        otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
+        otaInfo.setAppKey("23192376");
+        otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
+        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");
         //String innId = "7060";
-        String innId = "26042";
+        String innId = "14284";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "1000722";
+        String accountId = "23442";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -84,7 +85,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("1000722");
+        price1.setAccountId("23442");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -104,8 +105,10 @@ public class TBTestNew {
         String signature = DcUtil.obtMd5("903" + s + "TB" + "tb");
         //<property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
         // <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
-        String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-16&to=2015-08-06"+"&signature="+signature;
+        String inn_info ="http://oms.fanqiele.com/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
+        String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-09-21"+"&signature="+signature;
+        //String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
+        //String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-08-22"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
         String httpGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
@@ -114,11 +117,12 @@ public class TBTestNew {
         //Long rpid = null;
         OtaPriceModelDto otaPriceModel = null;
         OtaInnOtaDto otaInnOta = null;
+        OtaTaoBaoArea andArea = null;
         //客栈
         if (Constants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
             InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
             omsInnDto.setInnId(innId);
-            OtaTaoBaoArea andArea = null;
+
             if (!StringUtils.isEmpty(omsInnDto.getCity())){
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
@@ -151,7 +155,7 @@ public class TBTestNew {
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
                         BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
-                        bangInn.setInnName(omsInnDto.getInnName());
+
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }
@@ -160,6 +164,18 @@ public class TBTestNew {
             }
         }
 
+        String otaPriceModelId="";
+        String otaInnOtaId="";
+        if (StringUtils.isEmpty(otaPriceModel.getId())){
+            otaPriceModelId = otaPriceModel.getUuid();
+        }else {
+            otaPriceModelId = otaPriceModel.getId();
+        }
+        if (StringUtils.isEmpty(otaInnOta.getId())){
+            otaInnOtaId = otaInnOta.getUuid();
+        }else {
+            otaInnOtaId = otaInnOta.getId();
+        }
         //房型
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
@@ -169,16 +185,16 @@ public class TBTestNew {
                 if (xRoomType!=null){
                     OtaBangInnRoomDto otaBangInnRoomDto = otaBangInnRoomDao.selectBangInnRoomByRidAndCompanyId(String.valueOf( xRoomType.getRid()),company.getId());
                     if (otaBangInnRoomDto==null){
-                        OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModel.getUuid(), otaInnOta.getUuid(), xRoomType.getRid());
+                        OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(),  otaPriceModelId, otaInnOtaId, xRoomType.getRid());
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus());
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus(),otaInnOta,andArea);
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
                     if (innRoomTypeGoodsDto==null){
-                        OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOta.getUuid(), String.valueOf(xRoomType.getRid()));
+                        OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(),otaInnOtaId, String.valueOf(xRoomType.getRid()));
                         goodsDao.saveRoomTypeGoodsRp(goodsDto);
                     }else {
                         if (gid!=null){
@@ -224,7 +240,6 @@ public class TBTestNew {
 
 
     @Test
-    @Ignore
     public void  test4() throws IOException {
 
         TBParam tbParam  =  new TBParam();
