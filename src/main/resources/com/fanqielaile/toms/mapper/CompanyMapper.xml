@@ -57,4 +57,34 @@
         <include refid="Base_Column_List"/>
         from company where company_code = #{companyCode} and type = 1 and deleted = 0 limit 1
     </select>
+    <update id="updateCompany" parameterType="com.fanqielaile.toms.model.Company">
+        update company
+        <trim prefix="SET" suffixOverrides=",">
+            updated_date=now(),
+            version=version+1,
+            <if test="companyName != null and companyName != ''">
+                company_name = #{companyName},
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                company_code = #{companyCode},
+            </if>
+            <if test="otaId != null and otaId != ''">
+                ota_id = #{otaId},
+            </if>
+            <if test="userAccount != null and userAccount != ''">
+                user_account = #{userAccount},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                user_password = #{userPassword},
+            </if>
+
+        </trim>
+        where deleted = 0 and id = #{id}
+    </update>
+    <update id="deleteCompanyById" parameterType="java.lang.String">
+        update company SET  deleted = 1 where  id = '${companyId}'
+    </update>
+    <delete id="deleteCompanyPermissionByCompanyId" parameterType="java.lang.String">
+        DELETE FROM company_permission where company_id = #{companyId}
+    </delete>
 </mapper>

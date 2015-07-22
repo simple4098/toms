@@ -50,4 +50,14 @@
         LEFT join permission p on p.id = rp.permission_id
         where u.deleted = 0 and u.id= #{userId}
     </select>
+    <delete id="deleteCompanyUserPermission">
+        DELETE FROM role_permission where 1=1 and role_id IN
+        <foreach collection="userInfos" item="u" open="(" close=")" separator=",">
+            #{u.roleId}
+        </foreach>
+        and permission_id IN
+        <foreach collection="deletePermissions" item="p" separator="," close=")" open="(">
+            #{p.id}
+        </foreach>
+    </delete>
 </mapper>

@@ -47,4 +47,19 @@ public interface CompanyDao {
      * @return
      */
     Company selectCompanyByCompanyCode(@Param("companyCode") String companyCode);
+
+    /**
+     * 更新公司基本信息
+     * @param company
+     */
+    void updateCompany(Company company);
+
+    void deleteCompanyById(@Param("companyId")String companyId);
+
+    /**
+     * 根据公司id删除公司权限关联关系
+     *
+     * @param companyId
+     */
+    void deleteCompanyPermissionByCompanyId(String companyId);
 }

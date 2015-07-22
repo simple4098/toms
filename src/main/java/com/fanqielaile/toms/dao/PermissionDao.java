@@ -1,6 +1,8 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.model.Permission;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -36,4 +38,11 @@ public interface PermissionDao {
      * @param permission
      */
     void insertPermission(Permission permission);
+    /**
+     * 删除公司下员工不具有的权限
+     *
+     * @param userInfoDtos
+     * @param deletePermissionIds
+     */
+    void deleteCompanyUserPermission(@Param("userInfos") List<UserInfoDto> userInfoDtos, @Param("deletePermissions") List<Permission> deletePermissionIds);
 }
