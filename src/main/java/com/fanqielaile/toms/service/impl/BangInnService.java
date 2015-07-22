@@ -1,23 +1,28 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqielaile.toms.dao.BangInnDao;
-import com.fanqielaile.toms.dao.InnLabelDao;
-import com.fanqielaile.toms.dao.UserInfoDao;
+import com.fanqie.util.DcUtil;
+import com.fanqie.util.HttpClientUtil;
+import com.fanqie.util.JacksonUtil;
+import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by wangdayin on 2015/5/15.
@@ -30,6 +35,8 @@ public class BangInnService implements IBangInnService {
     private InnLabelDao innLabelDao;
     @Resource
     private UserInfoDao userInfoDao;
+    @Resource
+    private CompanyDao companyDao;
 
     @Override
     public List<BangInn> findBangInnByInnLabelId(String innLabelId) {
@@ -137,5 +144,43 @@ public class BangInnService implements IBangInnService {
     @Override
     public BangInn findBangInnByUserAndCode(UserInfo userInfo, String code) {
         return this.bangInnDao.selectBangInnByUserAndCode(userInfo, code);
+    }
+
+    @Override
+    public List<BangInn> findBangInnImages(String companyId) throws IOException {
+        List<BangInn> bangInns = this.bangInnDao.selectBangInnByCompanyId(companyId);
+        Company company = this.companyDao.selectCompanyById(companyId);
+        if (ArrayUtils.isNotEmpty(bangInns.toArray()) && null != company) {
+            for (BangInn bangInn : bangInns) {
+                //封装访问的路径与参数
+                String timestamp = String.valueOf(new Date().getTime());
+                String signature = DcUtil.obtMd5(company.getOtaId() + timestamp + company.getUserAccount() + company.getUserPassword());
+                String url = CommonApi.getInnInfo() + "?timestamp=" + timestamp + "&otaId=" + company.getOtaId() + "&accountId=" + bangInn.getAccountId() + "&signature=" + signature;
+                String response = HttpClientUtil.httpGets(url, null);
+                JSONObject jsonInn = JSONObject.fromObject(response);
+                if ("200".equals(jsonInn.get("status").toString()) && jsonInn.get("list") != null) {
+                    InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+                    bangInn.setInnDto(omsInnDto);
+                }
+            }
+        }
+        return bangInns;
+    }
+
+    @Override
+    public List<RoomTypeInfo> findBangInnRoomImage(BangInnDto bangInnDto) throws IOException {
+        Company company = this.companyDao.selectCompanyById(bangInnDto.getCompanyId());
+        List<RoomTypeInfo> result = new ArrayList<>();
+        if (null != company) {
+            String timestamp = String.valueOf(new Date().getTime());
+            String signature = DcUtil.obtMd5(company.getOtaId() + timestamp + company.getUserAccount() + company.getUserPassword());
+            String url = CommonApi.getRoomType() + "?timestamp=" + timestamp + "&from=" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "&to=" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "&otaId=" + company.getOtaId() + "&accountId=" + bangInnDto.getAccountId() + "&signature=" + signature;
+            String response = HttpClientUtil.httpGets(url, null);
+            JSONObject jsonObject = JSONObject.fromObject(response);
+            if ("200".equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
+                result = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+            }
+        }
+        return result;
     }
 }

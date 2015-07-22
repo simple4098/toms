@@ -11,7 +11,8 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             classpath:conf/spring/spring-content.xml,
-            classpath:conf/spring/spring-security.xml
+            classpath:conf/spring/spring-security.xml,
+            classpath:conf/spring/spring-memcached.xml
         </param-value>
     </context-param>
 
@@ -55,6 +56,10 @@
         <filter-class>org.sitemesh.config.ConfigurableSiteMeshFilter</filter-class>
     </filter>
     <!-- spring filter must before sitemesh filter-->
+    <!--<filter-mapping>-->
+    <!--<filter-name>springSecurityFilterChain</filter-name>-->
+    <!--<url-pattern>/*</url-pattern>-->
+    <!--</filter-mapping>-->
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
@@ -73,12 +78,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-
-
-    <!--<filter-mapping>-->
-    <!--<filter-name>springSecurityFilterChain</filter-name>-->
-    <!--<url-pattern>/*</url-pattern>-->
-    <!--</filter-mapping>-->
 
     <!-- Handles Spring requests -->
     <servlet>

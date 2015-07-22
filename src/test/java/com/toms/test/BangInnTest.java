@@ -1,7 +1,10 @@
 package com.toms.test;
 
+import com.fanqie.util.DcUtil;
+import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.model.BangInn;
+import net.sf.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -34,5 +38,16 @@ public class BangInnTest {
         bangInn.setInnName("番茄来了");
         bangInn.setMobile("13800138000");
         bangInnDao.insertBangInn(bangInn);
+    }
+
+    @Test
+    @Ignore
+    public void testImageGet() throws IOException {
+        String s = String.valueOf(new Date().getTime());
+        String signature = DcUtil.obtMd5("903" + s + "TB" + "tb");
+        String inn_info = "http://192.168.1.158:8888/api/getInnInfo?timestamp=" + s + "&otaId=" + 903 + "&accountId=" + 1000722 + "&signature=" + signature;
+        String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
+        JSONObject jsonInn = JSONObject.fromObject(httpGets1);
+        System.out.println(jsonInn);
     }
 }

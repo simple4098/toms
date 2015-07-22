@@ -117,8 +117,8 @@
                 </toms:authorize>
                 <li data-name="li-parent-2"
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
-                        <c:if test="${fn:contains(url, '/system/find_notices')}">class="open active"</c:if>
-                        <c:if test="${fn:contains(url, '/system/find_labels')}">class="open active"</c:if>
+                    <c:if test="${fn:contains(url, '/system/find_notices') || fn:contains(url, '/system/find_room_images')}">class="open active"</c:if>
+                    <c:if test="${fn:contains(url, '/system/find_labels') || fn:contains(url, '/system/images')}">class="open active"</c:if>
                         <c:if test="${fn:contains(url, '/user/find_user') || fn:contains(url, '/system/update_notice_page')}"> class="open active"</c:if>
 
                         >
@@ -156,6 +156,15 @@
                                 客栈分类
                             </a>
                         </li>
+                        </toms:authorize>
+                        <toms:authorize uri="/system/images">
+                            <li
+                                    <c:if test="${fn:contains(url, '/system/images')}">class="active" </c:if> >
+                                <a href="<c:url value="/system/images"/>">
+                                    <i class="icon-double-angle-right"></i>
+                                    图片管理
+                                </a>
+                            </li>
                         </toms:authorize>
                     </ul>
                 </li>
