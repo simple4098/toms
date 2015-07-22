@@ -111,6 +111,7 @@ public class CompanyService implements ICompanyService {
         userInfo.setPassword("111111");
         userInfo.setUserName(company.getCompanyName());
         userInfo.setDataPermission(1);
+        userInfo.setCompanyId(company.getId());
         userInfo.setUserType(UserType.ADMIN);
         this.userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
     }
