@@ -118,4 +118,8 @@
               </if>
               ORDER BY u.created_date DESC
        </select>
+
+       <update id="deleteUserInfoByCompanyId" parameterType="java.lang.String">
+              UPDATE user_info SET deleted=1 where company_id='${companyId}'
+       </update>
 </mapper>

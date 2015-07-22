@@ -103,10 +103,10 @@
         <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
         <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
         <property name="innInfo" value="http://192.168.1.158:8888/api/getInnInfo"></property>
-        <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-        <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
-        <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
-        <property name="imgUrl" value="http://192.168.1.159"></property>
+        <!--<property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>-->
+        <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
+        <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
+       <!-- <property name="imgUrl" value="http://192.168.1.159"></property>-->
     </bean>
 
 </beans>

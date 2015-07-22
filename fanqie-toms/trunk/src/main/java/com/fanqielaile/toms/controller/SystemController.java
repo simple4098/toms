@@ -4,24 +4,26 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.*;
-import com.fanqielaile.toms.service.IBangInnService;
-import com.fanqielaile.toms.service.IInnLabelService;
-import com.fanqielaile.toms.service.INoticeTemplateService;
-import com.fanqielaile.toms.service.IPermissionService;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 /*import com.tomato.framework.log.support.UserInfoContext;*/
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 设置
@@ -39,6 +41,8 @@ public class SystemController extends BaseController {
     private IPermissionService permissionService;
     @Resource
     private IBangInnService bangInnService;
+    @Resource
+    private ICompanyService companyService;
 
     /**
      * 登陆成功跳转
@@ -292,6 +296,138 @@ public class SystemController extends BaseController {
     public String createPermission(Permission permission) {
         permissionService.createPermission(permission);
         return "permission";
+    }
+
+    /**
+     * 跳转到公司管理页面
+     *
+     * @return
+     */
+    @RequestMapping("find_companys")
+    public String findCompany(Model model) {
+        try {
+            List<Company> companyList = this.companyService.findCompanyByCompany(null);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, companyList);
+            //封装权限信息
+            List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(null);
+            model.addAttribute("permissions", permissionList);
+        } catch (Exception e) {
+            logger.error("查询当前公司下属员工,查询失败", e);
+        }
+        return "system/company_list";
+    }
+
+    /**
+     * 跳转到公司基本信息页面
+     */
+    @RequestMapping("find_company")
+    public String findCompanyInfo(Model model,@RequestParam String id) {
+        try {
+            Company company = companyService.findCompanyByid(id);
+            model.addAttribute(Constants.DATA, company);
+        } catch (Exception e) {
+            logger.error("查询当前公司信息失败", e);
+        }
+        return "system/update_company";
+    }
+
+    /**
+     * 更新公司信息
+     */
+    @RequestMapping("update_company")
+    @ResponseBody
+    public Object updateCompany(Model model,Company company) {
+        Map<String,Object> param = new HashMap<String, Object>();
+        try {
+            companyService.modifyCompanyInfo(company);
+            param.put(Constants.STATUS, Constants.SUCCESS);
+            param.put(Constants.MESSAGE, "更新成功");
+        } catch (Exception e) {
+            param.put(Constants.STATUS, Constants.ERROR);
+            param.put(Constants.MESSAGE, e.getMessage());
+            logger.error("更新公司信息失败!", e);
+        }
+        return param;
+    }
+
+    /**
+     * 删除公司
+     * @param model
+     */
+    @RequestMapping("delete_company")
+    public void deleteCompany(Model model,@RequestParam String companyId) {
+        try {
+            companyService.removeCompany(companyId);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.MESSAGE, "删除成功!");
+        } catch (Exception e) {
+            logger.error("更新公司信息失败!", e);
+        }
+    }
+
+    /**
+     * 查询公司的权限
+     *
+     * @param companyId
+     * @param model
+     */
+    @RequestMapping("find_company_permission")
+    public void findCompanyPermission(String companyId, Model model) {
+        try {
+            Company company = this.companyService.findCompanyByid(companyId);
+            if (company != null) {
+                //公司可以分配的权限
+                List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(companyId);
+                model.addAttribute(Constants.DATA, permissionList);
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                model.addAttribute("company", company);
+            } else {
+                throw new TomsRuntimeException("查询公司出错");
+            }
+        } catch (Exception e) {
+            logger.error("查询公司权限出错", e);
+        }
+    }
+
+    /**
+     * 创建公司
+     *
+     * @param model
+     * @param company
+     * @param permissionIds
+     */
+    @RequestMapping("create_company")
+    public void createCompany(Model model, Company company, String permissionIds) {
+        try {
+            if (StringUtils.isNotEmpty(permissionIds)) {
+                this.companyService.addCompany(company, permissionIds);
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            }
+        } catch (Exception e) {
+            logger.error("创建公司出错", e);
+            throw new TomsRuntimeException("创建公司出错", e);
+        }
+
+    }
+
+    @RequestMapping("update_company_permission")
+    public void updateCompanyPermission(Model model, String companyId, String permissionIds) {
+        try {
+            if (StringUtils.isNotEmpty(permissionIds)) {
+                Company company = this.companyService.findCompanyByid(companyId);
+                if (null != company) {
+                    this.companyService.modifyCompanyPermission(company, permissionIds);
+                    model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                }
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "修改公司权限错误，原因：传入参数有误");
+            }
+        } catch (Exception e) {
+            logger.error("更新公司权限失败", e);
+            throw new TomsRuntimeException("更新公司权限失败",e);
+        }
     }
 
     @RequestMapping("images")

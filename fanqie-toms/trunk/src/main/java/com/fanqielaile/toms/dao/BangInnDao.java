@@ -152,4 +152,6 @@ public interface BangInnDao {
 
     //更新TP 店绑定的 客栈
     void updateBangInnTp(BangInn bangInn);
+
+    void deleteBangInnByCompanyId(@Param("companyId")String companyId);
 }

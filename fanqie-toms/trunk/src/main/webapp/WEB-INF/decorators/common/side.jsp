@@ -117,10 +117,9 @@
                 </toms:authorize>
                 <li data-name="li-parent-2"
                         <c:if test="${fn:contains(url, '/user/find_users')}">class="open active"</c:if>
-                    <c:if test="${fn:contains(url, '/system/find_notices') || fn:contains(url, '/system/find_room_images')}">class="open active"</c:if>
-                    <c:if test="${fn:contains(url, '/system/find_labels') || fn:contains(url, '/system/images')}">class="open active"</c:if>
-                        <c:if test="${fn:contains(url, '/user/find_user') || fn:contains(url, '/system/update_notice_page')}"> class="open active"</c:if>
-
+                        <c:if test="${fn:contains(url, '/system/find_notices') || fn:contains(url, '/system/find_room_images')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/system/find_labels') || fn:contains(url, '/system/images') || fn:contains(url, '/system/find_company')}">class="open active"</c:if>
+                        <c:if test="${fn:contains(url, '/user/find_user') || fn:contains(url, '/system/update_notice_page') || fn:contains(url, '/system/find_companys')}"> class="open active"</c:if>
                         >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-tag"></i>
@@ -163,6 +162,17 @@
                                 <a href="<c:url value="/system/images"/>">
                                     <i class="icon-double-angle-right"></i>
                                     图片管理
+                                </a>
+                            </li>
+                        </toms:authorize>
+                        <toms:authorize uri="/system/find_companys">
+                            <li
+                                    <c:if test="${fn:contains(url, '/system/find_companys')}">class="active" </c:if>
+                                    <c:if test="${fn:contains(url, '/system/find_company')}">class="active" </c:if>
+                                    >
+                                <a href="<c:url value="/system/find_companys"/>">
+                                    <i class="icon-double-angle-right"></i>
+                                    公司管理
                                 </a>
                             </li>
                         </toms:authorize>
