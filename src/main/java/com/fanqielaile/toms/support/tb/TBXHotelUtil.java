@@ -269,19 +269,13 @@ public class TBXHotelUtil {
      * @param roomTypeInfo 房型信息
      * @param company 公司信息
      */
-    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea) throws Exception, ApiException {
+    public  static Long  roomUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea) throws Exception {
         log.info("start roomUpdate roomTypeId:" +outerId );
-        String receiptOtherTypeDesc = null;
-        String guide = null;
+        String receiptOtherTypeDesc =  PropertiesUtil.readFile("/data.properties", "tb.receiptOtherTypeDesc");
+        String guide =  PropertiesUtil.readFile("/data.properties", "tb.guide");
         StringBuilder builder = new StringBuilder();
         builder.append( andArea!=null?andArea.getCityName():"").append(" ").append(otaInnOta!=null?otaInnOta.getAliasInnName():"").append(" ").append(roomTypeInfo.getRoomTypeName());
         log.debug("roomUpdate title:"+builder.toString());
-        try {
-            receiptOtherTypeDesc = PropertiesUtil.readFile("/data.properties", "tb.receiptOtherTypeDesc");
-            guide = PropertiesUtil.readFile("/data.properties", "tb.guide");
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
         req.setOutRid(String.valueOf(outerId));
@@ -342,11 +336,12 @@ public class TBXHotelUtil {
      * 添加酒店RP,7天以内可以取消， 7天以外不可以取消
      * @param company
      */
-    public static Long ratePlanAdd(OtaInfo company,RoomTypeInfo r) throws ApiException {
+    public static Long ratePlanAdd(OtaInfo company,RoomTypeInfo r) throws Exception {
+        String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateplanAddRequest req=new XhotelRateplanAddRequest();
         req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
-        req.setName("[不含早],价格优惠哟".concat(r.getRoomTypeName()));
+        req.setName(ratePlanAdd);
         //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
         req.setPaymentType(1L);
         //0：不含早1：含单早2：含双早N：含N早（1-99可选）
@@ -380,11 +375,12 @@ public class TBXHotelUtil {
      * 更新酒店RP,7天以内可以取消， 7天以外不可以取消
      * @param company
      */
-    public static Long ratePlanUpdate(OtaInfo company,RoomTypeInfo r) throws ApiException {
+    public static Long ratePlanUpdate(OtaInfo company,RoomTypeInfo r) throws Exception {
+        String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateplanUpdateRequest req=new XhotelRateplanUpdateRequest();
         req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
-        req.setName("[不含早],价格优惠哟".concat(r.getRoomTypeName()));
+        req.setName(ratePlanAdd);
         //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
         req.setPaymentType(1L);
         //0：不含早1：含单早2：含双早N：含N早（1-99可选）
