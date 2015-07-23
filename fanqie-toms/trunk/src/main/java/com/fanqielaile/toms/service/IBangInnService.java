@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
@@ -126,4 +127,10 @@ public interface IBangInnService {
      * @return
      */
     List<RoomTypeInfo> findBangInnRoomImage(BangInnDto bangInnDto) throws IOException;
+
+    /**
+     * @param bangInnDto
+     * @return
+     */
+    InnDto selectBangInnImage(BangInnDto bangInnDto) throws IOException;
 }
