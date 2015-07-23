@@ -18,6 +18,7 @@
         <result column="account_id" property="accountId"/>
         <result column="account_id_di" property="accountIdDi"/>
         <result column="ota_wg_id" property="otaWgId"/>
+        <result column="sj" property="sj"/>
     </resultMap>
     <resultMap id="BangInnDtoResult" type="com.fanqielaile.toms.dto.BangInnDto">
         <id column="id" property="id"/>
@@ -41,7 +42,7 @@
 
     </resultMap>
     <sql id="Base_Column_List">
-        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id
+        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,sj
        </sql>
     <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,deleted)
@@ -110,7 +111,7 @@
     <update id="updateBangInnTp" parameterType="com.fanqielaile.toms.model.BangInn">
         update bang_inn
         <trim prefix="SET" suffixOverrides=",">
-             updated_date = now(),
+             updated_date = now(),sj=#{sj},
             <if test="mobile != null and mobile != ''">
                 mobile= #{mobile},
             </if>
@@ -135,8 +136,8 @@
         company c on bi.company_id = c.id and c.type = 1 where bi.inn_id = #{innId} and bi.deleted=0 ORDER BY bi.bang_date DESC
     </select>
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
-        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,account_id_di, deleted)
-        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi},0)
+        insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,account_id_di, deleted,sj)
+        VALUES (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi},0,#{sj})
     </insert>
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select

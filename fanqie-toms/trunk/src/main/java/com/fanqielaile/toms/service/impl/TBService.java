@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.Constants;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -248,9 +250,11 @@ public class TBService implements ITPService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }*/
+        log.info("====同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         tbParam.setCompanyCode(o.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        tbParam.setSj(true);
         String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
         String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
@@ -258,31 +262,45 @@ public class TBService implements ITPService {
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
             List<PricePattern> pricePatterns = null;
             StringBuilder stringBuilder = null;
+            List<PriceModel> priceModelList = null;
+            PriceModel priceModel = null;
             for (ProxyInns proxyInns:list){
-                stringBuilder = new StringBuilder();
-                pricePatterns = proxyInns.getPricePatterns();
-                tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
-                for (PricePattern p:pricePatterns){
-                    if (p.getPattern().equals(1)){
-                        tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
-                        stringBuilder.append("DI,");
+                log.info("客栈id:"+proxyInns.getInnId());
+                //if (proxyInns.getInnId().equals(4905) || proxyInns.getInnId().equals(14284)){
+                //if (proxyInns.getInnId().equals(26042) ){
+                    stringBuilder = new StringBuilder();
+                    pricePatterns = proxyInns.getPricePatterns();
+                    tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
+                    priceModelList = new ArrayList();
+                    for (PricePattern p:pricePatterns){
+                        priceModel = new PriceModel();
+                        if (p.getPattern().equals(1)){
+                            tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
+                            stringBuilder.append("DI,");
+                            priceModel.setAccountId(String.valueOf(p.getAccountId()));
+                            priceModel.setPattern("DI");
+                        }
+                        if (p.getPattern().equals(2)){
+                            tbParam.setAccountId(String.valueOf(p.getAccountId()));
+                            stringBuilder.append("MAI,");
+                            priceModel.setAccountId(String.valueOf(p.getAccountId()));
+                            priceModel.setPattern("MAI");
+                        }
+                        priceModelList.add(priceModel);
                     }
-                    if (p.getPattern().equals(2)){
-                        tbParam.setAccountId(String.valueOf(p.getAccountId()));
-                        stringBuilder.append("MAI,");
+                    tbParam.setPriceModelArray(priceModelList);
+                    if (stringBuilder.toString().lastIndexOf(",")!=-1){
+                        stringBuilder.deleteCharAt(stringBuilder.length()-1);
                     }
-                }
-                if (stringBuilder.toString().lastIndexOf(",")!=-1){
-                    stringBuilder.deleteCharAt(stringBuilder.length()-1);
-                }
-                tbParam.setPriceModel(stringBuilder.toString());
-                if (stringBuilder.indexOf("MAI")!=-1){
-                    tbParam.setsJiaModel("MAI");
-                }else {
-                    break;
-                }
-                //更新酒店
-                updateOrAddHotel(tbParam, o);
+                    tbParam.setPriceModel(stringBuilder.toString());
+                    if (stringBuilder.indexOf("MAI")!=-1){
+                        tbParam.setsJiaModel("MAI");
+                    }else {
+                        continue;
+                    }
+                    //更新酒店
+                    updateOrAddHotel(tbParam, o);
+               //}
             }
         }
     }

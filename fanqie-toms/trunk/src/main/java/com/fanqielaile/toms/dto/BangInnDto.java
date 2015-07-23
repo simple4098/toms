@@ -70,6 +70,8 @@ public class BangInnDto extends BangInn {
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId(companyId);
+        bangInnDto.setMobile(omsInnDto.getFrontPhone());
+        bangInnDto.setSj(tbParam.isSj()?1:0);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
         bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));
         bangInnDto.setOtaWgId(otaInnOtaId);
@@ -91,6 +93,7 @@ public class BangInnDto extends BangInn {
         bangInnDto.setOtaWgId(uuid);
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setInnName(omsInnDto.getInnName());
+        bangInnDto.setSj(tbParam.isSj()?1:0);
         for (PriceModel p:priceModelArray){
             if(p.getPattern().equals("DI")){
                 bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));

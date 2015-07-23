@@ -8,6 +8,7 @@ import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 
 import org.apache.commons.lang3.StringUtils;
@@ -99,18 +100,25 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/hotel/timer")
     @ResponseBody
-    public Object hotelTimer(TBParam tbParam ){
+    public Object hotelTimer(final TBParam tbParam ){
         JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
-        List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
-        try {
-            ITPService service = null;
-            for (OtaInfoDto o:infoDtoList){
-                service = o.getOtaType().create();
-                service.updateHotel(o,  tbParam);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
+                try {
+                    ITPService service = null;
+                    for (OtaInfoDto o:infoDtoList){
+                        service = o.getOtaType().create();
+                        service.updateHotel(o ,tbParam);
+                    }
+                } catch (Exception e) {
+                   throw  new TomsRuntimeException("同步房型失败",e);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
         return  jsonModel;
     }
 

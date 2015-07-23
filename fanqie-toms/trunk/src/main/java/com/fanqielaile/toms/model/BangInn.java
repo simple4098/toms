@@ -48,6 +48,16 @@ public class BangInn extends Domain {
     private List<BangInn> bangInnList;
     //绑定客栈图片信息
     private InnDto innDto;
+    //是否上架 0 下架  1 上架
+    private int sj;
+
+    public int getSj() {
+        return sj;
+    }
+
+    public void setSj(int sj) {
+        this.sj = sj;
+    }
 
     public InnDto getInnDto() {
         return innDto;
