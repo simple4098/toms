@@ -183,4 +183,20 @@ public class BangInnService implements IBangInnService {
         }
         return result;
     }
+
+    @Override
+    public InnDto selectBangInnImage(BangInnDto bangInnDto) throws IOException {
+        Company company = this.companyDao.selectCompanyById(bangInnDto.getCompanyId());
+        //封装访问的路径与参数
+        String timestamp = String.valueOf(new Date().getTime());
+        String signature = DcUtil.obtMd5(company.getOtaId() + timestamp + company.getUserAccount() + company.getUserPassword());
+        String url = CommonApi.getInnInfo() + "?timestamp=" + timestamp + "&otaId=" + company.getOtaId() + "&accountId=" + bangInnDto.getAccountId() + "&signature=" + signature;
+        String response = HttpClientUtil.httpGets(url, null);
+        JSONObject jsonInn = JSONObject.fromObject(response);
+        if ("200".equals(jsonInn.get("status").toString()) && jsonInn.get("list") != null) {
+            InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+            return omsInnDto;
+        }
+        return null;
+    }
 }

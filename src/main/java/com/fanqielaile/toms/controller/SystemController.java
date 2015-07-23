@@ -2,6 +2,7 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.*;
@@ -430,19 +431,42 @@ public class SystemController extends BaseController {
         }
     }
 
+    /**
+     * 跳转到绑定客栈风光图片展示页面
+     *
+     * @param model
+     * @param id    客栈ID
+     * @return
+     */
     @RequestMapping("images")
-    public String findImages(Model model) {
+    public String findImages(Model model, String id) {
         try {
-            List<BangInn> bangInnList = this.bangInnService.findBangInnImages(getCurrentUser().getCompanyId());
+            List<BangInn> bangInnList = this.bangInnService.findBangInnByCompanyId(getCurrentUser().getCompanyId());
             model.addAttribute("bangInns", bangInnList);
-            model.addAttribute("imgUrl", CommonApi.IMG_URL);
-        } catch (IOException e) {
+            //根据ID查询客栈信息
+            if (StringUtils.isNotEmpty(id)) {
+                BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);
+                InnDto innDto = this.bangInnService.selectBangInnImage(bangInnDto);
+                if (null != innDto) {
+                    bangInnDto.setInnDto(innDto);
+                }
+                model.addAttribute("imgUrl", CommonApi.IMG_URL);
+                model.addAttribute("bangInn", bangInnDto);
+                //查看客栈对应的风光图片
+
+            }
+        } catch (Exception e) {
             logger.debug("查询绑定客栈图片信息出错", e);
             throw new TomsRuntimeException("查询绑定客栈图片信息出错");
         }
         return "system/images";
     }
 
+    /**
+     * @param model
+     * @param id
+     * @return
+     */
     @RequestMapping("find_room_images")
     public String findRoomImages(Model model, String id) {
         //查询绑定客栈是否存在
