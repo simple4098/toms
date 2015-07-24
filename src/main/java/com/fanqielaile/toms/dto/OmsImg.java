@@ -20,6 +20,16 @@ public class OmsImg implements java.io.Serializable {
 	private Date createAt; /**/
 	@JsonIgnore
 	private Date updateAt; /**/
+	//后缀
+	private String suffix;
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
 
 	public Integer getRoomTypeId() {
 		return roomTypeId;

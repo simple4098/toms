@@ -7,6 +7,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.OmsImg;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
@@ -179,6 +180,15 @@ public class BangInnService implements IBangInnService {
             JSONObject jsonObject = JSONObject.fromObject(response);
             if ("200".equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
                 result = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+                if (ArrayUtils.isNotEmpty(result.toArray())) {
+                    for (RoomTypeInfo roomTypeInfo : result) {
+                        if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
+                            for (OmsImg omsImg : roomTypeInfo.getImgList()) {
+                                omsImg.setSuffix(omsImg.getImgUrl().split("\\.")[1]);
+                            }
+                        }
+                    }
+                }
             }
         }
         return result;
@@ -195,6 +205,11 @@ public class BangInnService implements IBangInnService {
         JSONObject jsonInn = JSONObject.fromObject(response);
         if ("200".equals(jsonInn.get("status").toString()) && jsonInn.get("list") != null) {
             InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+            if (ArrayUtils.isNotEmpty(omsInnDto.getImgList().toArray())) {
+                for (OmsImg omsImg : omsInnDto.getImgList()) {
+                    omsImg.setSuffix(omsImg.getImgUrl().split("\\.")[1]);
+                }
+            }
             return omsInnDto;
         }
         return null;
