@@ -58,7 +58,7 @@
                                         <a href="${imgUrl}${img.imgUrl}" target="_blank" title="${img.imgName}"
                                            data-rel="colorbox">
                                             <img style="width:100px;height: 100px;" alt="150x150"
-                                                 src="${imgUrl}${img.imgUrl}"/>
+                                                 src="${imgUrl}${img.imgUrl}.200x200.${img.suffix}"/>
                                         </a>
                                     </li>
                                 </c:forEach>
