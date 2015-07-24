@@ -178,4 +178,8 @@
     <update id="deleteBangInnByCompanyIdAndInnId">
         UPDATE bang_inn SET deleted=1 where company_id='${companyId}' and inn_id =#{innId}
     </update>
+
+    <update id="deleteBangInnByCompanyId" parameterType="java.lang.String" >
+        UPDATE bang_inn SET deleted=1 where company_id='${companyId}'
+    </update>
 </mapper>
