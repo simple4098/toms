@@ -1,7 +1,15 @@
 -- 创建用户
-INSERT INTO  user_info("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "user_type", "login_name", "telephone", "user_name", "password", "data_permission", "company_id", "role_id", "deleted") VALUES ('c0a2aad1-5dd4-487a-b639-dacebcc4bf97', NULL, '2015-7-3', '2015-7-3', NULL, 0, 'PUBLIC', 'admin', '13800138000', '番茄管理员', '96e79218965eb72c92a549dd5a330112', '1                               ', '19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', 'cd5bef57-3376-450f-a13d-4a829dec071b', 0);
+INSERT INTO  user_info("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "user_type", "login_name", "telephone", "user_name", "password", "data_permission", "company_id", "role_id", "deleted")
+VALUES ('c0a2aad1-5dd4-487a-b639-dacebcc4bf97', NULL, '2015-7-3', '2015-7-3', NULL, 0, 'PUBLIC', 'admin', '13800138000', '番茄管理员', '96e79218965eb72c92a549dd5a330112', '1', '19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', 'cd5bef57-3376-450f-a13d-4a829dec071b', 0);
 -- 创建公司
-INSERT INTO  company("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "company_name", "deleted", "company_code", "type", "ota_id", "user_account", "user_password") VALUES ('19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', NULL, '2015-7-3', '2015-7-15', NULL, 3, '测试公司13431212121', 0, '54041688', 1, 101, 'CS', 'cs123');
+INSERT INTO  company("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "company_name", "deleted", "company_code", "type", "ota_id", "user_account", "user_password") VALUES ('19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', NULL, '2015-7-3', '2015-7-15', NULL, 3, '成都番茄来了技术有限公司', 0, '54041688', 1, 101, 'CS', 'cs123');
+-- 权限
+INSERT INTO "permission" ("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "permission_name", "url", "parent_id", "indexed", "deleted")
+VALUES ('9414cf03-338c-4994-890e-a91463e4d792', NULL, NULL, NULL, NULL, NULL, '图片管理', '/system/images', NULL, 0, 0);
+INSERT INTO "permission" ("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "permission_name", "url", "parent_id", "indexed", "deleted")
+VALUES ('7a6f7b47-d779-41a9-a09f-5289479cab0e', NULL, NULL, NULL, NULL, NULL, '公司管理', '/system/find_companys', NULL, 0, 0);
+INSERT INTO "permission" ("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "permission_name", "url", "parent_id", "indexed", "deleted")
+VALUES ('2e2b17f1-202f-4665-88ea-26806bc45660', NULL, NULL, NULL, NULL, NULL, '订单管理', '/order/find_orders', NULL, 0, 0);
 -- 创建公司具有的权限
 INSERT INTO company_permission("id", "company_id", "permission_id", "created_date", "updated_date") VALUES ('5ddd47f6-d996-472a-b131-0b36e23567e7', '19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', '2e2b17f1-202f-4665-88ea-26806bc45660', '2015-7-22', '2015-7-22');
 INSERT INTO company_permission("id", "company_id", "permission_id", "created_date", "updated_date") VALUES ('b23999be-f83a-4930-9305-500a42223b1e', '19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', '37b68f35-62ec-49cf-98c6-1e3755bb54c1', '2015-7-22', '2015-7-22');
@@ -18,6 +26,9 @@ INSERT INTO company_permission("id", "company_id", "permission_id", "created_dat
 INSERT INTO company_permission("id", "company_id", "permission_id", "created_date", "updated_date") VALUES ('7f593e66-4fd9-4f9b-a037-b282a581bc87', '19f7ed10-6a1c-4b56-bb98-ccbde9b4cbd4', '6e3a7472-e62e-4cfa-bff6-5a30218a4c95', '2015-7-22', '2015-7-22');
 -- 创建角色
 INSERT INTO "role" ("id", "creator_id", "created_date", "updated_date", "role_desc", "role_name", "role_key", "indexed") VALUES ('cd5bef57-3376-450f-a13d-4a829dec071b', NULL, '2015-7-3', NULL, 'ROLE_SUPER', 'ROLE_SUPER', 'ROLE_SUPER', 13);
+-- 角色权限
+INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date") VALUES ('afc26a52-1fb5-44ca-b21c-7a82c198fea9', 'cd5bef57-3376-450f-a13d-4a829dec071b', '499cbd11-a80e-4fc5-a38e-3d503fc3eb40', '2015-7-22', '2015-7-22');
+
 
 -- 创建飞鸟用户
 INSERT INTO  user_info("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "user_type", "login_name", "telephone", "user_name", "password", "data_permission", "company_id", "role_id", "deleted")
