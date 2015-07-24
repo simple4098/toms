@@ -32,23 +32,23 @@ INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "
 
 -- 创建飞鸟用户
 INSERT INTO  user_info("id", "creator_id", "created_date", "updated_date", "modifier_id", "version", "user_type", "login_name", "telephone", "user_name", "password", "data_permission", "company_id", "role_id", "deleted")
-VALUES ('88888888user', NULL, '2015-6-12', '2015-7-15', NULL, 1, 'ADMIN', 'feiniao', '13800138001', '飞鸟', '96e79218965eb72c92a549dd5a330112', '1', 'd0392bc8-131c-8989-846e-c81c66011111', '88888888role', 0);
+VALUES ('2e2b17f1-35566-4665-88ea-26806bc47777', NULL, '2015-6-12', '2015-7-15', NULL, 1, 'ADMIN', 'feiniao', '13800138001', '飞鸟', '96e79218965eb72c92a549dd5a330112', '1', 'd0392bc8-131c-8989-846e-c81c66011111', '2e2b17f1-35566-4665-88ea-123456789r', 0);
 -- 创建飞鸟用户角色
 INSERT INTO  role("id", "creator_id", "created_date", "updated_date", "role_desc", "role_name", "role_key", "indexed")
-VALUES ('88888888role', NULL, '2015-6-12', NULL, 'ROLE_FEI', 'ROLE_FEI', 'ROLE_10', 10);
+VALUES ('2e2b17f1-35566-4665-88ea-123456789r', NULL, '2015-6-12', NULL, 'ROLE_FEI', 'ROLE_FEI', 'ROLE_10', 10);
 -- 创建角色与权限关联关系
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('f130a2ab-4ea3-4a85-a86f-e90936cece36', '88888888role', '2e2b17f1-202f-4665-88ea-26806bc45660', '2015-7-22', '2015-7-22');
+VALUES ('f130a2ab-4ea3-4a85-a86f-e90936cece36', '2e2b17f1-35566-4665-88ea-123456789r', '2e2b17f1-202f-4665-88ea-26806bc45660', '2015-7-22', '2015-7-22');
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('feaec74f-a6b8-4cbc-aaec-940f742f2da3', '88888888role', '499cbd11-a80e-4fc5-a38e-3d503fc3eb40', '2015-7-22', '2015-7-22');
+VALUES ('feaec74f-a6b8-4cbc-aaec-940f742f2da3', '2e2b17f1-35566-4665-88ea-123456789r', '499cbd11-a80e-4fc5-a38e-3d503fc3eb40', '2015-7-22', '2015-7-22');
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('4a4c81d7-78a4-47f3-bf51-1e994d9b822a', '88888888role', 'd8c49677-e86a-4a10-abf4-d5a6a2d3e8f9', '2015-7-22', '2015-7-22');
+VALUES ('4a4c81d7-78a4-47f3-bf51-1e994d9b822a', '2e2b17f1-35566-4665-88ea-123456789r', 'd8c49677-e86a-4a10-abf4-d5a6a2d3e8f9', '2015-7-22', '2015-7-22');
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('8dce63ab-459f-4e85-ad64-b82e6c6bd373', '88888888role', 'e37849ca-c47c-4558-a48d-2b2c6b53b0f4', '2015-7-22', '2015-7-22');
+VALUES ('8dce63ab-459f-4e85-ad64-b82e6c6bd373', '2e2b17f1-35566-4665-88ea-123456789r', 'e37849ca-c47c-4558-a48d-2b2c6b53b0f4', '2015-7-22', '2015-7-22');
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('885ef003-b214-4469-bd08-0e61fb44ff6b', '88888888role', '55ac4fe9-6bec-400a-b0c0-89f2c8993c97', '2015-7-22', '2015-7-22');
+VALUES ('885ef003-b214-4469-bd08-0e61fb44ff6b', '2e2b17f1-35566-4665-88ea-123456789r', '55ac4fe9-6bec-400a-b0c0-89f2c8993c97', '2015-7-22', '2015-7-22');
 INSERT INTO  role_permission("id", "role_id", "permission_id", "created_date", "updated_date")
-VALUES ('cd1b8a6e-16ed-480f-bc15-cd77b9e3d464', '88888888role', '9414cf03-338c-4994-890e-a91463e4d792', '2015-7-22', '2015-7-22');
+VALUES ('cd1b8a6e-16ed-480f-bc15-cd77b9e3d464', '2e2b17f1-35566-4665-88ea-123456789r', '9414cf03-338c-4994-890e-a91463e4d792', '2015-7-22', '2015-7-22');
 -- 公司具有的权限
 INSERT INTO  company_permission("id", "company_id", "permission_id", "created_date", "updated_date")
 VALUES ('0973cf5f-b128-46c1-921d-b5edc22c423e', 'd0392bc8-131c-8989-846e-c81c66011111', '2e2b17f1-202f-4665-88ea-26806bc45660', '2015-7-6', '2015-7-6');
