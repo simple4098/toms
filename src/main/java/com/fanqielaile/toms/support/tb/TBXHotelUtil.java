@@ -9,6 +9,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.ImgUtil;
 import com.fanqielaile.toms.support.util.TPServiceUtil;
 import com.taobao.api.ApiException;
@@ -213,16 +214,16 @@ public class TBXHotelUtil {
      * @param outerId
      * @param company
      */
-    public static Long roomGet(Integer outerId,OtaInfo company) throws ApiException {
+    public static XRoom roomGet(Integer outerId,OtaInfo company) throws ApiException {
         log.info("roomGet outerId:" +outerId );
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomGetRequest req=new XhotelRoomGetRequest();
-        req.setGid(Long.valueOf(outerId));
+        req.setOutRid(String.valueOf(outerId));
         XhotelRoomGetResponse response = client.execute(req , company.getSessionKey());
         if (!StringUtils.isEmpty(response.getSubCode())){
             return null;
         }
-        return  response.getRoom().getGid();
+        return  response.getRoom();
     }
 
     public static Long roomDel(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfo company,RoomSwitchCalStatus status) throws Exception {
@@ -259,7 +260,12 @@ public class TBXHotelUtil {
         log.info("roomDel:" + response.getGid());
         log.info("roomDel bady:" + response.getBody());
         if (!StringUtils.isEmpty(response.getSubCode())) {
-            return  roomGet(outerId, company);
+            XRoom xRoom = roomGet(outerId, company);
+            if (xRoom!=null){
+                return  xRoom.getGid();
+            }else {
+                return null;
+            }
         }
         return response.getGid();
     }
@@ -327,7 +333,12 @@ public class TBXHotelUtil {
         log.info("roomUpdate:" + response.getGid());
         log.info("roomUpdate bady:" + response.getBody());
             if (!StringUtils.isEmpty(response.getSubCode())) {
-                return  roomGet(outerId, company);
+                XRoom xRoom = roomGet(outerId, company);
+                if (xRoom!=null){
+                    return  xRoom.getGid();
+                }else {
+                    return null;
+                }
             }
             return response.getGid();
     }
@@ -522,4 +533,44 @@ public class TBXHotelUtil {
         XhotelOrderUpdateResponse response = client.execute(req, company.getSessionKey());
         return response.getResult();
     }
+
+    public static Long updateHotelPushRoom(OtaInfo o, PushRoom pushRoom) throws Exception {
+        log.info("---updateHotelPushRoom start---");
+        XRoom xRoom = roomGet(pushRoom.getRoomType().getRoomTypeId(), o);
+        if (xRoom!=null){
+            String inventory = xRoom.getInventory();
+            List<Inventory> list = JacksonUtil.json2list(inventory, Inventory.class);
+            List<RoomDetail> roomDetails = pushRoom.getRoomDetails();
+            for (RoomDetail roomDetail:roomDetails){
+                String roomDate = roomDetail.getRoomDate();
+                Integer roomNum = roomDetail.getRoomNum();
+                for (Inventory in:list){
+                    if (in.getDate().equals(roomDate)){
+                        in.setQuota(roomNum);
+                    }
+                }
+            }
+            String json = JacksonUtil.obj2json(list);
+            xRoom.setInventory(json);
+        }else {
+            throw new TomsRuntimeException("updateHotelPushRoom xRoom is null ");
+        }
+        return   roomUpdate(o,xRoom);
+    }
+
+    /**
+     * 及时更新room
+     */
+    public  static Long  roomUpdate(OtaInfo company, XRoom xRoom) throws Exception {
+        log.info("oms 及时更新房型库存 xRoom.getGid():" + xRoom.getGid());
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRoomUpdateRequest req=new XhotelRoomUpdateRequest();
+        req.setGid(xRoom.getGid());
+        req.setInventory(xRoom.getInventory());
+        XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
+        log.info("roomUpdate:" + response.getGid());
+        log.info("roomUpdate bady:" + response.getBody());
+        return response.getGid();
+    }
+
 }

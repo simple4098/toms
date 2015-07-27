@@ -1,12 +1,17 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqielaile.toms.dto.PushRoom;
+import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.Order;
+import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -65,4 +70,43 @@ public class XmlDeal {
         order.setReason(element.elementText("Reason") == null ? "" : element.elementText("Reason"));
         return order;
     }
+
+    public static List<PushRoom> getPushRoom(String xml)throws Exception{
+        Element element = dealXmlStr(xml);
+        List<Element> elements = element.element("list").elements("RoomType");
+        return  getPushRoom(elements);
+    }
+
+    public static List<PushRoom> getPushRoom( List<Element> elements)throws Exception{
+        List<PushRoom> pushRoomList = new ArrayList<PushRoom>();
+        PushRoom pushRoom = null;
+        RoomTypeInfo roomTypeInfo = null;
+        if (ArrayUtils.isNotEmpty(elements.toArray())) {
+            List<RoomDetail> roomDetails;
+            RoomDetail roomDetail;
+            for (Element e : elements) {
+                pushRoom = new PushRoom();
+                roomTypeInfo = new RoomTypeInfo();
+                roomDetails = new ArrayList<RoomDetail>();
+                roomTypeInfo.setAccountId(Integer.valueOf(e.elementText("AccountId")));
+                roomTypeInfo.setRoomTypeId(Integer.valueOf(e.elementText("RoomTypeId")));
+                roomTypeInfo.setRoomTypeName(e.elementText("RoomTypeName"));
+                List<Element> RoomDetailList = e.element("RoomDetails").elements("RoomDetail");
+                for (Element  el: RoomDetailList){
+                    roomDetail = new RoomDetail();
+                    roomDetail.setRoomDate(el.elementText("RoomDate"));
+                    roomDetail.setRoomPrice(Double.valueOf(el.elementText("RoomPrice")));
+                    roomDetail.setPriRoomPrice(Double.valueOf(el.elementText("PriRoomPrice")));
+                    roomDetail.setRoomNum(Integer.valueOf(el.elementText("RoomNum")));
+                    roomDetails.add(roomDetail);
+                }
+                pushRoom.setRoomDetails(roomDetails);
+                pushRoom.setRoomType(roomTypeInfo);
+                pushRoomList.add(pushRoom);
+
+            }
+        }
+        return pushRoomList;
+    }
+
 }
