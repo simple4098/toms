@@ -53,8 +53,8 @@ public class ImgUtil {
             BufferedImage image = resize(src,0.3);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(image,imgSuffix,byteArrayOutputStream);
-            byte[] toByteArray = byteArrayOutputStream.toByteArray();
-            return toByteArray;
+            byteArrayOutputStream.close();
+            return  byteArrayOutputStream.toByteArray();
         }
         return bytes;
     }

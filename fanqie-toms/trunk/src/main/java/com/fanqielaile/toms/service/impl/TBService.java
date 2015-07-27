@@ -305,5 +305,12 @@ public class TBService implements ITPService {
         }
     }
 
+    @Override
+    public void updateHotelRoom(OtaInfoDto o, List<PushRoom> pushRoomList) throws Exception {
+        for (PushRoom pushRoom: pushRoomList){
+            TBXHotelUtil.updateHotelPushRoom(o, pushRoom);
+        }
+    }
+
 
 }
