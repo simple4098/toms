@@ -207,7 +207,7 @@
                             <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客栈简介</label>
 
                             <div class="col-sm-9">
-                                <textarea>${bangInn.innDto.innInfo}</textarea>
+                                <textarea rows="5" cols="50">${bangInn.innDto.innInfo}</textarea>
                         <span class="help-name col-xs-12 col-sm-7">
 
 											</span>
