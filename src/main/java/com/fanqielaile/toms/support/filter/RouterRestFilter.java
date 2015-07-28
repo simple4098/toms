@@ -24,8 +24,10 @@ public class RouterRestFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        //String xml = HttpClientUtil.convertStreamToString(request.getInputStream());
-        String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-07-27</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-07-28</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+        String xml = HttpClientUtil.convertStreamToString(request.getInputStream());
+        log.info("===========start==============");
+        log.info(xml);
+        //String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-07-27</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-07-28</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
         if (!StringUtils.isEmpty(xml)){
             String rootElementName = "";
             try {
@@ -33,7 +35,7 @@ public class RouterRestFilter implements Filter {
             } catch (Exception e) {
                 log.error("RouterRestFilter 解析xml失败",e);
             }
-            StringBuilder uri =new StringBuilder("/router/rest/").append(rootElementName);
+            StringBuilder uri =new StringBuilder("/fanqieService/").append(rootElementName);
             uri.append("?pushXml=").append(xml);
             request.getRequestDispatcher(uri.toString()).forward(request, response);
         }else {

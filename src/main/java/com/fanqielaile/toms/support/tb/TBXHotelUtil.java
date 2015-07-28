@@ -38,33 +38,7 @@ import java.util.List;
 public class TBXHotelUtil {
     private static  final Logger log = LoggerFactory.getLogger(TBXHotelUtil.class);
     private TBXHotelUtil(){}
-    /**
-     * 想淘宝添加酒店
-     * @param company 渠道信息，存放 appKey ，appSecret ... 信息
-     * @param innDto 客栈信息
-     * @SEE          hotelAddOrUpdate(...)
-     */
-    @Deprecated
-    public static XHotel hotelAdd(OtaInfo company,InnDto innDto,OtaTaoBaoArea andArea){
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelAddRequest req=new XhotelAddRequest();
-        req.setOuterId(innDto.getInnId());
-        req.setName(innDto.getBrandName());
-        req.setUsedName(innDto.getInnName());
-        if (andArea!=null){
-            req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
-            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
-        }
-        req.setAddress(innDto.getAddr());
-        try {
-            XhotelAddResponse response = client.execute(req , company.getSessionKey());
-            log.info("hotelAdd:" +response.getXhotel());
-            return response.getXhotel();
-        } catch (ApiException e) {
-            log.error(e.getErrMsg());
-        }
-        return null;
-    }
+
 
     //更新酒店
     public static XHotel hotelUpdate(OtaInfo company,InnDto innDto,OtaTaoBaoArea andArea) throws ApiException {
@@ -357,7 +331,6 @@ public class TBXHotelUtil {
         req.setPaymentType(1L);
         //0：不含早1：含单早2：含双早N：含N早（1-99可选）
         req.setBreakfastCount(0L);
-        //req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":168}}");
         //2.表示不能退{"cancelPolicyType":2}
         req.setCancelPolicy("{\"cancelPolicyType\":2}");
         req.setStatus(1L);
@@ -466,27 +439,19 @@ public class TBXHotelUtil {
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             List<InventoryRate> list = new ArrayList<InventoryRate>();
-            //List<RateSwitchCal> rateSwitchCalList = new ArrayList<RateSwitchCal>();
             InventoryPrice inventory = new InventoryPrice();
-            //RateSwitchCal rateSwitchCal = null;
             InventoryRate rate = null;
             double price = 0;
             for (RoomDetail r:roomTypeInfo.getRoomDetail()){
                 rate = new InventoryRate();
-                //rateSwitchCal = new RateSwitchCal(r.getRoomDate(),deleted?0:1);
                 rate.setDate(r.getRoomDate());
-                //rate.setQuota(r.getRoomNum()==null?0:r.getRoomNum());
                 price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
                 rate.setPrice(price*100);
                 list.add(rate);
-               // rateSwitchCalList.add(rateSwitchCal);
             }
             inventory.setInventory_price(list);
             String json = JacksonUtil.obj2json(inventory);
-            //String rateSwitchCalJson = JacksonUtil.obj2json(rateSwitchCalList);
             req.setInventoryPrice(json);
-            //req.setRateSwitchCal(rateSwitchCalJson);
-            //log.info("rateUpdate RateSwitchCal:" + rateSwitchCalJson);
             log.info("rateUpdate inventoryPrice:" + json);
         }
         XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
@@ -499,7 +464,6 @@ public class TBXHotelUtil {
      * @param gid
      * @param rpid
      * @param roomTypeInfo
-     *
      * @return
      */
     public static Rate rateGet(OtaInfo company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo){
@@ -517,6 +481,19 @@ public class TBXHotelUtil {
             log.error(e.getErrMsg());
         }
         return  null;
+    }
+
+    public static String rateUpdate(OtaInfo company,RoomTypeInfo roomTypeInfo,Rate rate) throws ApiException {
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
+        req.setGid(rate.getGid());
+        req.setRpid(rate.getRpid());
+        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setInventoryPrice(rate.getInventoryPrice());
+        XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
+        log.info("推送 rateUpdate:" +  response.getGidAndRpid());
+        return response.getGidAndRpid();
     }
 
     /**

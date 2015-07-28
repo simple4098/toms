@@ -24,4 +24,6 @@ public interface IOtaInnRoomTypeGoodsDao {
 
     //删除客栈宝贝关系
     void deletedGoods(@Param("otaWgId")String otaWgId);
+
+    OtaInnRoomTypeGoodsDto selectGoodsByRoomTypeIdAndCompany(@Param("companyId")String companyId, @Param("roomTypeId")Integer roomTypeId);
 }

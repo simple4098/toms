@@ -85,7 +85,7 @@
 
     <filter-mapping>
         <filter-name>RouterRestFilter</filter-name>
-        <url-pattern>/router/rest</url-pattern>
+        <url-pattern>/fanqieService</url-pattern>
     </filter-mapping>
 
     <!-- Handles Spring requests -->
