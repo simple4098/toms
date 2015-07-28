@@ -40,11 +40,19 @@
     <c:if test="${not empty bangInn}">
         <div class="page-content">
             <div class="page-header">
-                <h1>
-                    <a href="<c:url value="/system/find_room_images?id=${bangInn.id}"/>">
+                <h1 style="float: left">
+                    <a class="inn-name" data-toggle="modal" data-target="#addUser">
                             ${bangInn.innName}
                     </a>
+
+                    &nbsp;&nbsp;
+                    <span style="float: right"><h6>
+                        <a target="_blank" href="<c:url value="/system/find_room_images?id=${bangInn.id}"/>">
+                            房型图片
+                        </a>
+                    </h6></span>
                 </h1>
+
             </div>
             <!-- /.page-header -->
             <div class="row">
@@ -78,10 +86,337 @@
             </div>
             <!-- /.row -->
         </div>
-            <!-- /.page-content -->
+        <!-- /.page-content -->
     </c:if>
 </div>
+<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="addUserLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addUserLabel">客栈基本信息</h4>
+            </div>
+            <div class="modal-body">
+                <c:if test="${not empty bangInn.innDto}">
+                    <form class="form-horizontal" method="post" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 客栈名称 </label>
 
+                            <div class="col-sm-9">
+                                <input type="text" id="form-field-1" name="loginName"
+                                       value="${bangInn.innName}" class="col-xs-10 col-sm-5 login-name"/>
+                                <span class="help-login-name col-xs-12 col-sm-7"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 地址 </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" name="password" id="form-field-2" value="${bangInn.innDto.addr}"
+                                       class="col-xs-10 col-sm-5 ace pawd"/>
+                        <span class="help-password col-xs-12 col-sm-7">
+
+											</span>
+                            </div>
+                        </div>
+
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly">
+                                百度地图纬度 </label>
+
+                            <div class="col-sm-9">
+                                <input type="text" class="col-xs-10 col-sm-5 ace tel" id="form-input-readonly"
+                                       name="telephone"
+                                       value="${bangInn.innDto.baiduLat}"/>
+                        <span class="help-tel col-xs-12 col-sm-7">
+
+											</span>
+                            </div>
+                        </div>
+
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">百度地图经度</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.baiduLon}"
+                                       id="form-field-4"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">所在城市</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.city}"
+                                       id="form-field-5"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">所在区/县</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.county}"
+                                       id="form-field-6"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">前台电话</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.frontPhone}"
+                                       id="form-field-7"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客栈简介</label>
+
+                            <div class="col-sm-9">
+                                <textarea>${bangInn.innDto.innInfo}</textarea>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">官方微博</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.microblog}"
+                                       id="form-field-11"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">所在省</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.province}"
+                                       id="form-field-12"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">公众微信号</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.pubWechat}"
+                                       id="form-field-13"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">可接待人数</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.recNum}"
+                                       id="form-field-14"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">房间数</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.roomNum}"
+                                       id="form-field-15"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客服名称</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.serName}"
+                                       id="form-field-16"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客服电话</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.serPhone}"
+                                       id="form-field-17"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客服QQ</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.serQq}"
+                                       id="form-field-18"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">客服微信</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.serWechat}"
+                                       id="form-field-19"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">腾讯地图纬度</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.txLat}"
+                                       id="form-field-21"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="form-field-4">腾讯地图经度</label>
+
+                            <div class="col-sm-9">
+                                <input class="col-xs-10 col-sm-5 ace user-name" type="text" name="userName"
+                                       value="${bangInn.innDto.txLon}"
+                                       id="form-field-22"/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                                <div class="space-2"></div>
+
+                            </div>
+                        </div>
+                        <div class="space-4"></div>
+                        <c:if test="${not empty bangInn.innDto.facilitiesMap}">
+                            <c:forEach items="${bangInn.innDto.facilitiesMap}" var="f">
+                                <span class="btn btn-danger btn-sm tooltip-error" data-rel="tooltip"
+                                      data-placement="top" title="${f.name}">${f.name}</span>
+                            </c:forEach>
+                        </c:if>
+                    </form>
+                </c:if>
+            </div>
+            <%--<div class="modal-footer">--%>
+            <%--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>--%>
+            <%--<button type="button" class="btn btn-primary btn-submit">确认</button>--%>
+            <%--</div>--%>
+        </div>
+    </div>
+</div>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 <script>
