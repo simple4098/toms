@@ -25,7 +25,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 @Controller
-@RequestMapping("/router/rest")
+@RequestMapping("/fanqieService")
 public class RouterRestController {
     private static  final Logger log = LoggerFactory.getLogger(RouterRestController.class);
     @Resource

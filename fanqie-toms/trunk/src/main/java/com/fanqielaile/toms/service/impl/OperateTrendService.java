@@ -9,6 +9,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOperateTrendService;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +51,11 @@ public class OperateTrendService implements IOperateTrendService {
         paramDto.setCompanyId(currentUser.getCompanyId());
         paramDto.setDataPermission(currentUser.getDataPermission() == 1);
         String gets = HttpClientUtil.httpGets(CommonApi.QS, paramDto);
-        OperateTrend operateTrend = JacksonUtil.json2obj(gets, OperateTrend.class);
-        return operateTrend;
+        if(!StringUtils.isEmpty(gets)){
+            return JacksonUtil.json2obj(gets, OperateTrend.class);
+        }
+        return null;
+
     }
 
     @Override
@@ -60,8 +64,11 @@ public class OperateTrendService implements IOperateTrendService {
         paramDto.setCompanyId(currentUser.getCompanyId());
         paramDto.setDataPermission(currentUser.getDataPermission() == 1);
         String gets = HttpClientUtil.httpGets(CommonApi.QSDetail, paramDto);
-        JSONObject jsonObject = JSONObject.fromObject(gets);
-        Map<String, Object> result = (Map<String, Object>)jsonObject.get("result");
-        return result;
+        if(!StringUtils.isEmpty(gets)) {
+            JSONObject jsonObject = JSONObject.fromObject(gets);
+            return  (Map<String, Object>) jsonObject.get("result");
+        }else {
+            return null;
+        }
     }
 }
