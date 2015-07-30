@@ -157,6 +157,7 @@
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                     <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                     <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
+                    <property name="imgUrl" value="http://img.test.fanqiele.com"></property>
               </bean>
        </beans>
 
