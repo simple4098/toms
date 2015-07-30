@@ -154,8 +154,8 @@
                      <property name="ActiveInn" value="http://dc.test.fanqiele.com/api/toms/innActive.json"></property>
                      <property name="roomType" value="http://openapi.test.fanqielaile.com/api/getRoomType"></property>
                      <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/getInnInfo"></property>
-                    <!-- <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>-->
-                     <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
+                     <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
+                    <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                     <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
               </bean>
        </beans>
