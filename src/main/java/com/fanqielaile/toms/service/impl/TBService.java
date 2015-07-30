@@ -77,6 +77,7 @@ public class TBService implements ITPService {
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
+        log.info("==============inn_info:" + inn_info);
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         XHotel xHotel = null;
@@ -151,6 +152,7 @@ public class TBService implements ITPService {
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+        log.info("==============room_type:" + room_type);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         //房型
