@@ -102,13 +102,13 @@ COMMENT ON COLUMN "public"."ota_info"."expired_time" IS '失效时间';
 
 CREATE TABLE ota_inn_roomtype_goods (
 "id" varchar(60) COLLATE "default" NOT NULL,
-"room_type_id" varchar(30) COLLATE "default",
-"inn_id" varchar(30) COLLATE "default",
-"rpid" varchar(30) COLLATE "default",
-"gid" varchar(30) COLLATE "default",
-"company_id" varchar(30) COLLATE "default",
+"room_type_id" varchar(60) COLLATE "default",
+"inn_id" varchar(60) COLLATE "default",
+"rpid" varchar(60) COLLATE "default",
+"gid" varchar(60) COLLATE "default",
+"company_id" varchar(60) COLLATE "default",
 "ota_wg_id" varchar(64) COLLATE "default",
-"rid" varchar(30) COLLATE "default",
+"rid" varchar(60) COLLATE "default",
 "product_date" timestamp(6),
 "deleted" int2 DEFAULT 0,
 CONSTRAINT "pk_ota_inn_roomtype_goods" PRIMARY KEY ("id")

@@ -13,6 +13,6 @@ update bang_inn set deleted=0;
 --初始化公司
 INSERT INTO company VALUES ('d0392bc8-131c-8989-846e-c81c66011111', null, '2015-07-13', '2015-07-13', null, '0', '飞鸟', '0', '89894098', '1', '903', 'TB', 'tb');
 
-INSERT INTO "public"."ota_info" VALUES ('1', '淘宝', 'TB', '0', 'd0392bc8-131c-8989-846e-c81c66011111', '23192376', 'c2e9acffbdf281c93b167601781cd228', '61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376', null);
+INSERT INTO "public"."ota_info" VALUES ('1', '淘宝', 'TB', '0', 'd0392bc8-131c-8989-846e-c81c66011111', '1023192376', 'sandboxfbdf281c93b167601781cd228', '6102630889b6592676681403674c57dec774131f5d37e973636630123', null);
 
 
