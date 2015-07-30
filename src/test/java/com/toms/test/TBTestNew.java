@@ -16,6 +16,7 @@ import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.util.XmlDeal;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
@@ -67,17 +68,20 @@ public class TBTestNew {
     private IOtaInfoDao otaInfoDao;
 
     @Test
-    @Ignore
+
     public void test() throws Exception {
         OtaInfo otaInfo = new OtaInfo();
-        otaInfo.setAppKey("23192376");
+       /* otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");
+        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");*/
+        otaInfo.setAppKey("1023192376");
+        otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
         //String innId = "7060";
-        String innId = "14284";
+        String innId = "22634";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "23442";
+        String accountId = "1000863";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -85,7 +89,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("23442");
+        price1.setAccountId("1000863");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -105,10 +109,10 @@ public class TBTestNew {
         String signature = DcUtil.obtMd5("903" + s + "TB" + "tb");
         //<property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
         // <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
-        String inn_info ="http://oms.fanqiele.com/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-09-21"+"&signature="+signature;
-        //String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        //String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-08-22"+"&signature="+signature;
+        //String inn_info ="http://oms.fanqiele.com/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
+        //String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-09-21"+"&signature="+signature;
+        String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
+        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-28&to=2015-08-27"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
         String httpGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
@@ -240,43 +244,78 @@ public class TBTestNew {
 
 
     @Test
+    @Ignore
     public void  test4() throws IOException {
-
-        TBParam tbParam  =  new TBParam();
-        tbParam.setCompanyCode("11111111");
-        Company company = companyDao.selectCompanyByCompanyCode("11111111");
+        OtaInfoDto o = new OtaInfoDto();
+        o.setCompanyCode("11111111");
+        TBParam tbParam = new TBParam();
+        Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
+        tbParam.setCompanyCode(o.getCompanyCode());
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        tbParam.setSj(true);
         String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
         String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
             List<PricePattern> pricePatterns = null;
-            StringBuilder stringBuilder = null;
+            StringBuilder stringBuilder = new StringBuilder();
+            List<PriceModel> priceModelList = null;
+            PriceModel priceModel = null;
+            //stringBuilder = new StringBuilder();
             for (ProxyInns proxyInns:list){
-                stringBuilder = new StringBuilder();
+
                 pricePatterns = proxyInns.getPricePatterns();
                 tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
+                System.out.println("客栈id:"+proxyInns.getInnId());
+                stringBuilder.append(proxyInns.getInnId()).append(",");
+               /* priceModelList = new ArrayList();
                 for (PricePattern p:pricePatterns){
+                    priceModel = new PriceModel();
                     if (p.getPattern().equals(1)){
                         tbParam.setAccountIdDi(String.valueOf(p.getAccountId()));
                         tbParam.setsJiaModel("DI");
                         stringBuilder.append("DI,");
+                        priceModel.setAccountId(String.valueOf(p.getAccountId()));
+                        priceModel.setPattern("DI");
                     }
                     if (p.getPattern().equals(2)){
                         tbParam.setAccountId(String.valueOf(p.getAccountId()));
                         tbParam.setsJiaModel("MAI");
                         stringBuilder.append("MAI,");
+                        priceModel.setAccountId(String.valueOf(p.getAccountId()));
+                        priceModel.setPattern("MAI");
                     }
+                    priceModelList.add(priceModel);
                 }
+                tbParam.setPriceModelArray(priceModelList);
                 if (stringBuilder.toString().lastIndexOf(",")!=-1){
                     stringBuilder.deleteCharAt(stringBuilder.length()-1);
                 }
                 tbParam.setPriceModel(stringBuilder.toString());
+                System.out.println(tbParam.toString());*/
                 //更新酒店
                 //updateOrAddHotel(tbParam, o);
-
             }
+            if (stringBuilder.toString().lastIndexOf(",")!=-1){
+                stringBuilder.deleteCharAt(stringBuilder.length()-1);
+            }
+            System.out.println(stringBuilder.toString());
         }
+    }
+
+    @Test
+    public void test5() throws Exception {
+        OtaInfo otaInfo = new OtaInfo();
+        otaInfo.setAppKey("1023192376");
+        otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
+        String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-07-27</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-07-28</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+        List<PushRoom> pushRoomList = XmlDeal.getPushRoom(xml);
+        for (PushRoom r:pushRoomList){
+            TBXHotelUtil.updateHotelPushRoom(otaInfo,r);
+        }
+
     }
 }
 

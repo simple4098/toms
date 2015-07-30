@@ -1,36 +1,25 @@
 package com.toms.test;
 
-import com.fanqielaile.toms.enums.ChannelSource;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.fanqielaile.toms.dto.PushRoom;
+import com.fanqielaile.toms.support.util.XmlDeal;
+
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by wangdayin on 2015/6/3.
  */
 public class Test {
-    public static void main(String[] args) throws DocumentException {
-//        System.out.println(UUID.randomUUID());
-//        String xmlstr = "<BookRQ><DailyInfos><DailyInfo><Day>2013-12-24</Day><Price>17800</Price></DailyInfo><DailyInfo><Day>2013-12-25</Day><Price>46050</Price></DailyInfo></DailyInfos></BookRQ>";
-//        Document document = DocumentHelper.parseText(xmlstr);
-//        Element element = document.getRootElement();
-//        System.out.println(element.getName());
-//        List<Element> authenticationToken = element.element("DailyInfos").elements("DailyInfo");
-//        for (Element e : authenticationToken) {
-//            System.out.println(e.element("Day").getText());
-//        }
-        Date date = new Date();
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-        System.out.println(date.getTime());
-        System.out.println(new Timestamp(new Date().getTime()).getTime());
-        System.out.println(new Date().getTime() + "" + new Random().nextInt(10));
+    public static void main(String[] args) throws Exception {
+        String text ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>456</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2013-01-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2014-01-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail></RoomDetails></RoomType><RoomType><AccountId>123</AccountId><RoomTypeId>456</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2013-01-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2014-01-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+       /* Element element = XmlDeal.dealXmlStr(text);
+        System.out.println(element.getName());
+        String rootElementName = XmlDeal.getRootElementString(text);
+        System.out.println(rootElementName);*/
+
+        long begin = System.currentTimeMillis();
+        List<PushRoom> pushRoom = XmlDeal.getPushRoom(text);
+        long after = System.currentTimeMillis();
+        System.out.println("DOM用时"+(after-begin)+"毫秒");
     }
 }
