@@ -42,6 +42,16 @@ public class UserInfo extends Domain implements UserDetails {
     private String innLabelId;
     //管理员ID
     private String userId;
+    //关键字
+    private String keywords;
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
 
     public String getInnLabelId() {
         return innLabelId;

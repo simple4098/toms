@@ -73,11 +73,12 @@ public class InnManageController extends BaseController {
      * @return
      */
     @RequestMapping("find_inns")
-    public String findInns(Model model, String innLabelId, String userId, @RequestParam(defaultValue = "1", required = false) int page) {
+    public String findInns(Model model, String innLabelId, String userId, String keywords, @RequestParam(defaultValue = "1", required = false) int page) {
         try {
             UserInfo currentUser = getCurrentUser();
             currentUser.setInnLabelId(innLabelId);
             currentUser.setUserId(userId);
+            currentUser.setKeywords(keywords);
             List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
             model.addAttribute(Constants.DATA, bangInnList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -98,6 +99,7 @@ public class InnManageController extends BaseController {
             //保存查询条件
             model.addAttribute("innLabel", innLabelId);
             model.addAttribute("userId", userId);
+            model.addAttribute("keywords", keywords);
         } catch (Exception e) {
             logger.error("查询客栈列表，列表内容查询错误", e);
         }
