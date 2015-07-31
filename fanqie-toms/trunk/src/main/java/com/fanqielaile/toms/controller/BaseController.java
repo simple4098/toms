@@ -23,7 +23,7 @@ import java.net.URLEncoder;
 public class BaseController {
     private static Logger logger = LoggerFactory.getLogger(BaseController.class);
     //每页显示数量
-    public static final int defaultRows = 5;
+    public static final int defaultRows = 10;
     /*
     * 获取登陆用户信息
     * */

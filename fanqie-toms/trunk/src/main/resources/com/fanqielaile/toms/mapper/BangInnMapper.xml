@@ -85,7 +85,10 @@
         <if test="userId != null and userId != ''">
             and user_id = #{userId}
         </if>
-        ORDER BY bang_date DESC
+        <if test="keywords != null and keywords != ''">
+            and inn_name like concat('%',#{keywords},'%')
+        </if>
+        ORDER BY bang_date DESC,id ASC
     </select>
     <select id="selectBangInnById" parameterType="java.lang.String" resultMap="BangInnDtoResult">
         SELECT

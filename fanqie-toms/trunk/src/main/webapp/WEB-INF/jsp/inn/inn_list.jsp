@@ -43,7 +43,27 @@
                             </button>
                         </span>
                     </div>
-
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <form class="form-search" action="<c:url value="/inn_manage/find_inns"/>" method="post">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" value="${keywords}" name="keywords"
+                                                   class="form-control search-query" placeholder="请输入关键字、客栈名称"/>
+																	<span class="input-group-btn">
+																		<button type="submit"
+                                                                                class="btn btn-purple btn-sm">
+                                                                            Search
+                                                                            <i class="icon-search icon-on-right bigger-110"></i>
+                                                                        </button>
+																	</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
                             <thead style="font-size: 14px;">
@@ -97,7 +117,7 @@
                                         <td>${d.labelName}</td>
                                         <td>${d.code}</td>
                                         <td>${d.userName}</td>
-                                        <td>${d.bangDataFormat}</td>
+                                        <td><fmt:formatDate value="${d.bangDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
                                                 <a class="green"
