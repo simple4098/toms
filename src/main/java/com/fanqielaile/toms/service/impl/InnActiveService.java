@@ -41,8 +41,11 @@ public class InnActiveService implements IInnActiveService {
             innIds.add(bangInnDto.getInnId());
             sb.append(bangInnDto.getInnId()).append(",");
         }
-        sb.deleteCharAt(sb.toString().length() - 1);
-        paramDto.setInnInStr(sb.toString());
+        if(sb.length()>0){
+            sb.deleteCharAt(sb.toString().length() - 1);
+            paramDto.setInnInStr(sb.toString());
+        }
+
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setDataPermission(userInfo.getDataPermission() == 1);
         paramDto.setUserId(userInfo.getId());
