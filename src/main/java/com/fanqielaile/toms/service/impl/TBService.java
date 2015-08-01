@@ -17,10 +17,8 @@ import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
-import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
-
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -77,7 +75,6 @@ public class TBService implements ITPService {
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
-        log.info("==============inn_info:" + inn_info);
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         XHotel xHotel = null;
@@ -152,7 +149,6 @@ public class TBService implements ITPService {
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-        log.info("==============room_type:" + room_type);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         //房型
@@ -168,7 +164,7 @@ public class TBService implements ITPService {
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
                     //添加商品
-                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus(),otaInnOta,andArea);
+                    Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus(), otaInnOta, andArea);
                     //创建酒店rp
                     Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
@@ -313,8 +309,9 @@ public class TBService implements ITPService {
             //验证此房型是不是在数据库存在
             OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
             if (good!=null){
+                OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                 log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                TBXHotelUtil.updateHotelPushRoom(o, pushRoom);
+                TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
             } else {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
             }

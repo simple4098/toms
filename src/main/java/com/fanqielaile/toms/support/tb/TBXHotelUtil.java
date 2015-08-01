@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -461,16 +460,14 @@ public class TBXHotelUtil {
     /**
      * 获取库存
      * @param company
-     * @param gid
-     * @param rpid
      * @param roomTypeInfo
      * @return
      */
-    public static Rate rateGet(OtaInfo company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo){
+    public static Rate rateGet(OtaInfo company,RoomTypeInfo roomTypeInfo){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateGetRequest req=new XhotelRateGetRequest();
-        req.setGid(gid);
-        req.setRpid(rpid);
+        /*req.setGid(gid);
+        req.setRpid(rpid);*/
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
         try {
@@ -511,16 +508,29 @@ public class TBXHotelUtil {
         return response.getResult();
     }
 
-    public static Long updateHotelPushRoom(OtaInfo o, PushRoom pushRoom) throws Exception {
+    public static void updateHotelPushRoom(OtaInfo o, PushRoom pushRoom,OtaPriceModelDto priceModel) throws Exception {
         log.info("---updateHotelPushRoom start---");
         XRoom xRoom = roomGet(pushRoom.getRoomType().getRoomTypeId(), o);
-        if (xRoom!=null){
+        Rate rate = rateGet(o, pushRoom.getRoomType());
+        if (xRoom!=null && rate!=null ){
             String inventory = xRoom.getInventory();
+            String inventoryPrice = rate.getInventoryPrice();
             List<Inventory> list = JacksonUtil.json2list(inventory, Inventory.class);
+            InventoryPrice inventoryPrices = JacksonUtil.json2obj(inventoryPrice, InventoryPrice.class);
+            List<InventoryRate> inventoryRateList = inventoryPrices.getInventory_price();
             List<RoomDetail> roomDetails = pushRoom.getRoomDetails();
+            double price = 0;
             for (RoomDetail roomDetail:roomDetails){
                 String roomDate = roomDetail.getRoomDate();
                 Integer roomNum = roomDetail.getRoomNum();
+                Double  roomPrice = roomDetail.getRoomPrice();
+                for (InventoryRate ratePrice:inventoryRateList){
+                    if (ratePrice.getDate().equals(roomDate)){
+                        price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
+                        //tp店价格为分，我们自己系统价格是元
+                        ratePrice.setPrice(price*100);
+                    }
+                }
                 for (Inventory in:list){
                     if (in.getDate().equals(roomDate)){
                         in.setQuota(roomNum);
@@ -528,11 +538,17 @@ public class TBXHotelUtil {
                 }
             }
             String json = JacksonUtil.obj2json(list);
+            inventoryPrices.setInventory_price(inventoryRateList);
+            String inventoryRate = JacksonUtil.obj2json(inventoryPrices);
             xRoom.setInventory(json);
+            rate.setInventoryPrice(inventoryRate);
+            log.info("价格 json:" + inventoryRate);
+            roomUpdate(o, xRoom);
+            rateUpdate(o,pushRoom.getRoomType(),rate);
+
         }else {
             throw new TomsRuntimeException("updateHotelPushRoom xRoom is null ");
         }
-        return   roomUpdate(o,xRoom);
     }
 
     /**

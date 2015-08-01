@@ -310,11 +310,25 @@ public class TBTestNew {
         otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
-        String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-07-27</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-07-28</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+        otaInfo.setCompanyId("88888888");
+        String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>11.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>11</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>22.0</RoomPrice><PriRoomPrice>22.0</PriRoomPrice><RoomNum>22</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+        //String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>1.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>1.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
         List<PushRoom> pushRoomList = XmlDeal.getPushRoom(xml);
-        for (PushRoom r:pushRoomList){
-            TBXHotelUtil.updateHotelPushRoom(otaInfo,r);
+        for (PushRoom pushRoom: pushRoomList){
+            //验证此房型是不是在数据库存在
+            OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(otaInfo.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
+            OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
+            if (good!=null){
+                log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
+                TBXHotelUtil.updateHotelPushRoom(otaInfo, pushRoom,priceModel);
+
+            } else {
+                log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
+            }
         }
+       /* for (PushRoom r:pushRoomList){
+            TBXHotelUtil.updateHotelPushRoom(otaInfo,r);
+        }*/
 
     }
 }
