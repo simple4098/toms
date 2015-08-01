@@ -41,7 +41,7 @@ public class BangInnService implements IBangInnService {
 
     @Override
     public List<BangInn> findBangInnByInnLabelId(String innLabelId) {
-        return this.bangInnDao.selectBangInnByInnLabelId(innLabelId);
+        return this.bangInnDao.selectBangInnByInnLabelId(innLabelId,new UserInfo());
     }
 
     @Override
