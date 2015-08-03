@@ -40,8 +40,9 @@ public class OrderTest {
     @Test
     @Ignore
     public void testCancelOrder() throws Exception {
-        String xml = "<CancelRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>cdb7b8bf-277c-4d83-bca9-203a9f675cc3</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></CancelRQ>";
-        this.orderService.cancelOrder(xml, ChannelSource.TAOBAO);
+//        String xml = "<CancelRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>cdb7b8bf-277c-4d83-bca9-203a9f675cc3</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></CancelRQ>";
+        String xml = "<QueryRefundRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>8e749073-0538-4ec0-98ab-10992f9f53f6</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></QueryRefundRQ>";
+        this.orderService.dealPayBackMethod(xml, ChannelSource.TAOBAO);
     }
 
     @Test

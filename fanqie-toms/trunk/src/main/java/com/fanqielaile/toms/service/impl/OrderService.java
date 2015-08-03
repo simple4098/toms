@@ -324,4 +324,43 @@ public class OrderService implements IOrderService {
         businLogClient.save(businLog);*/
         return result;
     }
+
+    @Override
+    public Map<String, String> dealPayBackMethod(String xmlStr, ChannelSource taobao) throws Exception {
+        Map<String, String> result = new HashMap<>();
+        String orderId = XmlDeal.getOrder(xmlStr).getId();
+        Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, taobao);
+        if (null == order) {
+            result.put("status", "-400");
+            result.put("message", "没有此订单！");
+            return result;
+        }
+        //调用oms取消订单接口
+        // 查询调用的url
+        Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
+        if (null != dictionary) {
+            //发送请求
+            String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
+            JSONObject jsonObject = JSONObject.fromObject(respose);
+            logger.info("oms取消订单返回值=>" + jsonObject.toString());
+            if (!jsonObject.get("status").equals(200)) {
+                result.put("status", "-400");
+                result.put("message", "同步OMS失败！");
+                return result;
+            } else {
+                //同步成功后在修改数据库
+                order.setOrderStatus(OrderStatus.REFUSE);
+                order.setReason("买家申请退款");
+                this.orderDao.updateOrderStatusAndReason(order);
+                result.put("status", "0");
+                result.put("message", "success");
+                return result;
+            }
+        } else {
+            result.put("status", "-400");
+            result.put("message", "处理失败");
+        }
+        return result;
+    }
+
 }
