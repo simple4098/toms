@@ -63,4 +63,13 @@ public interface IOrderService {
      * @return
      */
     Map<String, String> findOrderStatus(String xmlStr, ChannelSource channelSource) throws Exception;
+
+    /**
+     * 退款成功回调
+     *
+     * @param xmlStr
+     * @param taobao
+     * @return
+     */
+    Map<String, String> dealPayBackMethod(String xmlStr, ChannelSource taobao) throws Exception;
 }
