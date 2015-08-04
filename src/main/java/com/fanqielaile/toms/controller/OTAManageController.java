@@ -93,7 +93,7 @@ public class OTAManageController extends BaseController {
                         if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
                             result.setStatus(orderStatus.get("status"));
                         }
-                    } else if (rootElementString.equals(OrderMethod.QueryRefundRQ.name())) {
+                    } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
                         Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
                         result.setMessage(map.get("message"));
                         result.setResultCode(map.get("status"));
