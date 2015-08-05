@@ -77,6 +77,7 @@ public class TBXHotelUtil {
         }
         req.setAddress(innDto.getAddr());
         XhotelAddResponse response = client.execute(req , company.getSessionKey());
+        log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());
         //存在
         if (Constants.HOTEL_EXIST.equals(response.getSubCode())) {
             return   hotelUpdate(company,innDto,andArea);
@@ -131,6 +132,7 @@ public class TBXHotelUtil {
         //服务设施
         req.setService(TPServiceUtil.jsonService(facilitiesMap));
             XhotelRoomtypeAddResponse response = client.execute(req , company.getSessionKey());
+            log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());
             if (Constants.ROOM_TYPE_EXIST.equals(response.getSubCode())) {
                 return  updateRoomType(company, roomTypeInfo);
             }
@@ -334,6 +336,7 @@ public class TBXHotelUtil {
         req.setCancelPolicy("{\"cancelPolicyType\":2}");
         req.setStatus(1L);
         XhotelRateplanAddResponse response = client.execute(req , company.getSessionKey());
+        log.info("ratePlanAdd:"+response.getBody());
         if (!StringUtils.isEmpty(response.getSubCode())){
                 return ratePlanUpdate(company, r);
         }
@@ -410,6 +413,7 @@ public class TBXHotelUtil {
             log.info("rateAddOrUpdate InventoryPrice:" + json);
         }
         XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
+        log.info("rateAddOrUpdate:" + response.getBody());
         if (Constants.RATE_REPEAT_ERROR.equals(response.getSubCode())){
            return rateUpdate(company,gid,rpid,roomTypeInfo,priceModelDto,sj);
         }
