@@ -154,4 +154,6 @@ public interface BangInnDao {
     void updateBangInnTp(BangInn bangInn);
 
     void deleteBangInnByCompanyId(@Param("companyId")String companyId);
+
+    BangInn selectBangInnByCompanyIdAndAccountId(@Param("companyId")String companyId, @Param("accountId")Integer accountId);
 }
