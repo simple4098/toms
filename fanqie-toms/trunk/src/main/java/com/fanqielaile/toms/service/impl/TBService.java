@@ -306,14 +306,20 @@ public class TBService implements ITPService {
     @Override
     public void updateHotelRoom(OtaInfoDto o, List<PushRoom> pushRoomList) throws Exception {
         for (PushRoom pushRoom: pushRoomList){
+            //查询客栈是否是上架状态
+            BangInn bangInn =  bangInnDao.selectBangInnByCompanyIdAndAccountId(o.getCompanyId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
             OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
-            if (good!=null){
-                OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
-                log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
-            } else {
-                log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
+            if ( bangInn!=null){
+                if (good!=null){
+                    OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
+                    log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
+                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
+                } else {
+                    log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
+                }
+            }else {
+                log.info("此客栈已经下架AccountId:"+ pushRoom.getRoomType().getAccountId());
             }
         }
     }
