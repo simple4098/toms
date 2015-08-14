@@ -417,7 +417,7 @@ public class Order extends Domain {
     public static CancelOrderParamDto toCancelOrderParam(Order order, Dictionary dictionary) {
         CancelOrderParamDto cancelOrderParamDto = new CancelOrderParamDto();
         cancelOrderParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
-        cancelOrderParamDto.setOtaOrderNo(order.getId());
+        cancelOrderParamDto.setOtaOrderNo(order.getOrderCode());
         cancelOrderParamDto.setPaidAmount(order.getTotalPrice());
         cancelOrderParamDto.setvName(dictionary.getvName());
         cancelOrderParamDto.setvPWD(dictionary.getvPWD());
