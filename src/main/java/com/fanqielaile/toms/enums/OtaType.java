@@ -24,6 +24,11 @@ public enum OtaType {
         public ITPService create() {
             return (MTService)SpringContextUtil.getBean("mtService");
         }
+    },FC{
+        @Override
+        public ITPService create() {
+            return (MTService)SpringContextUtil.getBean("fcService");
+        }
     };
     public abstract ITPService create();
 }

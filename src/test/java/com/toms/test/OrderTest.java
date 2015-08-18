@@ -2,14 +2,13 @@ package com.toms.test;
 
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dao.OrderDao;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.Order;
-import com.fanqielaile.toms.model.OtaInfo;
-import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
-import org.junit.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,10 +37,10 @@ public class OrderTest {
     }
 
     @Test
-    @Ignore
+
     public void testCancelOrder() throws Exception {
 //        String xml = "<CancelRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>cdb7b8bf-277c-4d83-bca9-203a9f675cc3</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></CancelRQ>";
-        String xml = "<QueryRefundRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>8e749073-0538-4ec0-98ab-10992f9f53f6</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></QueryRefundRQ>";
+        String xml = "<QueryRefundRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>20150814-5</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></QueryRefundRQ>";
         this.orderService.dealPayBackMethod(xml, ChannelSource.TAOBAO);
     }
 
@@ -67,7 +66,7 @@ public class OrderTest {
     @Ignore
     public void testUpdateOrder() throws Exception {
         Order order = this.orderDao.selectOrderByIdAndChannelSource("d959bcfe-f10f-42a5-aa2c-6f5dcb02ca6e", ChannelSource.TAOBAO);
-        OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());
         String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
         System.out.println(result.toString());
     }

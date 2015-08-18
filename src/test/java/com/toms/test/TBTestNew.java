@@ -70,7 +70,7 @@ public class TBTestNew {
     @Test
 
     public void test() throws Exception {
-        OtaInfo otaInfo = new OtaInfo();
+        OtaInfoRefDto otaInfo = new OtaInfoRefDto();
        /* otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
         otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");*/
@@ -78,10 +78,10 @@ public class TBTestNew {
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
         //String innId = "7060";
-        String innId = "22634";
+        String innId = "39691";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "1000863";
+        String accountId = "24166";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -89,7 +89,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("1000863");
+        price1.setAccountId("24166");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -103,7 +103,7 @@ public class TBTestNew {
         tbParam.setDeleted(deleted);
         tbParam.setPriceModelArray(priceModelArray);
         Company company = companyDao.selectCompanyByCompanyCode(companyCode);
-        String roomTypeUrl = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),accountId, CommonApi.ROOM_TYPE);
+        String roomTypeUrl = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), accountId, CommonApi.ROOM_TYPE);
         String innInfoUrl = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), accountId, CommonApi.INN_INFO);
         String s = String.valueOf(new Date().getTime());
         String signature = DcUtil.obtMd5("903" + s + "TB" + "tb");
@@ -113,8 +113,8 @@ public class TBTestNew {
         //String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-09-21"+"&signature="+signature;
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
         String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-28&to=2015-08-27"+"&signature="+signature;
-        String httpGets1 = HttpClientUtil.httpGets(inn_info, null);
-        String httpGets = HttpClientUtil.httpGets(room_type, null);
+        String httpGets1 = HttpClientUtil.httpGets(innInfoUrl, null);
+        String httpGets = HttpClientUtil.httpGets(roomTypeUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         JSONObject jsonInn = JSONObject.fromObject(httpGets1);
         XHotel xHotel = null;
@@ -244,9 +244,9 @@ public class TBTestNew {
 
 
     @Test
-    @Ignore
+
     public void  test4() throws IOException {
-        OtaInfoDto o = new OtaInfoDto();
+        OtaInfoRefDto o = new OtaInfoRefDto();
         o.setCompanyCode("11111111");
         TBParam tbParam = new TBParam();
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
@@ -306,7 +306,7 @@ public class TBTestNew {
 
     @Test
     public void test5() throws Exception {
-        OtaInfo otaInfo = new OtaInfo();
+        OtaInfoRefDto otaInfo = new OtaInfoRefDto();
         otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");

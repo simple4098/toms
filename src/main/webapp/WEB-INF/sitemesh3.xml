@@ -8,6 +8,7 @@
     <mapping path="/notice/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/user/update_password" exclude="true"/>
     <mapping path="/inn_manage/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/distribution/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <!--调用数据中心接口页面-->
     <mapping path="/operate/*" decorator="/WEB-INF/decorators/main-dc.jsp"/>
     <mapping path="/oms/obtRoomType" decorator="/WEB-INF/decorators/main-room-type.jsp"/>

@@ -1,8 +1,7 @@
 package com.fanqielaile.toms.service;
 
-import com.fanqielaile.toms.dto.OtaInfoDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.enums.OtaType;
-import com.fanqielaile.toms.model.OtaInfo;
 
 import java.util.List;
 
@@ -14,9 +13,14 @@ import java.util.List;
  */
 public interface IOtaInfoService {
 
-    List<OtaInfo> findAllOtaByCompany(String companyCode);
+    List<OtaInfoRefDto> findAllOtaByCompany(String companyCode);
 
-    OtaInfo findAllOtaByCompanyAndType(String companyCode,OtaType otaType);
+    OtaInfoRefDto findAllOtaByCompanyAndType(String companyCode,OtaType otaType);
 
-    List<OtaInfoDto> findOtaInfoList();
+    List<OtaInfoRefDto> findOtaInfoList();
+    //渠道列表（没有开通的渠道也要显示出来）
+    List<OtaInfoRefDto> findOtaInfoListByCompanyId(String companyId);
+
+    //企业开通渠道
+    void saveOtaInfo(OtaInfoRefDto otaInfoRefDto)throws Exception;
 }

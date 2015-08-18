@@ -1,12 +1,11 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.OtaInfoDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
-import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +37,9 @@ public class RouterRestController {
         Result result = new Result();
         try {
             pushRoomList = XmlDeal.getPushRoom(pushXml);
-            List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
+            List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
             ITPService service = null;
-            for (OtaInfoDto o:infoDtoList){
+            for (OtaInfoRefDto o:infoDtoList){
                 service = o.getOtaType().create();
                 service.updateHotelRoom(o, pushRoomList);
             }
