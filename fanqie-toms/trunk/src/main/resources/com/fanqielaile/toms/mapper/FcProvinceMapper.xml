@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IFcProvinceDao" >
+       <resultMap id="mapId" type="com.fanqielaile.toms.model.fc.FcProvince">
+              <id column="id" property="id" />
+              <result column="province_name" property="provinceName"/>
+              <result column="province_code" property="provinceCode"/>
+       </resultMap>
+
+       <insert id="saveFcProvince" parameterType="com.fanqielaile.toms.model.fc.FcProvince">
+          insert into fc_province(id,province_code,province_name) values (#{uuid},#{provinceCode},#{provinceName})
+       </insert>
+</mapper>

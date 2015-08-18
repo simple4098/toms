@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IFcAreaDao" >
+       <resultMap id="FcAreaId" type="com.fanqielaile.toms.model.fc.FcArea">
+              <id column="id" property="id" />
+              <result column="city_code" property="cityCode"/>
+              <result column="area_name" property="areaName"/>
+              <result column="area_code" property="areaCode"/>
+       </resultMap>
+
+       <insert id="saveFcArea" parameterType="com.fanqielaile.toms.model.fc.FcArea">
+          insert into fc_area(id,city_code,area_name,area_code) values (#{uuid},#{cityCode},#{areaName},#{areaCode})
+       </insert>
+</mapper>
