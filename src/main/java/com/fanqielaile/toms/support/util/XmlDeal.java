@@ -3,6 +3,9 @@ package com.fanqielaile.toms.support.util;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.model.fc.FcArea;
+import com.fanqielaile.toms.model.fc.FcCity;
+import com.fanqielaile.toms.model.fc.FcProvince;
 import com.fanqielaile.toms.model.Order;
 import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Document;
@@ -109,4 +112,46 @@ public class XmlDeal {
         return pushRoomList;
     }
 
+    public static List<FcCity> pareFcCity(String xml)throws Exception{
+        List<FcCity> list = new ArrayList<FcCity>();
+        Element element = dealXmlStr(xml);
+        List<Element> elements = element.elements("City");
+        FcCity fcCity = null;
+        for (Element el:elements){
+            fcCity = new FcCity();
+            fcCity.setCityCode(el.elementText("CityCode"));
+            fcCity.setCityName(el.elementText("CityName"));
+            fcCity.setProvinceCode(el.elementText("ProvinceCode"));
+            list.add(fcCity);
+        }
+        return list;
+    }
+    public static List<FcProvince> pareFcProvince(String xml)throws Exception{
+        List<FcProvince> list = new ArrayList<FcProvince>();
+        Element element = dealXmlStr(xml);
+        List<Element> elements = element.elements("Province");
+        FcProvince fcProvince = null;
+        for (Element el:elements){
+            fcProvince = new FcProvince();
+            fcProvince.setProvinceName(el.elementText("ProvinceName"));
+            fcProvince.setProvinceCode(el.elementText("ProvinceCode"));
+            list.add(fcProvince);
+        }
+        return list;
+    }
+
+    public static List<FcArea> pareFcArea(String xml)throws Exception{
+        List<FcArea> list = new ArrayList<FcArea>();
+        Element element = dealXmlStr(xml);
+        List<Element> elements = element.elements("District");
+        FcArea fcArea = null;
+        for (Element el:elements){
+            fcArea = new FcArea();
+            fcArea.setCityCode(el.elementText("CityCode"));
+            fcArea.setAreaName(el.elementText("DistrictName"));
+            fcArea.setAreaCode(el.elementText("DistrictCode"));
+            list.add(fcArea);
+        }
+        return list;
+    }
 }
