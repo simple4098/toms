@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.service.impl;
+package com.toms.test;
 
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
@@ -17,7 +17,10 @@ import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
+import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
+import com.taobao.api.domain.XRoom;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -89,9 +92,9 @@ public class TBService implements ITPService {
             if (!StringUtils.isEmpty(omsInnDto.getCity())){
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
-           /* if (!StringUtils.isEmpty(omsInnDto.getCounty())){
+            if (!StringUtils.isEmpty(omsInnDto.getCounty())){
                 andArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
-            }*/
+            }
             //推客栈、如果存在再获取客栈
             //xHotel = TBXHotelUtil.hotelAdd(otaInfo, omsInnDto, andArea);
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
@@ -264,7 +267,7 @@ public class TBService implements ITPService {
             PriceModel priceModel = null;
             for (ProxyInns proxyInns:list){
                 log.info("客栈id:"+proxyInns.getInnId());
-                //if (proxyInns.getInnId().equals(4905) || proxyInns.getInnId().equals(14284)){
+                if (proxyInns.getInnId().equals(3957) || proxyInns.getInnId().equals(3957)){
                 //if (proxyInns.getInnId().equals(26042) ){
                     stringBuilder = new StringBuilder();
                     pricePatterns = proxyInns.getPricePatterns();
@@ -297,29 +300,77 @@ public class TBService implements ITPService {
                         continue;
                     }
                     //更新酒店
-                    updateOrAddHotel(tbParam, o);
-               //}
+                   // updateOrAddHotel(tbParam, o);
+                    updateTimerHotel(company,tbParam, o);
+               }
             }
+        }
+    }
+
+    private void updateTimerHotel( Company company,TBParam tbParam, OtaInfoRefDto otaInfo)throws Exception{
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.INN_INFO);
+        String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
+        JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
+        //客栈
+        if (Constants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
+            InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+            omsInnDto.setInnId(tbParam.getInnId());
+            //推客栈、如果存在再获取客栈
+            XHotel xHotel = TBXHotelUtil.hotelGet(otaInfo, tbParam.getInnId());
+            if (xHotel!=null) {
+                OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId());
+                BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+                if (otaInnOta!=null && bangInn!=null){
+                    BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
+                    bangInnDao.updateBangInnTp(bangInn);
+                }
+            }else {
+                throw  new TomsRuntimeException(" 推送淘宝客栈失败!");
+            }
+        }else {
+            throw new TomsRuntimeException("无客栈信息!");
+        }
+        updateTimerRoom(company,tbParam,otaInfo);
+    }
+
+    private void updateTimerRoom(Company company,TBParam tbParam,OtaInfoRefDto otaInfo)throws Exception{
+        //添加更新宝贝
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        //房型
+        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+            List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+            XRoom xRoom = null;
+            Rate rate = null;
+            for (RoomTypeInfo r:list){
+                xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), otaInfo);
+                rate = TBXHotelUtil.rateGet(otaInfo, r);
+                if (xRoom!=null && rate!=null ){
+                    xRoom.setInventory(TomsUtil.obtInventory(r));
+                    TBXHotelUtil.roomUpdate(otaInfo,xRoom);
+                    rate.setInventoryPrice(TomsUtil.obtInventoryRate(r,new OtaPriceModelDto()));
+                    TBXHotelUtil.rateUpdate(otaInfo, r, rate);
+                }
+            }
+        }else {
+            throw new TomsRuntimeException("无房型信息!");
         }
     }
 
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
         for (PushRoom pushRoom: pushRoomList){
-            //查询客栈是否是上架状态
-            BangInn bangInn =  bangInnDao.selectBangInnByCompanyIdAndAccountId(o.getCompanyId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
             OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
-            if ( bangInn!=null){
-                if (good!=null){
-                    OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
-                    log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
-                } else {
-                    log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
-                }
-            }else {
-                log.info("此客栈已经下架AccountId:"+ pushRoom.getRoomType().getAccountId());
+            if (good!=null){
+                OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
+                log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
+                TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
+            } else {
+                log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
             }
         }
     }

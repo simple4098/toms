@@ -15,9 +15,19 @@ public class OtaInfo extends Domain {
     private String otaInfo;
     private String companyId;
     private OtaType otaType;
-    private String appKey;
+  /*  private String appKey;
     private String appSecret;
-    private String sessionKey;
+    private String sessionKey;*/
+    //排序
+    private int sort;
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
 
     public String getCompanyId() {
         return companyId;
@@ -43,27 +53,5 @@ public class OtaInfo extends Domain {
         this.otaType = otaType;
     }
 
-    public String getAppKey() {
-        return appKey;
-    }
 
-    public void setAppKey(String appKey) {
-        this.appKey = appKey;
-    }
-
-    public String getAppSecret() {
-        return appSecret;
-    }
-
-    public void setAppSecret(String appSecret) {
-        this.appSecret = appSecret;
-    }
-
-    public String getSessionKey() {
-        return sessionKey;
-    }
-
-    public void setSessionKey(String sessionKey) {
-        this.sessionKey = sessionKey;
-    }
 }

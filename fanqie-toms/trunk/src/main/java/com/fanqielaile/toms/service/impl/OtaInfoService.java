@@ -1,10 +1,10 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqielaile.toms.dao.IOtaInfoDao;
-import com.fanqielaile.toms.dto.OtaInfoDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.enums.OtaType;
-import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.IOtaInfoService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,17 +22,32 @@ public class OtaInfoService implements IOtaInfoService {
     private IOtaInfoDao otaInfoDao;
 
     @Override
-    public List<OtaInfo> findAllOtaByCompany(String companyCode) {
+    public List<OtaInfoRefDto> findAllOtaByCompany(String companyCode) {
         return otaInfoDao.selectAllOtaByCompany(companyCode);
     }
 
     @Override
-    public OtaInfo findAllOtaByCompanyAndType(String companyId, OtaType otaType) {
+    public OtaInfoRefDto findAllOtaByCompanyAndType(String companyId, OtaType otaType) {
         return otaInfoDao.selectAllOtaByCompanyAndType(companyId,otaType.name());
     }
 
     @Override
-    public List<OtaInfoDto> findOtaInfoList() {
+    public List<OtaInfoRefDto> findOtaInfoList() {
         return otaInfoDao.selectOtaInfoList();
+    }
+
+    @Override
+    public List<OtaInfoRefDto> findOtaInfoListByCompanyId(String companyId) {
+        return otaInfoDao.selectOtaInfoListByCompanyId(companyId);
+    }
+
+    @Override
+    public void saveOtaInfo(OtaInfoRefDto otaInfoRefDto)throws Exception{
+        OtaInfoRefDto otaInfo = otaInfoDao.findOtaInfoByOtaIdAndCompanyId(otaInfoRefDto);
+        if (otaInfo==null){
+            otaInfoDao.saveOtaInfo(otaInfoRefDto);
+        }else {
+            throw new  TomsRuntimeException("此渠道已经开通了!");
+        }
     }
 }

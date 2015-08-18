@@ -228,7 +228,7 @@ public class OrderService implements IOrderService {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
                 Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                 logger.info("淘宝取消订单接口返回值=>" + result);
                 if (null != result && result.equals("success")) {
@@ -241,7 +241,7 @@ public class OrderService implements IOrderService {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
                 Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                 logger.info("淘宝取消订单接口返回值=>" + result);
                 if (null != result && result.equals("success")) {
@@ -251,7 +251,7 @@ public class OrderService implements IOrderService {
             } else {
                 //更新淘宝订单状态
                 Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfo otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
                 logger.info("淘宝更新订单返回值=>" + result);
                 if (null != result && result.equals("success")) {

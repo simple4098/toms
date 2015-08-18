@@ -3,14 +3,12 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.OtaInfoDto;
-import com.fanqielaile.toms.model.OtaInfo;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +50,10 @@ public class APIController extends BaseController {
             jsonModel.setSuccess(false);
             return jsonModel;
         }
-        List<OtaInfo> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
+        List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
         try {
             ITPService service = null;
-            for (OtaInfo o:list){
+            for (OtaInfoRefDto o:list){
                 service = o.getOtaType().create();
                 service.updateOrAddHotel(tbParam,o);
             }
@@ -80,10 +78,10 @@ public class APIController extends BaseController {
             jsonModel.setSuccess(false);
             return jsonModel;
         }
-        List<OtaInfo> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
+        List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
         try {
             ITPService service = null;
-            for (OtaInfo o:list){
+            for (OtaInfoRefDto o:list){
                 service = o.getOtaType().create();
                 service.deleteHotel(tbParam,o);
             }
@@ -105,10 +103,10 @@ public class APIController extends BaseController {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                List<OtaInfoDto> infoDtoList = otaInfoService.findOtaInfoList();
+                List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
                 try {
                     ITPService service = null;
-                    for (OtaInfoDto o:infoDtoList){
+                    for (OtaInfoRefDto o:infoDtoList){
                         service = o.getOtaType().create();
                         service.updateHotel(o ,tbParam);
                     }
