@@ -4,6 +4,7 @@ import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.JacksonUtil;
+import com.fanqielaile.toms.dto.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,5 +36,35 @@ public class TomsUtil {
             return JacksonUtil.obj2json(param);
         }
         return "";
+    }
+
+    //日期库存json字符串
+    public static String obtInventory(RoomTypeInfo roomTypeInfo){
+        Inventory inventory =null;
+        List<Inventory> inventoryList = new ArrayList<Inventory>();
+        for (RoomDetail roomDetail:roomTypeInfo.getRoomDetail()){
+            inventory = new Inventory();
+            inventory.setDate(roomDetail.getRoomDate());
+            inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
+            inventoryList.add(inventory);
+        }
+        return JacksonUtil.obj2json(inventoryList);
+    }
+
+    public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto){
+        List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
+        InventoryPrice inventoryPrice = new InventoryPrice();
+        InventoryRate inventoryRate = null;
+        double price = 0;
+        for (RoomDetail detail : r.getRoomDetail()) {
+            inventoryRate = new InventoryRate();
+            inventoryRate.setDate(detail.getRoomDate());
+            price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+            //tp店价格为分，我们自己系统价格是元
+            inventoryRate.setPrice(price * 100);
+            inventoryRateList.add(inventoryRate);
+        }
+        inventoryPrice.setInventory_price(inventoryRateList);
+        return  JacksonUtil.obj2json(inventoryPrice);
     }
 }
