@@ -6,7 +6,6 @@
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
-<html>
 <head>
     <title>客栈接单设置</title>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
@@ -14,7 +13,6 @@
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
     <link rel="stylesheet" href="<%=basePath%>/assets/css/pages.css"/>
 </head>
-<body>
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
     <div class="row">
@@ -134,34 +132,29 @@
         </c:if>
     </div>
     <!-- /.col -->
-
 </div>
 <!-- /.row -->
-<script type="text/javascript">
-
-   $('.order-config-detail').on('click',function(){
-       var url = $(this).attr('data-url');
-       $.ajax({
-           type:'POST',
-           url:url,
-           dataType:'html',
-           success:function(data){
-               alert(data);
-               layer.open({
-                   title:"接单设置",
-                   type: 1,
-                   shift: 1,
-                   area: ['516px', '400px'],
-                   shadeClose: true, //开启遮罩关闭
-                   content: data
-               });
-           },error:function(data){
-               alert(data);
-           }
-       })
-
-   })
-
+<script>
+    $('.order-config-detail').on('click', function () {
+        var url = $(this).attr('data-url');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            dataType: 'html',
+            success: function (data) {
+                layer.open({
+                    title: "接单设置",
+                    type: 1,
+                    shift: 1,
+                    area: ['516px', '400px'],
+                    shadeClose: true, //开启遮罩关闭
+                    content: data
+                });
+            }, error: function (data) {
+                alert(data);
+            }
+        })
+    });
     $('.inn-label').on('change', function () {
         $("#pageId").attr("value", 1);
         $('.form-page').submit();
@@ -175,6 +168,6 @@
         $("#pageId").attr("value", page);
         $('.form-page').submit();
     }
+    ;
 </script>
-</body>
-</html>
+

@@ -37,7 +37,6 @@
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
 <script src="<%=basePath%>/assets/layer/layer.js"></script>
 <script>
-    $(function(){
         $("#userPlusBtn").on("click",function(){
             var data = $("#form-order-configId").serialize();
             var url = $("#urlId").val();
@@ -63,5 +62,4 @@
                 }
             })
         })
-    })
 </script>
