@@ -135,4 +135,6 @@ public interface IBangInnService {
      * @return
      */
     InnDto selectBangInnImage(BangInnDto bangInnDto) throws IOException;
+
+    BangInnDto findBangInnByInnIdCompanyId(Integer innId,String companyId);
 }

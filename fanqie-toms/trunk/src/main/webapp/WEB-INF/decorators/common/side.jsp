@@ -107,7 +107,8 @@
                     </ul>
                 </li>
                 <li data-name="li-parent-3" <c:if test="${fn:contains(url, '/distribution/otaList')}">class="open active" </c:if>
-                    <c:if test="${fn:contains(url, '/distribution/orderConfig')}">class="open active" </c:if>>
+                    <c:if test="${fn:contains(url, '/distribution/orderConfig')}">class="open active" </c:if>
+                    <c:if test="${fn:contains(url, '/distribution/fangPrice')}">class="open active" </c:if>>
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
                         <span class="menu-text"> 分销管理 </span>
@@ -119,6 +120,14 @@
                                 <a href="<c:url value="/distribution/otaList"/>">
                                     <i class="icon-double-angle-right"></i>
                                     开通渠道
+                                </a>
+                            </li>
+                        </toms:authorize>
+                        <toms:authorize uri="/distribution/fangPrice">
+                            <li <c:if test="${fn:contains(url, '/distribution/fangPrice')}">class="active"</c:if> >
+                                <a href="<c:url value="/distribution/fangPrice"/>">
+                                    <i class="icon-double-angle-right"></i>
+                                    房价管理
                                 </a>
                             </li>
                         </toms:authorize>

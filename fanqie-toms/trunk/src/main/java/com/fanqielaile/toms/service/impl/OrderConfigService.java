@@ -8,6 +8,7 @@ import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.model.OrderConfig;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderConfigService;
+import com.fanqielaile.toms.support.util.Constants;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +41,9 @@ public class OrderConfigService implements IOrderConfigService {
                 configDto.setOtaInfoId(infoRefDto.getOtaInfoId());
                 OrderConfigDto config = orderConfigDao.selectOrderConfigByOtaInfoId(configDto);
                 if (config!=null && 1==config.getStatus()){
-                    value.add("手动");
+                    value.add(Constants.SD);
                 }else {
-                    value.add("自动");
+                    value.add(Constants.ZD);
                 }
             }
             configDto.setValue(value);
@@ -76,7 +77,10 @@ public class OrderConfigService implements IOrderConfigService {
          }
     }
 
-
+    @Override
+    public List<OrderConfigDto> findFangPriceConfigByCompanyId(List<OtaInfoRefDto> list,  UserInfo currentUser, PageBounds pageBounds) {
+        return  bangInnDao.selectBangInnList(currentUser, pageBounds);
+    }
 
 
 }
