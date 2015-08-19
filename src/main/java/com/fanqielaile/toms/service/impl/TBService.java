@@ -89,9 +89,6 @@ public class TBService implements ITPService {
             if (!StringUtils.isEmpty(omsInnDto.getCity())){
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
-           /* if (!StringUtils.isEmpty(omsInnDto.getCounty())){
-                andArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
-            }*/
             //推客栈、如果存在再获取客栈
             //xHotel = TBXHotelUtil.hotelAdd(otaInfo, omsInnDto, andArea);
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);

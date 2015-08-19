@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.OrderConfigDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
@@ -62,6 +63,8 @@ public interface BangInnDao {
      * @return
      */
     List<BangInnDto> selectBangInnListByUserInfo(UserInfo userInfo, PageBounds pageBounds);
+
+    List<OrderConfigDto> selectBangInnList(UserInfo userInfo, PageBounds pageBounds);
 
     /**
      * 根据id查询绑定客栈
