@@ -137,23 +137,23 @@
 <script>
     $('.order-config-detail').on('click', function () {
         var url = $(this).attr('data-url');
-        $.ajax({
-            type: 'POST',
-            url: url,
-            dataType: 'html',
-            success: function (data) {
-                layer.open({
-                    title: "接单设置",
-                    type: 1,
-                    shift: 1,
-                    area: ['516px', '400px'],
-                    shadeClose: true, //开启遮罩关闭
-                    content: data
-                });
-            }, error: function (data) {
-                alert(data);
-            }
-        })
+         $.ajax({
+         type:'POST',
+         url:url,
+         dataType:'html',
+         success:function(data){
+         layer.open({
+         title:"接单设置",
+         type: 1,
+         shift: 1,
+         area: ['516px', '400px'],
+         shadeClose: true, //开启遮罩关闭
+         content: data
+         });
+         },error:function(data){
+         alert(data);
+         }
+         })
     });
     $('.inn-label').on('change', function () {
         $("#pageId").attr("value", 1);
@@ -167,7 +167,6 @@
     function page(page) {
         $("#pageId").attr("value", page);
         $('.form-page').submit();
-    }
-    ;
+    };
 </script>
 
