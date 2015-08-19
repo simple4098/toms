@@ -58,13 +58,25 @@ public class OrderConfigService implements IOrderConfigService {
         for (OtaInfoRefDto otaInfoRefDto:otaInfoRefDtoList){
             orderConfig = new OrderConfig(otaInfoRefDto.getOtaInfoId(),companyId,Integer.valueOf(innId));
             OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
-            if (orderConfigDto!=null){
+            if (orderConfigDto==null){
                 orderConfigDto = new OrderConfigDto(otaInfoRefDto.getOtaInfoId(),0,otaInfoRefDto.getOtaInfo());
+                orderConfigDto.setOtaType(otaInfoRefDto.getOtaType());
             }
             list.add(orderConfigDto);
         }
         return list;
     }
+
+    @Override
+    public void saveOrderConfig(List<OrderConfigDto> list,String innId, String companyId) throws Exception {
+         //删除之前的数据
+         orderConfigDao.deletedOrderConfigByInnIdAndCompanyId(Integer.valueOf(innId),companyId);
+         for (OrderConfigDto orderConfigDto:list){
+             orderConfigDao.saveOrderConfig(orderConfigDto);
+         }
+    }
+
+
 
 
 }

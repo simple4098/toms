@@ -56,6 +56,8 @@ public interface IBangInnService {
      */
     BangInnDto findBangInnById(String id);
 
+    BangInnDto findBangInnByInnIdCompanyId(String innId,String companyId);
+
     /**
      * 更新绑定的客栈
      *

@@ -106,6 +106,11 @@ public class BangInnService implements IBangInnService {
     }
 
     @Override
+    public BangInnDto findBangInnByInnIdCompanyId(String innId,String companyId) {
+        return bangInnDao.selectBangInnByInnIdCompanyId(Integer.valueOf(innId),companyId);
+    }
+
+    @Override
     public void modifiyBangInn(BangInnDto bangInnDto) {
         this.bangInnDao.updateBangInn(bangInnDto);
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IOrderConfigDao" >
+       <resultMap id="orderConfigId" type="com.fanqielaile.toms.dto.OrderConfigDto">
+              <id column="id" property="id" />
+              <result column="inn_id" property="innId"/>
+              <result column="ota_info_id" property="otaInfoId"/>
+              <result column="company_id" property="companyId"/>
+              <result column="status" property="status"/>
+              <result column="ota_info" property="otaInfo"/>
+              <result column="ota_type" property="otaType"/>
+       </resultMap>
+
+      <select id="selectOrderConfig" parameterType="com.fanqielaile.toms.model.OrderConfig" resultMap="orderConfigId">
+             SELECT o.* from order_config o
+             INNER JOIN otainfo_company_ref ocf ON ocf.ota_info_id=o.ota_info_id and ocf.company_id = o.company_id
+             LEFT JOIN ota_info oi ON oi.id = ocf.ota_info_id
+             where oi.deleted=0 and ocf.status=1 and o.company_id='${companyId}' and o.inn_id=#{innId}
+             ORDER BY oi.sort desc
+      </select>
+
+       <select id="selectOrderConfigByOtaInfoId" parameterType="com.fanqielaile.toms.model.OrderConfig" resultMap="orderConfigId">
+             SELECT o.*,oi.ota_info,oi.ota_type from order_config o
+             INNER JOIN otainfo_company_ref ocf ON ocf.ota_info_id=o.ota_info_id and ocf.company_id = o.company_id
+             LEFT JOIN ota_info oi ON oi.id = ocf.ota_info_id
+             where oi.deleted=0 and ocf.status=1 and o.company_id='${companyId}' and o.inn_id=#{innId} and o.ota_info_id='${otaInfoId}'
+             ORDER BY oi.sort desc
+      </select>
+
+      <insert id="saveOrderConfig" parameterType="com.fanqielaile.toms.dto.OrderConfigDto">
+            insert into order_config(id,inn_id,company_id,status,ota_info_id,modifier_id,deleted,updated_date)
+            values (#{uuid},#{innId},#{companyId},#{status},#{otaInfoId},#{modifierId},0,now())
+      </insert>
+      <delete id="deletedOrderConfigByInnIdAndCompanyId"  >
+          DELETE from order_config where inn_id=#{innId} and company_id='${companyId}'
+      </delete>
+
+</mapper>

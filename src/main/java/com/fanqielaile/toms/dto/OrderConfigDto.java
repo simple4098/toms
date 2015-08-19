@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dto;
 
+import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.OrderConfig;
 
 import java.util.List;
@@ -19,6 +20,18 @@ public class OrderConfigDto extends OrderConfig {
     private List<String>  value;
     //渠道名称
     private String otaInfo;
+    private OtaType otaType;
+
+    public OtaType getOtaType() {
+        return otaType;
+    }
+
+    public void setOtaType(OtaType otaType) {
+        this.otaType = otaType;
+    }
+
+    public OrderConfigDto() {
+    }
 
     public OrderConfigDto(String otaInfoId,int status, String otaInfo) {
         super.setStatus(status);
