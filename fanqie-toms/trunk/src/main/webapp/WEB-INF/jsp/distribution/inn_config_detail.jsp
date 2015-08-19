@@ -8,11 +8,14 @@
 <link rel="stylesheet" href="<%=basePath%>/assets/css/font-awesome.min.css"/>
 <link rel="stylesheet" href="<%=basePath%>/assets/css/ace.min.css"/>
 <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
+<style>
+    .rosybrown-order{color: #AB5D00}
+</style>
 
 
 <div class="modal-content">
-    <div class="table-header" style="background-color:gainsboro;text-align: center">
-             ${inn.innName}
+    <div class="table-header" style="background-color:beige;text-align: center">
+             <span class="rosybrown-order">${inn.innName}</span>
     </div>
     <div class="modal-body">
         <form id="form-order-configId"  method="post" role="form">
