@@ -172,7 +172,7 @@ public class InnManageController extends BaseController {
     public void checkCode(Model model, String code, String id) {
         BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);
         if (null != bangInnDto) {
-            if (bangInnDto.getCode().equals(code)) {
+            if (code.equals(bangInnDto.getCode())) {
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             } else {
                 BangInn bangInn = this.bangInnService.findBangInnByUserAndCode(getCurrentUser(), code);
