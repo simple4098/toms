@@ -17,4 +17,8 @@ public interface IOrderConfigDao {
     List<OrderConfig> selectOrderConfig(OrderConfig orderConfig);
 
     OrderConfigDto selectOrderConfigByOtaInfoId(OrderConfig orderConfig);
+
+    void saveOrderConfig(OrderConfigDto orderConfigDto);
+
+    void deletedOrderConfigByInnIdAndCompanyId(@Param("innId")Integer innId, @Param("companyId")String companyId);
 }

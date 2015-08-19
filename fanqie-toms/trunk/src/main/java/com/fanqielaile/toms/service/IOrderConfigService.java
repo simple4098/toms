@@ -20,4 +20,7 @@ public interface IOrderConfigService {
     List<OrderConfigDto> findOrderConfigByCompanyId( List<OtaInfoRefDto> list,UserInfo userInfo, PageBounds pageBounds );
 
     List<OrderConfigDto> findOrderConfigByCompanyIdAndInnId(String companyId, String innId);
+
+    void saveOrderConfig(List<OrderConfigDto> list,String innId, String companyId)throws Exception;
+
 }

@@ -11,17 +11,21 @@ import com.fanqielaile.toms.service.IOrderConfigService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -87,13 +91,32 @@ public class DistributionController extends BaseController{
         return "/distribution/order_inn_config_list";
     }
 
+    //客栈接单配置
     @RequestMapping("/ajax/orderConfigDetail")
     public String orderConfigDetail(Model model,String innId){
         UserInfo currentUser = getCurrentUser();
-        BangInnDto bangInnDto = bangInnService.findBangInnById(innId);
+        BangInnDto bangInnDto = bangInnService.findBangInnByInnIdCompanyId(innId,currentUser.getCompanyId());
         model.addAttribute("inn",bangInnDto);
         List<OrderConfigDto> list = orderConfigService.findOrderConfigByCompanyIdAndInnId(currentUser.getCompanyId(), innId);
         model.addAttribute("orderConfigList",list);
         return "/distribution/inn_config_detail";
     }
+    //保存客栈接单哦配置
+    @RequestMapping("/ajax/saveConfig")
+    public void saveConfig(Model model,String innId,String[] otaInfoId,HttpServletRequest request){
+        UserInfo currentUser = getCurrentUser();
+        List<OrderConfigDto> list = TomsUtil.orderConfig(innId, otaInfoId,currentUser, request);
+        try {
+            orderConfigService.saveOrderConfig(list,innId, currentUser.getCompanyId());
+            model.addAttribute(Constants.STATUS,Constants.SUCCESS);
+
+        } catch (Exception e) {
+            model.addAttribute(Constants.STATUS,Constants.ERROR);
+            log.error("收单设置异常"+e.getMessage());
+        }
+
+
+
+    }
+
 }

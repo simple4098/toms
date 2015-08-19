@@ -5,7 +5,9 @@ import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.model.UserInfo;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,5 +68,23 @@ public class TomsUtil {
         }
         inventoryPrice.setInventory_price(inventoryRateList);
         return  JacksonUtil.obj2json(inventoryPrice);
+    }
+
+    public static List<OrderConfigDto> orderConfig(String innId, String[] otaInfoIds, UserInfo currentUser,HttpServletRequest request) {
+        List<OrderConfigDto> list = new ArrayList<OrderConfigDto>();
+        if (otaInfoIds!=null){
+            OrderConfigDto orderConfigDto = null;
+            for (String otaInfoId:otaInfoIds){
+                orderConfigDto = new OrderConfigDto();
+                String status = request.getParameter(Constants.STATUS + otaInfoId);
+                orderConfigDto.setStatus(Integer.valueOf(status));
+                orderConfigDto.setInnId(Integer.valueOf(innId));
+                orderConfigDto.setOtaInfoId(otaInfoId);
+                orderConfigDto.setCompanyId(currentUser.getCompanyId());
+                orderConfigDto.setModifierId(currentUser.getId());
+                list.add(orderConfigDto);
+            }
+        }
+        return list;
     }
 }

@@ -74,6 +74,8 @@ public interface BangInnDao {
      */
     BangInnDto selectBangInnById(String Id);
 
+    BangInnDto selectBangInnByInnIdCompanyId(@Param("innId")Integer innId,@Param("companyId")String companyId);
+
     /**
      * 更新绑定客栈
      *
