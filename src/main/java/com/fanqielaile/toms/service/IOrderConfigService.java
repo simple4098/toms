@@ -16,11 +16,13 @@ import java.util.List;
  */
 public interface IOrderConfigService {
 
-
+    //收单设置-客栈列表
     List<OrderConfigDto> findOrderConfigByCompanyId( List<OtaInfoRefDto> list,UserInfo userInfo, PageBounds pageBounds );
 
     List<OrderConfigDto> findOrderConfigByCompanyIdAndInnId(String companyId, String innId);
 
     void saveOrderConfig(List<OrderConfigDto> list,String innId, String companyId)throws Exception;
 
+    //房价管理-客栈列表
+    List<OrderConfigDto> findFangPriceConfigByCompanyId(List<OtaInfoRefDto> list, UserInfo currentUser, PageBounds pageBounds);
 }

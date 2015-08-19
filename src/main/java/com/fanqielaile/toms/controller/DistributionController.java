@@ -3,12 +3,15 @@ package com.fanqielaile.toms.controller;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.OrderConfigDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.helper.PaginationHelper;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderConfigService;
 import com.fanqielaile.toms.service.IOtaInfoService;
+import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
@@ -46,6 +49,8 @@ public class DistributionController extends BaseController{
     private InnLabelService innLabelService;
     @Resource
     private IBangInnService bangInnService;
+    @Resource
+    private IOtaRoomPriceService otaRoomPriceService;
 
 
     //渠道列表
@@ -105,7 +110,7 @@ public class DistributionController extends BaseController{
     @RequestMapping("/ajax/saveConfig")
     public void saveConfig(Model model,String innId,String[] otaInfoId,HttpServletRequest request){
         UserInfo currentUser = getCurrentUser();
-        List<OrderConfigDto> list = TomsUtil.orderConfig(innId, otaInfoId,currentUser, request);
+        List<OrderConfigDto> list = TomsUtil.orderConfig(innId, otaInfoId, currentUser, request);
         try {
             orderConfigService.saveOrderConfig(list,innId, currentUser.getCompanyId());
             model.addAttribute(Constants.STATUS,Constants.SUCCESS);
@@ -114,9 +119,42 @@ public class DistributionController extends BaseController{
             model.addAttribute(Constants.STATUS,Constants.ERROR);
             log.error("收单设置异常"+e.getMessage());
         }
+    }
 
+    //房价管理-列表
+    @RequestMapping("/fangPrice")
+    public String fangPrice(Model model, String innLabelId, String keywords,@RequestParam(defaultValue = "1", required = false) int page){
+        UserInfo currentUser = getCurrentUser();
+        currentUser.setInnLabelId(innLabelId);
+        currentUser.setKeywords(keywords);
+        List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
+        List<OrderConfigDto> orderConfigDtoList = orderConfigService.findFangPriceConfigByCompanyId(list,currentUser, new PageBounds(page, defaultRows));
+        List<InnLabel> innLabels = innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
+        model.addAttribute("labels", innLabels);
+        //分页对象
+        Paginator paginator = ((PageList) orderConfigDtoList).getPaginator();
+        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        //保存查询条件
+        model.addAttribute("innLabel", innLabelId);
+        model.addAttribute("keywords", keywords);
+        model.addAttribute("orderConfigDtoList",orderConfigDtoList);
+        model.addAttribute("otaList", list);
+        return "/distribution/fang_price";
+    }
 
-
+    //房价管理-房价设置
+    @RequestMapping("/fangPriceDetail")
+    public String fangPriceDetail(Model model, String innId, String otaInfoId){
+        UserInfo currentUser = getCurrentUser();
+        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), Integer.valueOf(innId));
+        try {
+            List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn, currentUser.getCompanyId());
+            model.addAttribute("list",list);
+            model.addAttribute("otaInfoId",otaInfoId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "/distribution/fang_price_detail";
     }
 
 }

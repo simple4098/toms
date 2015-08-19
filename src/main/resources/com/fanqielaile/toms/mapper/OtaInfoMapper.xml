@@ -53,8 +53,8 @@
 
        <select id="selectOtaInfoListByCompanyId" parameterType="java.lang.String" resultMap="otaInfoRefId">
           SELECT oi.ota_info,oi.ota_type ,oi.sort,o.* from ota_info oi
-          LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id and o.company_id='${companyId}'
-          where oi.deleted=0 ORDER BY oi.sort
+          LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id
+          where oi.deleted=0  and  o.company_id='${companyId}' ORDER BY oi.sort
        </select>
 
     <insert id="saveOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto">

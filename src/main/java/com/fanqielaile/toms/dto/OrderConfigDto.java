@@ -16,7 +16,7 @@ public class OrderConfigDto extends OrderConfig {
 
     private String innName;
     private String labelName;
-    private List<OrderConfig>  orderConfigList;
+
     private List<String>  value;
     //渠道名称
     private String otaInfo;
@@ -39,13 +39,7 @@ public class OrderConfigDto extends OrderConfig {
         this.otaInfo = otaInfo;
     }
 
-    public List<OrderConfig> getOrderConfigList() {
-        return orderConfigList;
-    }
 
-    public void setOrderConfigList(List<OrderConfig> orderConfigList) {
-        this.orderConfigList = orderConfigList;
-    }
 
     public String getInnName() {
         return innName;

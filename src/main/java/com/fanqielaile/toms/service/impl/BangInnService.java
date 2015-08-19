@@ -219,4 +219,9 @@ public class BangInnService implements IBangInnService {
         }
         return null;
     }
+
+    @Override
+    public BangInnDto findBangInnByInnIdCompanyId(Integer innId, String companyId) {
+        return bangInnDao.selectBangInnByInnIdCompanyId(innId,companyId);
+    }
 }

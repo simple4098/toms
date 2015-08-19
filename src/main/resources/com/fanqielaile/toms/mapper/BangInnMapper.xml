@@ -108,6 +108,9 @@
         <if test="innLabelId != null and innLabelId != ''">
             and b.inn_label_id = #{innLabelId}
         </if>
+        <if test="keywords != null and keywords != ''">
+            and inn_name like concat('%',#{keywords},'%')
+        </if>
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
 
