@@ -152,7 +152,7 @@ public class DistributionController extends BaseController{
             model.addAttribute("list",list);
             model.addAttribute("otaInfoId",otaInfoId);
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error("房价设置异常"+e.getMessage());
         }
         return "/distribution/fang_price_detail";
     }
