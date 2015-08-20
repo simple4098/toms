@@ -1,8 +1,12 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -37,4 +41,31 @@ public interface OrderDao {
      * @param order
      */
     void updateOrderStatusAndFeeStatus(Order order);
+
+    /**
+     * 分页查询订单信息
+     *
+     * @param companyId
+     * @param pageBounds
+     * @param orderParamDto
+     * @return
+     */
+    List<OrderParamDto> selectOrderByPage(@Param("companyId") String companyId, PageBounds pageBounds, @Param("order") OrderParamDto orderParamDto);
+
+    /**
+     * 查询订单信息
+     *
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+    List<OrderParamDto> selectOrders(@Param("companyId") String companyId, @Param("order") OrderParamDto orderParamDto);
+
+    /**
+     * 根据订单ID查询订单信息
+     *
+     * @param id
+     * @return
+     */
+    OrderParamDto selectOrderById(@Param("id") String id);
 }

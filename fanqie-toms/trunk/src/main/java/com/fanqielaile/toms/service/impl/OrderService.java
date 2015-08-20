@@ -17,6 +17,8 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
@@ -63,8 +65,6 @@ public class OrderService implements IOrderService {
     private IOtaInfoDao otaInfoDao;
     @Resource
     private IOtaInnRoomTypeGoodsDao otaInnRoomTypeGoodsDao;
-
-
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -96,6 +96,10 @@ public class OrderService implements IOrderService {
         return null;
     }
 
+
+    @Resource
+    private IOrderConfigDao orderConfigDao;
+
     @Override
 //    @Log(descr = "创建订单")
     public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
@@ -121,6 +125,7 @@ public class OrderService implements IOrderService {
         //算成本价与OTA收益
         order.setCostPrice(order.getTotalPrice());
         order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
+        order.setCompanyId(otaInnOtaDto.getCompanyId());
         //创建订单
         this.orderDao.insertOrder(order);
         //创建每日价格信息
@@ -172,21 +177,53 @@ public class OrderService implements IOrderService {
     @Override
 //    @Log(descr = "付款成功回调")
     public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
-        //日志
-        String logStr = "付款成功回调传递参数" + xmlStr;
+        try {
+            //日志
+            String logStr = "付款成功回调传递参数" + xmlStr;
 //        businLog.setDescr(logStr);
 //        businLogClient.save(businLog);
-        String orderId = XmlDeal.getOrder(xmlStr).getId();
-        //获取订单号，判断订单是否存在
-        Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
-        //付款金额
-        order.setPayment(XmlDeal.getOrder(xmlStr).getPayment());
+            Order orderXml = XmlDeal.getOrder(xmlStr);
+            //获取订单号，判断订单是否存在
+            Order order = this.orderDao.selectOrderByIdAndChannelSource(orderXml.getId(), channelSource);
+            //付款金额
+            order.setPayment(orderXml.getPayment());
+            //支付宝付款码
+            order.setAlipayTradeNo(orderXml.getAlipayTradeNo());
+            //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+            OrderConfig orderConfig = new OrderConfig(otaInfo.getId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
+            OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
+            if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
+                //自动下单
+                //设置订单状态为：接受
+                order.setOrderStatus(OrderStatus.ACCEPT);
+                return payBackDealMethod(order);
+            } else {
+                //手动下单,手动下单修改订单状态为待处理
+                order.setOrderStatus(OrderStatus.NOT_DEAL);
+                //待处理订单写入付款金额和付款码
+                order.setFeeStatus(FeeStatus.PAID);
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+                return new JsonModel(true, "付款成功");
+            }
+        } catch (Exception e) {
+            return new JsonModel(false, "系统内部错误");
+        }
+    }
+
+    /**
+     * 付款成功回调的处理方法
+     *
+     * @param order
+     * @return
+     * @throws Exception
+     */
+    private JsonModel payBackDealMethod(Order order) throws Exception {
         // 房态更新时间
         OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
         if (null != roomTypeGoodsDto) {
             order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
         }
-
         //获取入住人信息
         List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
         order.setOrderGuestses(orderGuestses);
@@ -197,7 +234,7 @@ public class OrderService implements IOrderService {
         List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
         order.setDailyInfoses(dailyInfoses);
         //判断订单是否同步OMS
-        if (order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
+        if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             //查询客栈信息
@@ -257,11 +294,6 @@ public class OrderService implements IOrderService {
                 if (null != result && result.equals("success")) {
                     //同步成功后在修改数据库
                     order.setFeeStatus(FeeStatus.PAID);
-                    order.setOrderStatus(OrderStatus.ACCEPT);
-                    //解析xml得到的order
-                    Order order1 = XmlDeal.getOrder(xmlStr);
-                    order.setAlipayTradeNo(order1.getAlipayTradeNo());
-                    order.setPayment(order1.getPayment());
                     this.orderDao.updateOrderStatusAndFeeStatus(order);
                     return new JsonModel(true, "付款成功");
                 } else {
@@ -271,6 +303,28 @@ public class OrderService implements IOrderService {
 
         } else {
             return new JsonModel(false, "系统内部错误");
+        }
+    }
+
+    /**
+     * 淘宝取消接口
+     *
+     * @param order
+     * @param parm  参数 1L取消订单，2L确认订单
+     * @return
+     * @throws ApiException
+     */
+    private JsonModel TBCancelMethod(Order order, long parm) throws ApiException {
+        //更新淘宝订单状态
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+        String result = TBXHotelUtil.orderUpdate(order, otaInfo, parm);
+        logger.info("淘宝更新订单返回值=>" + result);
+        if (null != result && result.equals("success")) {
+            //同步成功后在修改数据库
+            this.orderDao.updateOrderStatusAndReason(order);
+            return new JsonModel(true, "更新订单成功");
+        } else {
+            return new JsonModel(false, "调用淘宝更新接口出错");
         }
     }
 
@@ -363,4 +417,96 @@ public class OrderService implements IOrderService {
         return result;
     }
 
+    @Override
+    public List<OrderParamDto> findOrderByPage(String companyId, PageBounds pageBounds, OrderParamDto orderParamDto) {
+        List<OrderParamDto> orderDtos = orderDao.selectOrderByPage(companyId, pageBounds, orderParamDto);
+        //房型名称
+        if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
+            for (OrderParamDto orderDto : orderDtos) {
+                OtaBangInnRoomDto otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
+                if (null == otaBangInnRoomDto) {
+                    orderDto.setRoomTypeName("暂无");
+                } else {
+                    orderDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+                }
+            }
+        }
+        return orderDtos;
+    }
+
+    @Override
+    public OrderParamDto findOrders(String companyId, OrderParamDto orderParamDto) {
+        OrderParamDto result = new OrderParamDto();
+        List<OrderParamDto> orderParamDtoList = this.orderDao.selectOrders(companyId, orderParamDto);
+        if (ArrayUtils.isNotEmpty(orderParamDtoList.toArray())) {
+            for (OrderParamDto order : orderParamDtoList) {
+                if (order.getOrderStatus().equals(OrderStatus.ACCEPT)) {
+                    result.setAcceptOrder(result.getAcceptOrder() + 1);
+                    result.setAllTotalPrice(result.getAllTotalPrice().add(order.getTotalPrice()));
+                    if (null != order.getCostPrice()) {
+                        result.setAllCostPrice(result.getAllCostPrice().add(order.getCostPrice()));
+                    }
+                    if (null != order.getOTAPrice()) {
+                        result.setAllPayPrice(result.getAllPayPrice().add(order.getOTAPrice()));
+                    }
+                    if (null != order.getPrepayPrice()) {
+                        result.setAllPrePrice(result.getAllPrePrice().add(order.getPrepayPrice()));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public OrderParamDto findOrderById(String id) {
+        OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
+        if (null != orderParamDto) {
+            OtaBangInnRoomDto otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
+            if (null != otaBangInnRoomDto) {
+                orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+            } else {
+                orderParamDto.setRoomTypeName("暂无");
+            }
+            List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
+            //价格策略
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
+            if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                for (DailyInfos dailyInfos : dailyInfoses) {
+                    dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
+                }
+            }
+            orderParamDto.setDailyInfoses(dailyInfoses);
+        }
+        return orderParamDto;
+    }
+
+    @Override
+    public void confirmOrder(OrderParamDto order) throws Exception {
+        //手动确认并执行下单
+        //设置订单状态为确认并执行下单
+        order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
+        payBackDealMethod(order);
+    }
+
+    @Override
+    public void refuesOrder(OrderParamDto order) throws ApiException {
+        //直接拒绝订单，不同步oms，直接调用淘宝更新订单状态接口
+        //1.调用淘宝更新订单接口
+        order.setOrderStatus(OrderStatus.HAND_REFUSE);
+        order.setReason("手动直接拒绝");
+        //淘宝更新订单
+        TBCancelMethod(order, 1L);
+
+    }
+
+    @Override
+    public void confirmNoOrder(OrderParamDto order) throws ApiException {
+        //确认订单，但不同步oms
+        //1.修改订单状态，2.调用淘宝更新订单确认有房
+        order.setOrderStatus(OrderStatus.CONFIM_NO_ORDER);
+        order.setReason("确认但不执行下单");
+        //淘宝更新订单
+        TBCancelMethod(order,2L);
+    }
 }

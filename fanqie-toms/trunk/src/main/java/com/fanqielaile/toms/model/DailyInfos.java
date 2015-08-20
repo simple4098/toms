@@ -1,8 +1,10 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import com.fanqie.util.DateUtil;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -16,6 +18,28 @@ public class DailyInfos extends Domain {
     private BigDecimal price;
     //订单ID
     private String orderId;
+    //售价
+    private BigDecimal costPrice;
+    //时间展示
+    private String dayDesc;
+
+    public String getDayDesc() {
+        String week = new SimpleDateFormat("EEEE").format(getDay());
+        String substring = week.substring(week.length() - 1, week.length());
+        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + substring;
+    }
+
+    public void setDayDesc(String dayDesc) {
+        this.dayDesc = dayDesc;
+    }
+
+    public BigDecimal getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(BigDecimal costPrice) {
+        this.costPrice = costPrice;
+    }
 
     public Date getDay() {
         return day;

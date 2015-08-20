@@ -101,6 +101,16 @@ public class Order extends Domain {
     private Date orderCreateTime;
     //toms订单编号
     private String orderCode;
+    //公司ID
+    private String companyId;
+
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
 
     public String getOrderCode() {
         return orderCode;
@@ -417,7 +427,7 @@ public class Order extends Domain {
     public static CancelOrderParamDto toCancelOrderParam(Order order, Dictionary dictionary) {
         CancelOrderParamDto cancelOrderParamDto = new CancelOrderParamDto();
         cancelOrderParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
-        cancelOrderParamDto.setOtaOrderNo(order.getOrderCode());
+        cancelOrderParamDto.setOtaOrderNo(order.getChannelOrderCode());
         cancelOrderParamDto.setPaidAmount(order.getTotalPrice());
         cancelOrderParamDto.setvName(dictionary.getvName());
         cancelOrderParamDto.setvPWD(dictionary.getvPWD());
@@ -441,7 +451,7 @@ public class Order extends Domain {
         omsOrder.setAccountId(order.getAccountId());
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
-        omsOrder.setOtaOrderNo(order.getOrderCode());
+        omsOrder.setOtaOrderNo(order.getChannelOrderCode());
         omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());

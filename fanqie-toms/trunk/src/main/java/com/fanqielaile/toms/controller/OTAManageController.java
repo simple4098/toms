@@ -77,6 +77,7 @@ public class OTAManageController extends BaseController {
                         }
                     } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
                         //付款成功回调
+                        //1.付款成功回调执行一次拦截
                         JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
                         if (jsonModel.isSuccess()) {
                             result.setResultCode("0");
