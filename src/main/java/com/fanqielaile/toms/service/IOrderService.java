@@ -1,13 +1,17 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
+import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,4 +76,53 @@ public interface IOrderService {
      * @return
      */
     Map<String, String> dealPayBackMethod(String xmlStr, ChannelSource taobao) throws Exception;
+
+
+    /**
+     * 查询订单信息
+     *
+     * @param companyId
+     * @param pageBounds
+     * @param orderParamDto
+     * @return
+     */
+    List<OrderParamDto> findOrderByPage(String companyId, PageBounds pageBounds, OrderParamDto orderParamDto);
+
+    /**
+     * 查询所有的订单信息
+     *
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+    OrderParamDto findOrders(String companyId, OrderParamDto orderParamDto);
+
+    /**
+     * 根据订单id查询订单
+     *
+     * @param id
+     * @return
+     */
+    OrderParamDto findOrderById(String id);
+
+    /**
+     * 手动确认并下单
+     *
+     * @param order
+     */
+    void confirmOrder(OrderParamDto order) throws Exception;
+
+    /**
+     * 直接拒绝订单
+     *
+     * @param order
+     */
+    void refuesOrder(OrderParamDto order) throws ApiException;
+
+    /**
+     * 确认但不执行下单
+     *
+     * @param order
+     */
+    void confirmNoOrder(OrderParamDto order) throws ApiException;
 }
