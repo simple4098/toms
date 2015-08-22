@@ -57,11 +57,10 @@
                     }else{
                         $("#msgId").html("保存失败!");
                     }
-                    /*var  i =layer.load(2, {time: 2*1000});
-                    console.log("=="+i)
+                    var  i =layer.load(2, {time: 2*1000});
                     if(i==1){
                         parent.window.location.href =  parent.window.location.href
-                    }*/
+                    }
                 }
             })
         })
