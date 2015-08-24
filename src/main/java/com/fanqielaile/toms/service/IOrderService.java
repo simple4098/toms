@@ -125,4 +125,12 @@ public interface IOrderService {
      * @param order
      */
     void confirmNoOrder(OrderParamDto order) throws ApiException;
+
+    /**
+     * 手动下单
+     *
+     * @param order
+     * @return
+     */
+    Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo);
 }

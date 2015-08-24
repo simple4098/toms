@@ -10,6 +10,7 @@ import com.fanqielaile.toms.model.OrderGuests;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import java.math.BigDecimal;
@@ -139,5 +140,27 @@ public class OrderMethodHelper {
         String orderCode = "";
         orderCode = new Date().getTime() + "" + new Random().nextInt(10);
         return orderCode;
+    }
+
+    /**
+     * 检查手动下单参数
+     *
+     * @param order
+     * @return
+     */
+    public static Boolean checkHandMakeOrder(Order order, String liveTimeString, String leaveTimeString) {
+        try {
+            if (StringUtils.isNotEmpty(order.getGuestMobile()) && StringUtils.isNotEmpty(order.getGuestName()) && StringUtils.isNotEmpty(order.getRoomTypeId()) && StringUtils.isNotEmpty(order.getPayment().toString())
+                    ) {
+                return true;
+            }
+            if (StringUtils.isNotEmpty(liveTimeString) && StringUtils.isNotEmpty(leaveTimeString)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return false;
     }
 }

@@ -1,8 +1,11 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.enums.OrderStatus;
+import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
+import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2015/7/6.
@@ -171,5 +175,30 @@ public class OrderController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
         }
+    }
+
+    /**
+     * 手动下单
+     *
+     * @param model
+     * @param order
+     */
+    @RequestMapping("hand_make_order")
+    public void handMakeOrder(Model model, Order order, String liveTimeString, String leaveTimeString) {
+        UserInfo userInfo = getCurrentUser();
+        //检查参数
+        Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
+        order.setCompanyId(getCurrentUser().getCompanyId());
+        if (param) {
+            order.setLiveTime(DateUtil.parseDate(liveTimeString));
+            order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
+            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
+            model.addAttribute("status", result.get("status"));
+            model.addAttribute("message", result.get("message"));
+        } else {
+            model.addAttribute("status", false);
+            model.addAttribute("message", "参数错误");
+        }
+
     }
 }

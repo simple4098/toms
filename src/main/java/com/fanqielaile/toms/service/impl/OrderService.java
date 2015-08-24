@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
@@ -13,6 +14,7 @@ import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.Dictionary;
 import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
@@ -65,6 +67,10 @@ public class OrderService implements IOrderService {
     private IOtaInfoDao otaInfoDao;
     @Resource
     private IOtaInnRoomTypeGoodsDao otaInnRoomTypeGoodsDao;
+    @Resource
+    private IRoomTypeService roomTypeService;
+    @Resource
+    private IOrderConfigDao orderConfigDao;
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -97,8 +103,7 @@ public class OrderService implements IOrderService {
     }
 
 
-    @Resource
-    private IOrderConfigDao orderConfigDao;
+
 
     @Override
 //    @Log(descr = "创建订单")
@@ -507,6 +512,53 @@ public class OrderService implements IOrderService {
         order.setOrderStatus(OrderStatus.CONFIM_NO_ORDER);
         order.setReason("确认但不执行下单");
         //淘宝更新订单
-        TBCancelMethod(order,2L);
+        TBCancelMethod(order, 2L);
+    }
+
+    @Override
+    public Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo) {
+        Map<String, Object> result = new HashMap<>();
+        //下单到oms
+        //1.查询字典表
+        //查询字典表中同步OMS需要的数据
+        Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
+        String respose = "";
+        JSONObject jsonObject = null;
+        RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
+        try {
+            //处理每日价格信息
+            ParamDto paramDto = new ParamDto();
+            paramDto.setCompanyId(userInfo.getCompanyId());
+            paramDto.setUserId(userInfo.getId());
+            paramDto.setAccountId(order.getAccountId() + "");
+            //设置查询日期
+            paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
+            paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
+            roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
+            logger.info("oms手动下单传递参数" + order.toOrderParamDto(order.makeHandOrder(order, roomTypeInfoDto), dictionary).toString());
+            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order.makeHandOrder(order, roomTypeInfoDto), dictionary));
+            jsonObject = JSONObject.fromObject(respose);
+        } catch (Exception e) {
+            result.put("status", false);
+            result.put("message", "同步oms失败");
+            return result;
+        }
+        logger.info("OMS接口响应=>" + respose);
+        if (!jsonObject.get("status").equals(200)) {
+            result.put("status", false);
+            result.put("message", "oms接口相应失败");
+            return result;
+        } else {
+            Order o = order.makeHandOrder(order, roomTypeInfoDto);
+            //同步oms订单成功，保存订单到toms
+            this.orderDao.insertOrder(o);
+            //创建每日价格信息
+            this.dailyInfosDao.insertDailyInfos(o);
+            //创建入住人信息
+            this.orderGuestsDao.insertOrderGuests(o);
+            result.put("status", true);
+            result.put("message", "下单成功");
+            return result;
+        }
     }
 }

@@ -7,7 +7,11 @@ import com.fanqie.core.domain.Person;
 import com.fanqie.core.dto.CancelOrderParamDto;
 import com.fanqie.core.dto.OrderParamDto;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.*;
+import com.fanqielaile.toms.helper.OrderMethodHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
 
@@ -103,6 +107,16 @@ public class Order extends Domain {
     private String orderCode;
     //公司ID
     private String companyId;
+    //tag-id
+    private String tagId;
+
+    public String getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
+    }
 
     public String getCompanyId() {
         return companyId;
@@ -486,5 +500,114 @@ public class Order extends Domain {
         omsOrder.setPersons(persons);
         orderParamDto.setOrder(omsOrder);
         return orderParamDto;
+    }
+
+    /**
+     * 处理手动下单传递的参数
+     *
+     * @param order
+     * @return
+     */
+    public static Order makeHandOrder(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        Order handOrder = new Order();
+        handOrder.setId(order.getUuid());
+        handOrder.setAccountId(order.getAccountId());
+        handOrder.setChannelSource(ChannelSource.HAND_ORDER);
+        handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
+        handOrder.setOrderCode(OrderMethodHelper.getOrderCode());
+        handOrder.setOrderStatus(OrderStatus.HAND_ORDER);
+        handOrder.setInnId(order.getInnId());
+        handOrder.setGuestName(order.getGuestName());
+        handOrder.setRoomTypeId(order.getRoomTypeId());
+        handOrder.setHomeAmount(order.getHomeAmount());
+        handOrder.setLiveTime(order.getLiveTime());
+        handOrder.setLeaveTime(order.getLeaveTime());
+        handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
+        //TODO 设置预付，成本，ota佣金价格
+        handOrder.setPrepayPrice(order.getPayment());
+        handOrder.setOrderTime(new Date());
+        handOrder.setOTARoomTypeId(order.getRoomTypeId());
+        handOrder.setCurrency(CurrencyType.CNY);
+        handOrder.setPaymentType(PaymentType.PREPAID);
+        handOrder.setGuestMobile(order.getGuestMobile());
+        handOrder.setFeeStatus(FeeStatus.PAID);
+        handOrder.setComment(order.getComment());
+        handOrder.setCompanyId(order.getCompanyId());
+        //设置房型名称
+        handOrder.setRoomTypeName(order.getRoomTypeName());
+        //每日信息
+        handOrder.setDailyInfoses(getDailyInfos(order, roomTypeInfoDto));
+        //入住人信息
+        handOrder.setOrderGuestses(getOrderGuest(order));
+        return handOrder;
+    }
+
+    //设置订单总价
+    private static BigDecimal getTotalPrice(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        BigDecimal result = BigDecimal.ZERO;
+        if (null != roomTypeInfoDto) {
+            if (ArrayUtils.isNotEmpty(roomTypeInfoDto.getList().toArray())) {
+                RoomTypeInfo roomTypeInfoResult = new RoomTypeInfo();
+                for (RoomTypeInfo roomTypeInfo : roomTypeInfoDto.getList()) {
+                    if (roomTypeInfo.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
+                        roomTypeInfoResult = roomTypeInfo;
+                    }
+                }
+                if (null != roomTypeInfoResult) {
+                    if (ArrayUtils.isNotEmpty(roomTypeInfoResult.getRoomDetail().toArray())) {
+                        for (RoomDetail roomDetail : roomTypeInfoResult.getRoomDetail()) {
+                            result = result.add(new BigDecimal(roomDetail.getRoomPrice()));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 设置每日价格信息
+     *
+     * @param order
+     * @return
+     */
+    public static List<DailyInfos> getDailyInfos(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        List<DailyInfos> dailyInfoses = new ArrayList<>();
+        if (null != order.getLiveTime() && null != order.getLeaveTime()) {
+            //获取选中房型的房价信息
+            if (ArrayUtils.isNotEmpty(roomTypeInfoDto.getList().toArray())) {
+                RoomTypeInfo roomTypeInfoResult = new RoomTypeInfo();
+                for (RoomTypeInfo roomTypeInfo : roomTypeInfoDto.getList()) {
+                    if (roomTypeInfo.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
+                        roomTypeInfoResult = roomTypeInfo;
+                    }
+                }
+                //创建订单中选中入住日期的每日房价
+                if (null != roomTypeInfoResult) {
+                    if (ArrayUtils.isNotEmpty(roomTypeInfoResult.getRoomDetail().toArray())) {
+                        for (RoomDetail roomDetail : roomTypeInfoResult.getRoomDetail()) {
+                            DailyInfos dailyInfos = new DailyInfos();
+                            dailyInfos.setOrderId(order.getId());
+                            dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
+                            dailyInfos.setPrice(new BigDecimal(roomDetail.getRoomPrice()));
+                            dailyInfos.setCreatedDate(new Date());
+                            dailyInfoses.add(dailyInfos);
+                        }
+                    }
+                }
+            }
+        }
+        return dailyInfoses;
+    }
+
+    public static List<OrderGuests> getOrderGuest(Order order) {
+        List<OrderGuests> orderGuestses = new ArrayList<>();
+        OrderGuests orderGuests = new OrderGuests();
+        orderGuests.setName(order.getGuestName());
+        orderGuests.setOrderId(order.getId());
+        //默认房间号排序为0
+        orderGuests.setRoomPos(0);
+        orderGuestses.add(orderGuests);
+        return orderGuestses;
     }
 }
