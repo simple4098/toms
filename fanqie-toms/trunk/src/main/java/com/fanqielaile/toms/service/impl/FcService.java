@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.service.ITPService;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,8 @@ import java.util.List;
  * @data : 2015/7/3
  * @version: v1.0.0
  */
-@Service("mtService")
-public class MTService implements ITPService {
+@Service("fcService")
+public class FcService implements ITPService {
 
 
     @Override
@@ -35,6 +36,11 @@ public class MTService implements ITPService {
 
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
+
+    }
+
+    @Override
+    public void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto) throws Exception {
 
     }
 }

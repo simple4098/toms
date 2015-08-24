@@ -3,16 +3,14 @@ package com.fanqielaile.toms.support.util;
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.UserInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * DESC :
@@ -68,6 +66,36 @@ public class TomsUtil {
         }
         inventoryPrice.setInventory_price(inventoryRateList);
         return  JacksonUtil.obj2json(inventoryPrice);
+    }
+    public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto,OtaRoomPriceDto priceDto){
+        List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
+        InventoryPrice inventoryPrice = new InventoryPrice();
+        InventoryRate inventoryRate = null;
+        double price = 0;
+        Double value = null;
+        Date startDate = null;
+        Date endDate = null;
+        if (priceDto!=null) {
+            value = priceDto.getValue() * Constants.tpPriceUnit;
+            startDate = priceDto.getStartDate();
+            endDate = priceDto.getEndDate();
+        }
+            for (RoomDetail detail : r.getRoomDetail()) {
+                inventoryRate = new InventoryRate();
+                inventoryRate.setDate(detail.getRoomDate());
+                price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                price = price * 100;
+                Date parseDate = DateUtil.parseDate(detail.getRoomDate());
+                //在设定的范围内才对价格进行处理
+                if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                    price = price + value;
+                }
+                //tp店价格为分，我们自己系统价格是元
+                inventoryRate.setPrice(price);
+                inventoryRateList.add(inventoryRate);
+            }
+            inventoryPrice.setInventory_price(inventoryRateList);
+            return JacksonUtil.obj2json(inventoryPrice);
     }
 
     public static List<OrderConfigDto> orderConfig(String innId, String[] otaInfoIds, UserInfo currentUser,HttpServletRequest request) {

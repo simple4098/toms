@@ -26,10 +26,38 @@ public class OtaInnOta extends Domain {
     private String priceModel;
     //上架模式
     private String sJiaModel;
+    //绑定客栈id
+    private String bangInnId;
+    //渠道id 比如淘宝 房仓 id
+    private String otaInfoId;
+    private Integer innId;
+    //是否上架 0 下架  1 上架
+    private int sj;
 
 
+    public String getBangInnId() {
+        return bangInnId;
+    }
 
+    public void setBangInnId(String bangInnId) {
+        this.bangInnId = bangInnId;
+    }
 
+    public String getOtaInfoId() {
+        return otaInfoId;
+    }
+
+    public void setOtaInfoId(String otaInfoId) {
+        this.otaInfoId = otaInfoId;
+    }
+
+    public Integer getInnId() {
+        return innId;
+    }
+
+    public void setInnId(Integer innId) {
+        this.innId = innId;
+    }
 
     public String getWgHid() {
         return wgHid;
@@ -86,5 +114,13 @@ public class OtaInnOta extends Domain {
 
     public void setPriceModel(String priceModel) {
         this.priceModel = priceModel;
+    }
+
+    public int getSj() {
+        return sj;
+    }
+
+    public void setSj(int sj) {
+        this.sj = sj;
     }
 }

@@ -114,14 +114,14 @@
                         <b class="arrow icon-angle-down"></b>
                     </a>
                     <ul class="submenu">
-                        <toms:authorize uri="/distribution/otaList">
+                        <%--<toms:authorize uri="/distribution/otaList">
                             <li <c:if test="${fn:contains(url, '/distribution/otaList')}">class="active" </c:if> >
                                 <a href="<c:url value="/distribution/otaList"/>">
                                     <i class="icon-double-angle-right"></i>
                                     开通渠道
                                 </a>
                             </li>
-                        </toms:authorize>
+                        </toms:authorize>--%>
                         <toms:authorize uri="/order/find_orders">
                             <li
                                     <c:if test="${fn:contains(url, '/order/find_orders')}">class="active" </c:if> >

@@ -66,7 +66,7 @@ public class BangInnDto extends BangInn {
         this.labelName = labelName;
     }
 
-    public static BangInnDto toDto(String companyId,TBParam tbParam,String otaInnOtaId,InnDto omsInnDto){
+    public static BangInnDto toDto(String companyId,TBParam tbParam,InnDto omsInnDto){
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId(companyId);
@@ -74,7 +74,7 @@ public class BangInnDto extends BangInn {
         bangInnDto.setSj(tbParam.isSj()?1:0);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
         bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));
-        bangInnDto.setOtaWgId(otaInnOtaId);
+        /*bangInnDto.setOtaWgId(otaInnOtaId);*/
         bangInnDto.setInnName(omsInnDto.getInnName());
         bangInnDto.setBangDate(new Date());
         for (PriceModel p:priceModelArray){
@@ -88,9 +88,9 @@ public class BangInnDto extends BangInn {
         return  bangInnDto;
     }
 
-    public static void toUpdateDto(BangInn bangInnDto, TBParam tbParam, String uuid, InnDto omsInnDto) {
+    public static void toUpdateDto(BangInn bangInnDto, TBParam tbParam, InnDto omsInnDto) {
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
-        bangInnDto.setOtaWgId(uuid);
+      /*  bangInnDto.setOtaWgId(otaWgId);*/
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setInnName(omsInnDto.getInnName());
         bangInnDto.setSj(tbParam.isSj()?1:0);
