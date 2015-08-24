@@ -52,6 +52,11 @@ function getRoomType(postData){
 		dataType:'html',
 		success:function(data){
 			$("#roomTypeContainerId").empty();
+			if (data.indexOf("没有") == -1) {
+				$('.hand-btn').attr('disabled', false);
+			} else {
+				$('.hand-btn').attr('disabled', true);
+			}
 			$("#roomTypeContainerId").html(data);
 		}
 	})
@@ -69,10 +74,74 @@ $('#from_datepicker').change(function(){
 		dataType:'html',
 		success:function(data){
 			$("#roomTypeContainerId").empty();
+			if (data.indexOf("没有") == -1) {
+				$('.hand-btn').attr('disabled', false);
+			} else {
+				$('.hand-btn').attr('disabled', true);
+			}
 			$("#roomTypeContainerId").html(data);
 		}
 	})
 })
+/*点击手动下单*/
+$('.hand-btn').on('click', function () {
+	var url = $("#dataUrlId").attr("data-url") + ".json?v=" + new Date().getTime();
+	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
+	var date = $(this).val();
+	$('#to_datepicker').val(TC.plusDate(date, '30', 'd', 'yyyy-MM-dd'));
+	var postDate = {
+		'startDate': $('#from_datepicker').val(),
+		'endDate': $('#to_datepicker').val(),
+		'tagId': tagId,
+		'accountId': accountId
+	};
+	$('.room-type option').remove();
+	$.ajax({
+		type: 'POST',
+		data: postDate,
+		url: url,
+		dataType: 'json',
+		success: function (data) {
+			if (data.roomType != null) {
+				$('.account-id').val(accountId);
+				$('.tag-id').val(tagId);
+				for (var i = 0; i < data.roomType.list.length; i++) {
+					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
+					$('#hangOrder').modal();
+				}
+			}
+
+		}
+	})
+});
+/*当入住日期和离开日期失去光标时*/
+$('.leave-time').on('blur', function () {
+	var url = $("#dataUrlId").attr("data-url") + ".json?v=" + new Date().getTime();
+	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
+	var date = $(this).val();
+	$('#to_datepicker').val(TC.plusDate(date, '30', 'd', 'yyyy-MM-dd'));
+	var postDate = {
+		'startDate': $('.live-time').val(),
+		'endDate': $('.leave-time').val(),
+		'tagId': tagId,
+		'accountId': accountId
+	};
+	$('.room-type option').remove();
+	$.ajax({
+		type: 'POST',
+		data: postDate,
+		url: url,
+		dataType: 'json',
+		success: function (data) {
+			if (data.roomType != null) {
+				for (var i = 0; i < data.roomType.list.length; i++) {
+					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
+				}
+			}
+		}
+	})
+})
+
 //上一月
 $('#prevM').on('click',function(){
 	var date = $('#from_datepicker').val();
@@ -88,4 +157,4 @@ $('#myButton').on('click', function(){
 	var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
 	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
 	getRoomType( postData );
-})
+});

@@ -5,7 +5,8 @@ package com.fanqielaile.toms.enums;
  * 渠道来源
  */
 public enum ChannelSource {
-    TAOBAO("淘宝");
+    TAOBAO("淘宝"),
+    HAND_ORDER("手动下单");
     private String text;
 
     ChannelSource(String text) {

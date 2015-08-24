@@ -37,7 +37,7 @@ public class OrderTest {
     }
 
     @Test
-
+    @Ignore
     public void testCancelOrder() throws Exception {
 //        String xml = "<CancelRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>cdb7b8bf-277c-4d83-bca9-203a9f675cc3</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></CancelRQ>";
         String xml = "<QueryRefundRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao125484778-1387789907859</CreateToken></AuthenticationToken><OrderId>20150814-5</OrderId><Reason>reason</Reason><CancelId>1387789907859</CancelId></QueryRefundRQ>";
