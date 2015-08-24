@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IOtaRoomPriceDao" >
+
+        <resultMap id="otaRoomPriceId" type="com.fanqielaile.toms.dto.OtaRoomPriceDto">
+            <result column="id" property="id" />
+            <result column="inn_id" property="innId" />
+            <result column="company_id" property="companyId"/>
+            <result column="ota_info_id" property="otaInfoId" />
+            <result column="room_type_id" property="roomTypeId" />
+            <result column="start_date" property="startDate" />
+            <result column="end_date" property="endDate" />
+            <result column="value" property="value" />
+            <result column="room_type_name" property="roomTypeName" />
+        </resultMap>
+
+       <select id="selectOtaRoomPriceDto" parameterType="com.fanqielaile.toms.dto.OtaRoomPriceDto"  resultMap="otaRoomPriceId">
+            SELECT  o.* from ota_room_price o
+            inner JOIN otainfo_company_ref oc on oc.company_id = o.company_id and o.ota_info_id = oc.ota_info_id
+            inner JOIN ota_info oi on oi.id = oc.ota_info_id
+            where o.deleted=0 and  o.company_id = #{companyId} and o.room_type_id=#{roomTypeId} and o.ota_info_id = #{otaInfoId}  ORDER  BY  o.created_date DESC  limit 1
+       </select>
+
+       <insert id="saveOtaRoomPriceDto" parameterType="com.fanqielaile.toms.dto.OtaRoomPriceDto">
+            INSERT  into ota_room_price(id,company_id,inn_id,room_type_id,start_date,end_date,value,ota_info_id,account_id,modifier_id,deleted,created_date,room_type_name)
+             values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{startDate},#{endDate},#{value},#{otaInfoId},#{accountId},#{modifierId},0,now(),#{roomTypeName})
+       </insert>
+
+</mapper>
