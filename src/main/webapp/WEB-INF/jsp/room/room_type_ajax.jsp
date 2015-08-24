@@ -44,7 +44,7 @@
       <c:forEach items="${list}" var="v">
         <tr>
           <c:forEach items="${v.roomDetail}" var="vv">
-            <td>${vv.roomNum}</td>
+            <td>${vv.roomNum}/${vv.roomPrice}</td>
           </c:forEach>
         </tr>
       </c:forEach>
