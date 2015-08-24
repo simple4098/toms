@@ -1,17 +1,11 @@
 package com.fanqielaile.toms.controller;
 
-import com.fanqielaile.toms.dto.BangInnDto;
-import com.fanqielaile.toms.dto.OrderConfigDto;
-import com.fanqielaile.toms.dto.OtaInfoRefDto;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.service.IBangInnService;
-import com.fanqielaile.toms.service.IOrderConfigService;
-import com.fanqielaile.toms.service.IOtaInfoService;
-import com.fanqielaile.toms.service.IOtaRoomPriceService;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
@@ -24,6 +18,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -142,19 +137,62 @@ public class DistributionController extends BaseController{
         return "/distribution/fang_price";
     }
 
-    //房价管理-房价设置
+    //房价管理-客栈房型信息
     @RequestMapping("/fangPriceDetail")
     public String fangPriceDetail(Model model, String innId, String otaInfoId){
         UserInfo currentUser = getCurrentUser();
         BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), Integer.valueOf(innId));
         try {
-            List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn, currentUser.getCompanyId());
+            List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
             model.addAttribute("list",list);
             model.addAttribute("otaInfoId",otaInfoId);
+            model.addAttribute("innId",innId);
+            model.addAttribute("bangInn",bangInn);
         } catch (Exception e) {
            log.error("房价设置异常"+e.getMessage());
         }
         return "/distribution/fang_price_detail";
+    }
+
+    //房价管理-展示房价设置
+    @RequestMapping(value = "/ajax/room_price_detail",method = RequestMethod.POST)
+    public String roomPriceDetail(Model model,OtaRoomPriceDto roomPriceDto,String roomTypeName){
+        UserInfo currentUser = getCurrentUser();
+        roomPriceDto.setCompanyId(currentUser.getCompanyId());
+        OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceService.findRoomPrice(roomPriceDto);
+        model.addAttribute("roomPrice",otaRoomPriceDto);
+        model.addAttribute("param",roomPriceDto);
+        model.addAttribute("roomTypeName",roomTypeName);
+        return "/distribution/room_price_detail";
+    }
+    //房价管理-保存房价设置
+    @RequestMapping(value = "/ajax/saveRoomPrice",method = RequestMethod.POST)
+    public void saveRoomPriceDetail(OtaRoomPriceDto roomPriceDto){
+        UserInfo currentUser = getCurrentUser();
+        roomPriceDto.setCompanyId(currentUser.getCompanyId());
+        roomPriceDto.setModifierId(currentUser.getId());
+        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), roomPriceDto.getInnId());
+        roomPriceDto.setAccountId(bangInn.getAccountId());
+        otaRoomPriceService.saveRoomPriceDto(roomPriceDto);
+    }
+
+     //房价管理-同步房型价格到卖房网站
+    @RequestMapping(value = "/ajax/tpPrice",method = RequestMethod.POST)
+    public void tpPrice(Model model,OtaRoomPriceDto roomPriceDto){
+        UserInfo currentUser = getCurrentUser();
+        roomPriceDto.setCompanyId(currentUser.getCompanyId());
+        List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
+        ITPService service = null;
+        for (OtaInfoRefDto o:list) {
+            service = o.getOtaType().create();
+            try {
+                service.updateRoomTypePrice(o, roomPriceDto);
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            } catch (Exception e) {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, e.getMessage());
+            }
+        }
     }
 
 }

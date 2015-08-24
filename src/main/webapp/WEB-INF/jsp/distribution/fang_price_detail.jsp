@@ -16,6 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h3 class="header smaller lighter blue">客栈房型价格设置</h3>
+            <a class="btn  btn-sub tp-price" style="background-color:#CE6613 !important; margin-left: 1040px" account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >同步淘宝价格</a>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="table-responsive">
@@ -31,7 +32,7 @@
                                 <c:forEach items="${list}" var="d">
                                     <tr>
                                         <td>${d.roomTypeName}</td>
-                                        <td>价格设置</td>
+                                        <td> <a class="btn btn-info btn-sub room-price-class" type_name="${d.roomTypeName}" inn_id="${innId}" ota_info_id="${otaInfoId}" room_type_id="${d.roomTypeId}">价格设置</a></td>
                                     </tr>
                                 </c:forEach>
                             </c:if>
@@ -49,6 +50,52 @@
     </div>
     <!-- /.col -->
 </div>
-<!-- /.row -->
+<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+<script>
+    $('.room-price-class').on('click', function () {
+        var otaInfoId = $(this).attr('ota_info_id');
+        var roomTypeId = $(this).attr('room_type_id');
+        var innId = $(this).attr('inn_id');
+        var roomTypeName = $(this).attr('type_name');
+
+        var url = '<c:url value="/distribution/ajax/room_price_detail"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&roomTypeId="+roomTypeId+"&roomTypeName="+roomTypeName
+        $.ajax({
+            type:'POST',
+            url:url,
+            dataType:'html',
+            success:function(data){
+                layer.open({
+                    title:"房型特殊价格设置",
+                    type: 1,
+                    shift: 1,
+                    area: ['516px', '400px'],
+                    shadeClose: true, //开启遮罩关闭
+                    content: data
+                });
+            },error:function(data){
+                alert(data);
+            }
+        })
+    });
+    $('.tp-price').on('click', function () {
+        var otaInfoId = $(this).attr('ota_info_id');
+        var innId = $(this).attr('inn_id');
+        var accountId = $(this).attr('account_id');
+        var url = '<c:url value="/distribution/ajax/tpPrice.json"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&accountId="+accountId
+        $.ajax({
+            type:'POST',
+            url:url,
+            dataType:'json',
+            success:function(data){
+                if(!data.status){
+                    alert(data.message);
+                }
+            },error:function(data){
+                alert("sdsd");
+            }
+        })
+    });
+</script>
+
 
 

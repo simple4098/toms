@@ -13,7 +13,6 @@ import java.math.BigDecimal;
  */
 public class OtaInnOtaDto extends OtaInnOta {
 
-    private Integer innId;
     //价格模式的值
     private BigDecimal priceModelValue;
 
@@ -25,15 +24,9 @@ public class OtaInnOtaDto extends OtaInnOta {
         this.priceModelValue = priceModelValue;
     }
 
-    public Integer getInnId() {
-        return innId;
-    }
 
-    public void setInnId(Integer innId) {
-        this.innId = innId;
-    }
 
-    public static OtaInnOtaDto  toDto(Long hid,String innName,String companyId,TBParam tbParam){
+    public static OtaInnOtaDto  toDto(Long hid,String innName,String companyId,TBParam tbParam,String bangInnId,String otaInfoId){
         OtaInnOtaDto otaInnOta = new OtaInnOtaDto();
         otaInnOta.setAliasInnName(innName);
         otaInnOta.setCompanyId(companyId);
@@ -43,6 +36,8 @@ public class OtaInnOtaDto extends OtaInnOta {
         otaInnOta.setInnId(Integer.valueOf(tbParam.getInnId()));
         otaInnOta.setWgHid(String.valueOf(hid));
         otaInnOta.setOtaId(tbParam.getOtaId());
+        otaInnOta.setBangInnId(bangInnId);
+        otaInnOta.setOtaInfoId(otaInfoId);
         return otaInnOta;
     }
 }

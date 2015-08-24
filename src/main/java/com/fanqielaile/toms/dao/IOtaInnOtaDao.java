@@ -37,5 +37,9 @@ public interface IOtaInnOtaDao {
 
     void deletedOtaInnOtaById(String otaWgId);
 
-    OtaInnOtaDto selectOtaInnOtaByHid(@Param("hid") Long hid, @Param("companyId") String companyId);
+    OtaInnOtaDto selectOtaInnOtaByHid(@Param("hid") Long hid, @Param("companyId") String companyId,@Param("otaInfoId")String otaInfoId);
+
+    OtaInnOtaDto selectOtaInnOtaByBangId(@Param("bangInnId")String id, @Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
+
+    void updateOtaInnOta(OtaInnOtaDto otaInnOta);
 }

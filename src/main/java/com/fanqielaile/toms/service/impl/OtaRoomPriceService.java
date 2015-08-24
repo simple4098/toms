@@ -6,15 +6,19 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.CompanyDao;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dao.IOtaRoomPriceDao;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
+import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,9 +33,14 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
     @Resource
     private CompanyDao companyDao;
 
+    @Resource
+    private IOtaRoomPriceDao otaRoomPriceDao;
+    @Resource
+    private IOtaInfoDao otaInfoDao;
+
     @Override
-    public List<RoomTypeInfo> obtOmsRoomInfo(BangInn bangInn,String companyId) throws Exception {
-        Company company = companyDao.selectCompanyById(companyId);
+    public List<RoomTypeInfo> obtOmsRoomInfo(BangInn bangInn) throws Exception {
+        Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
@@ -40,4 +49,16 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
         }
         return  null;
     }
+
+    @Override
+    public OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto) {
+       return otaRoomPriceDao.selectOtaRoomPriceDto(roomPriceDto);
+    }
+
+    @Override
+    public void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto) {
+        otaRoomPriceDao.saveOtaRoomPriceDto(roomPriceDto);
+    }
+
+
 }

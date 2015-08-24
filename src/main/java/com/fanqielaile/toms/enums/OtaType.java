@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.enums;
 
 import com.fanqielaile.toms.service.ITPService;
-import com.fanqielaile.toms.service.impl.MTService;
+import com.fanqielaile.toms.service.impl.FcService;
 import com.fanqielaile.toms.service.impl.TBService;
 import com.fanqielaile.toms.support.SpringContextUtil;
 
@@ -18,16 +18,10 @@ public enum OtaType {
         public ITPService create() {
             return (TBService)SpringContextUtil.getBean("tbService");
         }
-    },
-    MT{
-        @Override
-        public ITPService create() {
-            return (MTService)SpringContextUtil.getBean("mtService");
-        }
     },FC{
         @Override
         public ITPService create() {
-            return (MTService)SpringContextUtil.getBean("fcService");
+            return (FcService)SpringContextUtil.getBean("fcService");
         }
     };
     public abstract ITPService create();

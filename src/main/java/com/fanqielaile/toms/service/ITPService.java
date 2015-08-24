@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.PushRoom;
 
 import java.util.List;
@@ -38,4 +39,6 @@ public interface ITPService {
      * @param pushRoomList 获取oms 要更新房型的库存集合
      */
     void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList)throws Exception;
+
+    void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto)throws Exception;
 }

@@ -36,7 +36,7 @@
       </tr>
       <tr>
         <c:forEach  begin="1" step="1" end="${roomType.roomDates.size()}">
-          <th>剩余</th>
+          <th>剩余/价格</th>
         </c:forEach>
       </tr>
       </thead>

@@ -20,4 +20,5 @@ public class Constants {
     public static final String TBPassword = "TB123taobao";
     public static final String SD = "手动";
     public static final String ZD = "自动";
+    public static final int tpPriceUnit = 100;
 }

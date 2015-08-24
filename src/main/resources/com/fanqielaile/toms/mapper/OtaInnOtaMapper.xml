@@ -13,11 +13,15 @@
               <result column="sjia_model" property="sJiaModel"/>
               <result column="price_model_value" property="priceModelValue"/>
               <result column="deleted" property="deleted"/>
+              <result column="bang_inn_id" property="bangInnId"/>
+              <result column="ota_info_id" property="otaInfoId"/>
+              <result column="inn_id" property="innId"/>
+              <result column="sj" property="sj"/>
        </resultMap>
 
        <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
-              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model)
-              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel})
+              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model,bang_inn_id,ota_info_id,inn_id)
+              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel},#{bangInnId},#{otaInfoId},#{innId})
        </insert>
 
        <select id="findOtaInnOta" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -48,7 +52,7 @@
        </select>
 
        <select id="selectOtaInnOtaByHid"  resultMap="BaseResultMap">
-                SELECT o.* from ota_inn_ota o where  o.deleted=0 and o.wg_hid='${hid}' and o.company_id='${companyId}'
+                SELECT o.* from ota_inn_ota o where  o.deleted=0 and o.wg_hid='${hid}' and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'
        </select>
 
        <select id="selectOtaInnOtaByTBHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -56,4 +60,12 @@
               where oo.wg_hid=#{otaHotelId} and oo.deleted = 0
        </select>
 
+       <select id="selectOtaInnOtaByBangId" resultMap="BaseResultMap">
+              SELECT oo.* from ota_inn_ota oo inner JOIN bang_inn bi on bi.id = oo.bang_inn_id
+              where oo.deleted = 0 and oo.ota_info_id = '${otaInfoId}' and oo.bang_inn_id = '${bangInnId}' and oo.company_id='${companyId}'
+       </select>
+
+       <update id="updateOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
+             update ota_inn_ota set sj=#{sj} where  id=#{id}
+       </update>
 </mapper>
