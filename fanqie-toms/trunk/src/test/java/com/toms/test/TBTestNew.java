@@ -77,6 +77,7 @@ public class TBTestNew {
         otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
+        otaInfo.setOtaInfoId("1");
         //String innId = "7060";
         String innId = "39691";
         String companyCode = "11111111";
@@ -135,30 +136,31 @@ public class TBTestNew {
             }
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
             if (xHotel!=null) {
-                otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId());
+                otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
+                BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+
                 if (otaInnOta==null){
-                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam);
+                    //todo 2015-08-24 修改过
+                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam,null,otaInfo.getOtaInfoId());
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                     priceModelDao.savePriceModel(otaPriceModel);
-                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                     if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getUuid(), omsInnDto);
+                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getUuid(), omsInnDto);
+                        BangInnDto.toUpdateDto(bangInn, tbParam,  omsInnDto);
                         bangInn.setInnName(omsInnDto.getInnName());
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }else {
                     //otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                     otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                     if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getId(), omsInnDto);
+                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam,  omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
+                        BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
 
                         bangInnDao.updateBangInnTp(bangInn);
                     }

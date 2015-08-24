@@ -99,28 +99,28 @@ public class TBService implements ITPService {
             //xHotel = TBXHotelUtil.hotelAdd(otaInfo, omsInnDto, andArea);
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
             if (xHotel!=null) {
-                otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId());
+                otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                 if (otaInnOta==null){
-                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam);
+                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam,bangInn.getId(),otaInfo.getOtaInfoId());
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                     priceModelDao.savePriceModel(otaPriceModel);
                     if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getUuid(), omsInnDto);
+                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam,  omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getUuid(), omsInnDto);
+                        BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }else {
                     //otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                     otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
                     if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, otaInnOta.getId(), omsInnDto);
+                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                         bangInnDao.createBangInn(bangInnDto);
                     }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
+                        BangInnDto.toUpdateDto(bangInn, tbParam,  omsInnDto);
                         bangInnDao.updateBangInnTp(bangInn);
                     }
                 }
@@ -319,10 +319,10 @@ public class TBService implements ITPService {
             //推客栈、如果存在再获取客栈
             XHotel xHotel = TBXHotelUtil.hotelGet(otaInfo, tbParam.getInnId());
             if (xHotel!=null) {
-                OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId());
+                OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                 if (otaInnOta!=null && bangInn!=null){
-                    BangInnDto.toUpdateDto(bangInn, tbParam, otaInnOta.getId(), omsInnDto);
+                    BangInnDto.toUpdateDto(bangInn, tbParam,  omsInnDto);
                     bangInnDao.updateBangInnTp(bangInn);
                 }
             }else {
@@ -373,6 +373,11 @@ public class TBService implements ITPService {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
             }
         }
+    }
+
+    @Override
+    public void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto) {
+
     }
 
 
