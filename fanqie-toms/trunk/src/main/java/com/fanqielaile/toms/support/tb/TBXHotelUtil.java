@@ -2,6 +2,7 @@ package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.util.Constants;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.PropertiesUtil;
 import com.fanqielaile.toms.common.CommonApi;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -387,7 +389,7 @@ public class TBXHotelUtil {
      * @param priceModelDto 价格策略
      * @param sj 库存日历开关， true 关闭； false 打开
      */
-    public static  String  rateAddOrUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean sj) throws ApiException {
+    public static  String  rateAddOrUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean sj ,OtaRoomPriceDto priceDto) throws ApiException {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateAddRequest req=new XhotelRateAddRequest();
         req.setGid(gid);
@@ -404,7 +406,7 @@ public class TBXHotelUtil {
                 rate.setDate(r.getRoomDate());
                 price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
                 //tp店价格为分，我们自己系统价格是元
-                rate.setPrice(price * 100);
+                rate.setPrice(price * com.fanqielaile.toms.support.util.Constants.tpPriceUnit);
                 list.add(rate);
             }
             inventory.setInventory_price(list);
@@ -415,7 +417,7 @@ public class TBXHotelUtil {
         XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
         log.info("rateAddOrUpdate:" + response.getBody());
         if (Constants.RATE_REPEAT_ERROR.equals(response.getSubCode())){
-           return rateUpdate(company,gid,rpid,roomTypeInfo,priceModelDto,sj);
+           return rateUpdate(company,gid,rpid,roomTypeInfo,priceModelDto,sj,priceDto);
         }
         log.info("rateAddOrUpdate:" + response.getGidAndRpid());
         return  response.getGidAndRpid();
@@ -431,7 +433,7 @@ public class TBXHotelUtil {
      * @param deleted 库存日历开关， true 关闭； false 打开
      * @return
      */
-    public static String rateUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted) throws ApiException {
+    public static String rateUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted,OtaRoomPriceDto priceDto) throws ApiException {
         log.info("rateUpdate gid:" + gid +" rateUpdate rpid:"+rpid);
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
@@ -439,17 +441,31 @@ public class TBXHotelUtil {
         req.setRpid(rpid);
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        double price = 0;
+        Double value = null;
+        Date startDate = null;
+        Date endDate = null;
+        if (priceDto!=null) {
+            value = priceDto.getValue() * com.fanqielaile.toms.support.util.Constants.tpPriceUnit;
+            startDate = priceDto.getStartDate();
+            endDate = priceDto.getEndDate();
+        }
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             List<InventoryRate> list = new ArrayList<InventoryRate>();
             InventoryPrice inventory = new InventoryPrice();
             InventoryRate rate = null;
-            double price = 0;
             for (RoomDetail r:roomTypeInfo.getRoomDetail()){
                 rate = new InventoryRate();
                 rate.setDate(r.getRoomDate());
                 price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                rate.setPrice(price*100);
+                price = price* com.fanqielaile.toms.support.util.Constants.tpPriceUnit;
+                Date parseDate = DateUtil.parseDate(r.getRoomDate());
+                //在设定的范围内才对价格进行处理
+                if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                    price = price + value;
+                }
+                rate.setPrice(price);
                 list.add(rate);
             }
             inventory.setInventory_price(list);
