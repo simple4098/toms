@@ -60,7 +60,7 @@
     var from_date = $("#from_datepicker").val();
     var to_date = $("#to_datepicker").val();
     var value = $("#value_id").val();
-    var reg = new RegExp("^[0-9]+(.[0-9]{1,3})?$");
+    var reg = new RegExp("^[+-]?[0-9]+(.[0-9]{1,3})?$");
     if(from_date.length==0){
        alert("开始时间不能为空!");
       return false;
