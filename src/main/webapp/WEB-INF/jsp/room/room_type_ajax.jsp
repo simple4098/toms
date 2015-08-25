@@ -6,7 +6,7 @@
   String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
 <c:set value="${roomType.list}" var="list"/>
-<c:if test="${not empty roomType.list}">
+<c:if test="${not empty roomType.list && not empty roomType.roomDates}">
   <div class="table-left">
     <table class="table table-bordered">
       <tr class="success">
@@ -52,9 +52,9 @@
     </table>
   </div>
 </c:if>
-<c:if test="${empty roomType.list}">
+<c:if test="${empty roomType.list || empty roomType.roomDates}">
   <div class="alert alert-danger center">
-    没有数据,请选择分类/客栈查询房态房量
+    没有房型数据,请选择分类/客栈查询房态房量
   </div>
 </c:if>
 <script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
