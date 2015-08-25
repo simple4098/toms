@@ -187,7 +187,8 @@ public class TBService implements ITPService {
                         }
                         goodsDao.updateRoomTypeGoodsProductDate(innRoomTypeGoodsDto);
                     }
-                    TBXHotelUtil.rateAddOrUpdate(otaInfo, gid, rpid, r, otaPriceModel, !tbParam.isSj());
+                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
+                    TBXHotelUtil.rateAddOrUpdate(otaInfo, gid, rpid, r, otaPriceModel, !tbParam.isSj(),priceDto);
                 }else {
                   throw  new RuntimeException(" 推房型失败~");
                 }

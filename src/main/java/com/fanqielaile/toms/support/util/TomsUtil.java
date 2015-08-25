@@ -84,7 +84,7 @@ public class TomsUtil {
                 inventoryRate = new InventoryRate();
                 inventoryRate.setDate(detail.getRoomDate());
                 price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                price = price * 100;
+                price = price*Constants.tpPriceUnit;
                 Date parseDate = DateUtil.parseDate(detail.getRoomDate());
                 //在设定的范围内才对价格进行处理
                 if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
