@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -293,7 +294,7 @@ public class SystemController extends BaseController {
      * @param permission
      * @return
      */
-    @RequestMapping("create_permission")
+    @RequestMapping(value = "create_permission",method = RequestMethod.POST)
     public String createPermission(Permission permission) {
         permissionService.createPermission(permission);
         return "permission";
