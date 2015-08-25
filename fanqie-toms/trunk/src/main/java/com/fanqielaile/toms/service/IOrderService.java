@@ -110,21 +110,21 @@ public interface IOrderService {
      *
      * @param order
      */
-    void confirmOrder(OrderParamDto order) throws Exception;
+    JsonModel confirmOrder(OrderParamDto order) throws Exception;
 
     /**
      * 直接拒绝订单
      *
      * @param order
      */
-    void refuesOrder(OrderParamDto order) throws ApiException;
+    JsonModel refuesOrder(OrderParamDto order) throws ApiException;
 
     /**
      * 确认但不执行下单
      *
      * @param order
      */
-    void confirmNoOrder(OrderParamDto order) throws ApiException;
+    JsonModel confirmNoOrder(OrderParamDto order) throws ApiException;
 
     /**
      * 手动下单

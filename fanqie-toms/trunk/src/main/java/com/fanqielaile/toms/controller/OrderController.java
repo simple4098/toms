@@ -10,6 +10,7 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.JsonModel;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
@@ -129,8 +130,9 @@ public class OrderController extends BaseController {
         try {
             OrderParamDto order = this.orderService.findOrderById(id);
             if (order != null) {
-                this.orderService.confirmOrder(order);
-                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+                JsonModel jsonModel = this.orderService.confirmOrder(order);
+                model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+                model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
             } else {
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
                 model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
@@ -151,8 +153,9 @@ public class OrderController extends BaseController {
     public void refueseOrder(Model model, String id) throws ApiException {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
-            this.orderService.refuesOrder(order);
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            JsonModel jsonModel = this.orderService.refuesOrder(order);
+            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
@@ -169,8 +172,9 @@ public class OrderController extends BaseController {
     public void confirmNoOrder(Model model, String id) throws ApiException {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
-            this.orderService.confirmNoOrder(order);
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            JsonModel jsonModel = this.orderService.confirmNoOrder(order);
+            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
         } else {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");

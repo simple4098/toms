@@ -487,32 +487,35 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void confirmOrder(OrderParamDto order) throws Exception {
+    public JsonModel confirmOrder(OrderParamDto order) throws Exception {
         //手动确认并执行下单
         //设置订单状态为确认并执行下单
         order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
-        payBackDealMethod(order);
+        JsonModel jsonModel = payBackDealMethod(order);
+        return jsonModel;
     }
 
     @Override
-    public void refuesOrder(OrderParamDto order) throws ApiException {
+    public JsonModel refuesOrder(OrderParamDto order) throws ApiException {
         //直接拒绝订单，不同步oms，直接调用淘宝更新订单状态接口
         //1.调用淘宝更新订单接口
         order.setOrderStatus(OrderStatus.HAND_REFUSE);
         order.setReason("手动直接拒绝");
         //淘宝更新订单
-        TBCancelMethod(order, 1L);
+        JsonModel jsonModel = TBCancelMethod(order, 1L);
+        return jsonModel;
 
     }
 
     @Override
-    public void confirmNoOrder(OrderParamDto order) throws ApiException {
+    public JsonModel confirmNoOrder(OrderParamDto order) throws ApiException {
         //确认订单，但不同步oms
         //1.修改订单状态，2.调用淘宝更新订单确认有房
         order.setOrderStatus(OrderStatus.CONFIM_NO_ORDER);
         order.setReason("确认但不执行下单");
         //淘宝更新订单
-        TBCancelMethod(order, 2L);
+        JsonModel jsonModel = TBCancelMethod(order, 2L);
+        return jsonModel;
     }
 
     @Override
