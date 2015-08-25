@@ -158,3 +158,155 @@ $('#myButton').on('click', function(){
 	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
 	getRoomType( postData );
 });
+
+//spinner
+var spinner = $("#roomNum").spinner({
+	create: function (event, ui) {
+		//add custom classes and icons
+		$(this)
+			.next().addClass('btn btn-success btn-homeAmount-add').html('<i class="icon-plus"></i>')
+			.next().addClass('btn btn-danger btn-homeAmount').html('<i class="icon-minus"></i>')
+
+		//larger buttons on touch devices
+//            if(ace.click_event == "tap") $(this).closest('.ui-spinner').addClass('ui-spinner-touch');
+		$('.btn-homeAmount').attr('disabled', true);
+	}
+
+});
+$('.btn-homeAmount').on('click', function () {
+	var value = $('.home-amount').val();
+	if (value <= 1) {
+		$('.btn-homeAmount').attr('disabled', true);
+		$('.btn-homeAmount-add').attr('disabled', false);
+	} else {
+		$('.btn-homeAmount').attr('disabled', false);
+		$('.btn-homeAmount-add').attr('disabled', false);
+	}
+});
+$('.btn-homeAmount-add').on('click', function () {
+	var value = $('.home-amount').val();
+	if (value > 9) {
+		$('.btn-homeAmount').attr('disabled', false);
+		$('.btn-homeAmount-add').attr('disabled', true);
+	} else {
+		$('.btn-homeAmount').attr('disabled', false);
+		$('.btn-homeAmount-add').attr('disabled', false);
+
+	}
+});
+
+var $roomType = $('#roomType'),
+	$roomNum = $('#roomNum'),
+	$tel = $('#tel'),
+	$tips = $('.tips'),
+	$group1 = $('#inTime, #outTime'),
+	$group2 = $('#inTime, #outTime, #roomType')
+
+// 第一组联动
+$group1.datepicker({
+	showOtherMonths: true,
+	selectOtherMonths: false,
+});
+
+$group1.change(function () {
+
+	//if(dateCheck()){
+	//	$.ajax({
+	//		type: 'get',
+	//		url: 'json.json',
+	//		success: function(data){
+	//			var html = ''
+	//			data.roomType.map(function(el){
+	//				html += '<option value="'+ el.id +'">'+ el.name +'</option>'
+	//			})
+	//			$roomType.html( html )
+	//		}
+	//	})
+	//}
+})
+
+// 第二组联动
+$group2.change(function () {
+	//$.ajax({
+	//	type: 'get',
+	//	url: 'json.json',
+	//	success: function(data){
+	//		$roomNum.val( data.roomNum )
+	//	}
+	//})
+})
+
+// 验证手机号
+$tel.blur(function () {
+	var isPhone = /^([0-9]{3,4}-)?[0-9]{7,8}$/;
+	var isMob = /^((\+?86)|(\(\+86\)))?(13[012356789][0-9]{8}|15[012356789][0-9]{8}|18[02356789][0-9]{8}|147[0-9]{8}|1349[0-9]{7})$/;
+	var value = $(this).val().trim();
+	if (!(isMob.test(value) || isPhone.test(value))) {
+		$tips.html('请输入正确的手机号码！').show()
+	}
+	else {
+		$tips.empty().hide()
+	}
+})
+
+// 提交事件
+$('#submitBtn').click(function () {
+	var typeName = $('.room-type').children('option:selected').text();
+	$('.type-name').val(typeName);
+	if (formCheck() && dateCheck()) {
+		var url = $(this).attr('data-url');
+		$.ajax({
+			url: url,
+			type: 'post',
+			dataType: 'json',
+			data: $("#hand-order-form").serialize(),
+			success: function (data) {
+				if (data.status) {
+					layer.alert('提示信息：下单成功', {icon: 6}, function () {
+						window.location.reload();
+					});
+				} else {
+					layer.alert('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5}, function () {
+						window.location.reload();
+					});
+				}
+			}
+		})
+	}
+
+	return false
+
+})
+
+// 表单验证
+var formCheck = function () {
+	var isComplete = true
+	$tips.empty().hide()
+	$('#hand-order-form input').each(function (i, el) {
+		if (!$.trim($(this).val())) {
+			var tips = $(this).prop('data-tips')
+			$tips.html('请填写完相关信息').show()
+			isComplete = false
+			return false
+		}
+	})
+	return isComplete
+}
+
+// 日期验证
+var dateCheck = function () {
+	var $inTime = $('#inTime').val(),
+		$outTime = $('#outTime').val(),
+		isDate = true
+
+	if (new Date($inTime) > new Date($outTime)) {
+		$tips.html('开始日期不得大于结束日期哦！').show()
+		isDate = false
+		return
+	}
+	else {
+		$tips.empty().hide()
+	}
+
+	return isDate
+}
