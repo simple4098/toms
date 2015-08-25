@@ -71,9 +71,13 @@ $('.btn-confirm-sure').on('click', function () {
         dataType: 'json',
         success: function (data) {
             if (data.status) {
-                window.location.reload();
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
             } else {
-                layer.msg(data.message);
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
             }
         }
         ,
@@ -97,9 +101,13 @@ $('.btn-refues-sure').on('click', function () {
         dataType: 'json',
         success: function (data) {
             if (data.status) {
-                window.location.reload();
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
             } else {
-                layer.msg(data.message);
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
             }
         },
         error: function () {
@@ -123,9 +131,13 @@ $('.btn-confirm-no-sure').on('click', function () {
         dataType: 'json',
         success: function (data) {
             if (data.status) {
-                window.location.reload();
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
             } else {
-                layer.msg(data.message);
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
             }
         },
         error: function () {
