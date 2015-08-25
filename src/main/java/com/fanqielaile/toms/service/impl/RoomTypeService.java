@@ -46,7 +46,7 @@ public class RoomTypeService implements IRoomTypeService {
         String httpGets = HttpClientUtil.httpGets(roomTypeUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         RoomTypeInfoDto roomTypeInfoDto = null;
-        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             roomTypeInfoDto = new RoomTypeInfoDto();
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             List<RoomDetail> roomDetail = list.get(0).getRoomDetail();
@@ -59,7 +59,7 @@ public class RoomTypeService implements IRoomTypeService {
                     String dateToString = DateUtil.formatDateToString(parseDate, "MM-dd");
                     String t="";
                     if (parseDate.equals(today)){
-                        t=Constants.TODAY;
+                        t=TomsConstants.TODAY;
                     }else {
                         t=DcUtil.dayOfWeek(new DateTime(parseDate).getDayOfWeek());//String.valueOf(new DateTime(parseDate).getDayOfWeek());
                     }

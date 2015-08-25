@@ -21,4 +21,7 @@ public class Constants {
     public static final String SD = "手动";
     public static final String ZD = "自动";
     public static final int tpPriceUnit = 100;
+
+    public static   String MESSAGE_ERROR="参数异常，请检查!";
+    public static   String MESSAGE_SUCCESS="成功";
 }

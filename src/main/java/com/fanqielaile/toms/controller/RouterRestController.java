@@ -6,6 +6,7 @@ import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public class RouterRestController {
                 service = o.getOtaType().create();
                 service.updateHotelRoom(o, pushRoomList);
             }
-            result.setMessage(CommonApi.MESSAGE_SUCCESS);
+            result.setMessage(Constants.MESSAGE_SUCCESS);
             result.setStatus("200");
         } catch (Exception e) {
             result.setMessage(e.getMessage());

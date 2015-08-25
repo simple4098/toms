@@ -8,6 +8,7 @@ import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,10 +44,10 @@ public class APIController extends BaseController {
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody
     public Object hotel(TBParam tbParam){
-        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         if (!validateParam){
-            jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
+            jsonModel.setMessage(Constants.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;
         }
@@ -72,9 +73,9 @@ public class APIController extends BaseController {
     @RequestMapping("/hotel/del")
     @ResponseBody
     public Object del(TBParam tbParam){
-        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         if ( StringUtils.isEmpty(tbParam.getCompanyCode()) || StringUtils.isEmpty(tbParam.getInnId())){
-            jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
+            jsonModel.setMessage(Constants.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;
         }
@@ -99,7 +100,7 @@ public class APIController extends BaseController {
     @RequestMapping("/hotel/timer")
     @ResponseBody
     public Object hotelTimer(final TBParam tbParam ){
-        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -127,11 +128,11 @@ public class APIController extends BaseController {
     @RequestMapping("/commission/update")
     @ResponseBody
     public Object commissionUpdate(TBParam tbParam){
-        JsonModel jsonModel = new JsonModel(true,CommonApi.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         if(!StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getCommissionType())){
             commissionService.updateCommission(tbParam);
         }else {
-            jsonModel.setMessage(CommonApi.MESSAGE_ERROR);
+            jsonModel.setMessage(Constants.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;
         }
