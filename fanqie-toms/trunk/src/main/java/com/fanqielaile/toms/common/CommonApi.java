@@ -7,8 +7,6 @@ package com.fanqielaile.toms.common;
  * @version: v1.0.0
  */
 public class CommonApi {
-    public static   String MESSAGE_ERROR="参数异常，请检查!";
-    public static   String MESSAGE_SUCCESS="成功";
     public static   String QS = "";
     public static   String QSDetail = "";
     public static   String KF = "";
@@ -18,7 +16,7 @@ public class CommonApi {
     public static   String ROOM_TYPE="";
     public static   String INN_INFO="";
     public static   String TB_URL="";
-    public static   String IMG_URL="http://img.fanqiele.com";
+    public static   String IMG_URL="";
     public static   String ProxySaleList="";
 
     public static String getImgUrl() {

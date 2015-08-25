@@ -1,16 +1,16 @@
 package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.core.dto.RoomSwitchCalStatus;
-import com.fanqie.util.Constants;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.PropertiesUtil;
+import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Order;
-import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ImgUtil;
 import com.fanqielaile.toms.support.util.TPServiceUtil;
 import com.taobao.api.ApiException;
@@ -81,7 +81,7 @@ public class TBXHotelUtil {
         XhotelAddResponse response = client.execute(req , company.getSessionKey());
         log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());
         //存在
-        if (Constants.HOTEL_EXIST.equals(response.getSubCode())) {
+        if (TomsConstants.HOTEL_EXIST.equals(response.getSubCode())) {
             return   hotelUpdate(company,innDto,andArea);
         }
         log.info("hotelAdd:" +response.getXhotel());
@@ -90,8 +90,7 @@ public class TBXHotelUtil {
 
     /**
      * 获取酒店
-     * @param company
-     * @return
+     * @param company 公司信息
      */
 
     public static XHotel hotelGet(OtaInfoRefDto company,String innId) {
@@ -135,7 +134,7 @@ public class TBXHotelUtil {
         req.setService(TPServiceUtil.jsonService(facilitiesMap));
             XhotelRoomtypeAddResponse response = client.execute(req , company.getSessionKey());
             log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());
-            if (Constants.ROOM_TYPE_EXIST.equals(response.getSubCode())) {
+            if (TomsConstants.ROOM_TYPE_EXIST.equals(response.getSubCode())) {
                 return  updateRoomType(company, roomTypeInfo);
             }
             log.info("addRoomType:" + response.getXroomtype());
@@ -188,8 +187,8 @@ public class TBXHotelUtil {
 
     /**
      * 获取宝贝信息
-     * @param outerId
-     * @param company
+     * @param outerId 房型id
+     * @param company 渠道信息
      */
     public static XRoom roomGet(Integer outerId,OtaInfoRefDto company) throws ApiException {
         log.info("roomGet outerId:" +outerId );
@@ -406,7 +405,7 @@ public class TBXHotelUtil {
                 rate.setDate(r.getRoomDate());
                 price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
                 //tp店价格为分，我们自己系统价格是元
-                rate.setPrice(price * com.fanqielaile.toms.support.util.Constants.tpPriceUnit);
+                rate.setPrice(price * Constants.tpPriceUnit);
                 list.add(rate);
             }
             inventory.setInventory_price(list);
@@ -416,7 +415,7 @@ public class TBXHotelUtil {
         }
         XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
         log.info("rateAddOrUpdate:" + response.getBody());
-        if (Constants.RATE_REPEAT_ERROR.equals(response.getSubCode())){
+        if (TomsConstants.RATE_REPEAT_ERROR.equals(response.getSubCode())){
            return rateUpdate(company,gid,rpid,roomTypeInfo,priceModelDto,sj,priceDto);
         }
         log.info("rateAddOrUpdate:" + response.getGidAndRpid());
@@ -446,7 +445,7 @@ public class TBXHotelUtil {
         Date startDate = null;
         Date endDate = null;
         if (priceDto!=null) {
-            value = priceDto.getValue() * com.fanqielaile.toms.support.util.Constants.tpPriceUnit;
+            value = priceDto.getValue() * Constants.tpPriceUnit;
             startDate = priceDto.getStartDate();
             endDate = priceDto.getEndDate();
         }

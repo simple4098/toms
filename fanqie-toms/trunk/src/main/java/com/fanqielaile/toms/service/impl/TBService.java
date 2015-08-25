@@ -3,7 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.Constants;
+import com.fanqie.util.TomsConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -91,7 +91,7 @@ public class TBService implements ITPService {
         OtaInnOtaDto otaInnOta = null;
         OtaTaoBaoArea andArea = null;
         //客栈
-        if (Constants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
+        if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
             InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
             omsInnDto.setInnId(tbParam.getInnId());
 
@@ -156,7 +156,7 @@ public class TBService implements ITPService {
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         //房型
-        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             for (RoomTypeInfo r:list){
                 XRoomType xRoomType = TBXHotelUtil.addRoomType(tbParam.getInnId(), Long.valueOf(otaInnOta.getWgHid()), r, otaInfo);
@@ -226,7 +226,7 @@ public class TBService implements ITPService {
             String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
             String roomTypeGets = HttpClientUtil.httpGets(room_type,null);
             JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-            if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+            if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
                 List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
                 for (RoomTypeInfo r:list){
                     TBXHotelUtil.roomDel(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
@@ -261,7 +261,7 @@ public class TBService implements ITPService {
         String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
         String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
             List<PricePattern> pricePatterns = null;
             StringBuilder stringBuilder = null;
