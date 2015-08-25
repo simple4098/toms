@@ -1,22 +1,17 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
-<!DOCTYPE html>
-<html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>房态房量</title>
     <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
 
 </head>
-<body>
 <div >
     <div class="select-area">
         <form class="form-data">
@@ -88,12 +83,8 @@
             </c:if>
         </div>
 </div>
-<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/layer/layer.js"></script>
-<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
-<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
-<script src="<%=basePath%>/assets/js/tomato.min.js"></script>
-<script src="<%=basePath%>/assets/js/room-type.js"></script>
+
+
 <%--手动下单--%>
 <div class="modal fade" id="hangOrder" tabindex="-1" role="dialog" aria-labelledby="hangOrderModal" aria-hidden="true">
     <div class="modal-dialog">
@@ -107,13 +98,15 @@
                 <form class="form-horizontal hand-order-form" id="hand-order-form" role="form">
                     <input type="hidden" class="account-id" name="accountId"/>
                     <input type="hidden" class="tag-id" name="tagId"/>
-                    <input type="hidden" class="room-type-name" name="roomTypeName">
+                    <input type="hidden" class="type-name" name="roomTypeName"/>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名 </label>
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-sm-9">
-                            <input type="text" id="form-field-1" name="guestName"
+                            <input type="text" id="form-field-1" name="guestName" data-tips="姓名"
                                    value="" placeholder="客人姓名" class="col-xs-10 col-sm-5 guest-name"
                                     />
                             <span class="help-guest-name col-xs-12 col-sm-7"></span>
@@ -121,10 +114,12 @@
                     </div>
                     <div class="space-4"></div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right " for="form-field-2"> 手机号 </label>
+                        <label class="col-sm-3 control-label no-padding-right " for="tel"> 手机号
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-sm-9 ">
-                            <input type="text" name="guestMobile" id="form-field-2" placeholder="客人联系方式"
+                            <input type="text" name="guestMobile" id="tel" placeholder="客人联系方式" data-tips="手机号"
                                    class="col-xs-10 col-sm-5 guest-mobile"/>
                         <span class="help-guest-mobile col-xs-12 col-sm-7">
 
@@ -135,11 +130,14 @@
                     <div class="space-4"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="datepicker"> 入住时间 </label>
+                        <label class="col-sm-3 control-label no-padding-right" for="inTime"> 入住时间
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-xs-4">
                             <div class="input-group input-group-sm">
-                                <input type="text" name="liveTime" id="datepicker" class="form-control live-time"/>
+                                <input type="text" name="liveTimeString" id="inTime" data-tips="入住时间"
+                                       class="form-control live-time"/>
 													<span class="input-group-addon">
 														<i class="icon-calendar"></i>
 													</span>
@@ -152,11 +150,14 @@
                     <div class="space-4"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="datepicker1"> 离店时间 </label>
+                        <label class="col-sm-3 control-label no-padding-right" for="outTime"> 离店时间
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-xs-4">
                             <div class="input-group input-group-sm">
-                                <input type="text" name="leaveTime" id="datepicker1" class="form-control leave-time"/>
+                                <input type="text" name="leaveTimeString" id="outTime" data-tips="离店时间"
+                                       class="form-control leave-time"/>
 													<span class="input-group-addon">
 														<i class="icon-calendar"></i>
 													</span>
@@ -170,10 +171,12 @@
                     <div class="space-4"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="roomTypeId">房 型</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="roomType">房 型
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-sm-1">
-                            <select name="roomTypeId" class="room-type" id="roomTypeId">
+                            <select name="roomTypeId" class="room-type" id="roomType">
                                 <option value="">--请选择--</option>
                             </select>
                         <span class="help-name col-xs-12 col-sm-7">
@@ -183,10 +186,13 @@
                     <div class="space-4"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="spinner">房间数</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="roomNum">房间数
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-sm-1">
-                            <input class="home-amount" id="spinner" name="homeAmount" type="text" value="1"/>
+                            <input class="home-amount" id="roomNum" name="homeAmount" data-tips="房间数" type="text"
+                                   value="1"/>
                         <span class="help-name col-xs-12 col-sm-7">
 											</span>
                         </div>
@@ -194,10 +200,12 @@
                     <div class="space-4"></div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right " for="totalPrice"> 销售总价 </label>
+                        <label class="col-sm-3 control-label no-padding-right " for="totalPrice"> 销售总价
+                            <tip style="color: red">*</tip>
+                        </label>
 
                         <div class="col-sm-9 ">
-                            <input type="text" name="totalPrice" id="totalPrice" placeholder="订单总价"
+                            <input type="text" name="payment" id="totalPrice" placeholder="订单总价" data-tips="销售总价"
                                    class="col-xs-10 col-sm-5 total-price"/>
                         <span class="help-guest-mobile col-xs-12 col-sm-7">
 
@@ -221,7 +229,7 @@
                     <div class="space-4"></div>
 
                 </form>
-
+                <div class="tips" style="color: red"></div>
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
                         <button class="btn" data-dismiss="modal">
@@ -229,7 +237,7 @@
                             取消
                         </button>
                         &nbsp; &nbsp; &nbsp;
-                        <button class="btn btn-info btn-hand-make-order"
+                        <button class="btn btn-info btn-hand-make-order" id="submitBtn"
                                 data-url="<c:url value="/order/hand_make_order.json"/>" type="button">
                             <i class="icon-ok bigger-110"></i>
                             确认
@@ -244,70 +252,9 @@
         </div>
     </div>
 </div>
-<script>
-    $("#datepicker").datepicker({
-        showOtherMonths: true,
-        selectOtherMonths: false,
-    });
-    $("#datepicker1").datepicker({
-        showOtherMonths: true,
-        selectOtherMonths: false,
-    });
-    //spinner
-    var spinner = $("#spinner").spinner({
-        create: function (event, ui) {
-            //add custom classes and icons
-            $(this)
-                    .next().addClass('btn btn-success btn-homeAmount-add').html('<i class="icon-plus"></i>')
-                    .next().addClass('btn btn-danger btn-homeAmount').html('<i class="icon-minus"></i>')
-
-            //larger buttons on touch devices
-//            if(ace.click_event == "tap") $(this).closest('.ui-spinner').addClass('ui-spinner-touch');
-            $('.btn-homeAmount').attr('disabled', true);
-        }
-
-    });
-    $('.btn-homeAmount').on('click', function () {
-        var value = $('.home-amount').val();
-        if (value <= 1) {
-            $('.btn-homeAmount').attr('disabled', true);
-            $('.btn-homeAmount-add').attr('disabled', false);
-        } else {
-            $('.btn-homeAmount').attr('disabled', false);
-            $('.btn-homeAmount-add').attr('disabled', false);
-        }
-    });
-    $('.btn-homeAmount-add').on('click', function () {
-        var value = $('.home-amount').val();
-        if (value > 9) {
-            $('.btn-homeAmount').attr('disabled', false);
-            $('.btn-homeAmount-add').attr('disabled', true);
-        } else {
-            $('.btn-homeAmount').attr('disabled', false);
-            $('.btn-homeAmount-add').attr('disabled', false);
-
-        }
-    });
-    $('.btn-hand-make-order').on('click', function () {
-        $.ajax({
-            type: 'post',
-            dataType: 'json',
-            url: '<c:url value="/order/hand_make_order.json"/>?guestName=' + $('.guest-name').val() + '&guestMobile=' + $('.guest-mobile').val()
-            + '&liveTimeString=' + $('.live-time').val() + '&leaveTimeString=' + $('.leave-time').val() + '&roomTypeId=' + $('.room-type').val() + '&homeAmount=' + $('.home-amount').val()
-            + '&payment=' + $('.total-price').val() + '&comment=' + $('.comment').val() + '&accountId=' + $('.account-id').val() + '&tagId=' + $('.tag-id').val() + '&roomTypeName=' + $('.room-type').children('option:selected').text(),
-            success: function (data) {
-                if (data.status) {
-                    layer.alert('提示信息：下单成功', {icon: 6}, function () {
-                        window.location.reload();
-                    });
-                } else {
-                    layer.alert('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5}, function () {
-                        window.location.reload();
-                    });
-                }
-            }
-        })
-    });
-</script>
-</body>
-</html>
+<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+<script src="<%=basePath%>/assets/layer/layer.js"></script>
+<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
+<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
+<script src="<%=basePath%>/assets/js/tomato.min.js"></script>
+<script src="<%=basePath%>/assets/js/room-type.js"></script>

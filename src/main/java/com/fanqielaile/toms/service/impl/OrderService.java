@@ -255,11 +255,11 @@ public class OrderService implements IOrderService {
             } else {
                 order.setAccountId(bangInn.getAccountIdDi());
             }
-            List<OtaBangInnRoomDto> otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()));
-            if (otaBangInnRoomDtos.isEmpty()) {
+            OtaBangInnRoomDto otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), order.getCompanyId());
+            if (null == otaBangInnRoomDtos) {
                 return new JsonModel(false, "房型不存在");
             }
-            order.setRoomTypeName(otaBangInnRoomDtos.get(0).getRoomTypeName());
+            order.setRoomTypeName(otaBangInnRoomDtos.getRoomTypeName());
             logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, dictionary).toString());
             String respose = "";
             JSONObject jsonObject = null;
@@ -427,8 +427,13 @@ public class OrderService implements IOrderService {
         List<OrderParamDto> orderDtos = orderDao.selectOrderByPage(companyId, pageBounds, orderParamDto);
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
+            OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
             for (OrderParamDto orderDto : orderDtos) {
-                OtaBangInnRoomDto otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
+                if (ChannelSource.TAOBAO.equals(orderDto.getChannelSource())) {
+                    otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
+                } else {
+                    otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderDto.getInnId(), Integer.parseInt(orderDto.getRoomTypeId()), orderDto.getCompanyId());
+                }
                 if (null == otaBangInnRoomDto) {
                     orderDto.setRoomTypeName("暂无");
                 } else {
@@ -579,14 +584,22 @@ public class OrderService implements IOrderService {
             return result;
         } else {
             Order o = order.makeHandOrder(order, roomTypeInfoDto);
-            //同步oms订单成功，保存订单到toms
-            this.orderDao.insertOrder(o);
-            //创建每日价格信息
-            this.dailyInfosDao.insertDailyInfos(o);
-            //创建入住人信息
-            this.orderGuestsDao.insertOrderGuests(o);
-            result.put("status", true);
-            result.put("message", "下单成功");
+            //设置innId
+            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndAccountId(o.getCompanyId(), o.getAccountId());
+            if (null != bangInn) {
+                o.setInnId(bangInn.getInnId());
+                //同步oms订单成功，保存订单到toms
+                this.orderDao.insertOrder(o);
+                //创建每日价格信息
+                this.dailyInfosDao.insertDailyInfos(o);
+                //创建入住人信息
+                this.orderGuestsDao.insertOrderGuests(o);
+                result.put("status", true);
+                result.put("message", "下单成功");
+            } else {
+                result.put("status", false);
+                result.put("message", "下单失败，客栈不存在");
+            }
             return result;
         }
     }
