@@ -3,7 +3,7 @@ package com.toms.test;
 
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.Constants;
+import com.fanqie.util.TomsConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -126,7 +126,7 @@ public class TBTestNew {
         OtaInnOtaDto otaInnOta = null;
         OtaTaoBaoArea andArea = null;
         //客栈
-        if (Constants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
+        if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null){
             InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
             omsInnDto.setInnId(innId);
 
@@ -185,7 +185,7 @@ public class TBTestNew {
             otaInnOtaId = otaInnOta.getId();
         }
         //房型
-        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             for (RoomTypeInfo r:list){
                 XRoomType xRoomType = TBXHotelUtil.addRoomType(tbParam.getInnId(), Long.valueOf(otaInnOta.getWgHid()), r, otaInfo);
@@ -261,7 +261,7 @@ public class TBTestNew {
         String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
         String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-        if (Constants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
             List<PricePattern> pricePatterns = null;
             StringBuilder stringBuilder = new StringBuilder();
