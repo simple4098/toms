@@ -60,6 +60,7 @@
     var from_date = $("#from_datepicker").val();
     var to_date = $("#to_datepicker").val();
     var value = $("#value_id").val();
+    var reg = new RegExp("^[0-9]+(.[0-9]{1,3})?$");
     if(from_date.length==0){
        alert("开始时间不能为空!");
       return false;
@@ -68,6 +69,10 @@
       return false;
     }if(value.length==0){
        alert("增减值不能为空");
+      return false;
+    }
+    if(!reg.test(value)){
+      alert("请输入数字!");
       return false;
     }
     var url = '<c:url value="/distribution/ajax/saveRoomPrice.json"/>';
