@@ -488,33 +488,59 @@ public class OrderService implements IOrderService {
 
     @Override
     public JsonModel confirmOrder(OrderParamDto order) throws Exception {
+        JsonModel jsonModel = new JsonModel();
         //手动确认并执行下单
         //设置订单状态为确认并执行下单
         order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
-        JsonModel jsonModel = payBackDealMethod(order);
+        //淘宝订单处理方法
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            jsonModel = payBackDealMethod(order);
+        } else {
+            //TODO DO SOMETHING
+            jsonModel.setSuccess(true);
+            jsonModel.setMessage("下单成功");
+        }
         return jsonModel;
     }
 
     @Override
     public JsonModel refuesOrder(OrderParamDto order) throws ApiException {
+        JsonModel jsonModel = new JsonModel();
         //直接拒绝订单，不同步oms，直接调用淘宝更新订单状态接口
         //1.调用淘宝更新订单接口
         order.setOrderStatus(OrderStatus.HAND_REFUSE);
         order.setReason("手动直接拒绝");
         //淘宝更新订单
-        JsonModel jsonModel = TBCancelMethod(order, 1L);
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            jsonModel = TBCancelMethod(order, 1L);
+        } else {
+            //更新订单
+            this.orderDao.updateOrderStatusAndReason(order);
+            jsonModel.setSuccess(true);
+            jsonModel.setMessage("成功拒绝订单");
+        }
+
         return jsonModel;
 
     }
 
     @Override
     public JsonModel confirmNoOrder(OrderParamDto order) throws ApiException {
+        JsonModel jsonModel = new JsonModel();
         //确认订单，但不同步oms
         //1.修改订单状态，2.调用淘宝更新订单确认有房
         order.setOrderStatus(OrderStatus.CONFIM_NO_ORDER);
         order.setReason("确认但不执行下单");
         //淘宝更新订单
-        JsonModel jsonModel = TBCancelMethod(order, 2L);
+        //淘宝订单才更新
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            jsonModel = TBCancelMethod(order, 2L);
+        } else {
+            //更新订单
+            this.orderDao.updateOrderStatusAndReason(order);
+            jsonModel.setSuccess(true);
+            jsonModel.setMessage("确认订单成功");
+        }
         return jsonModel;
     }
 
