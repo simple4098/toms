@@ -30,7 +30,7 @@ public class OrderTest {
     private IOtaInfoDao otaInfoDao;
 
     @Test
-
+    @Ignore
     public void testAddOrder() throws Exception {
         String xmlStr = "<BookRQ><TaoBaoOrderId>1387784033895</TaoBaoOrderId><TaoBaoHotelId>16512064123</TaoBaoHotelId><HotelId>15728</HotelId><TaoBaoRoomTypeId>35553709123</TaoBaoRoomTypeId><RoomTypeId>1019240</RoomTypeId><TaoBaoRatePlanId>4161001123</TaoBaoRatePlanId><RatePlanCode>1019240</RatePlanCode><TaoBaoGid>12136001123</TaoBaoGid><CheckIn>2015-08-30</CheckIn><CheckOut>2015-08-31</CheckOut><EarliestArriveTime>2015-08-27 20:00:00</EarliestArriveTime><LatestArriveTime>2016-08-28 22:00:00</LatestArriveTime><RoomNum>1</RoomNum><TotalPrice>2800</TotalPrice><ContactName>测试联系人</ContactName><ContactTel>13920682209</ContactTel><PaymentType>5</PaymentType><DailyInfos><DailyInfo><Day>2015-08-30</Day><Price>1400</Price></DailyInfo><DailyInfo><Day>2015-08-31</Day><Price>1400</Price></DailyInfo></DailyInfos><OrderGuests><OrderGuest><Name>入住人1</Name><RoomPos>1</RoomPos></OrderGuest></OrderGuests><Comment>测试</Comment></BookRQ>";
         this.orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
@@ -52,7 +52,7 @@ public class OrderTest {
     }
 
     @Test
-
+    @Ignore
     public void testCreateOrder() throws Exception {
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>taobao</Username><Password>taobao</Password><CreateToken>taobao1230123213-1387792484913</CreateToken></AuthenticationToken><OrderId>b8f5096b-c4ef-44f2-9414-91b56b032dd0</OrderId><TaoBaoOrderId>1387784033263</TaoBaoOrderId><AlipayTradeNo>2013123111001001020000378012</AlipayTradeNo><Payment>10000</Payment></PaySuccessRQ>";
 //        String xmlStr = "<PaySuccessRQ><AuthenticationToken><Username>feiniao</Username><Password>111111</Password><CreateToken>taobao193617029605469-1435806074926</CreateToken></AuthenticationToken><OrderId>436e4b4f-c0b4-4c81-a6d9-08af74e85a64</OrderId><TaoBaoOrderId>193617029605469</TaoBaoOrderId><Payment>120000</Payment></PaySuccessRQ>";
