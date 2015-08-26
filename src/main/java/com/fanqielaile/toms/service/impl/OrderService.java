@@ -196,7 +196,7 @@ public class OrderService implements IOrderService {
             order.setAlipayTradeNo(orderXml.getAlipayTradeNo());
             //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
-            OrderConfig orderConfig = new OrderConfig(otaInfo.getId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
+            OrderConfig orderConfig = new OrderConfig(otaInfo.getOtaInfoId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
             OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
             if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
                 //自动下单
@@ -242,8 +242,9 @@ public class OrderService implements IOrderService {
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
             //查询客栈信息
-            BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId());
+            BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(),otaInfo.getOtaInfoId(),order.getCompanyId());
             if (null == bangInn) {
                 logger.info("绑定客栈不存在" + order.getOTAHotelId());
                 return new JsonModel(false, "绑定客栈不存在");
@@ -269,8 +270,6 @@ public class OrderService implements IOrderService {
             } catch (Exception e) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-                Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                 logger.info("淘宝取消订单接口返回值=>" + result);
                 if (null != result && result.equals("success")) {
@@ -282,8 +281,6 @@ public class OrderService implements IOrderService {
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-                Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                 logger.info("淘宝取消订单接口返回值=>" + result);
                 if (null != result && result.equals("success")) {
@@ -292,8 +289,6 @@ public class OrderService implements IOrderService {
                 return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
             } else {
                 //更新淘宝订单状态
-                Company company = this.companyDao.selectCompanyById(bangInn.getCompanyId());
-                OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
                 String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
                 logger.info("淘宝更新订单返回值=>" + result);
                 if (null != result && result.equals("success")) {
