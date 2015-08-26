@@ -20,8 +20,8 @@
        </resultMap>
 
        <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
-              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model,bang_inn_id,ota_info_id,inn_id)
-              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel},#{bangInnId},#{otaInfoId},#{innId})
+              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model,bang_inn_id,ota_info_id,inn_id,sj)
+              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel},#{bangInnId},#{otaInfoId},#{innId},#{sj})
        </insert>
 
        <select id="findOtaInnOta" parameterType="java.lang.String" resultMap="BaseResultMap">
