@@ -167,13 +167,19 @@ public class DistributionController extends BaseController{
     }
     //房价管理-保存房价设置
     @RequestMapping(value = "/ajax/saveRoomPrice",method = RequestMethod.POST)
-    public void saveRoomPriceDetail(OtaRoomPriceDto roomPriceDto){
+    public void saveRoomPriceDetail(Model model,OtaRoomPriceDto roomPriceDto){
         UserInfo currentUser = getCurrentUser();
         roomPriceDto.setCompanyId(currentUser.getCompanyId());
         roomPriceDto.setModifierId(currentUser.getId());
         BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), roomPriceDto.getInnId());
         roomPriceDto.setAccountId(bangInn.getAccountId());
-        otaRoomPriceService.saveRoomPriceDto(roomPriceDto);
+        try {
+            otaRoomPriceService.saveRoomPriceDto(roomPriceDto,bangInn);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        } catch (Exception e) {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, e.getMessage());
+        }
     }
 
      //房价管理-同步房型价格到卖房网站
