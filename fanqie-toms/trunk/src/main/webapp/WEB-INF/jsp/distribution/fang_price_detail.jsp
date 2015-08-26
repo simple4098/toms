@@ -8,7 +8,6 @@
 %>
 <head>
     <title>客栈接单设置</title>
-    <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <link rel="stylesheet" href="<%=basePath%>/assets/css/pages.css"/>
 </head>
 <div class="page-content">
@@ -67,7 +66,7 @@
                 layer.open({
                     title:"房型特殊价格设置",
                     type: 1,
-                    shift: 1,
+                    shade: false,
                     area: ['516px', '400px'],
                     shadeClose: true, //开启遮罩关闭
                     content: data
@@ -77,23 +76,32 @@
             }
         })
     });
+
     $('.tp-price').on('click', function () {
-        var otaInfoId = $(this).attr('ota_info_id');
-        var innId = $(this).attr('inn_id');
-        var accountId = $(this).attr('account_id');
-        var url = '<c:url value="/distribution/ajax/tpPrice.json"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&accountId="+accountId
-        $.ajax({
-            type:'POST',
-            url:url,
-            dataType:'json',
-            success:function(data){
-                if(!data.status){
-                    alert(data.message);
+        if( !$(this).hasClass('push')){
+            $(this).addClass("push");
+            var otaInfoId = $(this).attr('ota_info_id');
+            var innId = $(this).attr('inn_id');
+            var accountId = $(this).attr('account_id');
+            var url = '<c:url value="/distribution/ajax/tpPrice.json"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&accountId="+accountId
+            $.ajax({
+                type:'POST',
+                url:url,
+                dataType:'json',
+                success:function(data){
+                    $(this).removeClass("push");
+                    if(!data.status){
+                        layer.alert(data.message);
+                    }
+                },error:function(data){
+                    $(this).removeClass("push");
+                    layer.alert("同步失败!")
                 }
-            },error:function(data){
-                alert("sdsd");
-            }
-        })
+            })
+        }else{
+            layer.alert("正在同步请稍后...")
+        }
+
     });
 </script>
 
