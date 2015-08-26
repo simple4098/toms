@@ -514,7 +514,8 @@ public class Order extends Domain {
         handOrder.setAccountId(order.getAccountId());
         handOrder.setChannelSource(ChannelSource.HAND_ORDER);
         handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
-        handOrder.setOrderCode(OrderMethodHelper.getOrderCode());
+        //手动下单将渠道订单code跟order_code设置为相同
+        handOrder.setOrderCode(handOrder.getChannelOrderCode());
         handOrder.setOrderStatus(OrderStatus.HAND_ORDER);
         handOrder.setInnId(order.getInnId());
         handOrder.setGuestName(order.getGuestName());
@@ -525,6 +526,7 @@ public class Order extends Domain {
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
         //TODO 设置预付，成本，ota佣金价格
         handOrder.setPrepayPrice(order.getPayment());
+        handOrder.setPayment(order.getPayment());
         handOrder.setOrderTime(new Date());
         handOrder.setOTARoomTypeId(order.getRoomTypeId());
         handOrder.setCurrency(CurrencyType.CNY);
@@ -556,13 +558,13 @@ public class Order extends Domain {
                 if (null != roomTypeInfoResult) {
                     if (ArrayUtils.isNotEmpty(roomTypeInfoResult.getRoomDetail().toArray())) {
                         for (RoomDetail roomDetail : roomTypeInfoResult.getRoomDetail()) {
-                            result = result.add(new BigDecimal(roomDetail.getRoomPrice()));
+                            result = result.add(new BigDecimal(Double.toString(roomDetail.getRoomPrice())));
                         }
                     }
                 }
             }
         }
-        return result;
+        return result.multiply(new BigDecimal(order.getHomeAmount()));
     }
 
     /**
@@ -589,7 +591,7 @@ public class Order extends Domain {
                             DailyInfos dailyInfos = new DailyInfos();
                             dailyInfos.setOrderId(order.getId());
                             dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
-                            dailyInfos.setPrice(new BigDecimal(roomDetail.getRoomPrice()));
+                            dailyInfos.setPrice(new BigDecimal(Double.toString(roomDetail.getRoomPrice())));
                             dailyInfos.setCreatedDate(new Date());
                             dailyInfoses.add(dailyInfos);
                         }

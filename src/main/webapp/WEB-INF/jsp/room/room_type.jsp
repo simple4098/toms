@@ -15,6 +15,10 @@
 <div >
     <div class="select-area">
         <form class="form-data">
+            <input type="hidden" class="room-type-url" id="roomTypeUrl"
+                   data-url="<c:url value="/order/find_room_type.json"/>"/>
+            <input type="hidden" class="room-num-url" id="roomNumUrl"
+                   data-url="<c:url value="/order/find_room_num.json"/>"/>
             <input type="hidden" id="dataUrlId" data-url="<c:url value="/oms/ajax/obtRoomType"/>">
             <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
             <select class="form-control" id="kz-tags-r"></select>
@@ -99,7 +103,7 @@
                     <input type="hidden" class="account-id" name="accountId"/>
                     <input type="hidden" class="tag-id" name="tagId"/>
                     <input type="hidden" class="type-name" name="roomTypeName"/>
-
+                    <input type="hidden" class="max-num" value=""/>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名
                             <tip style="color: red">*</tip>

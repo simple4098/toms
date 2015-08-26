@@ -105,6 +105,7 @@ $('.hand-btn').on('click', function () {
 			if (data.roomType != null) {
 				$('.account-id').val(accountId);
 				$('.tag-id').val(tagId);
+				$('.room-type').append('<option value="">-请选择-</option>');
 				for (var i = 0; i < data.roomType.list.length; i++) {
 					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
 					$('#hangOrder').modal();
@@ -114,33 +115,6 @@ $('.hand-btn').on('click', function () {
 		}
 	})
 });
-/*当入住日期和离开日期失去光标时*/
-$('.leave-time').on('blur', function () {
-	var url = $("#dataUrlId").attr("data-url") + ".json?v=" + new Date().getTime();
-	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-	var date = $(this).val();
-	$('#to_datepicker').val(TC.plusDate(date, '30', 'd', 'yyyy-MM-dd'));
-	var postDate = {
-		'startDate': $('.live-time').val(),
-		'endDate': $('.leave-time').val(),
-		'tagId': tagId,
-		'accountId': accountId
-	};
-	$('.room-type option').remove();
-	$.ajax({
-		type: 'POST',
-		data: postDate,
-		url: url,
-		dataType: 'json',
-		success: function (data) {
-			if (data.roomType != null) {
-				for (var i = 0; i < data.roomType.list.length; i++) {
-					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
-				}
-			}
-		}
-	})
-})
 
 //上一月
 $('#prevM').on('click',function(){
@@ -185,7 +159,11 @@ $('.btn-homeAmount').on('click', function () {
 });
 $('.btn-homeAmount-add').on('click', function () {
 	var value = $('.home-amount').val();
-	if (value > 9) {
+	var maxNum = $('.max-num').val();
+	if (null == maxNum || 0 == maxNum) {
+		maxNum = 9;
+	}
+	if (value > maxNum) {
 		$('.btn-homeAmount').attr('disabled', false);
 		$('.btn-homeAmount-add').attr('disabled', true);
 	} else {
@@ -206,34 +184,60 @@ var $roomType = $('#roomType'),
 $group1.datepicker({
 	showOtherMonths: true,
 	selectOtherMonths: false,
+	minDate: new Date(),
 });
 
 $group1.change(function () {
 
-	//if(dateCheck()){
-	//	$.ajax({
-	//		type: 'get',
-	//		url: 'json.json',
-	//		success: function(data){
-	//			var html = ''
-	//			data.roomType.map(function(el){
-	//				html += '<option value="'+ el.id +'">'+ el.name +'</option>'
-	//			})
-	//			$roomType.html( html )
-	//		}
-	//	})
-	//}
+	if (dateCheck()) {
+		var url = $('.room-type-url').attr('data-url');
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: $("#hand-order-form").serialize(),
+			success: function (data) {
+				$('.room-type option').remove();
+				if (data.status) {
+					$('.room-type').append('<option value="">-请选择-</option>');
+					for (var i = 0; i < data.data.length; i++) {
+						$('.room-type').append('<option value="' + data.data[i].roomTypeId + '">' + data.data[i].roomTypeName + '</option>');
+					}
+				}
+			},
+			error: function () {
+				layer.alert("系统错误");
+			}
+		})
+	}
 })
 
 // 第二组联动
 $group2.change(function () {
-	//$.ajax({
-	//	type: 'get',
-	//	url: 'json.json',
-	//	success: function(data){
-	//		$roomNum.val( data.roomNum )
-	//	}
-	//})
+	if (dateCheck()) {
+		var url = $('.room-num-url').attr('data-url');
+		var typeName = $('.room-type').children('option:selected').text();
+		$('.type-name').val(typeName);
+		$.ajax({
+			type: 'post',
+			url: url,
+			dataType: 'json',
+			data: $("#hand-order-form").serialize(),
+			success: function (data) {
+				if (data.status) {
+					$('.home-amount').val(1);
+					if (data.data <= 1) {
+						$('.max-num').val(data.data);
+						$('.btn-homeAmount').attr('disabled', true);
+						$('.btn-homeAmount-add').attr('disabled', true);
+					} else {
+						$('.max-num').val(data.data - 1);
+						$('.btn-homeAmount').attr('disabled', true);
+						$('.btn-homeAmount-add').attr('disabled', false);
+					}
+				}
+			}
+		})
+	}
 })
 
 // 验证手机号
@@ -262,11 +266,15 @@ $('#submitBtn').click(function () {
 			data: $("#hand-order-form").serialize(),
 			success: function (data) {
 				if (data.status) {
-					layer.alert('提示信息：下单成功', {icon: 6}, function () {
+					layer.confirm('提示信息：下单成功', {icon: 6}, function () {
+						window.location.reload();
+					}, function () {
 						window.location.reload();
 					});
 				} else {
-					layer.alert('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5}, function () {
+					layer.confirm('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5}, function () {
+						window.location.reload();
+					}, function () {
 						window.location.reload();
 					});
 				}
@@ -304,9 +312,16 @@ var dateCheck = function () {
 		isDate = false
 		return
 	}
+	if (new Date($inTime) == new Date($outTime)) {
+		$tips.html('结束日期必须大于开始日期').show()
+		isDate = false
+		return
+	}
 	else {
 		$tips.empty().hide()
 	}
-
+	if ($inTime == null || $inTime == "" || $outTime == null || $outTime == "") {
+		return false;
+	}
 	return isDate
 }

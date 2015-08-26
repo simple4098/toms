@@ -14,6 +14,33 @@ public class RoomTypeInfoDto {
 
     public List<RoomTypeInfo> list;
     public List<String> roomDates;
+    public String roomTypeId;
+    public String roomTypeName;
+    public Integer maxRoomNum;
+
+    public Integer getMaxRoomNum() {
+        return maxRoomNum;
+    }
+
+    public void setMaxRoomNum(Integer maxRoomNum) {
+        this.maxRoomNum = maxRoomNum;
+    }
+
+    public String getRoomTypeId() {
+        return roomTypeId;
+    }
+
+    public void setRoomTypeId(String roomTypeId) {
+        this.roomTypeId = roomTypeId;
+    }
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
+    }
 
     public List<RoomTypeInfo> getList() {
         return list;

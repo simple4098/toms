@@ -2,6 +2,8 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.OrderParamDto;
+import com.fanqielaile.toms.dto.RoomTypeInfoDto;
+import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
@@ -15,6 +17,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.taobao.api.ApiException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -59,6 +62,9 @@ public class OrderController extends BaseController {
             model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);
+            //渠道来源
+            List<Order> orders = this.orderService.findOrderChancelSource(currentUser.getCompanyId());
+            model.addAttribute("orderSource", orders);
         } catch (Exception e) {
             logger.error("查询订单列表失败", e);
             throw new TomsRuntimeException("查询订单列表失败");
@@ -204,5 +210,64 @@ public class OrderController extends BaseController {
             model.addAttribute("message", "参数错误");
         }
 
+    }
+
+    /**
+     * 手动下单时可选房型
+     *
+     * @param model
+     * @param order
+     * @param liveTimeString
+     * @param leaveTimeString
+     */
+    @RequestMapping("find_room_type")
+    public void findRoomType(Model model, Order order, String liveTimeString, String leaveTimeString) {
+        UserInfo userInfo = getCurrentUser();
+        if (StringUtils.isNotEmpty(liveTimeString)) {
+            order.setLiveTime(DateUtil.parseDate(liveTimeString));
+        }
+        if (StringUtils.isNotEmpty(leaveTimeString)) {
+            order.setLeaveTime(DateUtil.addDay(DateUtil.parseDate(leaveTimeString), -1));
+        }
+        try {
+            List<RoomTypeInfoDto> roomTypeInfoDtos = this.orderService.findHandOrderRoomType(order, userInfo);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, roomTypeInfoDtos);
+        } catch (Exception e) {
+            logger.error("查询手动可选房型信息出错" + e.getMessage());
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "查询手动可选房型信息出错");
+            throw new TomsRuntimeException("查询手动可选房型信息出错" + e.getMessage());
+        }
+
+    }
+
+    /**
+     * 获取房型最大库存量
+     *
+     * @param model
+     * @param order
+     * @param liveTimeString
+     * @param leaveTimeString
+     */
+    @RequestMapping("find_room_num")
+    public void findRoomNum(Model model, Order order, String liveTimeString, String leaveTimeString) {
+        UserInfo userInfo = getCurrentUser();
+        if (StringUtils.isNotEmpty(liveTimeString)) {
+            order.setLiveTime(DateUtil.parseDate(liveTimeString));
+        }
+        if (StringUtils.isNotEmpty(leaveTimeString)) {
+            order.setLeaveTime(DateUtil.addDay(DateUtil.parseDate(leaveTimeString), -1));
+        }
+        try {
+            List<RoomTypeInfoDto> roomTypeInfoDtos = this.orderService.findHandOrderRoomType(order, userInfo);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, OrderMethodHelper.getMaxRoomNum(roomTypeInfoDtos, order));
+        } catch (Exception e) {
+            logger.error("获取房型最大库存量失败" + e.getMessage());
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "获取房型最大库存量失败");
+            throw new TomsRuntimeException("获取房型最大库存量失败" + e.getMessage());
+        }
     }
 }

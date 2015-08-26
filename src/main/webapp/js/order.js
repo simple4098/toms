@@ -15,7 +15,7 @@ $('.btn-search').on('click', function () {
     var searchType = $('.search-type').val();
     if (beginDate == null || beginDate == '' || endDate == null || endDate == '' || searchType == null || searchType == '') {
         $('.begin-date').val(null);
-        $('end-date').val(null);
+        $('.end-date').val(null);
         $('.search-type').val(null);
     }
     $('.search-form').submit();
