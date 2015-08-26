@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
 import com.fanqielaile.toms.dto.OrderParamDto;
+import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
@@ -133,4 +134,20 @@ public interface IOrderService {
      * @return
      */
     Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo);
+
+    /**
+     * 查询渠道来源
+     *
+     * @param companyId
+     * @return
+     */
+    List<Order> findOrderChancelSource(String companyId);
+
+    /**
+     * 查询手动下单时可以选择的房型信息
+     *
+     * @param order
+     * @return
+     */
+    List<RoomTypeInfoDto> findHandOrderRoomType(Order order, UserInfo userInfo) throws Exception;
 }

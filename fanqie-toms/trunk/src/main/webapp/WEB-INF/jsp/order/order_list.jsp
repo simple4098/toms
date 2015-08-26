@@ -79,14 +79,24 @@
                             <thead style="font-size: 14px;">
                             <tr>
                                 <th>
-                                    <select>
+                                    <select name="channelSource">
                                         <option value="">渠道来源</option>
+                                        <c:if test="${not empty orderSource}">
+                                            <c:forEach items="${orderSource}" var="sor">
+                                                <option value="${sor.channelSource}">${sor.channelSource.text}</option>
+                                            </c:forEach>
+                                        </c:if>
                                     </select>
                                 </th>
                                 <th>渠道订单号</th>
                                 <th>
-                                    <select>
+                                    <select name="orderStatus">
                                         <option value="">订单状态</option>
+                                        <option value="CONFIM_AND_ORDER">已确认并下单</option>
+                                        <option value="CONFIM_NO_ORDER">已确认但不下单</option>
+                                        <option value="REFUSE">已拒绝</option>
+                                        <option value="HAND_REFUSE">手动拒绝</option>
+                                        <option value="HAND_ORDER">手动下单</option>
                                     </select>
                                 </th>
 
@@ -119,8 +129,8 @@
                                         <td>${d.roomTypeName}</td>
                                         <td>${d.homeAmount}</td>
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
-                                                                               pattern="yyyy-MM-dd HH:mm:ss"/>/<fmt:formatDate
-                                                value="${d.leaveTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                                                               pattern="yyyy-MM-dd"/>/<fmt:formatDate
+                                                value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
                                         <td>${d.totalPrice}/${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td>${d.OTAPrice}</td>
@@ -233,3 +243,29 @@
 </div>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/js/order.js"></script>
+<script>
+    $.datepicker.regional['zh-CN'] = {
+        closeText: '关闭',
+        prevText: '<上月',
+        nextText: '下月>',
+        currentText: '今天',
+        monthNames: ['一月', '二月', '三月', '四月', '五月', '六月',
+            '七月', '八月', '九月', '十月', '十一月', '十二月'],
+        monthNamesShort: ['一', '二', '三', '四', '五', '六',
+            '七', '八', '九', '十', '十一', '十二'],
+        dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+        dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+        weekHeader: '周',
+        dateFormat: 'yy-mm-dd',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: true,
+        yearSuffix: '年'
+    };
+    $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    $('.begin-date,.end-date').datepicker({
+        showOtherMonths: true,
+        selectOtherMonths: false,
+    });
+</script>

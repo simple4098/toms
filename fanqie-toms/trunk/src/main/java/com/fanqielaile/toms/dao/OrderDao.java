@@ -68,4 +68,12 @@ public interface OrderDao {
      * @return
      */
     OrderParamDto selectOrderById(@Param("id") String id);
+
+    /**
+     * 查询渠道来源
+     *
+     * @param companyId
+     * @return
+     */
+    List<Order> selectOrderChancelSource(@Param("companyId") String companyId);
 }

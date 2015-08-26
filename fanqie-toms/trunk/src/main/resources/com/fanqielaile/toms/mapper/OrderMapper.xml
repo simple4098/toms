@@ -160,4 +160,7 @@
             </if>
         </where>
     </select>
+    <select id="selectOrderChancelSource" resultMap="BaseResultsMap" parameterType="java.lang.String">
+        SELECT channel_source from ota_toms_order WHERE company_id = #{companyId} GROUP BY channel_source
+    </select>
 </mapper>

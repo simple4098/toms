@@ -23,6 +23,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -467,7 +468,12 @@ public class OrderService implements IOrderService {
     public OrderParamDto findOrderById(String id) {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
         if (null != orderParamDto) {
-            OtaBangInnRoomDto otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
+            OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
+            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+                otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
+            } else {
+                otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderParamDto.getInnId(), Integer.parseInt(orderParamDto.getRoomTypeId()), orderParamDto.getCompanyId());
+            }
             if (null != otaBangInnRoomDto) {
                 orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
             } else {
@@ -475,10 +481,18 @@ public class OrderService implements IOrderService {
             }
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
             //价格策略
-            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
-            if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
-                for (DailyInfos dailyInfos : dailyInfoses) {
-                    dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
+            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+                OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
+                if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                    for (DailyInfos dailyInfos : dailyInfoses) {
+                        dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
+                    }
+                }
+            } else {
+                if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                    for (DailyInfos dailyInfos : dailyInfoses) {
+                        dailyInfos.setCostPrice(dailyInfos.getPrice());
+                    }
                 }
             }
             orderParamDto.setDailyInfoses(dailyInfoses);
@@ -591,11 +605,57 @@ public class OrderService implements IOrderService {
                 this.orderGuestsDao.insertOrderGuests(o);
                 result.put("status", true);
                 result.put("message", "下单成功");
+                return result;
             } else {
                 result.put("status", false);
                 result.put("message", "下单失败，客栈不存在");
+                return result;
             }
-            return result;
         }
+    }
+
+    @Override
+    public List<Order> findOrderChancelSource(String companyId) {
+        return this.orderDao.selectOrderChancelSource(companyId);
+    }
+
+    @Override
+    public List<RoomTypeInfoDto> findHandOrderRoomType(Order order, UserInfo userInfo) throws Exception {
+        ParamDto paramDto = new ParamDto();
+        paramDto.setCompanyId(userInfo.getCompanyId());
+        paramDto.setUserId(userInfo.getId());
+        paramDto.setAccountId(order.getAccountId() + "");
+        if (StringUtils.isNotEmpty(order.getLeaveTime().toString())) {
+            paramDto.setEndDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd"));
+        }
+        if (StringUtils.isNotEmpty(order.getLiveTime().toString())) {
+            paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
+        }
+        paramDto.setTagId(order.getTagId());
+        RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
+        List<RoomTypeInfoDto> roomTypeInfoDtos = new ArrayList<>();
+        //处理找出的房型信息，如果放量为空的提出数据
+        if (null != roomType) {
+            if (ArrayUtils.isNotEmpty(roomType.getList().toArray())) {
+                for (RoomTypeInfo roomTypeInfo : roomType.getList()) {
+                    if (ArrayUtils.isNotEmpty(roomTypeInfo.getRoomDetail().toArray())) {
+                        RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
+                        for (RoomDetail roomDetail : roomTypeInfo.getRoomDetail()) {
+                            if (null != roomDetail.getRoomNum()) {
+                                if (0 != roomDetail.getRoomNum()) {
+                                    roomTypeInfoDto.setRoomTypeId(roomTypeInfo.getRoomTypeId() + "");
+                                    roomTypeInfoDto.setRoomTypeName(roomTypeInfo.getRoomTypeName());
+                                    roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
+                                }
+                            }
+                        }
+                        if (StringUtils.isNotEmpty(roomTypeInfoDto.getRoomTypeName()) && StringUtils.isNotEmpty(roomTypeInfoDto.getRoomTypeId())) {
+                            roomTypeInfoDtos.add(roomTypeInfoDto);
+                        }
+                    }
+                }
+            }
+        }
+        return roomTypeInfoDtos;
     }
 }

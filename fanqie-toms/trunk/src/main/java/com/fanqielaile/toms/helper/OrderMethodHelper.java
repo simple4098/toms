@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.helper;
 
+import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.CurrencyType;
 import com.fanqielaile.toms.enums.FeeStatus;
 import com.fanqielaile.toms.enums.OrderStatus;
@@ -162,5 +163,25 @@ public class OrderMethodHelper {
         }
 
         return false;
+    }
+
+    /**
+     * 得到最大的房间库存量
+     *
+     * @param roomTypeInfoDtos
+     * @return
+     */
+    public static Integer getMaxRoomNum(List<RoomTypeInfoDto> roomTypeInfoDtos, Order order) {
+        int result = 0;
+        if (ArrayUtils.isNotEmpty(roomTypeInfoDtos.toArray())) {
+            for (RoomTypeInfoDto roomTypeInfoDto : roomTypeInfoDtos) {
+                if (roomTypeInfoDto.getRoomTypeId().equals(order.getRoomTypeId())) {
+                    if (roomTypeInfoDto.getMaxRoomNum() > result) {
+                        result = roomTypeInfoDto.getMaxRoomNum();
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
