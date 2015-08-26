@@ -325,15 +325,19 @@
                         </c:if>
                         <br>
                     </ul>
-                    <hr>
+                    <hr/>
                     <br/>
                     <!-- 单选框 -->
+                    <div style="margin-right: 50px;float: left">
                     <label class="radio-inline">
                         <input type="radio" class="dataPermission0" name="dataPermission" id="inlineRadio1" value="0">只看自己的客栈
                     </label>
+                    </div>
+                    <div style="margin-right: 100px;float: left;">
                     <label class="radio-inline">
                         <input type="radio" name="dataPermission" class="dataPermission1" id="inlineRadio2" value="1">能看所有的客栈
                     </label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -386,12 +390,16 @@
                     <hr>
                     <br/>
                     <!-- 单选框 -->
+                    <div style="margin-right: 50px;float: left">
                     <label class="radio-inline">
                         <input type="radio" name="dataPermission" class="dataPermission3" id="inlineRadio3" value="0">只看自己的客栈
                     </label>
+                    </div>
+                    <div style="margin-right: 100px;float: left;">
                     <label class="radio-inline">
                         <input type="radio" name="dataPermission" class="dataPermission4" id="inlineRadio4" value="1">能看所有的客栈
                     </label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
