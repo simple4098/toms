@@ -83,13 +83,18 @@
       dataType:'json',
       data:$("#form-order-configId").serialize(),
       success:function(data){
-        var  i =layer.load(2, {time: 2*1000});
-        if(i==1){
-          parent.window.location.href =  parent.window.location.href
+        if(data.status){
+            parent.window.location.href =  parent.window.location.href
+        }else{
+          alert(data.message);
         }
       },error:function(data){
          alert("保存异常，请稍后再试;");
       }
     })
+  })
+  //关闭窗口 绑定事件
+  $(".layui-layer-close").bind("click",function(){
+    parent.window.location.href =  parent.window.location.href
   })
 </script>
