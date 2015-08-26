@@ -203,9 +203,9 @@
         <include refid="Base_Column_List"/>
         from bang_inn where inn_id=#{innId} and deleted=0
     </select>
-    <select id="selectBangInnByTBHotelId" parameterType="java.lang.String" resultMap="BangInnDtoResult">
-        SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.ota_wg_id = oo.id where oo.wg_hid=#{otaHotelId} and
-        oo.deleted = 0 and bi.deleted=0
+    <select id="selectBangInnByTBHotelId"  resultMap="BangInnDtoResult">
+        SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.id = oo.bang_inn_id where oo.wg_hid=#{otaHotelId} and
+        oo.deleted = 0 and bi.deleted=0 and oo.company_id = '${companyId}' and oo.ota_info_id ='${otaInfoId}'
     </select>
 
     <select id="selectBangInnByCompanyIdAndAccountId" resultMap="BangInnDtoResult" >

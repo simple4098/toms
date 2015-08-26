@@ -146,7 +146,7 @@ public interface BangInnDao {
      * @param otaHotelId
      * @return
      */
-    BangInnDto selectBangInnByTBHotelId(@Param("otaHotelId") String otaHotelId);
+    BangInnDto selectBangInnByTBHotelId(@Param("otaHotelId") String otaHotelId,@Param("otaInfoId")String otaInfoId,@Param("companyId")String companyId);
 
     /**
      * 删除此客栈在此公司的关系

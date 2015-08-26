@@ -20,7 +20,7 @@ public interface IOtaRoomPriceService {
 
     OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto);
 
-    void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto);
+    void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto,  BangInn bangInn)throws Exception;
 
 
 }
