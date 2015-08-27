@@ -469,7 +469,8 @@ public class Order extends Domain {
         omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
-        omsOrder.setRoomTypeNum(order.getHomeAmount());
+        //房型数量，针对oms接口传1
+        omsOrder.setRoomTypeNum(1);
         omsOrder.setTypePay(1);
         omsOrder.setUserName(order.getGuestName());
         //TODO需要传入房态更新时间
