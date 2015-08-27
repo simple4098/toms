@@ -133,7 +133,7 @@ public interface IOrderService {
      * @param order
      * @return
      */
-    Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo);
+    Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo) throws Exception;
 
     /**
      * 查询渠道来源

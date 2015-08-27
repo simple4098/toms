@@ -559,7 +559,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo) {
+    public Map<String, Object> dealHandMakeOrder(Order order, UserInfo userInfo) throws Exception {
         Map<String, Object> result = new HashMap<>();
         //下单到oms
         //1.查询字典表
@@ -568,18 +568,20 @@ public class OrderService implements IOrderService {
         String respose = "";
         JSONObject jsonObject = null;
         RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
+        //处理每日价格信息
+        ParamDto paramDto = new ParamDto();
+        paramDto.setCompanyId(userInfo.getCompanyId());
+        paramDto.setUserId(userInfo.getId());
+        paramDto.setAccountId(order.getAccountId() + "");
+        //设置查询日期
+        paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
+        paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
+        roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
+        Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
         try {
-            //处理每日价格信息
-            ParamDto paramDto = new ParamDto();
-            paramDto.setCompanyId(userInfo.getCompanyId());
-            paramDto.setUserId(userInfo.getId());
-            paramDto.setAccountId(order.getAccountId() + "");
-            //设置查询日期
-            paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
-            paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
-            roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
-            logger.info("oms手动下单传递参数" + order.toOrderParamDto(order.makeHandOrder(order, roomTypeInfoDto), dictionary).toString());
-            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order.makeHandOrder(order, roomTypeInfoDto), dictionary));
+
+            logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, dictionary).toString());
+            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, dictionary));
             jsonObject = JSONObject.fromObject(respose);
         } catch (Exception e) {
             result.put("status", false);
@@ -592,17 +594,16 @@ public class OrderService implements IOrderService {
             result.put("message", "oms接口相应失败");
             return result;
         } else {
-            Order o = order.makeHandOrder(order, roomTypeInfoDto);
             //设置innId
-            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndAccountId(o.getCompanyId(), o.getAccountId());
+            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndAccountId(hangOrder.getCompanyId(), hangOrder.getAccountId());
             if (null != bangInn) {
-                o.setInnId(bangInn.getInnId());
+                hangOrder.setInnId(bangInn.getInnId());
                 //同步oms订单成功，保存订单到toms
-                this.orderDao.insertOrder(o);
+                this.orderDao.insertOrder(hangOrder);
                 //创建每日价格信息
-                this.dailyInfosDao.insertDailyInfos(o);
+                this.dailyInfosDao.insertDailyInfos(hangOrder);
                 //创建入住人信息
-                this.orderGuestsDao.insertOrderGuests(o);
+                this.orderGuestsDao.insertOrderGuests(hangOrder);
                 result.put("status", true);
                 result.put("message", "下单成功");
                 return result;
