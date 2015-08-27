@@ -25,6 +25,7 @@ import com.taobao.api.domain.XRoom;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.jaxen.function.NamespaceUriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -351,16 +352,20 @@ public class TBService implements ITPService {
                 xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), o);
                 rate = TBXHotelUtil.rateGet(o, r);
                 if (xRoom!=null && rate!=null ){
-                    obtInventory = TomsUtil.obtInventory(r);
-                    xRoom.setInventory(obtInventory);
-                    log.info("宝贝roomTypeId：" + r.getRoomTypeId() + " 同步到tp店" + obtInventory);
-                    TBXHotelUtil.roomUpdate(o, xRoom);
-                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), roomPriceDto.getOtaInfoId()));
-                    log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(r,priceModelDto));
-                    obtInventoryRate = TomsUtil.obtInventoryRate(r,priceModelDto,priceDto);
-                    log.info("处理之后的价格json：" + obtInventoryRate);
-                    rate.setInventoryPrice(obtInventoryRate);
-                    TBXHotelUtil.rateUpdate(o, r, rate);
+                    if (r.getRoomDetail()!= null){
+                        obtInventory = TomsUtil.obtInventory(r);
+                        xRoom.setInventory(obtInventory);
+                        log.info("宝贝roomTypeId：" + r.getRoomTypeId() + " 同步到tp店" + obtInventory);
+                        TBXHotelUtil.roomUpdate(o, xRoom);
+                        OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), roomPriceDto.getOtaInfoId()));
+                        log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(r,priceModelDto));
+                        obtInventoryRate = TomsUtil.obtInventoryRate(r,priceModelDto,priceDto);
+                        log.info("处理之后的价格json：" + obtInventoryRate);
+                        rate.setInventoryPrice(obtInventoryRate);
+                        TBXHotelUtil.rateUpdate(o, r, rate);
+                    }else {
+                        log.info("r.getRoomTypeId()：" + r.getRoomTypeId()+" 此房型无房价信息");
+                    }
                 }
             }
         }else {
