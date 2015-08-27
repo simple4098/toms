@@ -14,6 +14,8 @@
 %>
 <title>订单管理</title>
 <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
+<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
+<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/ace.min.css">
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
 <script src="<%=basePath%>/assets/layer/layer.js"></script>
 <div class="page-content">
@@ -53,7 +55,8 @@
                                 </option>
                             </select>
                             <input class="begin-date" type="text" placeholder="开始时间" name="beginDate"
-                                   value="${order.beginDate}"/>至 <input class="end-date" type="text"
+                                   value="${order.beginDate}"/>
+                            至 <input class="end-date" type="text"
                                                                         value="${order.endDate}" name="endDate"
                                                                         placeholder="截止时间"/>
                             <button type="submit" class="btn-info btn-search">查询</button>
@@ -243,6 +246,8 @@
 </div>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/js/order.js"></script>
+
+
 <script>
     $.datepicker.regional['zh-CN'] = {
         closeText: '关闭',
