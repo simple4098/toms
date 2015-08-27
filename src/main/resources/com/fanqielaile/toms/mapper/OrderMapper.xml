@@ -127,6 +127,12 @@
             <if test="companyId != null and companyId != ''">
                 and oto.company_id=#{companyId}
             </if>
+            <if test="order.orderStatus != null and order.orderStatus != ''">
+                and oto.order_status = '${order.orderStatus}'
+            </if>
+            <if test="order.channelSource != null and order.channelSource != ''">
+                and oto.channel_source = '${order.channelSource}'
+            </if>
             <if test="order.searchType != null and order.searchType != ''">
                 and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
             </if>

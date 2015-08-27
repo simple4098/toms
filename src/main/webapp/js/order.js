@@ -20,7 +20,20 @@ $('.btn-search').on('click', function () {
     }
     $('.search-form').submit();
 })
-
+//渠道来源，订单状态联动
+$('.channel-source,.order-status').change(function () {
+    $('#channelSource').val($('.channel-source').val());
+    $('#orderStatus').val($('.order-status').val());
+    var beginDate = $('.begin-date').val();
+    var endDate = $('.end-date').val();
+    var searchType = $('.search-type').val();
+    if (beginDate == null || beginDate == '' || endDate == null || endDate == '' || searchType == null || searchType == '') {
+        $('.begin-date').val(null);
+        $('.end-date').val(null);
+        $('.search-type').val(null);
+    }
+    $('.search-form').submit();
+})
 /*查询订单*/
 $('.btn-order').on('click', function () {
     var url = $(this).attr('data-url');
