@@ -27,7 +27,7 @@ public class DailyInfos extends Domain {
 
     public String getDayDesc() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
+        calendar.setTime(getDay());
         int intWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
         return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(intWeek);
     }
