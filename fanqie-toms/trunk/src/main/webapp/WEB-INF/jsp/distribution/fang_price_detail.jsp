@@ -78,8 +78,10 @@
     });
 
     $('.tp-price').on('click', function () {
-        if( !$(this).hasClass('push')){
-            $(this).addClass("push");
+        var $this = $(this);
+        if( !$this.hasClass('push')){
+            layer.load(0, {time: 2*1000});
+            $this.addClass("push");
             var otaInfoId = $(this).attr('ota_info_id');
             var innId = $(this).attr('inn_id');
             var accountId = $(this).attr('account_id');
@@ -89,12 +91,12 @@
                 url:url,
                 dataType:'json',
                 success:function(data){
-                    $(this).removeClass("push");
+                    $this.removeClass("push");
                     if(!data.status){
-                        layer.alert(data.message);
+                        layer.alert("推送失败,检查是否房价信息存在!");
                     }
                 },error:function(data){
-                    $(this).removeClass("push");
+                    $this.removeClass("push");
                     layer.alert("同步失败!")
                 }
             })

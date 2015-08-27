@@ -1,7 +1,5 @@
 package com.fanqielaile.toms.support.util;
 
-import com.fanqie.core.dto.PriceModel;
-import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
