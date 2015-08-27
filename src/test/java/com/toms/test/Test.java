@@ -1,9 +1,12 @@
 package com.toms.test;
 
 
+import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.support.util.XmlDeal;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,9 +20,16 @@ public class Test {
         String rootElementName = XmlDeal.getRootElementString(text);
         System.out.println(rootElementName);*/
 
-        long begin = System.currentTimeMillis();
-        List<PushRoom> pushRoom = XmlDeal.getPushRoom(text);
-        long after = System.currentTimeMillis();
-        System.out.println("DOM用时"+(after-begin)+"毫秒");
+//        long begin = System.currentTimeMillis();
+//        List<PushRoom> pushRoom = XmlDeal.getPushRoom(text);
+//        long after = System.currentTimeMillis();
+//        System.out.println("DOM用时"+(after-begin)+"毫秒");
+
+        String[] weekDaysName = {"日", "一", "二", "三", "四", "五", "六"};
+        String[] weekDaysCode = {"0", "1", "2", "3", "4", "5", "6"};
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int intWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        System.out.println(DcUtil.dayOfWeek(intWeek));
     }
 }
