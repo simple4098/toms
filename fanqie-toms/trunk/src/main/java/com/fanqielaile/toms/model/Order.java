@@ -511,7 +511,7 @@ public class Order extends Domain {
      */
     public static Order makeHandOrder(Order order, RoomTypeInfoDto roomTypeInfoDto) {
         Order handOrder = new Order();
-        handOrder.setId(order.getUuid());
+        handOrder.setId(order.getId());
         handOrder.setAccountId(order.getAccountId());
         handOrder.setChannelSource(ChannelSource.HAND_ORDER);
         handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());

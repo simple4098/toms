@@ -202,6 +202,7 @@ public class OrderController extends BaseController {
         if (param) {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
+            order.setId(order.getUuid());
             Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
             model.addAttribute("status", result.get("status"));
             model.addAttribute("message", result.get("message"));
