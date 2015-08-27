@@ -80,8 +80,8 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
                     Collections.sort(priceList);
                     Double price  = priceList.get(0);
                     //value本来为负数, 转化为整数比较
-                    if (price<-(value)){
-                        throw  new TomsRuntimeException("减小的价格不跟低于卖价");
+                    if (!(price+value >= 1)){
+                        throw  new TomsRuntimeException("减小的价格不跟低于1元");
                     }
                 }
 
