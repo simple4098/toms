@@ -2,9 +2,11 @@ package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -24,9 +26,10 @@ public class DailyInfos extends Domain {
     private String dayDesc;
 
     public String getDayDesc() {
-        String week = new SimpleDateFormat("EEEE").format(getDay());
-        String substring = week.substring(week.length() - 1, week.length());
-        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + substring;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int intWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(intWeek);
     }
 
     public void setDayDesc(String dayDesc) {
