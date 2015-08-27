@@ -73,18 +73,18 @@ public class TBTestNew {
 
     public void test() throws Exception {
         OtaInfoRefDto otaInfo = new OtaInfoRefDto();
-       /* otaInfo.setAppKey("23192376");
+        otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");*/
-        otaInfo.setAppKey("1023192376");
+        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");
+       /* otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*/
         otaInfo.setOtaInfoId("1");
         //String innId = "7060";
-        String innId = "39691";
+        String innId = "27549";
         String companyCode = "11111111";
         //String accountId = "14339";
-        String accountId = "24166";
+        String accountId = "25400";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -92,7 +92,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("24166");
+        price1.setAccountId("25400");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -113,9 +113,9 @@ public class TBTestNew {
         //<property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
         // <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
         //String inn_info ="http://oms.fanqiele.com/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        //String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-22&to=2015-09-21"+"&signature="+signature;
-        String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
-        String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-28&to=2015-08-27"+"&signature="+signature;
+        //String room_type ="http://oms.fanqiele.com/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-08-27&to=2015-10-26"+"&signature="+signature;
+        //String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&signature="+signature;
+        //String room_type ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+otaId+"&accountId="+accountId+"&from=2015-07-28&to=2015-08-27"+"&signature="+signature;
         String httpGets1 = HttpClientUtil.httpGets(innInfoUrl, null);
         String httpGets = HttpClientUtil.httpGets(roomTypeUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
@@ -133,39 +133,34 @@ public class TBTestNew {
             if (!StringUtils.isEmpty(omsInnDto.getCity())){
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
-            if (!StringUtils.isEmpty(omsInnDto.getCounty())){
+            /*if (!StringUtils.isEmpty(omsInnDto.getCounty())){
                 andArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
-            }
+            }*/
             xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
             if (xHotel!=null) {
                 otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-
+                //未绑定
+                BangInnDto bangInnDto = null;
+                if (bangInn==null){
+                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam,  omsInnDto);
+                    bangInnDao.createBangInn(bangInnDto);
+                    //已绑定
+                }else {
+                    BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+                    bangInnDao.updateBangInnTp(bangInn);
+                }
+                String bangInnId = bangInn==null?bangInnDto.getUuid():bangInn.getId();
                 if (otaInnOta==null){
-                    //todo 2015-08-24 修改过
-                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam,null,otaInfo.getOtaInfoId());
+                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam,bangInnId,otaInfo.getOtaInfoId());
+                    otaInnOta.setSj(tbParam.isSj()?1:0);
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                     priceModelDao.savePriceModel(otaPriceModel);
-                    if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
-                        bangInnDao.createBangInn(bangInnDto);
-                    }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam,  omsInnDto);
-                        bangInn.setInnName(omsInnDto.getInnName());
-                        bangInnDao.updateBangInnTp(bangInn);
-                    }
                 }else {
-                    //otaInnOta =  otaInnOtaDao.findOtaInnOtaByParams(tbParam);
                     otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-                    if (bangInn==null){
-                        BangInnDto bangInnDto = BangInnDto.toDto(company.getId(), tbParam,  omsInnDto);
-                        bangInnDao.createBangInn(bangInnDto);
-                    }else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
-
-                        bangInnDao.updateBangInnTp(bangInn);
-                    }
+                    otaInnOta.setSj(tbParam.isSj()?1:0);
+                    otaInnOtaDao.updateOtaInnOta(otaInnOta);
                 }
             }else {
                 throw  new TomsRuntimeException(" 推送淘宝客栈失败!");
