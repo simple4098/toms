@@ -64,7 +64,6 @@
                                 <th style="width: 180px;">住离日期</th>
                                 <th>总价/预付金额</th>
                                 <th>成本价</th>
-                                <th>OTA佣金</th>
                                 <th>下单时间</th>
                                 <th>查看</th>
                                 <th style="width: 430px;">操作</th>
@@ -89,7 +88,6 @@
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
                                         <td>${d.totalPrice}/${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
-                                        <td>${d.OTAPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">

@@ -525,6 +525,7 @@ public class Order extends Domain {
         handOrder.setLiveTime(order.getLiveTime());
         handOrder.setLeaveTime(order.getLeaveTime());
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
+        handOrder.setCostPrice(handOrder.getTotalPrice());
         //TODO 设置预付，成本，ota佣金价格
         handOrder.setPrepayPrice(order.getPayment());
         handOrder.setPayment(order.getPayment());

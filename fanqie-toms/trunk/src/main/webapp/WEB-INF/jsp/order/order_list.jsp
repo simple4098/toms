@@ -37,6 +37,8 @@
 
                     <form class="search-form" name="search-form" action="<c:url value="/order/find_orders"/>"
                           method="post">
+                        <input type="hidden" name="channelSource" id="channelSource" value="${order.channelSource}"/>
+                        <input type="hidden" name="orderStatus" id="orderStatus" value="${order.orderStatus}"/>
                         <div>
                             日期选择：
                             <select name="searchType" class="search-type">
@@ -82,24 +84,41 @@
                             <thead style="font-size: 14px;">
                             <tr>
                                 <th>
-                                    <select name="channelSource">
+                                    <select name="channelSource" class="channel-source">
                                         <option value="">渠道来源</option>
                                         <c:if test="${not empty orderSource}">
                                             <c:forEach items="${orderSource}" var="sor">
-                                                <option value="${sor.channelSource}">${sor.channelSource.text}</option>
+                                                <option
+                                                        <c:if test="${sor.channelSource == order.channelSource}">selected</c:if>
+                                                        value="${sor.channelSource}">${sor.channelSource.text}</option>
                                             </c:forEach>
                                         </c:if>
                                     </select>
                                 </th>
                                 <th>渠道订单号</th>
                                 <th>
-                                    <select name="orderStatus">
-                                        <option value="">订单状态</option>
-                                        <option value="CONFIM_AND_ORDER">已确认并下单</option>
-                                        <option value="CONFIM_NO_ORDER">已确认但不下单</option>
-                                        <option value="REFUSE">已拒绝</option>
-                                        <option value="HAND_REFUSE">手动拒绝</option>
-                                        <option value="HAND_ORDER">手动下单</option>
+                                    <select name="orderStatus" class="order-status">
+                                        <option selected value="">订单状态</option>
+                                        <option
+                                                <c:if test="${order.orderStatus == 'CONFIM_AND_ORDER'}">selected</c:if>
+                                                value="CONFIM_AND_ORDER">已确认并下单
+                                        </option>
+                                        <option
+                                                <c:if test="${order.orderStatus == 'CONFIM_NO_ORDER'}">selected</c:if>
+                                                value="CONFIM_NO_ORDER">已确认但不下单
+                                        </option>
+                                        <option
+                                                <c:if test="${order.orderStatus == 'REFUSE'}">selected</c:if>
+                                                value="REFUSE">已拒绝
+                                        </option>
+                                        <option
+                                                <c:if test="${order.orderStatus == 'HAND_REFUSE'}">selected</c:if>
+                                                value="HAND_REFUSE">手动拒绝
+                                        </option>
+                                        <option
+                                                <c:if test="${order.orderStatus == 'HAND_ORDER'}">selected</c:if>
+                                                value="HAND_ORDER">手动下单
+                                        </option>
                                     </select>
                                 </th>
 
@@ -112,7 +131,6 @@
                                 <th class="hidden-240">住离日期</th>
                                 <th>总价/预付金额</th>
                                 <th>成本价</th>
-                                <th>OTA佣金</th>
                                 <th>下单时间</th>
                                 <th>操作</th>
                             </tr>
@@ -136,7 +154,6 @@
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
                                         <td>${d.totalPrice}/${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
-                                        <td>${d.OTAPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
