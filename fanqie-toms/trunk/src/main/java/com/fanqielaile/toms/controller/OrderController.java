@@ -194,7 +194,7 @@ public class OrderController extends BaseController {
      * @param order
      */
     @RequestMapping("hand_make_order")
-    public void handMakeOrder(Model model, Order order, String liveTimeString, String leaveTimeString) {
+    public void handMakeOrder(Model model, Order order, String liveTimeString, String leaveTimeString) throws Exception {
         UserInfo userInfo = getCurrentUser();
         //检查参数
         Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
