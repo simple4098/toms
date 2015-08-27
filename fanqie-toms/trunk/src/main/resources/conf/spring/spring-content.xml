@@ -106,7 +106,7 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>
-              <bean class="com.fanqielaile.toms.common.CommonApi">
+             <!-- <bean class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://192.168.1.116:8083/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://192.168.1.116:8083/api/toms/opeDetail.json"></property>
                      <property name="KF" value="http://192.168.1.116:8083/api/toms/obtCustomerNum.json"></property>
@@ -118,8 +118,8 @@
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                      <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
                     <property name="imgUrl" value="http://192.168.1.159"></property>
-              </bean>
-             <!-- <bean class="com.fanqielaile.toms.common.CommonApi">
+              </bean>-->
+              <bean class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
                      <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
@@ -129,10 +129,10 @@
                      <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
                      <property name="innInfo" value="http://192.168.1.158:8888/api/getInnInfo"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-                     &lt;!&ndash;<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>&ndash;&gt;
+                     <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                      <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://192.168.1.159"></property>
-              </bean>-->
+              </bean>
        </beans>
        <beans profile="staging">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
