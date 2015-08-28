@@ -172,11 +172,11 @@ public class OrderMethodHelper {
      * @return
      */
     public static Integer getMaxRoomNum(List<RoomTypeInfoDto> roomTypeInfoDtos, Order order) {
-        int result = 0;
+        int result = 99;
         if (ArrayUtils.isNotEmpty(roomTypeInfoDtos.toArray())) {
             for (RoomTypeInfoDto roomTypeInfoDto : roomTypeInfoDtos) {
                 if (roomTypeInfoDto.getRoomTypeId().equals(order.getRoomTypeId())) {
-                    if (roomTypeInfoDto.getMaxRoomNum() > result) {
+                    if (roomTypeInfoDto.getMaxRoomNum() < result) {
                         result = roomTypeInfoDto.getMaxRoomNum();
                     }
                 }
