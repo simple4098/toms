@@ -11,3 +11,5 @@ CREATE INDEX  ON "public"."ota_inn_ota" ("wg_hid", "company_id", "bang_inn_id", 
 
 ALTER TABLE ota_toms_order ADD COLUMN company_id varchar(64);
 COMMENT ON COLUMN "public"."ota_toms_order"."company_id" IS '公司id';
+
+update ota_toms_order set company_id='d0392bc8-131c-8989-846e-c81c66011111'
