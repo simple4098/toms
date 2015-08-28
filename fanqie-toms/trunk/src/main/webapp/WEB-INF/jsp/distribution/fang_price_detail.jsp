@@ -7,7 +7,7 @@
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
 <head>
-    <title>客栈接单设置</title>
+    <title>客栈特殊价设置</title>
     <link rel="stylesheet" href="<%=basePath%>/assets/css/pages.css"/>
 </head>
 <div class="page-content">
@@ -80,7 +80,7 @@
     $('.tp-price').on('click', function () {
         var $this = $(this);
         if( !$this.hasClass('push')){
-            layer.load(0, {time: 2*1000});
+            layer.load(0, {time: 3*1000});
             $this.addClass("push");
             var otaInfoId = $(this).attr('ota_info_id');
             var innId = $(this).attr('inn_id');
