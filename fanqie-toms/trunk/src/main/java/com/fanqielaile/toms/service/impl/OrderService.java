@@ -72,6 +72,8 @@ public class OrderService implements IOrderService {
     private IRoomTypeService roomTypeService;
     @Resource
     private IOrderConfigDao orderConfigDao;
+    @Resource
+    private IOtaRoomPriceDao otaRoomPriceDao;
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -114,23 +116,38 @@ public class OrderService implements IOrderService {
         Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
         //转换成对象只针对淘宝传递的参数
         Order order = OrderMethodHelper.getOrder(dealXmlStr);
+
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+        OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(order.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
         //设置每日价格
         if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
-            for (DailyInfos dailyInfos : order.getDailyInfoses()) {
-                dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+            if (otaRoomPriceDto == null) {
+                for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                    dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+                }
+            } else {
+                //执行特殊价加减流程
+                //1.判断入住时间是否在特殊价日期之间
+                for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                    if (DateUtil.isBetween(dailyInfos.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
+                        dailyInfos.setPrice(dailyInfos.getPrice().subtract(new BigDecimal(Double.toString(otaRoomPriceDto.getValue()))));
+                    } else {
+                        dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+                    }
+                }
             }
-        }
+            }
         //设置渠道来源
         order.setChannelSource(channelSource);
         order.setOrderTime(new Date());
         //设置订单总价
-        order.setTotalPrice(order.getTotalPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+        order.setTotalPrice(OrderMethodHelper.getTotalPrice(order));
         //设置订单号
         order.setOrderCode(OrderMethodHelper.getOrderCode());
         //算成本价与OTA收益
         order.setCostPrice(order.getTotalPrice());
-        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
+        //不展示ota佣金
+//        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
         order.setCompanyId(otaInnOtaDto.getCompanyId());
         //创建订单
         this.orderDao.insertOrder(order);

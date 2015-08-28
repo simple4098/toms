@@ -184,4 +184,15 @@ public class OrderMethodHelper {
         }
         return result;
     }
+
+    //得到计算后的总价
+    public static BigDecimal getTotalPrice(Order order) {
+        BigDecimal result = BigDecimal.ZERO;
+        if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+            for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                result = result.add(dailyInfos.getPrice());
+            }
+        }
+        return result;
+    }
 }
