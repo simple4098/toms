@@ -566,7 +566,7 @@ public class Order extends Domain {
                 }
             }
         }
-        return result.multiply(new BigDecimal(order.getHomeAmount()));
+        return result;
     }
 
     /**
