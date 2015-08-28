@@ -39,7 +39,9 @@ public class BaseController {
             logger.info("登录超时");
             throw new TomsRuntimeException("The login timeout, please login again!");
         }
-        return (UserInfo) principal;
+        UserInfo userInfo = (UserInfo) principal;
+        userInfo.setKeywords(null);
+        return userInfo;
 //        UserInfo userInfo = new UserInfo();
 //        userInfo.setCompanyId(null);
 //        return userInfo;
