@@ -137,6 +137,7 @@
                 and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
             </if>
         </where>
+        ORDER BY oto.order_time DESC
     </select>
     <select id="selectOrders" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
