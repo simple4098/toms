@@ -635,9 +635,10 @@ public class OrderService implements IOrderService {
         paramDto.setTagId(order.getTagId());
         RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
         List<RoomTypeInfoDto> roomTypeInfoDtos = new ArrayList<>();
-        //处理找出的房型信息，如果放量为空的提出数据
+        //处理找出的房型信息，如果房量为空的提出数据
         if (null != roomType) {
             if (ArrayUtils.isNotEmpty(roomType.getList().toArray())) {
+                outer:
                 for (RoomTypeInfo roomTypeInfo : roomType.getList()) {
                     if (ArrayUtils.isNotEmpty(roomTypeInfo.getRoomDetail().toArray())) {
                         RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
@@ -647,6 +648,10 @@ public class OrderService implements IOrderService {
                                     roomTypeInfoDto.setRoomTypeId(roomTypeInfo.getRoomTypeId() + "");
                                     roomTypeInfoDto.setRoomTypeName(roomTypeInfo.getRoomTypeName());
                                     roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
+                                }
+                                if (0 == roomDetail.getRoomNum() || StringUtils.isEmpty(roomDetail.getRoomNum() + "")) {
+                                    roomTypeInfoDto = new RoomTypeInfoDto();
+                                    continue outer;
                                 }
                             }
                         }
@@ -659,4 +664,5 @@ public class OrderService implements IOrderService {
         }
         return roomTypeInfoDtos;
     }
+
 }

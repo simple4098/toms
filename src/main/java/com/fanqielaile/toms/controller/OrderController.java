@@ -244,7 +244,7 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 获取房型最大库存量
+     * 获取房型最小库存量
      *
      * @param model
      * @param order
