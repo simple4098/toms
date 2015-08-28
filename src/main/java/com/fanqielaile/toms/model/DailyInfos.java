@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
+import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -28,8 +29,7 @@ public class DailyInfos extends Domain {
     public String getDayDesc() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(getDay());
-        int intWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(intWeek);
+        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(new DateTime(getDay()).getDayOfWeek());
     }
 
     public void setDayDesc(String dayDesc) {
