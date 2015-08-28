@@ -156,7 +156,7 @@ public class OrderService implements IOrderService {
             return new JsonModel(false, "订单不存在");
         }
         order.setReason(XmlDeal.getOrder(xmlStr).getReason());
-        order.setOrderStatus(OrderStatus.REFUSE);
+        order.setOrderStatus(OrderStatus.CANCEL_ORDER);
         //判断订单是否需要同步OMS,条件根据订单是否付款
         if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
             // 查询调用的url
