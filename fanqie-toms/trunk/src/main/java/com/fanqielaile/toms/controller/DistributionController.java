@@ -73,7 +73,7 @@ public class DistributionController extends BaseController{
 
     //接单设置-客栈列表
     @RequestMapping("/orderConfig")
-    public String orderConfig(Model model, String innLabelId, String keywords,@RequestParam(defaultValue = "1", required = false) int page) {
+    public String orderConfig(Model model, String innLabelId,@RequestParam(defaultValue = "1", required = false) int page) {
         UserInfo currentUser = getCurrentUser();
         currentUser.setInnLabelId(innLabelId);
         List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
@@ -85,7 +85,6 @@ public class DistributionController extends BaseController{
         model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
         //保存查询条件
         model.addAttribute("innLabel", innLabelId);
-        model.addAttribute("keywords", keywords);
         model.addAttribute("orderConfigDtoList",orderConfigDtoList);
         model.addAttribute("otaList", list);
         return "/distribution/order_inn_config_list";
