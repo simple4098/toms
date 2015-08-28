@@ -469,8 +469,7 @@ public class Order extends Domain {
         omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
-        //房型数量，针对oms接口传1
-        omsOrder.setRoomTypeNum(1);
+        omsOrder.setRoomTypeNum(order.getHomeAmount());
         omsOrder.setTypePay(1);
         omsOrder.setUserName(order.getGuestName());
         //TODO需要传入房态更新时间
@@ -517,7 +516,7 @@ public class Order extends Domain {
         handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
         //手动下单将渠道订单code跟order_code设置为相同
         handOrder.setOrderCode(handOrder.getChannelOrderCode());
-        handOrder.setOrderStatus(OrderStatus.HAND_ORDER);
+        handOrder.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
         handOrder.setInnId(order.getInnId());
         handOrder.setGuestName(order.getGuestName());
         handOrder.setRoomTypeId(order.getRoomTypeId());
@@ -566,7 +565,7 @@ public class Order extends Domain {
                 }
             }
         }
-        return result;
+        return result.multiply(new BigDecimal(order.getHomeAmount()));
     }
 
     /**

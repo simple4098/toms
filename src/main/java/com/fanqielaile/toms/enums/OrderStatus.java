@@ -10,9 +10,9 @@ public enum OrderStatus {
     NOT_DEAL("待处理"),
     CONFIM_AND_ORDER("确认并下单"),
     CONFIM_NO_ORDER("已确认但不下单"),
-    HAND_ORDER("手动下单"),
+    CANCEL_ORDER("已取消"),
     HAND_REFUSE("直接拒绝"),
-    REFUSE("拒绝");
+    REFUSE("自动拒绝");
     private String text;
 
     OrderStatus(String text) {

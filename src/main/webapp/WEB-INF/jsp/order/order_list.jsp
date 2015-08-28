@@ -109,15 +109,15 @@
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'REFUSE'}">selected</c:if>
-                                                value="REFUSE">已拒绝
+                                                value="REFUSE">自动拒绝
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'HAND_REFUSE'}">selected</c:if>
                                                 value="HAND_REFUSE">手动拒绝
                                         </option>
                                         <option
-                                                <c:if test="${order.orderStatus == 'HAND_ORDER'}">selected</c:if>
-                                                value="HAND_ORDER">手动下单
+                                                <c:if test="${order.orderStatus == 'CANCEL_ORDER'}">selected</c:if>
+                                                value="CANCEL_ORDER">已取消
                                         </option>
                                     </select>
                                 </th>
