@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h3 class="header smaller lighter blue">客栈房型价格设置</h3>
-            <a class="btn  btn-sub tp-price" style="background-color:#CE6613 !important; margin-left: 1040px" account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >同步淘宝价格</a>
+            <a class="btn  btn-sub tp-price" style="background-color:#CE6613 !important; margin-left: 995px" account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >同步价格到卖房网站</a>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="table-responsive">
@@ -94,6 +94,8 @@
                     $this.removeClass("push");
                     if(!data.status){
                         layer.alert("推送失败,检查是否房价信息存在!");
+                    }else{
+                        layer.msg('同步完成');
                     }
                 },error:function(data){
                     $this.removeClass("push");
