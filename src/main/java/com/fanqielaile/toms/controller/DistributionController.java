@@ -194,6 +194,7 @@ public class DistributionController extends BaseController{
                 service.updateRoomTypePrice(o, roomPriceDto);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             } catch (Exception e) {
+                log.error("同步价格失败:"+e.getMessage());
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
                 model.addAttribute(Constants.MESSAGE, e.getMessage());
             }
