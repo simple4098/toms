@@ -3,7 +3,7 @@ DECLARE
 BEGIN
   SQL:='SELECT  b.ota_wg_id,b.id,b.inn_id,b.sj FROM bang_inn b
 INNER JOIN ota_inn_ota oio ON oio.id = b.ota_wg_id
-where b.company_id=''89894098''';
+where b.company_id=''d0392bc8-131c-8989-846e-c81c66011111''';
 
 FOR r IN EXECUTE SQL LOOP
 
