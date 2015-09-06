@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "GetHotelInfoRequest")
 public class GetHotelInfoRequest {
 
-    public String  FcHotelIds;
+    private String  FcHotelIds;
 
     @XmlElement(name = "FcHotelIds")
     public String getFcHotelIds() {
