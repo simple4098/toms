@@ -15,5 +15,9 @@ public enum RequestType {
     //同步价格计划
     syncRatePlan,
     //同步价格信息接口
-    syncRateInfo
-}
+    syncRateInfo,
+    //酒店基本信息列表查询接口
+    queryHotelInfoList,
+    //酒店基本信息详情查询接口- QueryHotelInfo
+    queryHotelInfo
+    }
