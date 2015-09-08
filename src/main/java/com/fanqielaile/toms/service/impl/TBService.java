@@ -127,14 +127,15 @@ public class TBService implements ITPService {
                     otaInnOta.setSj(tbParam.isSj()?1:0);
                     otaInnOtaDao.updateOtaInnOta(otaInnOta);
                 }
+                //添加更新宝贝
+                updateOrAddRoom(tbParam,otaInfo,otaPriceModel,otaInnOta,andArea);
             }else {
-                throw  new TomsRuntimeException(" 推送淘宝客栈失败!");
+                log.debug(" 推送淘宝客栈失败!");
             }
         }else {
-            throw new TomsRuntimeException("无客栈信息!");
+            log.debug("无客栈信息!");
         }
-        //添加更新宝贝
-        updateOrAddRoom(tbParam,otaInfo,otaPriceModel,otaInnOta,andArea);
+
     }
 
     //添加更新宝贝
@@ -172,7 +173,7 @@ public class TBService implements ITPService {
                     //添加商品
                     Long gid = TBXHotelUtil.roomUpdate(r.getRoomTypeId(), r, otaInfo, tbParam.getStatus(), otaInnOta, andArea);
                     //创建酒店rp
-                    Long rpid = TBXHotelUtil.ratePlanAdd(otaInfo, r);
+                    Long rpid = TBXHotelUtil.ratePlanAddOrUpdate(otaInfo, r);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
                     if (innRoomTypeGoodsDto==null){
                         OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOtaId, String.valueOf(xRoomType.getRid()));
@@ -192,56 +193,16 @@ public class TBService implements ITPService {
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
                     TBXHotelUtil.rateAddOrUpdate(otaInfo, gid, rpid, r, otaPriceModel, !tbParam.isSj(),priceDto);
                 }else {
-                  throw  new RuntimeException(" 推房型失败~");
+                    log.debug(" 推房型失败~");
                 }
             }
         }else {
-            throw new TomsRuntimeException("无房型信息!");
+            log.debug("无房型信息!");
         }
     }
     @Override
    /* @Log(descr ="酒店酒店删除、解绑")*/
     public void deleteHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
-     /*   String event = TomsUtil.event(tbParam);
-        log.info("event:"+event);
-        try {
-            businLog.setDescr("酒店酒店删除、解绑");
-            businLog.setEvent(event);
-            businLogClient.save(businLog);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }*/
-        //公司基本信息
-        Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
-        //客栈绑定信息
-        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-        if (bangInn!=null){
-            //解除此客在此企业的绑定关系
-            bangInnDao.deleteBangInnByCompanyIdAndInnId(company.getId(), bangInn.getInnId());
-            //删除客栈与渠道绑定关系
-            otaInnOtaDao.deletedOtaInnOtaById(bangInn.getOtaWgId());
-            //删除客栈房型关系
-            otaBangInnRoomDao.deletedBangInnRoom(bangInn.getOtaWgId());
-            //删除客栈宝贝关系
-            goodsDao.deletedGoods(bangInn.getOtaWgId());
-            DcUtil.hotelParam(tbParam,bangInn.getAccountId(),company.getOtaId());
-            String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-            String roomTypeGets = HttpClientUtil.httpGets(room_type,null);
-            JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-            if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
-                List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-                for (RoomTypeInfo r:list){
-                    TBXHotelUtil.roomDel(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
-                    //更新库存 --删除不用更新库存
-                    /*if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
-                        TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r, otaPriceModel, true);
-                    }*/
-                }
-            }
-        }else {
-            throw new TomsRuntimeException("删除失败,此客栈没有绑定此企业!");
-        }
-
     }
 
     @Override
@@ -313,15 +274,17 @@ public class TBService implements ITPService {
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
         for (PushRoom pushRoom: pushRoomList){
+           Integer roomTypeId = pushRoom.getRoomType().getRoomTypeId();
             //查询客栈是否是上架状态
-            BangInn bangInn =  bangInnDao.selectBangInnByCompanyIdAndAccountId(o.getCompanyId(), pushRoom.getRoomType().getAccountId());
+            BangInn bangInn =  bangInnDao.selectBangInnByParam(o.getCompanyId(), o.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
-            OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
+            OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), roomTypeId);
             if ( bangInn!=null){
                 if (good!=null){
                     OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                     log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
+                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(o.getCompanyId(), roomTypeId,  o.getOtaInfoId()));
+                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel,priceDto);
                 } else {
                     log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
                 }

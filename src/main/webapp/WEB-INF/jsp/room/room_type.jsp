@@ -9,7 +9,8 @@
     <meta charset="utf-8">
     <title>房态房量</title>
     <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/pages.css">
+    <link href="<c:url value='/assets/css/pages.css'/>" rel="stylesheet"/>
+    <script src="<c:url value='/js/select2.full.js'/>"></script>
 
 </head>
 <div >
@@ -22,14 +23,14 @@
             <input type="hidden" id="dataUrlId" data-url="<c:url value="/oms/ajax/obtRoomType"/>">
             <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
             <select class="form-control" id="kz-tags-r"></select>
-            <select class="form-control" id="kz_item-r"></select>
+            <select class="form-control js-example-basic-single" id="kz_item-r"></select>
             <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
                 搜索
                 <i class="icon-search icon-on-right bigger-110"></i>
             </button>
         </form>
     </div>
-    <div style="margin-left: 94%">
+    <div class="btn-box clearfix">
         <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled>手动下单</button>
     </div>
     <c:set value="${roomType.list}" var="list"/>
@@ -256,9 +257,16 @@
         </div>
     </div>
 </div>
-<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/layer/layer.js"></script>
-<script src="<%=basePath%>/assets/js/bootstrap.min.js"></script>
-<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
-<script src="<%=basePath%>/assets/js/tomato.min.js"></script>
-<script src="<%=basePath%>/assets/js/room-type.js"></script>
+<script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
+<script src="<c:url value='/assets/layer/layer.js'/>"></script>
+<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
+<script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
+<script src="<c:url value='/assets/js/tomato.min.js'/>"></script>
+<script src="<c:url value='/assets/js/room-type.js'/>"></script>
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
+<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".js-example-basic-single").select2();
+    });
+</script>

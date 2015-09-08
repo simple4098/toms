@@ -25,6 +25,8 @@
         <input type="hidden" name="searchType" value="${order.searchType}"/>
         <input type="hidden" name="beginDate" value="${order.beginDate}"/>
         <input type="hidden" name="endDate" value="${order.endDate}"/>
+        <input type="hidden" name="channelSource" class="channel-source-text" value="${order.channelSource}"/>
+        <input type="hidden" name="orderStatus" class="order-status-text" value="${order.orderStatus}"/>
     </form>
     <div class="row">
         <div class="col-xs-12">
@@ -32,9 +34,29 @@
 
             <div class="row">
                 <div class="col-xs-12">
-                    <h4 class="smaller blue"><a href="<c:url value="/order/find_non_orders"/>">待处理订单</a> <a
-                            href="<c:url value="/order/find_orders"/> ">已处理订单</a></h4>
+                    <div class="tabbable">
+                        <ul class="nav nav-tabs" id="myTab">
+                            <li>
+                                <a href="<c:url value="/order/find_non_orders"/>">
+                                    <span class="badge badge-danger">*</span>
+                                    待处理--未确认订单
+                                </a>
+                            </li>
 
+                            <li>
+                                <a href="<c:url value="/order/find_pay_back_orders"/>">
+                                    <span class="badge badge-danger">*</span>
+                                    待处理--申请退款订单
+                                </a>
+                            </li>
+
+                            <li class="active">
+                                <a href="<c:url value="/order/find_orders"/>">
+                                    已处理订单
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <form class="search-form" name="search-form" action="<c:url value="/order/find_orders"/>"
                           method="post">
                         <input type="hidden" name="channelSource" id="channelSource" value="${order.channelSource}"/>

@@ -160,5 +160,18 @@ public interface BangInnDao {
 
     void deleteBangInnByCompanyId(@Param("companyId")String companyId);
 
+    /**
+     * 查询管理的客栈
+     * @param companyId 公司id
+     * @param accountId oms accountId
+     */
     BangInn selectBangInnByCompanyIdAndAccountId(@Param("companyId")String companyId, @Param("accountId")Integer accountId);
+
+    /**
+     * 查询上架状态的客栈
+     * @param companyId
+     * @param otaInfoId
+     * @param accountId
+     */
+    BangInn selectBangInnByParam(@Param("companyId")String companyId,@Param("otaInfoId") String otaInfoId, @Param("accountId")Integer accountId);
 }

@@ -73,9 +73,10 @@ public class DistributionController extends BaseController{
 
     //接单设置-客栈列表
     @RequestMapping("/orderConfig")
-    public String orderConfig(Model model, String innLabelId,@RequestParam(defaultValue = "1", required = false) int page) {
+    public String orderConfig(Model model, String innLabelId,String keywords,@RequestParam(defaultValue = "1", required = false) int page) {
         UserInfo currentUser = getCurrentUser();
         currentUser.setInnLabelId(innLabelId);
+        currentUser.setKeywords(keywords);
         List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
         List<OrderConfigDto> orderConfigDtoList = orderConfigService.findOrderConfigByCompanyId(list,currentUser, new PageBounds(page, defaultRows));
         List<InnLabel> innLabels = this.innLabelService.findLabelsByCompanyId(currentUser.getCompanyId());
@@ -87,6 +88,7 @@ public class DistributionController extends BaseController{
         model.addAttribute("innLabel", innLabelId);
         model.addAttribute("orderConfigDtoList",orderConfigDtoList);
         model.addAttribute("otaList", list);
+        model.addAttribute("keywords", keywords);
         return "/distribution/order_inn_config_list";
     }
 
@@ -187,17 +189,17 @@ public class DistributionController extends BaseController{
         UserInfo currentUser = getCurrentUser();
         roomPriceDto.setCompanyId(currentUser.getCompanyId());
         List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
-        ITPService service = null;
-        for (OtaInfoRefDto o:list) {
-            service = o.getOtaType().create();
-            try {
+        try {
+            ITPService service = null;
+            for (OtaInfoRefDto o:list) {
+                service = o.getOtaType().create();
                 service.updateRoomTypePrice(o, roomPriceDto);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            } catch (Exception e) {
-                log.error("同步价格失败:"+e.getMessage());
-                model.addAttribute(Constants.STATUS, Constants.ERROR);
-                model.addAttribute(Constants.MESSAGE, e.getMessage());
             }
+        } catch (Exception e) {
+            log.error("同步价格失败:"+e.getMessage());
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, e.getMessage());
         }
     }
 

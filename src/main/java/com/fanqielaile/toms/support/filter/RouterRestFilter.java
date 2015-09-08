@@ -27,7 +27,7 @@ public class RouterRestFilter implements Filter {
         String xml = HttpClientUtil.convertStreamToString(request.getInputStream());
         log.info("===========start==============");
         log.info(xml);
-        //String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-07-27</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-07-28</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
+        //String xml ="<?xml version=\"1.0\" encoding=\"utf-8\"?><PushRoomType><list><RoomType><AccountId>1000968</AccountId><RoomTypeId>1019276</RoomTypeId><RoomTypeName>大床房</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-09-07</RoomDate><RoomPrice>218.0</RoomPrice><PriRoomPrice>9999999.0</PriRoomPrice><RoomNum>3</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
         if (!StringUtils.isEmpty(xml)){
             String rootElementName = "";
             try {

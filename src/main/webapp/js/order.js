@@ -24,6 +24,8 @@ $('.btn-search').on('click', function () {
 $('.channel-source,.order-status').change(function () {
     $('#channelSource').val($('.channel-source').val());
     $('#orderStatus').val($('.order-status').val());
+    $('.channel-source-text').val($('.channel-source').val());
+    $('.order-status-text').val($('.order-status').val());
     var beginDate = $('.begin-date').val();
     var endDate = $('.end-date').val();
     var searchType = $('.search-type').val();
@@ -159,5 +161,61 @@ $('.btn-confirm-no-sure').on('click', function () {
     })
 });
 $('.btn-default').on('click', function () {
-    window.location.reload();
+    $(".modal-backdrop").remove();
 })
+//同意退款
+$('.pay-back-sure').on('click', function () {
+    var url = $(this).attr('data-url');
+    $('.pay-back-sure-url').val(url);
+    $("#payBackSure").modal();
+});
+$('.btn-pay-back-sure').on('click', function () {
+    var url = $('.pay-back-sure-url').val();
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.msg("系统错误");
+        }
+    })
+});
+//拒绝退款
+$('.refuse-pay-back').on('click', function () {
+    var url = $(this).attr('data-url');
+    $('.refuse-pay-back-url').val(url);
+    $("#refusePayBack").modal();
+});
+$('.btn-refuse-pay-back-sure').on('click', function () {
+    var url = $('.refuse-pay-back-url').val();
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.msg("系统错误");
+        }
+    })
+});

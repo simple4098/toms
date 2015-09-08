@@ -311,6 +311,7 @@ public class TBTestNew {
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
         otaInfo.setCompanyId("88888888");
+        otaInfo.setOtaInfoId("1");
         String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>11.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>11</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>22.0</RoomPrice><PriRoomPrice>22.0</PriRoomPrice><RoomNum>22</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
         //String xml ="<PushRoomType><list><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>1.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType><RoomType><AccountId>123</AccountId><RoomTypeId>1018376</RoomTypeId><RoomTypeName>房型1</RoomTypeName><RoomDetails><RoomDetail><RoomDate>2015-08-01</RoomDate><RoomPrice>2.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>1</RoomNum></RoomDetail><RoomDetail><RoomDate>2015-08-02</RoomDate><RoomPrice>1.0</RoomPrice><PriRoomPrice>1.0</PriRoomPrice><RoomNum>2</RoomNum></RoomDetail></RoomDetails></RoomType></list></PushRoomType>";
         List<PushRoom> pushRoomList = XmlDeal.getPushRoom(xml);
@@ -320,7 +321,8 @@ public class TBTestNew {
             OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
             if (good!=null){
                 log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                TBXHotelUtil.updateHotelPushRoom(otaInfo, pushRoom,priceModel);
+                OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInfo.getCompanyId(), pushRoom.getRoomType().getRoomTypeId(),  otaInfo.getOtaInfoId()));
+                TBXHotelUtil.updateHotelPushRoom(otaInfo, pushRoom, priceModel,priceDto);
 
             } else {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());

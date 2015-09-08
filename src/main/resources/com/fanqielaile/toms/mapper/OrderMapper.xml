@@ -119,7 +119,7 @@
         LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id
         <where>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
-                AND oto.order_status !='NOT_DEAL'
+                AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
             </if>
             <if test="order.orderStatusString != null and order.orderStatusString =='NOT_DEAL'">
                 AND oto.order_status ='NOT_DEAL'

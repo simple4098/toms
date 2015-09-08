@@ -366,12 +366,14 @@ public class TBService implements ITPService {
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
         for (PushRoom pushRoom: pushRoomList){
+            Integer roomTypeId = pushRoom.getRoomType().getRoomTypeId();
             //验证此房型是不是在数据库存在
-            OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), pushRoom.getRoomType().getRoomTypeId());
+            OtaInnRoomTypeGoodsDto good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), roomTypeId);
             if (good!=null){
                 OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                 log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
-                TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel);
+                OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(o.getCompanyId(), roomTypeId,  o.getOtaInfoId()));
+                TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel,priceDto);
             } else {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
             }

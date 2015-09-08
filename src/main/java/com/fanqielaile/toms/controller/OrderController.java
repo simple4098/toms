@@ -96,12 +96,41 @@ public class OrderController extends BaseController {
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);
         } catch (Exception e) {
-            logger.error("查询订单列表失败", e);
-            throw new TomsRuntimeException("查询订单列表失败");
+            logger.error("查询未处理订单列表失败", e);
+            throw new TomsRuntimeException("查询未处理订单列表失败");
         }
         return "/order/order_non_list";
     }
 
+    /**
+     * 查询退款申请订单列表
+     *
+     * @param model
+     * @param page
+     * @param orderParamDto
+     * @return
+     */
+    @RequestMapping("find_pay_back_orders")
+    public String findPayBackOrders(Model model, @RequestParam(defaultValue = "1", required = false) int page, OrderParamDto orderParamDto) {
+        try {
+            UserInfo currentUser = getCurrentUser();
+            orderParamDto.setOrderStatus(OrderStatus.PAY_BACK);
+            List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, orderParamDtos);
+            //封装分页信息
+            Paginator paginator = ((PageList) orderParamDtos).getPaginator();
+            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+            //分转查询条件
+            model.addAttribute("order", orderParamDto);
+            OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
+            model.addAttribute("orderPrice", paramDto);
+        } catch (Exception e) {
+            logger.error("查询退款订单列表失败", e);
+            throw new TomsRuntimeException("查询退款订单列表失败");
+        }
+        return "/order/order_pay_back_list";
+    }
     /**
      * 查询订单详细信息
      *
@@ -136,7 +165,7 @@ public class OrderController extends BaseController {
         try {
             OrderParamDto order = this.orderService.findOrderById(id);
             if (order != null) {
-                JsonModel jsonModel = this.orderService.confirmOrder(order);
+                JsonModel jsonModel = this.orderService.confirmOrder(order, getCurrentUser());
                 model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
                 model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
             } else {
@@ -159,7 +188,7 @@ public class OrderController extends BaseController {
     public void refueseOrder(Model model, String id) throws ApiException {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
-            JsonModel jsonModel = this.orderService.refuesOrder(order);
+            JsonModel jsonModel = this.orderService.refuesOrder(order, getCurrentUser());
             model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
             model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
         } else {
@@ -178,7 +207,7 @@ public class OrderController extends BaseController {
     public void confirmNoOrder(Model model, String id) throws ApiException {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
-            JsonModel jsonModel = this.orderService.confirmNoOrder(order);
+            JsonModel jsonModel = this.orderService.confirmNoOrder(order, getCurrentUser());
             model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
             model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
         } else {
@@ -269,6 +298,45 @@ public class OrderController extends BaseController {
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, "获取房型最大库存量失败");
             throw new TomsRuntimeException("获取房型最大库存量失败" + e.getMessage());
+        }
+    }
+
+    /**
+     * 同意退款
+     *
+     * @param model
+     * @param id
+     * @throws Exception
+     */
+    @RequestMapping("agree_pay_back")
+    public void agreePayBack(Model model, String id) throws Exception {
+        OrderParamDto order = this.orderService.findOrderById(id);
+        if (null != order) {
+            JsonModel jsonModel = this.orderService.agreePayBackOrder(order, getCurrentUser());
+            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+        }
+    }
+
+    /**
+     * 拒绝退款
+     *
+     * @param model
+     * @param id
+     */
+    @RequestMapping("refuse_pay_back")
+    public void refusePayBack(Model model, String id) {
+        OrderParamDto order = this.orderService.findOrderById(id);
+        if (null != order) {
+            JsonModel jsonModel = this.orderService.refusePayBackOrder(order, getCurrentUser());
+            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
         }
     }
 }
