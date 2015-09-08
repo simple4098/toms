@@ -266,17 +266,17 @@ $('#submitBtn').click(function () {
 			data: $("#hand-order-form").serialize(),
 			success: function (data) {
 				if (data.status) {
-					layer.confirm('提示信息：下单成功', {icon: 6}, function () {
-						window.location.reload();
-					}, function () {
-						window.location.reload();
-					});
+					layer.confirm('提示信息：下单成功', {icon: 6});
+					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
+					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+					getRoomType(postData);
+					$('#hangOrder').modal('toggle');
 				} else {
-					layer.confirm('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5}, function () {
-						window.location.reload();
-					}, function () {
-						window.location.reload();
-					});
+					layer.confirm('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5});
+					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
+					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+					getRoomType(postData);
+					$('#hangOrder').modal('toggle');
 				}
 			}
 		})

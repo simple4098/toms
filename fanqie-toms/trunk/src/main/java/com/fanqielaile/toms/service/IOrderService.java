@@ -110,22 +110,25 @@ public interface IOrderService {
      * 手动确认并下单
      *
      * @param order
+     * @param currentUser
      */
-    JsonModel confirmOrder(OrderParamDto order) throws Exception;
+    JsonModel confirmOrder(OrderParamDto order, UserInfo currentUser) throws Exception;
 
     /**
      * 直接拒绝订单
      *
      * @param order
+     * @param currentUser
      */
-    JsonModel refuesOrder(OrderParamDto order) throws ApiException;
+    JsonModel refuesOrder(OrderParamDto order, UserInfo currentUser) throws ApiException;
 
     /**
      * 确认但不执行下单
      *
      * @param order
+     * @param currentUser
      */
-    JsonModel confirmNoOrder(OrderParamDto order) throws ApiException;
+    JsonModel confirmNoOrder(OrderParamDto order, UserInfo currentUser) throws ApiException;
 
     /**
      * 手动下单
@@ -150,4 +153,22 @@ public interface IOrderService {
      * @return
      */
     List<RoomTypeInfoDto> findHandOrderRoomType(Order order, UserInfo userInfo) throws Exception;
+
+    /**
+     * 同意退款
+     *
+     * @param order
+     * @param currentUser
+     * @return
+     */
+    JsonModel agreePayBackOrder(OrderParamDto order, UserInfo currentUser) throws Exception;
+
+    /**
+     * 拒绝退款
+     *
+     * @param order
+     * @param currentUser
+     * @return
+     */
+    JsonModel refusePayBackOrder(OrderParamDto order, UserInfo currentUser);
 }

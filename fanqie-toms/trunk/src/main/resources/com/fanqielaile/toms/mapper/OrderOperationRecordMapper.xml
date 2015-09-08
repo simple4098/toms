@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.OrderOperationRecordDao">
+    <resultMap id="BaseResultsMap" type="com.fanqielaile.toms.model.OrderOperationRecord">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="order_id" property="orderId"/>
+        <result column="before_status" property="beforeStatus"/>
+        <result column="after_status" property="afterStatus"/>
+        <result column="modify_person" property="modifyPerson"/>
+        <result column="content" property="content"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+              id,created_date,order_id,before_status,after_status,modify_person,content
+       </sql>
+    <insert id="insertOrderOperationRecord" parameterType="com.fanqielaile.toms.model.OrderOperationRecord">
+              INSERT INTO order_operation_record(id,created_date,order_id,before_status,after_status,modify_person,content)
+              VALUES
+                     (#{uuid},now(),#{orderId},#{beforeStatus},#{afterStatus},#{modifyPerson},#{content})
+       </insert>
+</mapper>

@@ -122,15 +122,23 @@ select.form-control{
 	position: relative;
 }
 .table-left{
-	width: 130px;
+	width: 140px;
 	overflow-x: scroll;
 }
 .table-right{
 	overflow-x: scroll;
 	position: absolute;
 	top: 0;
-	left: 130px;
+	left: 140px;
 	width: 100%;
+}
+/*手动下单按钮*/
+.btn-box{
+	height: 45px;
+}
+.btn-box button{
+	float: right;
+	margin-right: 15px;
 }
 .room-status-table{
 	width: 2500px;

@@ -31,7 +31,7 @@
                                 <c:forEach items="${list}" var="d">
                                     <tr>
                                         <td>${d.roomTypeName}</td>
-                                        <td> <a class="btn btn-info btn-sub room-price-class" type_name="${d.roomTypeName}" inn_id="${innId}" ota_info_id="${otaInfoId}" room_type_id="${d.roomTypeId}">价格设置</a></td>
+                                        <td> <a class="btn btn-info btn-sub room-price-class" data-url="<c:url value="/distribution/ajax/room_price_detail"/>" type_name="${d.roomTypeName}" inn_id="${innId}" ota_info_id="${otaInfoId}" room_type_id="${d.roomTypeId}">价格设置</a></td>
                                     </tr>
                                 </c:forEach>
                             </c:if>
@@ -50,14 +50,19 @@
     <!-- /.col -->
 </div>
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script>
+<script src="<%=basePath%>/js/fang-peice.js"></script>
+<%--<script>
     $('.room-price-class').on('click', function () {
         var otaInfoId = $(this).attr('ota_info_id');
         var roomTypeId = $(this).attr('room_type_id');
         var innId = $(this).attr('inn_id');
         var roomTypeName = $(this).attr('type_name');
 
-        var url = '<c:url value="/distribution/ajax/room_price_detail"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&roomTypeId="+roomTypeId+"&roomTypeName="+roomTypeName
+        var url = '<c:url value="/distribution/ajax/room_price_detail"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&roomTypeId="+roomTypeId+"&roomTypeName="+roomTypeName;
+        var $_this = $(this);
+        var b = !$_this.hasClass("push");
+        if(b) {
+        $_this.addClass("push");
         $.ajax({
             type:'POST',
             url:url,
@@ -73,8 +78,11 @@
                 });
             },error:function(data){
                 alert(data);
-            }
-        })
+             }
+            })
+
+        }
+
     });
 
     $('.tp-price').on('click', function () {
@@ -107,7 +115,7 @@
         }
 
     });
-</script>
+</script>--%>
 
 
 

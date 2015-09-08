@@ -12,6 +12,7 @@ public enum OrderStatus {
     CONFIM_NO_ORDER("已确认但不下单"),
     CANCEL_ORDER("已取消"),
     HAND_REFUSE("直接拒绝"),
+    PAY_BACK("退款申请中"),
     REFUSE("自动拒绝");
     private String text;
 

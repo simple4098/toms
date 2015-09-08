@@ -106,7 +106,8 @@
                     </ul>
                 </li>
                 <li data-name="li-parent-3"
-                    <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders')
+                    <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
+                                    fn:contains(url, '/order/find_pay_back_orders')
                  || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig') }">class="open active" </c:if>  >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
@@ -124,7 +125,9 @@
                         </toms:authorize>--%>
                         <toms:authorize uri="/order/find_orders">
                             <li
-                                    <c:if test="${fn:contains(url, '/order/find_orders')}">class="active" </c:if> >
+                                    <c:if test="${fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
+                                    fn:contains(url, '/order/find_pay_back_orders')
+                                    }">class="active" </c:if> >
                                 <a href="<c:url value="/order/find_orders"/>">
                                     <i class="icon-double-angle-right"></i>
                                     订单管理
