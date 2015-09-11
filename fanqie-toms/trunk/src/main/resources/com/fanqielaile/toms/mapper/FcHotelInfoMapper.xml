@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IFcHotelInfoDao">
+    <resultMap id="resultMapId" type="com.fanqielaile.toms.dto.FcHotelInfoDto">
+        <id column="id" property="id"/>
+        <result column="hotel_id" property="hotelId"/>
+        <result column="hotel_name" property="hotelName"/>
+        <result column="hotel_address" property="hotelAddress"/>
+        <result column="telephone" property="telephone"/>
+        <result column="website_url" property="websiteUrl"/>
+        <result column="hotel_star" property="hotelStar"/>
+        <result column="city" property="city"/>
+        <result column="distinct" property="distinct"/>
+        <result column="business" property="business"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,'distinct',business,created_date,updated_date,deleted
+    </sql>
+    <insert id="saveFcHotelInfo" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto">
+        insert into fc_hotel_info(id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,distinct,business,created_date,updated_date,deleted)
+        values (#{uuid},#{hotelId},#{hotelName},#{hotelAddress},#{telephone},#{websiteUrl},#{hotelStar},#{city},#{distinct},#{business},now(),now(),0)
+
+    </insert>
+
+    <select id="selectFcHotel" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto" resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  fc_hotel_info   where deleted=0
+        <if test="hotelName!=null and hotelName!=''">
+            and hotel_name = #{hotelName}
+        </if>
+    </select>
+
+</mapper>

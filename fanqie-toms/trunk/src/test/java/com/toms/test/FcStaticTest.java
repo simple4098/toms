@@ -93,29 +93,18 @@ public class FcStaticTest {
     @Test
     public void GetHotelRequest() throws JAXBException {
         GetHotelInfoRequest getHotelInfoRequest = new GetHotelInfoRequest();
-        getHotelInfoRequest.setFcHotelIds("112324");
-        Header header = new Header(RequestType.addHotelMapping,"S10085349","security_test_S10085349");
+        getHotelInfoRequest.setFcHotelIds("112324,112275");
+        Header header = new Header(RequestType.getHotelInfo,"S10085349","security_test_S10085349");
         GetHotelRequest getHotelRequest = new GetHotelRequest(header,getHotelInfoRequest);
-
-        /*XStream xStream = new XStream(new DomDriver("utf-8"));
-        xStream.processAnnotations(GetHotelRequest.class);
-        System.out.println(xStream.toXML(getHotelInfoRequest));*/
         try {
-           /* JAXBContext context = JAXBContext.newInstance(GetHotelRequest.class);
-            Marshaller marshaller = context.createMarshaller();
-            StringWriter fw = new StringWriter();
-            marshaller.marshal(getHotelRequest,fw);
-            String string = fw.toString();*/
-
             String s = FcUtil.fcRequest(getHotelRequest);
             System.out.println(s);
-
-           /* try {
-                String gets = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/getHotelInfo", string);
+            try {
+                String gets = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/getHotelInfo", s);
                 System.out.println(gets);
             } catch (IOException e) {
                 e.printStackTrace();
-            }*/
+            }
         } catch (JAXBException e) {
             e.printStackTrace();
         }
