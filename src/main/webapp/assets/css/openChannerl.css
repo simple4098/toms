@@ -1,0 +1,25 @@
+@charset "UTF-8";
+.container{
+	background: #fff;
+}
+.channel-box{
+	margin-top: 28px;
+}
+.channel-pic{
+	margin-top: 5px;
+	width: 138px;
+	height: 78px;
+	float: left;
+	border: 1px solid #c0c0c0;
+}
+.channel-inp{
+	width: 250px;
+	float: left;	
+	margin-left: 34px;
+}
+.channel-inp input{
+	margin-left: 10px;
+}
+.channel-btn{
+	
+}

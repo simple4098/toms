@@ -1,0 +1,152 @@
+@charset "UTF-8";
+.color-red{
+	color: #f00;
+}
+.hr-2 {
+  margin: 5px 0;
+}
+.container{
+	background: #fff;
+}
+.nav-bar{
+	margin: 10px 0;
+}
+.nav-bar li{
+	float: left;
+	width: 108px;
+	height: 40px;
+	text-align: center;
+	line-height: 40px;
+	list-style: none;
+	border: 1px solid #ccc;
+	border-left: none;
+	cursor: pointer;
+	font-size: 14px;
+}
+.nav-bar li:hover{
+	background: #ebebeb;
+}
+.nav-bar li:first-child{
+	border-left: 1px solid #ccc;
+}
+
+.select-area input{
+	line-height: inherit!important;
+	height: 30px;
+	padding: 3px 6px;
+	vertical-align: middle;
+}
+select.form-control {
+  display: inline-block;
+  width: 165px;
+  min-width: 165px;
+  padding: 3px 6px;
+  height: 30px;
+}
+/*搜索按钮*/
+.search-btn{
+	height: 29px;
+}
+/* innRelation-2 */
+.widget-main{
+	font-size: 14px;
+}
+.widget-title{
+	height: 30px;
+	line-height: 30px;
+	font-weight: bold;
+}
+.widget-title span{
+	font-weight: normal;
+}
+.widget-title:nth-child(2){
+	padding-left: 10px;
+	border-left: 1px solid #eee;
+}
+.widget-con:last-child{
+	height: 300px;
+	overflow-y: auto;
+	border-left: 1px solid #eee;
+}
+.widget-con p{
+	font-weight: bold;
+}
+.widget-con p span{
+	font-weight: normal;
+}
+.widget-con p em{
+	font-style: normal;
+	font-weight: normal;
+	color: #55cc00;
+	padding-left: 30px;
+}
+.inn-search{
+	height: 31px;
+}
+.inn-search input{
+	vertical-align: middle;
+}
+.widget-con label{
+	display: block;
+	border-bottom: 1px dashed #393939;
+}
+.widget-con input{
+	vertical-align: top;
+}
+.result-box{
+	display: inline-block;
+}
+/*房型匹配*/
+.drag-con:last-child{
+	border-left: 1px solid #eee;
+}
+.inn-rooms{
+	width: 232px;
+	height: 42px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+#sortable{
+	min-height: 156px;
+}
+#sortable .inn-rooms{
+	cursor: move;
+}
+.inn-rooms-box{
+	width: 232px;
+	height: 42px;
+	border: 1px dashed #ccc;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	overflow: hidden;
+}
+.inn-rooms-box .inn-rooms{
+	cursor: move;
+}
+.inn-rooms p{
+	margin: 0;
+	padding-left: 5px;
+}
+.inn-rooms-icon{
+	width: 232px;
+	height: 42px;
+	margin-bottom: 10px;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASkAAAALCAYAAAAjinsLAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAABEElEQVRo3u3asU3DUBDG8b9pI9ISRYJkguzgjmSALOEBIHJtJQu4d80AQOcZ2CBxEUFtUZvCpgPLeq84nfT92nfFV53su0sQiVQW9Qp4BnbAAvgEXoFTlqcX63ziW2IdQHwri/oReAFu/3hugX2Wp+/WOcUvNSkJVhb1GvgA5iNlLbDJ8vRsnVd8urEOIK4dGG9Q0H9hPVkHFb/UpCTGdmLdzjqo+JVUVdVZhxCfvq8P0E2YGCQds2VjHVec0kxKgpVF3QD3E0qbLE9X1nnFJ/3uSYy3iXXa7kkwNSmJcaTf3o1phzqRIGpSEmw4K9jzf6P6vZM6W2cVvzSTkmjDxfmBfot3B3zRX5wfdXEusX4As74zkQTdPnQAAAAASUVORK5CYII=") -32px 15px no-repeat;
+}
+.inn-roomname{
+	font-weight: bold;
+}
+.inn-roomname span{
+	color: #55cc00;
+}
+.roomtype-table td{
+	vertical-align: middle!important;
+}
+.price-plan{
+	padding-right: 20px;
+}
+/*价格计划*/
+#addPriceBtn{
+	margin: 6px 13px 0 0;
+}
