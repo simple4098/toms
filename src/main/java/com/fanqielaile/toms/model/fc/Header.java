@@ -20,8 +20,6 @@ public class Header {
     private String TimeStamp = DateUtil.formatDateToString(new Date(),DateUtil.FORMAT_DATE_STR_SECOND);
     //房仓提供的合作商密钥
     private String PartnerCode;
-    //请求类型
-    private RequestType type;
     private String  RequestType;
     //签名
     private String Signature;
@@ -29,9 +27,9 @@ public class Header {
     private Header() {
     }
     public Header(RequestType requestType, String partnerCode, String securityCode) {
-        type = requestType;
+        RequestType = requestType.name();
         PartnerCode = partnerCode;
-        this.Signature = DcUtil.obtMd5(TimeStamp+PartnerCode+ DcUtil.obtMd5(securityCode)+type.name());
+        this.Signature = DcUtil.obtFcMd5(TimeStamp+PartnerCode+ DcUtil.obtFcMd5(securityCode)+requestType.name());
     }
 
     @XmlAttribute(name = "TimeStamp")
@@ -52,7 +50,7 @@ public class Header {
         PartnerCode = partnerCode;
     }
 
-    @XmlAttribute(name = "PartnerCode")
+    @XmlAttribute(name = "RequestType")
     public String getRequestType() {
         return RequestType;
     }

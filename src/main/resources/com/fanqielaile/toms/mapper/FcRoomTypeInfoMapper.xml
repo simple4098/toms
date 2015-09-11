@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IFcRoomTypeInfoDao">
+    <resultMap id="resultMapId" type="com.fanqielaile.toms.dto.FcRoomTypeInfoDto">
+        <id column="id" property="id"/>
+        <result column="hotel_id" property="hotelId"/>
+        <result column="room_type_id" property="roomTypeId"/>
+        <result column="room_type_name" property="roomTypeName"/>
+        <result column="bed_type" property="bedType"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,hotel_id,room_type_id,room_type_name,bed_type,created_date,updated_date,deleted
+    </sql>
+
+    <insert id="saveFcRoomTypeInfo" parameterType="com.fanqielaile.toms.dto.FcRoomTypeInfoDto">
+        insert into fc_room_type_info(id,hotel_id,room_type_id,room_type_name,bed_type,created_date,updated_date,deleted)
+        values (#{uuid},#{hotelId},#{roomTypeId},#{roomTypeName},#{bedType},now(),now(),0)
+    </insert>
+
+    <select id="selectFcRoomTypeByHotelId" parameterType="java.lang.String" resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  fc_room_type_info   where deleted=0
+        <if test="hotelId!=null and hotelId!=''">
+            and hotel_id = #{hotelId}
+        </if>
+    </select>
+
+</mapper>

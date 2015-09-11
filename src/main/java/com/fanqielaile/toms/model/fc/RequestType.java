@@ -18,6 +18,6 @@ public enum RequestType {
     syncRateInfo,
     //酒店基本信息列表查询接口
     queryHotelInfoList,
-    //酒店基本信息详情查询接口- QueryHotelInfo
-    queryHotelInfo
+    //酒店基本信息详情查询接口- getHotelInfo
+    getHotelInfo
     }
