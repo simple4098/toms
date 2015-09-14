@@ -174,4 +174,9 @@ public interface BangInnDao {
      * @param accountId
      */
     BangInn selectBangInnByParam(@Param("companyId")String companyId,@Param("otaInfoId") String otaInfoId, @Param("accountId")Integer accountId);
+
+    /**
+     * 房仓匹配客栈列表
+     */
+    List<BangInn> selectFcBangInn(BangInnDto bangInnDto, PageBounds pageBounds);
 }

@@ -224,4 +224,9 @@ public class BangInnService implements IBangInnService {
     public BangInnDto findBangInnByInnIdCompanyId(Integer innId, String companyId) {
         return bangInnDao.selectBangInnByInnIdCompanyId(innId,companyId);
     }
+
+    @Override
+    public List<BangInn> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds) {
+        return  bangInnDao.selectFcBangInn(bangInnDto,pageBounds);
+    }
 }

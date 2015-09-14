@@ -108,21 +108,22 @@
                 <li data-name="li-parent-3"
                     <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
                                     fn:contains(url, '/order/find_pay_back_orders')
-                 || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig') }">class="open active" </c:if>  >
+                 || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig')
+                 || fn:contains(url, '/innMatch/match')}">class="open active" </c:if>  >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
                         <span class="menu-text"> 分销管理 </span>
                         <b class="arrow icon-angle-down"></b>
                     </a>
                     <ul class="submenu">
-                        <%--<toms:authorize uri="/distribution/otaList">
-                            <li <c:if test="${fn:contains(url, '/distribution/otaList')}">class="active" </c:if> >
-                                <a href="<c:url value="/distribution/otaList"/>">
+                      <%--  <toms:authorize uri="/innMatch/">--%>
+                            <li <c:if test="${fn:contains(url, '/innMatch/')}">class="active" </c:if> >
+                                <a href="<c:url value="/innMatch/match"/>">
                                     <i class="icon-double-angle-right"></i>
-                                    开通渠道
+                                    客栈匹配
                                 </a>
                             </li>
-                        </toms:authorize>--%>
+                       <%-- </toms:authorize>--%>
                         <toms:authorize uri="/order/find_orders">
                             <li
                                     <c:if test="${fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||

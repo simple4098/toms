@@ -48,6 +48,10 @@
         <result column="company_id" property="companyId"/>
     </resultMap>
 
+    <resultMap id="fcId" type="com.fanqielaile.toms.dto.BangInnDto" extends="BaseResultMap">
+       <result column="ota_inn_ota_id" property="otaInnOtaId"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,sj
        </sql>
@@ -226,4 +230,27 @@
     <update id="deleteBangInnByCompanyId" parameterType="java.lang.String" >
         UPDATE bang_inn SET deleted=1 where company_id='${companyId}'
     </update>
+
+
+    <select id="selectFcBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
+        SELECT b.*,oio.id as ota_inn_ota_id from bang_inn b
+        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInnOtaId}'
+        where  b.deleted=0  and b.company_id ='${companyId}'
+        <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
+            and oio.id is NULL
+        </if>
+        <if test="innStatus!=null and innStatus.name()=='MATCH'">
+            and oio.id NOTNULL
+        </if>
+        <if test="dataPermission == 0">
+            and b.user_id = #{userId}
+        </if>
+        <if test="innLabelId !=null and innLabelId!= ''">
+            and b.inn_label_id = #{innLabelId}
+        </if>
+        <if test="keywords != null and keywords != ''">
+            and inn_name like concat('%',#{keywords},'%')
+        </if>
+        ORDER BY b.bang_date DESC,b.id ASC
+    </select>
 </mapper>
