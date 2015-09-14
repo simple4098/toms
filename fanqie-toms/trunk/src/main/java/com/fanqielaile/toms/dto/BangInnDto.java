@@ -3,7 +3,12 @@ package com.fanqielaile.toms.dto;
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.enums.InnStatus;
+import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Role;
+import com.fanqielaile.toms.model.UserInfo;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +27,27 @@ public class BangInnDto extends BangInn {
     private String companyName;
     //公司唯一识别码
     private String companyCode;
+
+    private String otaInnOtaId;
+    //数据权限
+    private Integer dataPermission;
+    //所属公司ID
+    private String companyId;
+    //客栈的标签id
+    private String innLabelId;
+    //管理员ID
+    private String userId;
+    //关键字
+    private String keywords;
+    private InnStatus innStatus;
+
+    public InnStatus getInnStatus() {
+        return innStatus;
+    }
+
+    public void setInnStatus(InnStatus innStatus) {
+        this.innStatus = innStatus;
+    }
 
     public String getCompanyCode() {
         return companyCode;
@@ -66,6 +92,60 @@ public class BangInnDto extends BangInn {
         this.labelName = labelName;
     }
 
+    public String getOtaInnOtaId() {
+        return otaInnOtaId;
+    }
+
+    public void setOtaInnOtaId(String otaInnOtaId) {
+        this.otaInnOtaId = otaInnOtaId;
+    }
+
+    public Integer getDataPermission() {
+        return dataPermission;
+    }
+
+    public void setDataPermission(Integer dataPermission) {
+        this.dataPermission = dataPermission;
+    }
+
+    @Override
+    public String getCompanyId() {
+        return companyId;
+    }
+
+    @Override
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    @Override
+    public String getInnLabelId() {
+        return innLabelId;
+    }
+
+    @Override
+    public void setInnLabelId(String innLabelId) {
+        this.innLabelId = innLabelId;
+    }
+
+    @Override
+    public String getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
     public static BangInnDto toDto(String companyId,TBParam tbParam,InnDto omsInnDto){
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
@@ -102,5 +182,21 @@ public class BangInnDto extends BangInn {
                 bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
             }
         }
+    }
+
+    public static BangInnDto userInfoToBangInnDto(UserInfo userInfo,BangInnDto bangInnDto, List<OtaInfoRefDto> infoRefDtoList){
+        bangInnDto.setCompanyId(userInfo.getCompanyId());
+        bangInnDto.setDataPermission(userInfo.getDataPermission());
+        bangInnDto.setUserId(userInfo.getUserId());
+        if (StringUtils.isEmpty(bangInnDto.getOtaInnOtaId())){
+            if (infoRefDtoList!=null){
+                for (OtaInfoRefDto infoRefDto:infoRefDtoList){
+                    if (OtaType.FC.equals(infoRefDto.getOtaType())){
+                        bangInnDto.setOtaInnOtaId(infoRefDto.getOtaInfoId());
+                    }
+                }
+            }
+        }
+        return  bangInnDto;
     }
 }
