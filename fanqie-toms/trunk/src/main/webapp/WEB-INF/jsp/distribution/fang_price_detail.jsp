@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h3 class="header smaller lighter blue">客栈房型价格设置</h3>
-            <a class="btn  btn-sub tp-price" style="background-color:#CE6613 !important; margin-left: 995px" account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >同步价格到卖房网站</a>
+            <a class="btn  btn-sub tp-price" style="background-color:#CE6613 !important; margin-left: 995px" data-url="<c:url value="/distribution/ajax/tpPrice.json"/>" account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >同步价格到卖房网站</a>
             <div class="row">
                 <div class="col-xs-12">
                     <div class="table-responsive">

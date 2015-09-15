@@ -39,7 +39,8 @@ $('.tp-price').on('click', function () {
         var otaInfoId = $(this).attr('ota_info_id');
         var innId = $(this).attr('inn_id');
         var accountId = $(this).attr('account_id');
-        var url = '<c:url value="/distribution/ajax/tpPrice.json"/>'+"?innId="+innId+"&otaInfoId="+otaInfoId+"&accountId="+accountId
+        var data_url  = $(this).attr('data-url');
+        var url = data_url+"?innId="+innId+"&otaInfoId="+otaInfoId+"&accountId="+accountId
         $.ajax({
             type:'POST',
             url:url,
