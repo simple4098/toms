@@ -1,6 +1,9 @@
 package com.fanqielaile.toms.dto;
 
 import com.fanqielaile.toms.model.fc.FcHotelInfo;
+import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
+
+import java.util.List;
 
 /**
  * DESC :
@@ -10,4 +13,14 @@ import com.fanqielaile.toms.model.fc.FcHotelInfo;
  * @version: v1.0.0
  */
 public class FcHotelInfoDto extends FcHotelInfo {
+    //房型
+    private List<FcRoomTypeInfo> fcRoomTypeInfos;
+
+    public List<FcRoomTypeInfo> getFcRoomTypeInfos() {
+        return fcRoomTypeInfos;
+    }
+
+    public void setFcRoomTypeInfos(List<FcRoomTypeInfo> fcRoomTypeInfos) {
+        this.fcRoomTypeInfos = fcRoomTypeInfos;
+    }
 }

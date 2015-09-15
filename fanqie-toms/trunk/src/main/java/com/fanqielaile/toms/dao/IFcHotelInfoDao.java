@@ -17,4 +17,11 @@ public interface IFcHotelInfoDao {
      * @param infoDto 查询酒店参数
      */
     List<FcHotelInfoDto> selectFcHotel(FcHotelInfoDto infoDto);
+
+    /**
+     * 创建酒店基本信息
+     *
+     * @param fcHotelInfoDto
+     */
+    void insertFcHotelInfo(FcHotelInfoDto fcHotelInfoDto);
 }
