@@ -4,6 +4,9 @@ import com.fanqie.core.dto.ParamDto;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
+import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
+import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
@@ -171,4 +174,36 @@ public interface IOrderService {
      * @return
      */
     JsonModel refusePayBackOrder(OrderParamDto order, UserInfo currentUser);
+
+    /**
+     * 天下房仓创建订单
+     *
+     * @param xml
+     * @return
+     */
+    Map<String, Object> createFcHotelOrder(String xml) throws Exception;
+
+    /**
+     * 天下房仓取消订单
+     *
+     * @param xml
+     * @return
+     */
+    CancelHotelOrderResponse cancelFcHotelOrder(String xml) throws Exception;
+
+    /**
+     * 天下房仓获取订单状态
+     *
+     * @param xml
+     * @return
+     */
+    GetOrderStatusResponse getFcOrderStatus(String xml) throws Exception;
+
+    /**
+     * 天下房仓试订单处理方法
+     *
+     * @param xml
+     * @return
+     */
+    CheckRoomAvailResponse checkRoomAvail(String xml);
 }

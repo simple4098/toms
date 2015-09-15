@@ -7,15 +7,16 @@
         <result column="order_id" property="orderId"/>
         <result column="name" property="name"/>
         <result column="room_pos" property="roomPos"/>
+        <result column="nationality" property="nationality"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,created_date,order_id,name,room_pos
+        id,created_date,order_id,name,room_pos,nationality
     </sql>
     <insert id="insertOrderGuests" parameterType="com.fanqielaile.toms.model.Order">
-        INSERT INTO ota_order_guests(id,created_date,order_id,name,room_pos)
+        INSERT INTO ota_order_guests(id,created_date,order_id,name,room_pos,nationality)
         VALUES
         <foreach collection="orderGuestses" separator="," item="o">
-            (#{o.uuid},now(),#{o.orderId},#{o.name},#{o.roomPos})
+            (#{o.uuid},now(),#{o.orderId},#{o.name},#{o.roomPos},#{o.nationality})
         </foreach>
     </insert>
     <select id="selectOrderGuestByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">

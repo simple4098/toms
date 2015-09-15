@@ -1,16 +1,24 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.enums.*;
+import com.fanqielaile.toms.model.DailyInfos;
+import com.fanqielaile.toms.model.OrderGuests;
 import com.fanqielaile.toms.model.fc.FcArea;
 import com.fanqielaile.toms.model.fc.FcCity;
 import com.fanqielaile.toms.model.fc.FcProvince;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +29,7 @@ import java.util.List;
  * xml解析
  */
 public class XmlDeal {
+    private static Logger logger = LoggerFactory.getLogger(XmlDeal.class);
     /**
      * 解析xml信息
      *
@@ -71,6 +80,183 @@ public class XmlDeal {
         order.setPayment(payment);
         //取消订单原因
         order.setReason(element.elementText("Reason") == null ? "" : element.elementText("Reason"));
+        return order;
+    }
+
+    /**
+     * 得到天下房仓调试订单接口查询参数
+     *
+     * @param xml
+     * @return
+     */
+    public static Order getCheckRoomAvailOrder(String xml) {
+        Order order = new Order();
+        try {
+            Element element = dealXmlStr(xml);
+            Element param = element.element("CheckRoomAvailRequest");
+            order.setInnId(Integer.parseInt(param.elementText("SpHotelId")));
+            order.setRoomTypeId(param.elementText("SpRoomTypeId"));
+            order.setOTARatePlanId(param.elementText("SpRoomTypeId"));
+            order.setLiveTime(DateUtil.parseDate(param.elementText("CheckInDate")));
+            order.setLeaveTime(DateUtil.parseDate(param.elementText("CheckOutDate")));
+            order.setHomeAmount(Integer.parseInt(param.elementText("RoomNum")));
+        } catch (Exception e) {
+            logger.error("解析天下房仓试订单xml出错" + e.getMessage());
+            throw new TomsRuntimeException("解析xml出错" + e.getMessage());
+        }
+        return order;
+    }
+
+    /**
+     * 得到天下房仓创建订单参数
+     *
+     * @param xml
+     * @return
+     */
+    public static Order getFcCreateOrder(String xml) {
+        Order order = new Order();
+        try {
+            Element element = dealXmlStr(xml);
+            Element param = element.element("CreateHotelOrderRequest");
+            Element contacter = param.element("Contacter");
+            order.setId(order.getUuid());
+            order.setChannelSource(ChannelSource.FC);
+            order.setChannelOrderCode(element.elementText("FcOrderId"));
+            order.setInnId(Integer.parseInt(param.elementText("SpHotelId")));
+            order.setRoomTypeId(param.elementText("SpRoomTypeId"));
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            order.setGuestName(contacter.elementText("LinkMan"));
+            order.setGuestMobile(contacter.elementText("LinkManPhone"));
+            order.setGuestEmail(contacter.elementText("Email"));
+            order.setHomeAmount(Integer.parseInt(param.elementText("RoomNum")));
+            order.setLiveTime(DateUtil.parse(param.elementText("CheckInDate"), "yyyy-MM-dd"));
+            order.setLeaveTime(DateUtil.parse(param.elementText("CheckOutDate"), "yyyy-MM-dd"));
+            order.setPrepayPrice(new BigDecimal(param.elementText("TotalAmount")));
+            order.setOTARoomTypeId(param.elementText("BedType"));
+            order.setEariestArriveTime(DateUtil.parse(param.elementText("ArrivalTime"), "yyyy-MM-dd"));
+            order.setLastestArriveTime(DateUtil.parse(param.elementText("LatestArrivalTime"), "yyyy-MM-dd"));
+            order.setCurrency(Enum.valueOf(CurrencyType.class, param.elementText("Currency")));
+            order.setFeeStatus(FeeStatus.NOT_PAY);
+            //TODO 预付成本价设置ota佣金
+            order.setFcBedType(param.elementText("BedType"));
+            order.setDailyInfoses(getFcDailyInfos(param.element("SalePriceList").elements("SalePriceItem"), order.getId()));
+            order.setConfirmType(getFcOrderConfirmType(param.elementText("ConfirmType")));
+            order.setOrderGuestses(getFcOrderGuest(param.element("GuestInfoList").elements("GuestInfo"), order.getId()));
+            order.setPaymentType(PaymentType.PREPAID);
+            order.setPayment(order.getTotalPrice());
+
+        } catch (Exception e) {
+            logger.error("解析天下房仓创建订单xml出错" + e.getMessage());
+            throw new TomsRuntimeException("解析天下房仓创建订单xml出错" + e.getMessage());
+        }
+        return order;
+    }
+
+    /**
+     * 得到天下房仓创建订单入住人信息
+     *
+     * @param elements
+     * @param orderId
+     * @return
+     */
+    private static List<OrderGuests> getFcOrderGuest(List<Element> elements, String orderId) {
+        List<OrderGuests> orderGuestsList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(elements.toArray())) {
+            for (Element element : elements) {
+                OrderGuests orderGuests = new OrderGuests();
+                orderGuests.setRoomPos(element.attributeCount());
+                orderGuests.setOrderId(orderId);
+                orderGuests.setName(element.elementText("GuestName"));
+                orderGuests.setNationality(element.elementText("Nationality"));
+                orderGuestsList.add(orderGuests);
+            }
+        }
+        return orderGuestsList;
+    }
+
+
+    /**
+     * 得到天下房仓订单确认类型
+     *
+     * @param confirmType
+     * @return
+     */
+    private static ConfirmType getFcOrderConfirmType(String confirmType) {
+        if (StringUtils.isNotEmpty(confirmType)) {
+            if ("1".equals(confirmType)) {
+                return ConfirmType.ON_LINE;
+            } else if ("2".equals(confirmType)) {
+                return ConfirmType.ON_EMAIL;
+            } else {
+                return ConfirmType.OTHER;
+            }
+        } else {
+            throw new TomsRuntimeException("天下房仓创建订单传入xml订单确认类型参数错误");
+        }
+
+    }
+
+    /**
+     * 处理天下房仓每日入住信息
+     *
+     * @param elements
+     * @param orderId
+     * @return
+     */
+    private static List<DailyInfos> getFcDailyInfos(List<Element> elements, String orderId) {
+        List<DailyInfos> dailyInfosList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(elements.toArray())) {
+            for (Element element : elements) {
+                DailyInfos dailyInfos = new DailyInfos();
+                dailyInfos.setOrderId(orderId);
+                dailyInfos.setPrice(new BigDecimal(element.elementText("SalePrice")));
+                dailyInfos.setDay(DateUtil.parse(element.elementText("SaleDate"), "yyyy-MM-dd"));
+                dailyInfos.setBreakfastType(getFcBreakFastType(element.elementText("BreakfastType")));
+                dailyInfos.setBreakfastNum(Integer.parseInt(element.elementText("BreakfastNum")));
+                dailyInfosList.add(dailyInfos);
+            }
+        }
+        return dailyInfosList;
+    }
+
+    /**
+     * 得到天下房仓早餐类型
+     *
+     * @param breakfastType
+     * @return
+     */
+    private static FcBreakFastType getFcBreakFastType(String breakfastType) {
+        if (StringUtils.isNotEmpty(breakfastType)) {
+            if ("1".equals(breakfastType)) {
+                return FcBreakFastType.CHINA;
+            } else if ("2".equals(breakfastType)) {
+                return FcBreakFastType.WEST;
+            } else {
+                return FcBreakFastType.AUTO;
+            }
+        } else {
+            throw new TomsRuntimeException("天下房仓传入xml早餐类型参数错误");
+        }
+
+    }
+
+    /**
+     * 得到天下房仓取消订单查询订单状态参数
+     *
+     * @param xml
+     * @return
+     */
+    public static Order getFcCancelOrder(String xml) {
+        Order order = new Order();
+        try {
+            Element element = dealXmlStr(xml);
+            Element param = element.element("CancelHotelOrderRequest");
+            order.setId(param.elementText("SpOrderId"));
+            order.setReason(param.elementText("CancelReason"));
+
+        } catch (Exception e) {
+            throw new TomsRuntimeException("解析天下房仓取消订单xml出错");
+        }
         return order;
     }
 

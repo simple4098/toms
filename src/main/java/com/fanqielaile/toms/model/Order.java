@@ -109,6 +109,56 @@ public class Order extends Domain {
     private String companyId;
     //tag-id
     private String tagId;
+    //客人邮箱
+    private String guestEmail;
+    //特殊要求
+    private String specialRequirement;
+    //附加设置
+    private String reservedItem;
+    //天下房仓房间类型
+    private String fcBedType;
+    //订单确认方式
+    private ConfirmType confirmType;
+
+    public ConfirmType getConfirmType() {
+        return confirmType;
+    }
+
+    public void setConfirmType(ConfirmType confirmType) {
+        this.confirmType = confirmType;
+    }
+
+    public String getFcBedType() {
+        return fcBedType;
+    }
+
+    public void setFcBedType(String fcBedType) {
+        this.fcBedType = fcBedType;
+    }
+
+    public String getGuestEmail() {
+        return guestEmail;
+    }
+
+    public void setGuestEmail(String guestEmail) {
+        this.guestEmail = guestEmail;
+    }
+
+    public String getSpecialRequirement() {
+        return specialRequirement;
+    }
+
+    public void setSpecialRequirement(String specialRequirement) {
+        this.specialRequirement = specialRequirement;
+    }
+
+    public String getReservedItem() {
+        return reservedItem;
+    }
+
+    public void setReservedItem(String reservedItem) {
+        this.reservedItem = reservedItem;
+    }
 
     public String getTagId() {
         return tagId;
@@ -442,7 +492,8 @@ public class Order extends Domain {
         CancelOrderParamDto cancelOrderParamDto = new CancelOrderParamDto();
         cancelOrderParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
         cancelOrderParamDto.setOtaOrderNo(order.getChannelOrderCode());
-        cancelOrderParamDto.setPaidAmount(order.getTotalPrice());
+        //取消订单传入已付金额为0
+        cancelOrderParamDto.setPaidAmount(BigDecimal.ZERO);
         cancelOrderParamDto.setvName(dictionary.getvName());
         cancelOrderParamDto.setvPWD(dictionary.getvPWD());
         return cancelOrderParamDto;
@@ -500,6 +551,22 @@ public class Order extends Domain {
         omsOrder.setPersons(persons);
         orderParamDto.setOrder(omsOrder);
         return orderParamDto;
+    }
+
+    /**
+     * 同步oms设置订单总价
+     *
+     * @param order
+     * @return
+     */
+    private static BigDecimal getTotalPrice(Order order) {
+        BigDecimal result = BigDecimal.ZERO;
+        if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+            for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                result = result.add(dailyInfos.getPrice());
+            }
+        }
+        return result.multiply(new BigDecimal(order.getHomeAmount()));
     }
 
     /**

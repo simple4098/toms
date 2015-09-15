@@ -1,13 +1,19 @@
 package com.fanqielaile.toms.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dao.DictionaryDao;
+import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
+import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
+import com.fanqielaile.toms.dto.fc.CreateHotelOrderResponse;
+import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.fc.FcResult;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.util.Constants;
@@ -118,6 +124,96 @@ public class OTAManageController extends BaseController {
             result.setResultCode("-400");
         }
         logger.info("返回淘宝的xml值=>" + result.toString());
+        return result;
+    }
+
+    /**
+     * 天下房仓试订单接口
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping("checkRoomAvail")
+    @ResponseBody
+    public Object checkRoomNum(String xml) {
+        CheckRoomAvailResponse result = new CheckRoomAvailResponse();
+        if (StringUtils.isNotEmpty(xml)) {
+            CheckRoomAvailResponse checkRoomAvailResponse = new CheckRoomAvailResponse();
+            checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
+            return checkRoomAvailResponse;
+        } else {
+            result.setResultFlag("0");
+            result.setResultMsg("xml参数错误");
+        }
+        return result;
+    }
+
+    /**
+     * 天下房仓创建订单
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping("createHotelOrder")
+    @ResponseBody
+    public Object createhotelOrder(String xml) throws Exception {
+        CreateHotelOrderResponse result = new CreateHotelOrderResponse();
+        if (StringUtils.isNotEmpty(xml)) {
+            Map<String, Object> map = this.orderService.createFcHotelOrder(xml);
+            JsonModel jsonModel = (JsonModel) map.get("status");
+            Order order = (Order) map.get("order");
+            if (jsonModel.isSuccess()) {
+                result.setFcOrderId(order.getChannelOrderCode());
+                result.setSpOrderId(order.getId());
+                result.setResultFlag("1");
+                result.setResultMsg("创建订单成功");
+            } else {
+                result.setResultFlag("0");
+                result.setResultMsg(jsonModel.getMessage());
+            }
+
+        } else {
+            result.setResultFlag("0");
+            result.setResultMsg("xml参数错误");
+        }
+        return result;
+    }
+
+    /**
+     * 天下房仓取消订单
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping("cancelHotelOrder")
+    @ResponseBody
+    public Object cancelHotelOrder(String xml) throws Exception {
+        CancelHotelOrderResponse result = new CancelHotelOrderResponse();
+        if (StringUtils.isNotEmpty(xml)) {
+            result = this.orderService.cancelFcHotelOrder(xml);
+        } else {
+            result.setResultFlag("0");
+            result.setResultMsg("xml参数错误");
+        }
+        return result;
+    }
+
+    /**
+     * 天下房仓获取订单状态
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping("getOrderStatus")
+    @ResponseBody
+    public Object getFcOrderStatus(String xml) throws Exception {
+        GetOrderStatusResponse result = new GetOrderStatusResponse();
+        if (StringUtils.isNotEmpty(xml)) {
+            result = this.orderService.getFcOrderStatus(xml);
+        } else {
+            result.setResultFlag("1");
+            result.setResultMsg("xml参数错误");
+        }
         return result;
     }
 }
