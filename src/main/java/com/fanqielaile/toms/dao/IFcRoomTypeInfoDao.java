@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import com.fanqielaile.toms.dto.FcRoomTypeInfoDto;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,5 +17,11 @@ public interface IFcRoomTypeInfoDao {
 
     List<FcRoomTypeInfo> selectFcRoomTypeByHotelId(@Param("hotelId")String hotelId);
 
+    /**
+     * 新建酒店基本房型信息
+     *
+     * @param fcHotelInfoDto
+     */
+    void insertFcRoomTypeInfo(FcHotelInfoDto fcHotelInfoDto);
 
 }

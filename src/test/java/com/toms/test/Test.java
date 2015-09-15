@@ -38,7 +38,7 @@ public class Test {
         dateList.add("2015-05-06");
         dateList.add("2015-06-06");
         dateList.add("2015-07-06");
-        String string = TomsUtil.listDateToStr(dateList);
-        System.out.println(string);
+//        String string = TomsUtil.listDateToStr(dateList);
+//        System.out.println(string);
     }
 }

@@ -16,9 +16,13 @@
         id,hotel_id,room_type_id,room_type_name,bed_type,created_date,updated_date,deleted
     </sql>
 
-    <insert id="saveFcRoomTypeInfo" parameterType="com.fanqielaile.toms.dto.FcRoomTypeInfoDto">
+    <insert id="insertFcRoomTypeInfo" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto">
         insert into fc_room_type_info(id,hotel_id,room_type_id,room_type_name,bed_type,created_date,updated_date,deleted)
-        values (#{uuid},#{hotelId},#{roomTypeId},#{roomTypeName},#{bedType},now(),now(),0)
+        values
+        <foreach collection="fcRoomTypeInfos" item="f" separator=",">
+            (#{f.uuid},#{f.hotelId},#{f.roomTypeId},#{f.roomTypeName},#{f.bedType},now(),now(),0)
+        </foreach>
+
     </insert>
 
     <select id="selectFcRoomTypeByHotelId" parameterType="java.lang.String" resultMap="resultMapId">

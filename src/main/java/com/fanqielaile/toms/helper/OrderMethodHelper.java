@@ -193,6 +193,6 @@ public class OrderMethodHelper {
                 result = result.add(dailyInfos.getPrice());
             }
         }
-        return result;
+        return result.multiply(new BigDecimal(order.getHomeAmount()));
     }
 }

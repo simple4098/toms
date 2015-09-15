@@ -444,8 +444,11 @@
             <version>1.4.7</version>
             <scope>test</scope>
         </dependency>
-
-
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.6.5</version>
+        </dependency>
     </dependencies>
     <build>
         <finalName>toms</finalName>

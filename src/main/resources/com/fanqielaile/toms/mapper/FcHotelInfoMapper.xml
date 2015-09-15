@@ -10,7 +10,7 @@
         <result column="website_url" property="websiteUrl"/>
         <result column="hotel_star" property="hotelStar"/>
         <result column="city" property="city"/>
-        <result column="distinct" property="distinct"/>
+        <result column="fc_distinct" property="distinct"/>
         <result column="business" property="business"/>
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
@@ -18,12 +18,12 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,'distinct',business,created_date,updated_date,deleted
+        id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,fc_distinct,business,created_date,updated_date,deleted
     </sql>
-    <insert id="saveFcHotelInfo" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto">
-        insert into fc_hotel_info(id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,distinct,business,created_date,updated_date,deleted)
+    <insert id="insertFcHotelInfo" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto">
+        insert into
+        fc_hotel_info(id,hotel_id,hotel_name,hotel_address,telephone,website_url,hotel_star,city,fc_distinct,business,created_date,updated_date,deleted)
         values (#{uuid},#{hotelId},#{hotelName},#{hotelAddress},#{telephone},#{websiteUrl},#{hotelStar},#{city},#{distinct},#{business},now(),now(),0)
-
     </insert>
 
     <select id="selectFcHotel" parameterType="com.fanqielaile.toms.dto.FcHotelInfoDto" resultMap="resultMapId">
