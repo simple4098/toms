@@ -7,15 +7,17 @@
         <result column="price" property="price"/>
         <result column="created_date" property="createdDate"/>
         <result column="order_id" property="orderId"/>
+        <result column="break_fast_type" property="breakFastType"/>
+        <result column="break_fast_num" property="breakFastNum"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,day,price,created_date,order_id
+        id,day,price,created_date,order_id,break_fast_type,break_fast_num
     </sql>
     <insert id="insertDailyInfos" parameterType="com.fanqielaile.toms.model.Order">
-        INSERT INTO ota_daily_infos(id,day,price,created_date,order_id)
+        INSERT INTO ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num)
         VALUES
         <foreach collection="dailyInfoses" item="d" separator=",">
-            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId})
+            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakFastType},#{d.breakFastNum})
         </foreach>
     </insert>
     <select id="selectDailyInfoByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">

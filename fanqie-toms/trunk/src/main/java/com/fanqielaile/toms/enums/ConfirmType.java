@@ -1,18 +1,18 @@
 package com.fanqielaile.toms.enums;
 
 /**
- * Created by wangdayin on 2015/6/18.
- * 渠道来源
+ * Created by wangdayin on 2015/9/1.
  */
-public enum ChannelSource {
-    TAOBAO("淘宝"),
-    FC("天下房仓"),
-    HAND_ORDER("手动下单");
-    private String text;
+public enum ConfirmType {
+    ON_LINE("在线确认"),
+    ON_EMAIL("传真确认"),
+    OTHER("其他方式");
 
-    ChannelSource(String text) {
+    ConfirmType(String text) {
         this.text = text;
     }
+
+    private String text;
 
     public String getText() {
         return text;

@@ -13,6 +13,16 @@ public class OrderGuests extends Domain {
     private int roomPos;
     //订单ID
     private String orderId;
+    //国籍
+    private String nationality;
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
 
     public String getName() {
         return name;

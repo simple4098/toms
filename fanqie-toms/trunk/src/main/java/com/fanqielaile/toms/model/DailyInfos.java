@@ -3,6 +3,8 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
+import com.fanqielaile.toms.enums.BreakfastType;
+import com.fanqielaile.toms.enums.FcBreakFastType;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
@@ -25,6 +27,26 @@ public class DailyInfos extends Domain {
     private BigDecimal costPrice;
     //时间展示
     private String dayDesc;
+    //早餐类型（可选）
+    private FcBreakFastType breakfastType;
+    //早餐数量
+    private Integer breakfastNum;
+
+    public FcBreakFastType getBreakfastType() {
+        return breakfastType;
+    }
+
+    public void setBreakfastType(FcBreakFastType breakfastType) {
+        this.breakfastType = breakfastType;
+    }
+
+    public Integer getBreakfastNum() {
+        return breakfastNum;
+    }
+
+    public void setBreakfastNum(Integer breakfastNum) {
+        this.breakfastNum = breakfastNum;
+    }
 
     public String getDayDesc() {
         Calendar calendar = Calendar.getInstance();
