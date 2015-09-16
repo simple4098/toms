@@ -3,20 +3,22 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,9 +35,18 @@ public class RoomTypeService implements IRoomTypeService {
     private static  final Logger log = Logger.getLogger(RoomTypeService.class);
     @Resource
     private CompanyDao companyDao;
+    @Resource
+    private BangInnDao bangInnDao;
     @Override
     public RoomTypeInfoDto findRoomType(ParamDto paramDto,UserInfo userInfo)throws  Exception{
         Company company = companyDao.selectCompanyById(userInfo.getCompanyId());
+        if (!StringUtils.isEmpty(paramDto.getAccountId())){
+            BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndAccountId(userInfo.getCompanyId(), Integer.valueOf(paramDto.getAccountId()));
+            if (!paramDto.isMaiAccount()){
+                paramDto.setAccountId(bangInn.getAccountIdDi()!=null?String.valueOf(bangInn.getAccountIdDi()):null);
+            }
+        }
+
         String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
         log.info("==============roomTypeUrl:" + roomTypeUrl);
         /*String s = String.valueOf(new Date().getTime());
@@ -43,7 +54,7 @@ public class RoomTypeService implements IRoomTypeService {
         String inn_info ="http://192.168.1.158:8888/api/getInnInfo?timestamp="+s+"&otaId="+105+"&accountId="+14339+"&signature="+signature;
         String url ="http://192.168.1.158:8888/api/getRoomType?timestamp="+s+"&otaId="+105+"&accountId="+14339+"&from=2015-05-05&to=2015-06-06"+"&signature="+signature;*/
        // String httpGets1 = HttpClientUtil.httpGets(inn_info,null);
-        String httpGets = HttpClientUtil.httpGets(roomTypeUrl,null);
+        String httpGets = HttpClientUtil.httpGets(roomTypeUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         RoomTypeInfoDto roomTypeInfoDto = null;
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
@@ -59,9 +70,9 @@ public class RoomTypeService implements IRoomTypeService {
                     String dateToString = DateUtil.formatDateToString(parseDate, "MM-dd");
                     String t="";
                     if (parseDate.equals(today)){
-                        t=TomsConstants.TODAY;
+                        t= TomsConstants.TODAY;
                     }else {
-                        t=DcUtil.dayOfWeek(new DateTime(parseDate).getDayOfWeek());//String.valueOf(new DateTime(parseDate).getDayOfWeek());
+                        t= DcUtil.dayOfWeek(new DateTime(parseDate).getDayOfWeek());//String.valueOf(new DateTime(parseDate).getDayOfWeek());
                     }
                     String v = dateToString+t;
                     dates.add(v);

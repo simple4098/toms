@@ -89,11 +89,13 @@ $('.hand-btn').on('click', function () {
 	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
 	var date = $(this).val();
 	$('#to_datepicker').val(TC.plusDate(date, '30', 'd', 'yyyy-MM-dd'));
+	var maiAccount = $(".maiAccount:checked").val();
 	var postDate = {
 		'startDate': $('#from_datepicker').val(),
 		'endDate': $('#to_datepicker').val(),
 		'tagId': tagId,
-		'accountId': accountId
+		'accountId': accountId,
+		'maiAccount':maiAccount
 	};
 	$('.room-type option').remove();
 	$.ajax({
@@ -129,7 +131,8 @@ $('#nextM').on('click',function(){
 
 $('#myButton').on('click', function(){
 	var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+	var maiAccount = $(".maiAccount:checked").val();
+	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 	getRoomType( postData );
 });
 
@@ -184,7 +187,7 @@ var $roomType = $('#roomType'),
 $group1.datepicker({
 	showOtherMonths: true,
 	selectOtherMonths: false,
-	minDate: new Date(),
+	minDate: new Date()
 });
 
 $group1.change(function () {
@@ -268,13 +271,15 @@ $('#submitBtn').click(function () {
 				if (data.status) {
 					layer.confirm('提示信息：下单成功', {icon: 6});
 					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+					var maiAccount = $(".maiAccount:checked").val();
+					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 					getRoomType(postData);
 					$('#hangOrder').modal('toggle');
 				} else {
 					layer.confirm('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5});
 					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+					var maiAccount = $(".maiAccount:checked").val();
+					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 					getRoomType(postData);
 					$('#hangOrder').modal('toggle');
 				}
