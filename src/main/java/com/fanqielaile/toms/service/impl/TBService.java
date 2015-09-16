@@ -1,18 +1,16 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.core.dto.PriceModel;
-import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.TomsConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
+import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.ITPService;
@@ -25,7 +23,6 @@ import com.taobao.api.domain.XRoom;
 import com.taobao.api.domain.XRoomType;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.jaxen.function.NamespaceUriFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -84,7 +81,7 @@ public class TBService implements ITPService {
         }*/
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
-        String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
+        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.INN_INFO);
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         XHotel xHotel = null;
@@ -108,7 +105,7 @@ public class TBService implements ITPService {
                 //未绑定
                 BangInnDto bangInnDto = null;
                 if (bangInn==null){
-                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam,  omsInnDto);
+                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                     bangInnDao.createBangInn(bangInnDto);
                 //已绑定
                 }else {
@@ -117,7 +114,7 @@ public class TBService implements ITPService {
                 }
                 String bangInnId = bangInn==null?bangInnDto.getUuid():bangInn.getId();
                 if (otaInnOta==null){
-                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam,bangInnId,otaInfo.getOtaInfoId());
+                    otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
                     otaInnOta.setSj(tbParam.isSj()?1:0);
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
@@ -130,10 +127,10 @@ public class TBService implements ITPService {
                 //添加更新宝贝
                 updateOrAddRoom(tbParam,otaInfo,otaPriceModel,otaInnOta,andArea);
             }else {
-                log.debug(" 推送淘宝客栈失败!");
+                log.info(" 推送淘宝客栈失败!");
             }
         }else {
-            log.debug("无客栈信息!");
+            log.info("无客栈信息!");
         }
 
     }
@@ -191,7 +188,7 @@ public class TBService implements ITPService {
                         goodsDao.updateRoomTypeGoodsProductDate(innRoomTypeGoodsDto);
                     }
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
-                    TBXHotelUtil.rateAddOrUpdate(otaInfo, gid, rpid, r, otaPriceModel, !tbParam.isSj(),priceDto);
+                    TBXHotelUtil.rateAddOrUpdate(otaInfo, gid, rpid, r, otaPriceModel, !tbParam.isSj(), priceDto);
                 }else {
                     log.debug(" 推房型失败~");
                 }
@@ -222,7 +219,7 @@ public class TBService implements ITPService {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         tbParam.setSj(true);
         String saleListUrl = DcUtil.omsQueryProxySaleListUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ProxySaleList);
-        String roomTypeGets = HttpClientUtil.httpGets(saleListUrl,null);
+        String roomTypeGets = HttpClientUtil.httpGets(saleListUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
             List<ProxyInns> list = JacksonUtil.json2list(jsonObject.get("proxyInns").toString(), ProxyInns.class);
@@ -284,7 +281,7 @@ public class TBService implements ITPService {
                     OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                     log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(o.getCompanyId(), roomTypeId,  o.getOtaInfoId()));
-                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel,priceDto);
+                    TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel, priceDto);
                 } else {
                     log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
                 }
@@ -321,14 +318,16 @@ public class TBService implements ITPService {
                         log.info("宝贝roomTypeId：" + r.getRoomTypeId() + " 同步到tp店" + obtInventory);
                         TBXHotelUtil.roomUpdate(o, xRoom);
                         OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), roomPriceDto.getOtaInfoId()));
-                        log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(r,priceModelDto));
-                        obtInventoryRate = TomsUtil.obtInventoryRate(r,priceModelDto,priceDto);
+                        log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(r, priceModelDto));
+                        obtInventoryRate = TomsUtil.obtInventoryRate(r, priceModelDto, priceDto);
                         log.info("处理之后的价格json：" + obtInventoryRate);
                         rate.setInventoryPrice(obtInventoryRate);
                         TBXHotelUtil.rateUpdate(o, r, rate);
                     }else {
                         log.info("r.getRoomTypeId()：" + r.getRoomTypeId()+" 此房型无房价信息");
                     }
+                }else {
+                    log.info("xRoom  rate 为null"+r.getRoomTypeId()+" xRoom:"+xRoom+" rate:"+rate);
                 }
             }
         }else {
