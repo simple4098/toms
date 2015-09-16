@@ -28,6 +28,8 @@
                 搜索
                 <i class="icon-search icon-on-right bigger-110"></i>
             </button>
+             <input type="radio" class="maiAccount" name="maiAccount" checked value="1"/>卖价
+             <input type="radio"  class="maiAccount"  name="maiAccount" value="0"/>低价
         </form>
     </div>
     <div class="btn-box clearfix">
