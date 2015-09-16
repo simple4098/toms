@@ -24,4 +24,26 @@ public interface IFcRoomTypeInfoDao {
      */
     void insertFcRoomTypeInfo(FcHotelInfoDto fcHotelInfoDto);
 
+    /**
+     * 根据酒店ID和房型ID查询酒店房型信息
+     *
+     * @param hotelId
+     * @param roomTypeId
+     * @return
+     */
+    FcRoomTypeInfoDto selectFcRoomTypeByHotelIdAndRoomTypeId(@Param("hotelId") String hotelId, @Param("roomTypeId") String roomTypeId);
+
+    /**
+     * 新增酒店房型
+     *
+     * @param fcRoomTypeInfo
+     */
+    void insertRoomTypeInfo(FcRoomTypeInfo fcRoomTypeInfo);
+
+    /**
+     * 更新酒店房型信息
+     *
+     * @param fcRoomTypeInfo
+     */
+    void updateFcRoomTypeInfo(FcRoomTypeInfo fcRoomTypeInfo);
 }

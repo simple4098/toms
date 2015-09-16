@@ -16,23 +16,29 @@ import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.Dictionary;
+import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
-import com.fanqielaile.toms.support.util.JsonModel;
-import com.fanqielaile.toms.support.util.XmlDeal;
+import com.fanqielaile.toms.support.util.*;
+import com.fanqielaile.toms.support.util.ftp.FTPUtil;
+import com.fanqielaile.toms.support.util.ftp.UploadStatus;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -79,6 +85,10 @@ public class OrderService implements IOrderService {
     private IOtaRoomPriceDao otaRoomPriceDao;
     @Resource
     private OrderOperationRecordDao orderOperationRecordDao;
+    @Resource
+    private IFcHotelInfoDao fcHotelInfoDao;
+    @Resource
+    private IFcRoomTypeInfoDao fcRoomTypeInfoDao;
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -316,7 +326,7 @@ public class OrderService implements IOrderService {
                 jsonObject = JSONObject.fromObject(respose);
             } catch (Exception e) {
                 order.setOrderStatus(OrderStatus.REFUSE);
-                order.setFeeStatus(FeeStatus.NOT_PAY);
+                order.setFeeStatus(FeeStatus.PAID);
                 if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
                     String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
                     logger.info("淘宝取消订单接口返回值=>" + result);
@@ -873,5 +883,53 @@ public class OrderService implements IOrderService {
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
 
         return result;
+    }
+
+    @Override
+    public UploadStatus getFcAddHotelInfo() throws DocumentException {
+        //1.下载天下房仓增量文件到本地
+        FileDealUtil.downLoadFromUrl(ResourceBundleUtil.getString(Constants.FcDownLoadUrl) + DateUtil.format(DateUtil.addDay(new Date(), -1), "yyyy-MM-dd") + ".zip", DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip", FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd"));
+        //2.解压下载的文件
+        FileDealUtil.unZipFiles(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip"), FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\");
+        //3.解析xml
+        File file = new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd"));
+        if (file.isDirectory()) {
+            File[] f = file.listFiles();
+            outer:
+            for (int i = 0; i < file.list().length; i++) {
+                if (f[i].isDirectory() || f[i].getName().contains("zip")) {
+                    continue outer;
+                } else {
+                    SAXReader reader = new SAXReader();
+                    Document document = reader.read(f[i]);
+                    FcHotelInfoDto fcHotelInfoDto = XmlDeal.dealFcHotelInfo(document);
+                    //4.判断此酒店是否存在，存在更新，不存在插入
+                    FcHotelInfoDto hotelInfoDto = this.fcHotelInfoDao.selectFcHotelInfoByFcHotelId(fcHotelInfoDto.getHotelId());
+                    if (null == hotelInfoDto) {
+                        this.fcHotelInfoDao.insertFcHotelInfo(fcHotelInfoDto);
+                    } else {
+                        this.fcHotelInfoDao.updateFcHotelInfo(fcHotelInfoDto);
+                    }
+                    //操作酒店对应的房型
+                    if (ArrayUtils.isNotEmpty(fcHotelInfoDto.getFcRoomTypeInfos().toArray())) {
+                        for (FcRoomTypeInfo fcRoomTypeInfo : fcHotelInfoDto.getFcRoomTypeInfos()) {
+                            FcRoomTypeInfoDto fcRoomTypeInfoDto = this.fcRoomTypeInfoDao.selectFcRoomTypeByHotelIdAndRoomTypeId(fcHotelInfoDto.getHotelId(), fcRoomTypeInfo.getRoomTypeId());
+                            if (null == fcRoomTypeInfoDto) {
+                                //新增房型
+                                this.fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
+                            } else {
+                                //修改房型
+                                this.fcRoomTypeInfoDao.updateFcRoomTypeInfo(fcRoomTypeInfo);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //5.处理完成将文件上传到ftp上
+        UploadStatus uploadStatus = FTPUtil.upload(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip"), ResourceBundleUtil.getString(Constants.FcUploadUrl) + DateUtil.format(new Date(), "yyyy-MM-dd") + "/" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip", false);
+        return uploadStatus;
+
+
     }
 }

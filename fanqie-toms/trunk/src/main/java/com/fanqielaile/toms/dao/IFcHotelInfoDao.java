@@ -24,4 +24,19 @@ public interface IFcHotelInfoDao {
      * @param fcHotelInfoDto
      */
     void insertFcHotelInfo(FcHotelInfoDto fcHotelInfoDto);
+
+    /**
+     * 根据天下房仓酒店ID查询酒店
+     *
+     * @param fcHotelId
+     * @return
+     */
+    FcHotelInfoDto selectFcHotelInfoByFcHotelId(String fcHotelId);
+
+    /**
+     * 更新天下房仓酒店信息
+     *
+     * @param fcHotelInfoDto
+     */
+    void updateFcHotelInfo(FcHotelInfoDto fcHotelInfoDto);
 }

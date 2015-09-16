@@ -21,9 +21,15 @@ public class DownLoadFileTest {
 //        File[] files = new File[]{new File("E:/1.docx"),new File("E:/2.docx")};
 //        File file = new File("E:/3.zip");
 ////        FileDealUtil.ZipFiles(files,file);
-//        FileDealUtil.unZipFiles(file,"E:/");
 
-        FileDealUtil.downLoadFromUrl("http://image.fangcang.com/upload/USP/increment_2015-09-15.zip", "2015-09-15.zip", "/");
+//        FileDealUtil.downLoadFromUrl("http://image.fangcang.com/upload/USP/increment_2015-09-15.zip", "2015-09-15.zip", new DownLoadFileTest().getCurrentPath()+"/fc_data/2015-09-15");
+//        FileDealUtil.unZipFiles(new File(new DownLoadFileTest().getCurrentPath()+"/fc_data/2015-09-15/2015-09-15.zip"),new DownLoadFileTest().getCurrentPath()+ "/fc_data/2015-09-15/");
+        FileDealUtil.deleteDir(new File(new DownLoadFileTest().getCurrentPath() + "/fc_data"));
 
+    }
+
+    private String getCurrentPath() {
+        String path = getClass().getResource("../").getFile().toString();
+        return System.getProperty("user.dir");
     }
 }

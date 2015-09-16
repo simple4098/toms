@@ -18,6 +18,7 @@
             <list>
                 <value>classpath:conf/properties/datasource.properties</value>
                 <value>classpath:conf/properties/memcachedCache.properties</value>
+                <value>classpath:config.properties</value>
             </list>
         </property>
     </bean>

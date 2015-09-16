@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.support.util;
 
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.FcHotelInfoDto;
 import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
@@ -11,6 +12,7 @@ import com.fanqielaile.toms.model.fc.FcArea;
 import com.fanqielaile.toms.model.fc.FcCity;
 import com.fanqielaile.toms.model.fc.FcProvince;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -339,5 +341,50 @@ public class XmlDeal {
             list.add(fcArea);
         }
         return list;
+    }
+
+    /**
+     * 天下房仓酒店信息解析
+     *
+     * @param document
+     * @return
+     */
+    public static FcHotelInfoDto dealFcHotelInfo(Document document) {
+        FcHotelInfoDto fcHotelInfoDto = new FcHotelInfoDto();
+        Element element = document.getRootElement();
+        fcHotelInfoDto.setHotelId(element.elementText("HotelId"));
+        fcHotelInfoDto.setHotelName(element.elementText("HotelChnName"));
+        fcHotelInfoDto.setHotelAddress(element.elementText("ChnAddress"));
+        fcHotelInfoDto.setTelephone(element.elementText("Telephone"));
+        fcHotelInfoDto.setWebsiteUrl(element.elementText("WebSiteURL"));
+        fcHotelInfoDto.setHotelStar(Integer.parseInt(element.elementText("HotelStar")));
+        fcHotelInfoDto.setCity(element.elementText("City"));
+        fcHotelInfoDto.setDistinct(element.elementText("Distinct"));
+        fcHotelInfoDto.setBusiness(element.elementText("Business"));
+        fcHotelInfoDto.setFcRoomTypeInfos(getFcRoomTypeInfos(element, fcHotelInfoDto.getHotelId()));
+        return fcHotelInfoDto;
+    }
+
+    /**
+     * 天下房仓房型信息解析
+     *
+     * @param element
+     * @param hotelId
+     * @return
+     */
+    public static List<FcRoomTypeInfo> getFcRoomTypeInfos(Element element, String hotelId) {
+        List<FcRoomTypeInfo> result = new ArrayList<>();
+        List<Element> elements = element.element("Rooms").elements("RoomType");
+        if (ArrayUtils.isNotEmpty(elements.toArray())) {
+            for (Element e : elements) {
+                FcRoomTypeInfo fcRoomTypeInfo = new FcRoomTypeInfo();
+                fcRoomTypeInfo.setHotelId(hotelId);
+                fcRoomTypeInfo.setRoomTypeId(e.elementText("RoomtypeId"));
+                fcRoomTypeInfo.setRoomTypeName(e.elementText("RoomTypeName"));
+                fcRoomTypeInfo.setBedType(e.elementText("BedType"));
+                result.add(fcRoomTypeInfo);
+            }
+        }
+        return result;
     }
 }

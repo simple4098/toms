@@ -22,7 +22,6 @@
         <foreach collection="fcRoomTypeInfos" item="f" separator=",">
             (#{f.uuid},#{f.hotelId},#{f.roomTypeId},#{f.roomTypeName},#{f.bedType},now(),now(),0)
         </foreach>
-
     </insert>
 
     <select id="selectFcRoomTypeByHotelId" parameterType="java.lang.String" resultMap="resultMapId">
@@ -34,4 +33,28 @@
         </if>
     </select>
 
+    <select id="selectFcRoomTypeByHotelIdAndRoomTypeId" resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from fc_room_type_info where hotel_id = #{hotelId} and room_type_id=#{roomTypeId}
+    </select>
+    <insert id="insertRoomTypeInfo" parameterType="com.fanqielaile.toms.model.fc.FcRoomTypeInfo">
+        insert into
+        fc_room_type_info(id,hotel_id,room_type_id,room_type_name,bed_type,created_date,updated_date,deleted)
+        values
+        (#{uuid},#{hotelId},#{roomTypeId},#{roomTypeName},#{bedType},now(),now(),0)
+    </insert>
+    <update id="updateFcRoomTypeInfo" parameterType="com.fanqielaile.toms.model.fc.FcRoomTypeInfo">
+        UPDATE fc_room_type_info
+        <trim prefix="SET" suffixOverrides=",">
+            updated_date = now(),
+            <if test="roomTypeName != null and roomTypeName != ''">
+                room_type_name = #{roomTypeName},
+            </if>
+            <if test="bedType != null and bedType != ''">
+                bed_type = #{bedType},
+            </if>
+        </trim>
+        where hotel_id = #{hotelId} and room_type_id = #{roomTypeId} and deleted = 0
+    </update>
 </mapper>

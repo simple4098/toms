@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqie.util.DateUtil;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
 import org.apache.tools.zip.ZipOutputStream;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -120,10 +122,14 @@ public class FileDealUtil {
     public static void unZipFiles(File zipfile, String descDir) {
         try {
             ZipFile zf = new ZipFile(zipfile);
+            out:
             for (Enumeration entries = zf.getEntries(); entries
                     .hasMoreElements(); ) {
                 ZipEntry entry = ((ZipEntry) entries.nextElement());
                 String zipEntryName = entry.getName();
+                if (!zipEntryName.contains(".")) {
+                    continue out;
+                }
                 InputStream in = zf.getInputStream(entry);
                 OutputStream out = new FileOutputStream(descDir + zipEntryName);
                 byte[] buf1 = new byte[1024];
@@ -139,6 +145,41 @@ public class FileDealUtil {
             logger.error("ZIP解压出错" + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 递归删除目录下的所有文件及子目录下所有文件
+     *
+     * @param dir 将要删除的文件目录
+     * @return boolean
+     */
+    public static void deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDir(file);
+                } else {
+                    file.delete();
+                }
+            }
+        }
+        dir.delete();
+    }
+
+    public static void main(String[] args) {
+        File file = new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip");
+        file.delete();
+//        deleteDir(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd")));
+    }
+
+    /**
+     * 获取项目路径
+     *
+     * @return
+     */
+    public static String getCurrentPath() {
+        return System.getProperty("user.dir");
     }
 
 }

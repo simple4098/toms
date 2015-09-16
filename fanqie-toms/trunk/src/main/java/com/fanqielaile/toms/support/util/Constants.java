@@ -21,6 +21,12 @@ public class Constants {
     public static final String SD = "手动";
     public static final String ZD = "自动";
     public static final int tpPriceUnit = 100;
+    //天下房仓备份ftp备份路径
+    public static final String FcUploadUrl = "fcXmlDir";
+    //天下房仓增量下载地址
+    public static final String FcDownLoadUrl = "fcDownUrl";
+    //天下房仓增量临时保存路径
+    public static final String FcDownLoadSavePath = "fcDownLoadSavePath";
 
     public static   String MESSAGE_ERROR="参数异常，请检查!";
     public static   String MESSAGE_SUCCESS="成功";
