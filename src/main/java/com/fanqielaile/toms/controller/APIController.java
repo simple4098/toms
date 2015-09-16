@@ -1,16 +1,22 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.service.ICommissionService;
+import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.FileDealUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.fanqielaile.toms.support.util.ResourceBundleUtil;
+import com.fanqielaile.toms.support.util.ftp.UploadStatus;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -19,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +43,8 @@ public class APIController extends BaseController {
     private ICommissionService commissionService;
     @Resource
     private IOtaInfoService otaInfoService;
+    @Resource
+    private IOrderService orderService;
 
     /**
      * 客栈上架、下架
@@ -84,7 +94,7 @@ public class APIController extends BaseController {
             ITPService service = null;
             for (OtaInfoRefDto o:list){
                 service = o.getOtaType().create();
-                service.deleteHotel(tbParam,o);
+                service.deleteHotel(tbParam, o);
             }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
@@ -137,5 +147,23 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         return  jsonModel;
+    }
+
+    /**
+     * 获取天下房仓增量酒店，房型信息
+     */
+    @RequestMapping("/get_fc_hotel_info")
+    public void getFcHotelInfo() throws DocumentException {
+        log.info("======开始获取天下房仓增量数据========");
+        UploadStatus uploadStatus = this.orderService.getFcAddHotelInfo();
+        //不在一个事务里面处理
+        if (uploadStatus.equals(UploadStatus.Upload_New_File_Success)) {
+            //先删除zip包
+            File zipFile = new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip");
+            zipFile.delete();
+            //再删除文件和目录
+            FileDealUtil.deleteDir(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd")));
+        }
+        log.info("=====处理增量数据结束========");
     }
 }

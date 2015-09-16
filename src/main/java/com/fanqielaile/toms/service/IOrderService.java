@@ -11,9 +11,11 @@ import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.fanqielaile.toms.support.util.ftp.UploadStatus;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
+import org.dom4j.DocumentException;
 
 import java.util.List;
 import java.util.Map;
@@ -206,4 +208,9 @@ public interface IOrderService {
      * @return
      */
     CheckRoomAvailResponse checkRoomAvail(String xml);
+
+    /**
+     * 获取增量天下房仓接口
+     */
+    UploadStatus getFcAddHotelInfo() throws DocumentException;
 }
