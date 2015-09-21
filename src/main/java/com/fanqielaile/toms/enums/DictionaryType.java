@@ -6,5 +6,6 @@ package com.fanqielaile.toms.enums;
 public enum DictionaryType {
     CANCEL_ORDER,
     ORDER_STATUS,
+    CHECK_ORDER,
     CREATE_ORDER;
 }

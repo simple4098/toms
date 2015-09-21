@@ -1,34 +1,37 @@
 package com.fanqielaile.toms.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.fanqie.util.HttpClientUtil;
-import com.fanqielaile.toms.dao.DictionaryDao;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.CreateHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
+import com.fanqielaile.toms.enums.BreakfastType;
 import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.CurrencyType;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.model.fc.FcResult;
+import com.fanqielaile.toms.model.fc.SaleItem;
 import com.fanqielaile.toms.service.IOrderService;
-import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +47,7 @@ public class OTAManageController extends BaseController {
     /*@Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();*/
+
     /**
      * 淘宝调用的接口
      *
@@ -135,12 +139,33 @@ public class OTAManageController extends BaseController {
      */
     @RequestMapping("checkRoomAvail")
     @ResponseBody
-    public Object checkRoomNum(String xml) {
+    public Object checkRoomNum(String xml) throws Exception {
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
         if (StringUtils.isNotEmpty(xml)) {
-            CheckRoomAvailResponse checkRoomAvailResponse = new CheckRoomAvailResponse();
-            checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
-            return checkRoomAvailResponse;
+            CheckRoomAvailResponse checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
+            checkRoomAvailResponse.setResultFlag("1");
+            checkRoomAvailResponse.setResultMsg("success");
+            List<SaleItem> saleItemList = new ArrayList<>();
+            SaleItem saleItem = new SaleItem();
+            //无早
+            saleItem.setBreakfastType(BreakfastType.ZERO);
+            //配额数量
+            saleItem.setAvailableQuotaNum(0);
+            //早餐数量
+            saleItem.setBreakfastNum(0);
+            //货币类型
+            saleItem.setCurrencyType(CurrencyType.CNY);
+            saleItem.setDayCanBook(1);
+            saleItem.setRoomStatus(1);
+            //是否可超，0否，1是
+            saleItem.setOverDraft(0);
+            //价格是否待查，0否，1是
+            saleItem.setPriceNeedCheck(0);
+            saleItem.setSaleDate(new Date());
+            saleItem.setSalePrice(BigDecimal.valueOf(11));
+            saleItemList.add(saleItem);
+            checkRoomAvailResponse.setSaleItems(saleItemList);
+            return FcUtil.fcRequest(checkRoomAvailResponse);
         } else {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
@@ -216,4 +241,6 @@ public class OTAManageController extends BaseController {
         }
         return result;
     }
+
+
 }

@@ -31,6 +31,16 @@ public class DailyInfos extends Domain {
     private FcBreakFastType breakfastType;
     //早餐数量
     private Integer breakfastNum;
+    //房间数量
+    private Integer roomNum;
+
+    public Integer getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(Integer roomNum) {
+        this.roomNum = roomNum;
+    }
 
     public FcBreakFastType getBreakfastType() {
         return breakfastType;
