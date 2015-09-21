@@ -12,6 +12,7 @@ import com.fanqielaile.toms.model.fc.FcArea;
 import com.fanqielaile.toms.model.fc.FcCity;
 import com.fanqielaile.toms.model.fc.FcProvince;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
@@ -341,6 +342,19 @@ public class XmlDeal {
             list.add(fcArea);
         }
         return list;
+    }
+
+    public static Response pareFcResult(String xml)throws Exception{
+        Response response = new Response();
+        Element element = dealXmlStr(xml);
+        String resultCode = element.element("ResultCode").getText();
+        String resultNo = element.element("ResultNo").getText();
+        String resultMsg = element.element("ResultMsg").getText();
+        response.setResultCode(resultCode);
+        response.setResultMsg(resultMsg);
+        response.setResultNo(resultNo);
+
+        return response;
     }
 
     /**

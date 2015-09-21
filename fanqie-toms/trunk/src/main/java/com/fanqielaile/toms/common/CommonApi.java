@@ -18,7 +18,13 @@ public class CommonApi {
     public static   String TB_URL="";
     public static   String IMG_URL="";
     public static   String ProxySaleList="";
-
+    public static   String FcAddHotelMappingUrl;
+    public  String getFcAddHotelMappingUrl() {
+        return FcAddHotelMappingUrl;
+    }
+    public  void setFcAddHotelMappingUrl(String fcAddHotelMappingUrl) {
+        FcAddHotelMappingUrl = fcAddHotelMappingUrl;
+    }
     public static String getImgUrl() {
         return IMG_URL;
     }

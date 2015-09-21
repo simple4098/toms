@@ -1,5 +1,6 @@
 package com.toms.test;
 
+import com.fanqie.core.dto.CloseDateParam;
 import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
@@ -10,10 +11,7 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.OtaInfo;
-import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;

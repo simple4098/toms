@@ -33,10 +33,10 @@ public class BangInnDto extends BangInn {
     private Integer dataPermission;
     //所属公司ID
     private String companyId;
-    //客栈的标签id
-    private String innLabelId;
+    //渠道id
+    private String otaInfoId;
     //管理员ID
-    private String userId;
+    //private String userId;
     //关键字
     private String keywords;
     private InnStatus innStatus;
@@ -118,24 +118,12 @@ public class BangInnDto extends BangInn {
         this.companyId = companyId;
     }
 
-    @Override
-    public String getInnLabelId() {
-        return innLabelId;
+    public String getOtaInfoId() {
+        return otaInfoId;
     }
 
-    @Override
-    public void setInnLabelId(String innLabelId) {
-        this.innLabelId = innLabelId;
-    }
-
-    @Override
-    public String getUserId() {
-        return userId;
-    }
-
-    @Override
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setOtaInfoId(String otaInfoId) {
+        this.otaInfoId = otaInfoId;
     }
 
     public String getKeywords() {

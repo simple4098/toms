@@ -10,12 +10,10 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.OtaInfo;
-import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
@@ -73,18 +71,18 @@ public class TBTestNew {
 
     public void test() throws Exception {
         OtaInfoRefDto otaInfo = new OtaInfoRefDto();
-        otaInfo.setAppKey("23192376");
+        /*otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");
-       /* otaInfo.setAppKey("1023192376");
+        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");*/
+        otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*/
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
         otaInfo.setOtaInfoId("1");
         //String innId = "7060";
-        String innId = "27549";
-        String companyCode = "11111111";
+        String innId = "46149";
+        String companyCode = "89894098";
         //String accountId = "14339";
-        String accountId = "25400";
+        String accountId = "26884";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -92,7 +90,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("25400");
+        price1.setAccountId("26884");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -322,7 +320,7 @@ public class TBTestNew {
             if (good!=null){
                 log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInfo.getCompanyId(), pushRoom.getRoomType().getRoomTypeId(),  otaInfo.getOtaInfoId()));
-                TBXHotelUtil.updateHotelPushRoom(otaInfo, pushRoom, priceModel,priceDto);
+                //TBXHotelUtil.updateHotelPushRoom(otaInfo, pushRoom, priceModel,priceDto);
 
             } else {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());

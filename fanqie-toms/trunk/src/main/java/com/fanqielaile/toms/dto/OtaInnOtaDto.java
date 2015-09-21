@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dto;
 
 import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaInnOta;
 
 import java.math.BigDecimal;
@@ -38,6 +39,19 @@ public class OtaInnOtaDto extends OtaInnOta {
         otaInnOta.setOtaId(tbParam.getOtaId());
         otaInnOta.setBangInnId(bangInnId);
         otaInnOta.setOtaInfoId(otaInfoId);
+        return otaInnOta;
+    }
+    public static OtaInnOtaDto  toFcDto(Long hid,String innName,Integer innId,Company company,String bangInnId,String otaInfoId){
+        OtaInnOtaDto otaInnOta = new OtaInnOtaDto();
+        otaInnOta.setAliasInnName(innName);
+        otaInnOta.setCompanyId(company.getId());
+        otaInnOta.setCommissionPercent(new BigDecimal(1));
+        otaInnOta.setInnId(innId);
+        otaInnOta.setWgHid(String.valueOf(hid));
+        otaInnOta.setBangInnId(bangInnId);
+        otaInnOta.setOtaInfoId(otaInfoId);
+        otaInnOta.setSj(1);
+        otaInnOta.setOtaId(String.valueOf(company.getOtaId()));
         return otaInnOta;
     }
 }

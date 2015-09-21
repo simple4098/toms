@@ -5,6 +5,8 @@ import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.UserInfo;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -49,6 +51,23 @@ public class TomsUtil {
         return JacksonUtil.obj2json(inventoryList);
     }
 
+    //日期库存json字符串 - 根据dateList 把库存设置为0
+    public static String obtInventory(RoomTypeInfo roomTypeInfo,List<String> dateList){
+        Inventory inventory =null;
+        List<Inventory> inventoryList = new ArrayList<Inventory>();
+        for (RoomDetail roomDetail:roomTypeInfo.getRoomDetail()){
+            inventory = new Inventory();
+            inventory.setDate(roomDetail.getRoomDate());
+            if (dateList.contains(roomDetail.getRoomDate())){
+                inventory.setQuota(Constants.ZERO_QUOTA);
+            }else {
+                inventory.setQuota(roomDetail.getRoomNum() == null ? Constants.ZERO_QUOTA : roomDetail.getRoomNum());
+            }
+            inventoryList.add(inventory);
+        }
+        return JacksonUtil.obj2json(inventoryList);
+    }
+
     public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto){
         List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
         InventoryPrice inventoryPrice = new InventoryPrice();
@@ -59,7 +78,7 @@ public class TomsUtil {
             inventoryRate.setDate(detail.getRoomDate());
             price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
             //tp店价格为分，我们自己系统价格是元
-            inventoryRate.setPrice(price * 100);
+            inventoryRate.setPrice(price * Constants.tpPriceUnit);
             inventoryRateList.add(inventoryRate);
         }
         inventoryPrice.setInventory_price(inventoryRateList);
@@ -112,5 +131,26 @@ public class TomsUtil {
             }
         }
         return list;
+    }
+
+    public static  String  listDateToStr(List<String> date){
+        StringBuilder buffer = new StringBuilder();
+        if (!CollectionUtils.isEmpty(date)){
+            for (String da:date){
+                buffer.append(da).append(",");
+            }
+            if (buffer.length()!=0){
+                buffer.deleteCharAt(buffer.length()-1);
+            }
+        }
+       return buffer.toString();
+    }
+
+    public static List<String> strToList(String dateJson) {
+        if (dateJson!=null && dateJson.length()!=0){
+            String[] split = dateJson.split(",");
+            return Arrays.asList(split);
+        }
+        return null;
     }
 }

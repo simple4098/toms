@@ -12,6 +12,7 @@ import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ImgUtil;
 import com.fanqielaile.toms.support.util.TPServiceUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.FileItem;
@@ -662,4 +663,40 @@ public class TBXHotelUtil {
         return null;
     }
 
+    /**
+     * 根据关房时间 去更新库存
+     * @param roomTypeInfo 房型信息
+     * @param infoRefDto  渠道信息
+     * @param dateList 关房时间集合
+     */
+    public static void updateRoomQuota(RoomTypeInfo roomTypeInfo, OtaInfoRefDto infoRefDto, List<String> dateList) {
+        Integer roomTypeId = roomTypeInfo.getRoomTypeId();
+        XRoom xRoom = TBXHotelUtil.roomGet(roomTypeId, infoRefDto);
+        if (xRoom!=null){
+            String obtInventory = TomsUtil.obtInventory(roomTypeInfo,dateList);
+            xRoom.setInventory(obtInventory);
+            log.info("宝贝roomTypeId：" + roomTypeId + " 同步到tp店" + obtInventory);
+            TBXHotelUtil.roomUpdate(infoRefDto, xRoom);
+        }
+
+    }
+
+    /**
+     * 根据关房时间 去更新宝贝的价格
+     * @param roomTypeInfo 房型信息
+     * @param infoRefDto  渠道
+     * @param priceModelDto 价格模式
+     * @param priceDto 特殊价格
+     */
+    public static void updateRoomRate(RoomTypeInfo roomTypeInfo,OtaInfoRefDto infoRefDto, OtaPriceModelDto priceModelDto, OtaRoomPriceDto priceDto) {
+        Rate rate = TBXHotelUtil.rateGet(infoRefDto, roomTypeInfo);
+        if (rate!=null){
+            log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(roomTypeInfo,priceModelDto));
+            String obtInventoryRate = TomsUtil.obtInventoryRate(roomTypeInfo,priceModelDto,priceDto);
+            log.info("处理之后的价格json：" + obtInventoryRate);
+            rate.setInventoryPrice(obtInventoryRate);
+            TBXHotelUtil.rateUpdate(infoRefDto, roomTypeInfo, rate);
+        }
+
+    }
 }
