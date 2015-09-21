@@ -178,5 +178,5 @@ public interface BangInnDao {
     /**
      * 房仓匹配客栈列表
      */
-    List<BangInn> selectFcBangInn(BangInnDto bangInnDto, PageBounds pageBounds);
+    List<BangInnDto> selectFcBangInn(BangInnDto bangInnDto, PageBounds pageBounds);
 }

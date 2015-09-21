@@ -9,6 +9,8 @@
     <mapping path="/user/update_password" exclude="true"/>
     <mapping path="/inn_manage/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/distribution/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/innMatch/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/innMatch/ajax/*" exclude="true" />
     <mapping path="/order/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/distribution/ajax/*" exclude="true" />
     <!--调用数据中心接口页面-->

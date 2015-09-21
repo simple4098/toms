@@ -16,6 +16,13 @@ public class FcHotelInfoDto extends FcHotelInfo {
     //房型
     private List<FcRoomTypeInfo> fcRoomTypeInfos;
 
+    public FcHotelInfoDto() {
+    }
+
+    public FcHotelInfoDto(String hotelName) {
+        super.setHotelName(hotelName);
+    }
+
     public List<FcRoomTypeInfo> getFcRoomTypeInfos() {
         return fcRoomTypeInfos;
     }

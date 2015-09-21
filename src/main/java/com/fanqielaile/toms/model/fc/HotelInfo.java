@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @data : 2015/8/13
  * @version: v1.0.0
  */
+@XmlRootElement(name = "HotelInfo")
 public class HotelInfo {
     //房仓酒店id
     private Integer FcHotelId;

@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,6 +25,8 @@ public interface IFcHotelInfoDao {
      * @param fcHotelInfoDto
      */
     void insertFcHotelInfo(FcHotelInfoDto fcHotelInfoDto);
+
+    FcHotelInfoDto selectFcHotelByHotelId(@Param("hotelId")String hotelId);
 
     /**
      * 根据天下房仓酒店ID查询酒店

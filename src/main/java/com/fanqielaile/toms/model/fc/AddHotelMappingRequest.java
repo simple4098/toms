@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.model.fc;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -12,16 +13,20 @@ import java.util.List;
  * @version: v1.0.0
  */
 
+
 public class AddHotelMappingRequest  {
 
-    private List<HotelInfo> HotelList;
+    private AddHotelMappingListRequest listRequest;
+
 
     @XmlElement(name = "HotelList")
-    public List<HotelInfo> getHotelList() {
-        return HotelList;
+    public AddHotelMappingListRequest getListRequest() {
+        return listRequest;
     }
 
-    public void setHotelList(List<HotelInfo> hotelList) {
-        HotelList = hotelList;
+    public void setListRequest(AddHotelMappingListRequest listRequest) {
+        this.listRequest = listRequest;
     }
+
+
 }

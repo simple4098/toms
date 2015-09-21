@@ -1,7 +1,6 @@
 package com.fanqielaile.toms.model.fc;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 /**
  * DESC :
@@ -11,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version: v1.0.0
  */
 @XmlRootElement(name = "Request")
-public class AddHotelRequest {
+public class AddHotelRequest extends FcRequest {
     @XmlElement(name = "Header")
     public Header header;
    @XmlElement(name = "AddHotelMappingRequest")

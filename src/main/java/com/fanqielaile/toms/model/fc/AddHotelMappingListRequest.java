@@ -5,18 +5,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * DESC :房型映射
+ * DESC :
  * @author : 番茄木-ZLin
- * @data : 2015/8/13
+ * @data : 2015/9/17
  * @version: v1.0.0
  */
-@XmlRootElement(name = "AddRoomTypeMappingRequest")
-public class AddRoomTypeMappingRequest {
-    private  Integer FcHotelId;
-    private  String SpHotelId;
+@XmlRootElement(name = "HotelList")
+public class AddHotelMappingListRequest {
     private List<HotelInfo> HotelList;
 
-    @XmlElement(name = "HotelList")
+    @XmlElement(name = "HotelInfo")
     public List<HotelInfo> getHotelList() {
         return HotelList;
     }

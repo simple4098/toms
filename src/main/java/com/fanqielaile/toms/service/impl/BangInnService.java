@@ -226,7 +226,7 @@ public class BangInnService implements IBangInnService {
     }
 
     @Override
-    public List<BangInn> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds) {
+    public List<BangInnDto> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds) {
         return  bangInnDao.selectFcBangInn(bangInnDto,pageBounds);
     }
 }

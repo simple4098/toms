@@ -12,6 +12,8 @@ public class Constants {
     public static final boolean SUCCESS = true;
     //返回错误
     public static final boolean ERROR = false;
+    public static final String ERROR400 = "400";
+    public static final String SUCCESS200 = "200";
     //数据
     public static final String DATA = "data";
     //TB用户名
@@ -27,6 +29,8 @@ public class Constants {
     public static final String FcDownLoadUrl = "fcDownUrl";
     //天下房仓增量临时保存路径
     public static final String FcDownLoadSavePath = "fcDownLoadSavePath";
+    public static final int ZERO_QUOTA = 0;
+    public static final  String FcResultNo="000";
 
     public static   String MESSAGE_ERROR="参数异常，请检查!";
     public static   String MESSAGE_SUCCESS="成功";

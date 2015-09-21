@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dto;
 
 import com.fanqie.core.dto.RoomSwitchCalStatus;
+import com.fanqielaile.toms.support.util.Constants;
 
 import java.util.Date;
 
@@ -35,7 +36,7 @@ public class Inventory {
         if (switchCalStatus!=null){
             //更新库存为0  当删除删除房源，下架房源
            if (RoomSwitchCalStatus.XJ.equals(switchCalStatus) || RoomSwitchCalStatus.DEL.equals(switchCalStatus)){
-                setQuota(0);
+                setQuota(Constants.ZERO_QUOTA);
             }
         }
     }

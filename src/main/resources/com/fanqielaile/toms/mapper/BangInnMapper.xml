@@ -50,6 +50,7 @@
 
     <resultMap id="fcId" type="com.fanqielaile.toms.dto.BangInnDto" extends="BaseResultMap">
        <result column="ota_inn_ota_id" property="otaInnOtaId"/>
+       <result column="ota_info_id" property="otaInfoId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -233,7 +234,7 @@
 
 
     <select id="selectFcBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
-        SELECT b.*,oio.id as ota_inn_ota_id from bang_inn b
+        SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInnOtaId}'
         where  b.deleted=0  and b.company_id ='${companyId}'
         <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">

@@ -78,7 +78,7 @@ public class FcStaticTest {
         hotelInfo.setFcHotelName("zhang san");
         hotelInfoList.add(hotelInfo);
         AddHotelMappingRequest addHotelMappingRequest = new AddHotelMappingRequest();
-        addHotelMappingRequest.setHotelList(hotelInfoList);
+        //addHotelMappingRequest.setHotelList(hotelInfoList);
         Header header = new Header(RequestType.addHotelMapping,"S10085349","security_test_S10085349");
         AddHotelRequest addHotelRequest = new AddHotelRequest(header,addHotelMappingRequest);
         try {
@@ -102,6 +102,38 @@ public class FcStaticTest {
             try {
                 String gets = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/getHotelInfo", s);
                 System.out.println(gets);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void addHotelRequest() throws Exception {
+        List<HotelInfo> list = new ArrayList<HotelInfo>();
+        HotelInfo hotelInfo = new HotelInfo();
+        hotelInfo.setFcHotelId(113327);
+        hotelInfo.setSpHotelId("12346");
+        hotelInfo.setFcHotelName("林芝明珠大酒店");
+  /*      HotelInfo hotelInfo1 = new HotelInfo();
+        hotelInfo1.setFcHotelId(2323);
+        hotelInfo1.setSpHotelId("11");*/
+        list.add(hotelInfo);
+
+        AddHotelMappingListRequest listRequest = new AddHotelMappingListRequest();
+        listRequest.setHotelList(list);
+        AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
+        hotelMappingRequest.setListRequest(listRequest);
+        Header header = new Header(RequestType.addHotelMapping,"S10085349","security_test_S10085349");
+        AddHotelRequest hotelRequest = new AddHotelRequest(header,hotelMappingRequest);
+        try {
+            String s = FcUtil.fcRequest(hotelRequest);
+            System.out.println(s);
+            try {
+                String gets = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/addHotelMapping", s);
+                System.out.println(gets);
+                Response response = XmlDeal.pareFcResult(gets);
             } catch (IOException e) {
                 e.printStackTrace();
             }

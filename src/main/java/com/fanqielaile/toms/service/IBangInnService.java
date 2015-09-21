@@ -143,5 +143,5 @@ public interface IBangInnService {
      * @param bangInnDto
      * @return
      */
-    List<BangInn> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds);
+    List<BangInnDto> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds);
 }
