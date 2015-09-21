@@ -17,6 +17,7 @@ import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 import org.dom4j.DocumentException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -207,7 +208,7 @@ public interface IOrderService {
      * @param xml
      * @return
      */
-    CheckRoomAvailResponse checkRoomAvail(String xml);
+    CheckRoomAvailResponse checkRoomAvail(String xml) throws IOException;
 
     /**
      * 获取增量天下房仓接口

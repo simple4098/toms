@@ -17,6 +17,7 @@ import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.Dictionary;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
+import com.fanqielaile.toms.model.fc.SaleItem;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -216,6 +218,7 @@ public class OrderService implements IOrderService {
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
             if (null != dictionary) {
                 //发送请求
+                logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
                 String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
                 logger.info("调用OMS取消订单的返回值=>" + respose.toString());
                 JSONObject jsonObject = JSONObject.fromObject(respose);
@@ -480,6 +483,7 @@ public class OrderService implements IOrderService {
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
         if (null != dictionary) {
             //发送请求
+            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
             String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
             JSONObject jsonObject = JSONObject.fromObject(respose);
             logger.info("oms取消订单返回值=>" + jsonObject.toString());
@@ -761,6 +765,7 @@ public class OrderService implements IOrderService {
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
         if (null != dictionary) {
             //发送请求
+            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
             String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
             JSONObject jsonObject = JSONObject.fromObject(respose);
             logger.info("oms取消订单返回值=>" + jsonObject.toString());
@@ -877,18 +882,53 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public CheckRoomAvailResponse checkRoomAvail(String xml) {
+    public CheckRoomAvailResponse checkRoomAvail(String xml) throws IOException {
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
-        //解析xml
+        /*//解析xml
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
-
+        Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
+        String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(dictionary, order));
+        JSONObject jsonObject = JSONObject.fromObject(response);
+        Order dailyInfos= (Order) JSONObject.toBean(jsonObject.getJSONObject("data"),Order.class);
+        if (null != dailyInfos && ArrayUtils.isNotEmpty(dailyInfos.getDailyInfoses().toArray())){
+            List<SaleItem> saleItemList = new ArrayList<>();
+            for (DailyInfos dailyInfos1:dailyInfos.getDailyInfoses()){
+                SaleItem saleItem = new SaleItem();
+                //无早
+                saleItem.setBreakfastType(BreakfastType.ZERO);
+                //配额数量
+                saleItem.setAvailableQuotaNum(0);
+                //早餐数量
+                saleItem.setBreakfastNum(0);
+                //货币类型
+                saleItem.setCurrencyType(CurrencyType.CNY);
+                //根据房间数量判断房间状态和是否可预订
+                if (dailyInfos1.getRoomNum() >0) {
+                    //dayCanBook:1可预订，roomstatus：1有房
+                    saleItem.setDayCanBook(1);
+                    saleItem.setRoomStatus(1);
+                }else {
+                    //dayCanBook:0不可预订，roomstatus：2满房
+                    saleItem.setDayCanBook(0);
+                    saleItem.setRoomStatus(2);
+                }
+                //是否可超，0否，1是
+                saleItem.setOverDraft(0);
+                //价格是否待查，0否，1是
+                saleItem.setPriceNeedCheck(0);
+                saleItem.setSaleDate(dailyInfos1.getDay());
+                saleItem.setSalePrice(dailyInfos1.getPrice());
+                saleItemList.add(saleItem);
+            }
+            result.setSaleItems(saleItemList);
+        }*/
         return result;
     }
 
     @Override
     public UploadStatus getFcAddHotelInfo() throws DocumentException {
         //1.下载天下房仓增量文件到本地
-        FileDealUtil.downLoadFromUrl(ResourceBundleUtil.getString(Constants.FcDownLoadUrl) + DateUtil.format(DateUtil.addDay(new Date(), -1), "yyyy-MM-dd") + ".zip", DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip", FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd"));
+        FileDealUtil.downLoadFromUrl(ResourceBundleUtil.getString(Constants.FcDownLoadUrl) + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip", DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip", FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd"));
         //2.解压下载的文件
         FileDealUtil.unZipFiles(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\" + DateUtil.format(new Date(), "yyyy-MM-dd") + ".zip"), FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd") + "\\");
         //3.解析xml

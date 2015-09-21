@@ -6,6 +6,7 @@ import com.fanqie.core.domain.OMSOrder;
 import com.fanqie.core.domain.Person;
 import com.fanqie.core.dto.CancelOrderParamDto;
 import com.fanqie.core.dto.OrderParamDto;
+import com.fanqie.core.dto.RoomAvailParamDto;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
@@ -679,5 +680,17 @@ public class Order extends Domain {
         orderGuests.setRoomPos(0);
         orderGuestses.add(orderGuests);
         return orderGuestses;
+    }
+
+    public RoomAvailParamDto toRoomAvail(Dictionary dictionary, Order order) {
+        RoomAvailParamDto roomAvailParamDto = new RoomAvailParamDto();
+        roomAvailParamDto.setFrom(DateUtil.format(order.getLiveTime()));
+        roomAvailParamDto.setTo(DateUtil.format(order.getLeaveTime()));
+        roomAvailParamDto.setInnId(order.getInnId());
+        roomAvailParamDto.setRoomTypeId(Integer.parseInt(order.getRoomTypeId()));
+        roomAvailParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
+        roomAvailParamDto.setvName(dictionary.getvName());
+        roomAvailParamDto.setvPWD(dictionary.getvPWD());
+        return roomAvailParamDto;
     }
 }

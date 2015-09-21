@@ -8,7 +8,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
@@ -355,64 +354,6 @@ public class FTPUtil {
         return status;
     }
 
-    /**
-     * 上传64位编码的图片文件到FTP服务器
-     *
-     * @param imgCode 64位编码的图片文件
-     * @param remote  远程文件路径，使用/home/directory1/subdirectory/file.ext 按照Linux上的路径指定方式，支持多级目录嵌套，支持递归创建不存在的目录结构
-     * @return 上传结果
-     */
-    public static UploadStatus uploadImgBase64Code(String imgCode, String remote) {
-        UploadStatus result = null;
-        if (connect(ftpHostName, ftpPort, ftpUsername, ftpPassword)) {
-            try {
-                //设置PassiveMode传输
-                ftpClient.enterLocalPassiveMode();
-                //设置以二进制流的方式传输
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                ftpClient.setControlEncoding("GBK");
-                //对远程目录的处理
-                String remoteFileName = remote;
-                if (remote.contains("/")) {
-                    remoteFileName = remote.substring(remote.lastIndexOf("/") + 1);
-                    //创建服务器远程目录结构，创建失败直接返回
-                    if (createDirecroty(remote, ftpClient) == UploadStatus.Create_Directory_Fail) {
-                        return UploadStatus.Create_Directory_Fail;
-                    }
-                }
-
-                //检查远程是否存在文件，如果存在则先删除后上传
-                FTPFile[] files = ftpClient.listFiles(new String(remoteFileName.getBytes("GBK"), "iso-8859-1"));
-                if (files.length == 1) {
-                    if (!ftpClient.deleteFile(remoteFileName)) {
-                        return UploadStatus.Delete_Remote_Faild;
-                    }
-                }
-
-                BASE64Decoder decoder = new BASE64Decoder();
-                try {
-                    // Base64解码
-                    byte[] b = decoder.decodeBuffer(imgCode);
-                    for (int i = 0; i < b.length; ++i) {
-                        if (b[i] < 0) {// 调整异常数据
-                            b[i] += 256;
-                        }
-                    }
-                    // 生成图片
-                    OutputStream out = ftpClient.appendFileStream(new String(remoteFileName.getBytes("GBK"), "iso-8859-1"));
-                    out.write(b);
-                    out.flush();
-                    out.close();
-                    result = ftpClient.completePendingCommand() ? UploadStatus.Upload_New_File_Success : UploadStatus.Upload_New_File_Failed;
-                } catch (Exception e) {
-                    logger.error("对字节数组字符串进行Base64解码并生成图片失败", e);
-                }
-            } catch (IOException e) {
-                logger.debug("上传文件到FTP服务器异常：" + e);
-            }
-        }
-        return result;
-    }
 
     /**
      * 删除ftp服务器上的文件
