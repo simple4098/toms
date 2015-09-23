@@ -82,7 +82,7 @@
           </div>
           <hr class="hr-2">
           <c:if test="${empty otaInnOtaDto}">
-          <button data-url="<c:url value="/innMatch/ajax/match.json"/> " class="btn btn-primary">提交匹配</button>
+          <button data-url="<c:url value="/innMatch/ajax/match.json"/> " class="btn btn-primary" id="btn-primary-id">提交匹配</button>
          </c:if>
         </div>
       </div>
@@ -97,7 +97,7 @@
 
       <div class="widget-body">
         <div class="widget-main clearfix">
-          <div class="roomtype-sort">
+          <div class="roomtype-sort"  <c:if test="${!(empty matchRoomTypeList)}"> style="display: none" </c:if>>
             <div class="col-sm-9 widget-title">该客栈房型信息<span>（拖动右边可匹配房型到虚线框内进行1对1匹配）</span></div>
             <div class="col-sm-3 widget-title">匹配天下房仓房型</div>
             <div style="clear: both"></div>
@@ -107,21 +107,11 @@
                 <div class="col-sm-4" id="innRoomtype">
                   <c:forEach items="${omsRoomTypeList}" var="room">
                     <div class="inn-rooms">
-                      <input type="hidden" value="${room.roomTypeId}">
+                      <input type="hidden"  data-roomTypeId="${room.roomTypeId}" data-roomTypeName="${room.roomTypeName}" data-area="${room.roomArea}">
                       <p class="inn-roomname">${room.roomTypeName}|<span>未匹配</span></p>
-                      <p>面积：${room.roomArea}平方米</p>
+                      <p>面积：<c:if test="${!(empty room.roomArea)}">${room.roomArea}平方米</c:if> <c:if test="${empty room.roomArea}">未知</c:if> </p>
                     </div>
                   </c:forEach>
-                  <div class="inn-rooms">
-                    <input type="hidden" value="0002">
-                    <p class="inn-roomname">大床房|<span>未匹配</span></p>
-                    <p>面积：20平方米</p>
-                  </div>
-                  <div class="inn-rooms">
-                    <input type="hidden" value="0003">
-                    <p class="inn-roomname">大床房|<span>未匹配</span></p>
-                    <p>面积：20平方米</p>
-                  </div>
                 </div>
                 <div class="col-sm-4">
                   <c:forEach items="${omsRoomTypeList}" var="room">
@@ -129,7 +119,7 @@
                   </c:forEach>
                 </div>
                 <div class="col-sm-4" id="otaRoomType">
-                  <c:forEach items="omsRoomTypeList" var="room">
+                  <c:forEach items="${omsRoomTypeList}" var="room">
                     <div class="inn-rooms-box connectedSortable">
                     </div>
                   </c:forEach>
@@ -138,31 +128,16 @@
               <div class="col-sm-3 drag-con connectedSortable" id="sortable">
                 <c:forEach items="${fcRoomTypeList}" var="room">
                   <div class="inn-rooms">
-                    <input type="hidden" value="${room.roomTypeId}">
+                    <input type="hidden" data-roomTypeId="${room.roomTypeId}" data-roomTypeName="${room.roomTypeName}">
                     <p>${room.roomTypeName}</p>
-                <%--    <p>面积：20平方米</p>--%>
                   </div>
                 </c:forEach>
-               <%-- <div class="inn-rooms">
-                  <input type="hidden" value="1">
-                  <p>1--大床房</p>
-                  <p>面积：20平方米</p>
-                </div>
-                <div class="inn-rooms">
-                  <input type="hidden" value="2">
-                  <p>2--大床房</p>
-                  <p>面积：20平方米</p>
-                </div>
-                <div class="inn-rooms">
-                  <input type="hidden" value="3">
-                  <p>3--大床房</p>
-                  <p>面积：20平方米</p>
-                </div>--%>
               </div>
             </div>
             <hr class="hr-2">
-            <button class="btn btn-primary" id="roomTypeBtn">提交匹配</button>
+            <button class="btn btn-primary" data-url="<c:url value="/innMatch/ajax/matchRoomType.json"/>" id="roomTypeBtn">提交匹配</button>
           </div>
+          <c:if test="${!(empty matchRoomTypeList)}">
           <div class="roomtype-table">
             <table class="table table-bordered table-hover">
               <thead>
@@ -175,10 +150,33 @@
               </tr>
               </thead>
               <tbody id="roomTypeData">
+              <c:forEach items="${matchRoomTypeList}" var="o">
+              <tr>
+                <td>1</td>
+                <td>
+                  <input type="hidden" data-roomtypeid="${o.fqRoomTypeId}" data-roomtypename="${o.fqRoomTypeName}" data-area="${o.roomArea}">
+                  <p class="inn-roomname">${o.fqRoomTypeName}|<span>${(empty o.fcRoomTypeId)?'未匹配':'匹配成功'}</span></p>
+                  <p>面积(平方米)：${(empty o.roomArea)?'未知':o.roomArea}  </p>
+                </td>
+                <td>${o.fcRoomTypeName}</td>
+                <td>
+                    <span class="price-plan">
+                    </span>
+                    <c:if test="${!(empty o.fcRoomTypeId)}">
+                      <c:if test="${!(empty o.fcRatePlanDto)}">
+                        <span class="price-plan">${o.fcRatePlanDto.bedType.desc}+${o.fcRatePlanDto.payMethod.value}+${o.fcRatePlanDto.currency.value}</span>
+                      </c:if>
+                      <button class="btn btn-xs btn-primary edit-btn editPopupsClass" data-fc-roomtype-fq="${o.id}" data-toggle="modal" data-target="#editPopups">编辑</button>
+                    </c:if>
+                </td><td><button class="btn btn-xs btn-success" data-toggle="modal" data-target="#roomTypeUp">上架</button></td>
+              </tr>
+              </c:forEach>
+
               </tbody>
             </table>
-            <button class="btn btn-primary" id="roomTypeBtn">房型重新匹配</button>
+            <button class="btn btn-primary"  id="roomTypeBtn">房型重新匹配</button>
           </div>
+          </c:if>
         </div>
       </div>
     </div>
@@ -225,16 +223,11 @@
         </button>
         <h4 class="modal-title">选择价格计划</h4>
       </div>
-      <div class="modal-body">
-        <select>
-          <option value="1001">大床+预付（1001）</option>
-          <option value="1001">大床+预付（2002）</option>
-          <option value="1001">大床+预付（3001）</option>
-          <option value="1001">大床+预付（4001）</option>
-        </select>
+      <input type="hidden" value="" id="hiddenRatePlanId"/>
+      <div class="modal-body" id="ratePlan-id">
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-dismiss="modal" id="editSave">确定</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="bangRatePlanId">确定</button>
       </div>
     </div>
   </div>
@@ -329,7 +322,7 @@
     data:{'innId':innId},
     type:'post',
     dataType:'html',
-    url:"/innMatch/ajax/ratePlanList",
+    url:'<c:url value="/innMatch/ajax/ratePlanList"/> ',
     success:function(data){
       $(".roomTypeDataClass").html(data)
     },error:function(data){
@@ -337,25 +330,56 @@
     }
   })
 
-  $(".del_rate").bind("click",function(){
-    var _this = $(this);
-    var id = _this.attr("data");
-    if(confirm("确定要删除数据吗")){
-      $.ajax({
-        data:{'ratePlanId':id},
-        type:'post',
-        dataType:'json',
-        url:"/innMatch/ajax/delRatePlan",
-        success:function(data){
-          $(".roomTypeDataClass").html(data)
-        },error:function(data){
-          alert(data);
-        }
-      })
-    }else{
-      return false;
+  $.ajax({
+    type:'post',
+    dataType:'json',
+    url:'<c:url value="/innMatch/ajax/ratePlanJson.json"/>',
+    success:function(data){
+      var select ="<select id='selectId'>"
+      var $data = data.rateList;
+      for(var i=0;i<$data.length;i++){
+        var d = $data[i];
+        var bedTypeValue = d.bedTypeValue;
+        var currencyValue = d.currencyValue;
+        var payMethodValue = d.payMethodValue;
+        var id = d.id;
+        select+="<option value='"+id+"'"+">"+bedTypeValue+"+"+currencyValue+"+"+payMethodValue+"</option>";
+      }
+      select+="</select>";
+       $("#ratePlan-id").html(select)
+    },error:function(data){
+      alert("error");
     }
+  })
 
+  //编辑价格计划
+  $(".editPopupsClass").on("click",function(){
+      var _this = $(this);
+      var id = _this.attr("data-fc-roomtype-fq");
+      $("#hiddenRatePlanId").val(id);
+
+  })
+  //管理价格计划
+  $("#bangRatePlanId").on("click",function(){
+    var id = $("#hiddenRatePlanId").val();
+    var ratePlanId = $('#selectId option:selected') .val();//选中的值
+
+    $.ajax({
+      data:{"fcRoomTypeFqId":id,"ratePlanId":ratePlanId},
+      type:'post',
+      dataType:'json',
+      url:'<c:url value="/innMatch/ajax/saveFcRoomTypeFqRatePlan.json"/>',
+      success:function(data){
+        if(data.status=='200'){
+          window.location.href = window.location.href;
+        }else{
+          layer.msg("关联失败:"+data.message);
+        }
+
+      },error:function(data){
+        layer.msg("关联失败:"+data.message);
+      }
+    })
   })
 </script>
 </body>

@@ -39,6 +39,12 @@
             and  bed_type =#{bedType}
         </if>
     </select>
+    <select id="selectFcRatePlanById"  resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  fc_rate_plan   where deleted=0 and id='${ratePlanId}'
+
+    </select>
 
     <delete id="deletedRatePlan" parameterType="java.lang.String">
         delete from fc_rate_plan where id='${ratePlanId}'
