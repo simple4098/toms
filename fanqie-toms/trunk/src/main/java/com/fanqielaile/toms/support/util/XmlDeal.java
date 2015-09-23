@@ -99,7 +99,7 @@ public class XmlDeal {
             Element param = element.element("CheckRoomAvailRequest");
             order.setInnId(Integer.parseInt(param.elementText("SpHotelId")));
             order.setRoomTypeId(param.elementText("SpRoomTypeId"));
-            order.setOTARatePlanId(param.elementText("SpRoomTypeId"));
+            order.setOTARatePlanId(param.elementText("SpRatePlanId"));
             order.setLiveTime(DateUtil.parseDate(param.elementText("CheckInDate")));
             order.setLeaveTime(DateUtil.parseDate(param.elementText("CheckOutDate")));
             order.setHomeAmount(Integer.parseInt(param.elementText("RoomNum")));
@@ -124,7 +124,7 @@ public class XmlDeal {
             Element contacter = param.element("Contacter");
             order.setId(order.getUuid());
             order.setChannelSource(ChannelSource.FC);
-            order.setChannelOrderCode(element.elementText("FcOrderId"));
+            order.setChannelOrderCode(param.elementText("FcOrderId"));
             order.setInnId(Integer.parseInt(param.elementText("SpHotelId")));
             order.setRoomTypeId(param.elementText("SpRoomTypeId"));
             order.setOrderStatus(OrderStatus.ACCEPT);
@@ -136,11 +136,15 @@ public class XmlDeal {
             order.setLeaveTime(DateUtil.parse(param.elementText("CheckOutDate"), "yyyy-MM-dd"));
             order.setPrepayPrice(new BigDecimal(param.elementText("TotalAmount")));
             order.setOTARoomTypeId(param.elementText("BedType"));
-            order.setEariestArriveTime(DateUtil.parse(param.elementText("ArrivalTime"), "yyyy-MM-dd"));
-            order.setLastestArriveTime(DateUtil.parse(param.elementText("LatestArrivalTime"), "yyyy-MM-dd"));
+            if (StringUtils.isNotEmpty(param.elementText("ArrivalTime"))) {
+                order.setEariestArriveTime(DateUtil.parse(param.elementText("ArrivalTime"), "yyyy-MM-dd"));
+            }
+            if (StringUtils.isNotEmpty(param.elementText("LatestArrivalTime"))) {
+                order.setLastestArriveTime(DateUtil.parse(param.elementText("LatestArrivalTime"), "yyyy-MM-dd"));
+            }
             order.setCurrency(Enum.valueOf(CurrencyType.class, param.elementText("Currency")));
             order.setFeeStatus(FeeStatus.NOT_PAY);
-            //TODO 预付成本价设置ota佣金
+            //TODO 预付,成本价设置ota佣金
             order.setFcBedType(param.elementText("BedType"));
             order.setDailyInfoses(getFcDailyInfos(param.element("SalePriceList").elements("SalePriceItem"), order.getId()));
             order.setConfirmType(getFcOrderConfirmType(param.elementText("ConfirmType")));
@@ -256,9 +260,26 @@ public class XmlDeal {
             Element param = element.element("CancelHotelOrderRequest");
             order.setId(param.elementText("SpOrderId"));
             order.setReason(param.elementText("CancelReason"));
-
         } catch (Exception e) {
             throw new TomsRuntimeException("解析天下房仓取消订单xml出错");
+        }
+        return order;
+    }
+
+    /**
+     * 得到天下房仓订单状态查询订单状态参数
+     *
+     * @param xml
+     * @return
+     */
+    public static Order getFcOrderStatus(String xml) {
+        Order order = new Order();
+        try {
+            Element element = dealXmlStr(xml);
+            Element param = element.element("GetOrderStatusRequest");
+            order.setId(param.elementText("SpOrderId"));
+        } catch (Exception e) {
+            throw new TomsRuntimeException("解析天下房仓订单状态xml出错");
         }
         return order;
     }

@@ -7,8 +7,8 @@
         <result column="price" property="price"/>
         <result column="created_date" property="createdDate"/>
         <result column="order_id" property="orderId"/>
-        <result column="break_fast_type" property="breakFastType"/>
-        <result column="break_fast_num" property="breakFastNum"/>
+        <result column="break_fast_type" property="breakfastType"/>
+        <result column="break_fast_num" property="breakfastNum"/>
     </resultMap>
     <sql id="Base_Column_List">
         id,day,price,created_date,order_id,break_fast_type,break_fast_num
@@ -17,7 +17,7 @@
         INSERT INTO ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num)
         VALUES
         <foreach collection="dailyInfoses" item="d" separator=",">
-            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakFastType},#{d.breakFastNum})
+            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakfastType},#{d.breakfastNum})
         </foreach>
     </insert>
     <select id="selectDailyInfoByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">

@@ -15,7 +15,7 @@ import java.util.Date;
 @XmlRootElement(name = "SaleItem")
 public class SaleItem {
     //售卖日期
-    private Date saleDate;
+    private String saleDate;
     //指定日期是否可预订:1-可预订；0-不可预订
     private Integer dayCanBook;
     //价格是否待查：1-是；0-否
@@ -36,11 +36,11 @@ public class SaleItem {
     private Integer overDraft;
 
     @XmlElement(name = "SalaDate")
-    public Date getSaleDate() {
+    public String getSaleDate() {
         return saleDate;
     }
 
-    public void setSaleDate(Date saleDate) {
+    public void setSaleDate(String saleDate) {
         this.saleDate = saleDate;
     }
 

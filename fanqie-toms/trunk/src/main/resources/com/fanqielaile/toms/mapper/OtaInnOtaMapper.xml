@@ -73,4 +73,8 @@
        <update id="updateOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
              update ota_inn_ota set sj=#{sj} where  id=#{id}
        </update>
+       <select id="selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId" resultMap="BaseResultMap">
+              select * from ota_inn_ota WHERE company_id = #{companyId} and ota_info_id=#{otaInfoId} and inn_id =
+              #{innId};
+       </select>
 </mapper>

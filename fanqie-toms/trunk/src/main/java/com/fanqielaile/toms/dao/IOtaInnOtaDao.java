@@ -43,5 +43,7 @@ public interface IOtaInnOtaDao {
 
     void updateOtaInnOta(OtaInnOtaDto otaInnOta);
 
+    OtaInnOtaDto selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(@Param("innId") int innId, @Param("companyId") String companyId, @Param("otaInfoId") String otaInfoId);
+
     OtaInnOtaDto selectOtaInnOtaById(@Param("id")String id,@Param("companyId")String companyId);
 }

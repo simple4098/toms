@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.helper;
 
+import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.CurrencyType;
 import com.fanqielaile.toms.enums.FeeStatus;
@@ -194,5 +196,25 @@ public class OrderMethodHelper {
             }
         }
         return result.multiply(new BigDecimal(order.getHomeAmount()));
+    }
+
+    /**
+     * 将ota房型信息转换为toms每日价格信息
+     *
+     * @param roomDetails
+     * @return
+     */
+    public static List<DailyInfos> toDailyInfos(List<RoomDetail> roomDetails) {
+        List<DailyInfos> result = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(roomDetails.toArray())) {
+            for (RoomDetail roomDetail : roomDetails) {
+                DailyInfos dailyInfos = new DailyInfos();
+                dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
+                dailyInfos.setPrice(BigDecimal.valueOf(roomDetail.getRoomPrice()));
+                dailyInfos.setRoomNum(roomDetail.getRoomNum());
+                result.add(dailyInfos);
+            }
+        }
+        return result;
     }
 }
