@@ -27,6 +27,7 @@ import com.fanqielaile.toms.support.util.ftp.FTPUtil;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -231,6 +232,8 @@ public class OrderService implements IOrderService {
                     this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.CANCEL_ORDER, "取消订单接口", ChannelSource.TAOBAO.name()));
                 }
             }
+        } else {
+            this.orderDao.updateOrderStatusAndReason(order);
         }
 //        businLog.setDescr(logStr + "取消的订单信息=>" + order.toString());
 //        //保存日志
@@ -285,9 +288,11 @@ public class OrderService implements IOrderService {
      */
     private JsonModel payBackDealMethod(Order order, UserInfo currentUser, String otaType) throws Exception {
         // 房态更新时间
-        OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
-        if (null != roomTypeGoodsDto) {
-            order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
+        if (StringUtils.isNotEmpty(order.getOTAGid())) {
+            OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
+            if (null != roomTypeGoodsDto) {
+                order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
+            }
         }
         //获取入住人信息
         List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
@@ -340,7 +345,8 @@ public class OrderService implements IOrderService {
                     }
                     return new JsonModel(false, "OMS系统异常");
                 } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                    //TODO 调用房仓的接口
+                    //如果付款失败，天下房仓返回创建订单失败
+                    return new JsonModel(false, "OMS系统异常，创建订单失败");
                 }
             }
             logger.info("OMS接口响应=>" + respose);
@@ -357,7 +363,8 @@ public class OrderService implements IOrderService {
                     }
                     return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
                 } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                    //TODO 调用房仓的接口
+                    //如果付款失败，天下房仓返回创建订单失败
+                    return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
                 }
             } else {
                 if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
@@ -375,7 +382,8 @@ public class OrderService implements IOrderService {
                         return new JsonModel(false, "调用淘宝更新接口出错");
                     }
                 } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                    //TODO 调用房仓的接口
+                    //天下房仓返回创建订单成功
+                    return new JsonModel(true, "创建订单成功");
                 }
             }
 
@@ -808,6 +816,10 @@ public class OrderService implements IOrderService {
         //解析xml
         Order order = XmlDeal.getFcCreateOrder(xml);
         //创建订单
+        //1.天下房仓需要查询otahotelid
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
+        OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(order.getInnId(), otaInfo.getCompanyId(), otaInfo.getOtaInfoId());
+        order.setOTAHotelId(otaInnOtaDto.getWgHid());
         createOrderMethod(order.getChannelSource(), order);
         //天下房仓创建订单，同步oms
         JsonModel jsonModel = payBackDealMethod(order, new UserInfo(), OtaType.FC.name());
@@ -846,7 +858,7 @@ public class OrderService implements IOrderService {
     public GetOrderStatusResponse getFcOrderStatus(String xml) throws Exception {
         GetOrderStatusResponse result = new GetOrderStatusResponse();
         //解析xml
-        Order orderParam = XmlDeal.getFcCancelOrder(xml);
+        Order orderParam = XmlDeal.getFcOrderStatus(xml);
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderParam.getId(), ChannelSource.FC);
         if (null == order) {
             result.setResultFlag("0");
@@ -859,16 +871,15 @@ public class OrderService implements IOrderService {
                 result.setResultMsg("查询失败");
                 result.setResultFlag("1");
             } else {
-                JSONObject orderJson = JSONObject.fromObject(jsonObject.get("order"));
-                if (orderJson.get("status").equals("0")) {
+                if (jsonObject.get("orderStatus").equals("0")) {
                     result.setCancelStatus(2);
-                } else if (orderJson.get("status").equals("1")) {
+                } else if (jsonObject.get("orderStatus").equals("1")) {
                     result.setCancelStatus(3);
-                } else if (orderJson.get("status").equals("2")) {
+                } else if (jsonObject.get("orderStatus").equals("2")) {
                     result.setCancelStatus(4);
-                } else if (orderJson.get("status").equals("3")) {
+                } else if (jsonObject.get("orderStatus").equals("3")) {
                     result.setCancelStatus(4);
-                } else if ((orderJson.get("status").equals("4"))) {
+                } else if ((jsonObject.get("orderStatus").equals("4"))) {
                     result.setCancelStatus(2);
                 } else {
                     throw new TomsRuntimeException("OMS内部错误");
@@ -884,44 +895,58 @@ public class OrderService implements IOrderService {
     @Override
     public CheckRoomAvailResponse checkRoomAvail(String xml) throws IOException {
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
-        /*//解析xml
+        //解析xml
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
         Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
+        logger.info("天下房仓试订单接口传递参数=>" + order.toRoomAvail(dictionary, order).toString());
         String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(dictionary, order));
         JSONObject jsonObject = JSONObject.fromObject(response);
-        Order dailyInfos= (Order) JSONObject.toBean(jsonObject.getJSONObject("data"),Order.class);
-        if (null != dailyInfos && ArrayUtils.isNotEmpty(dailyInfos.getDailyInfoses().toArray())){
-            List<SaleItem> saleItemList = new ArrayList<>();
-            for (DailyInfos dailyInfos1:dailyInfos.getDailyInfoses()){
-                SaleItem saleItem = new SaleItem();
-                //无早
-                saleItem.setBreakfastType(BreakfastType.ZERO);
-                //配额数量
-                saleItem.setAvailableQuotaNum(0);
-                //早餐数量
-                saleItem.setBreakfastNum(0);
-                //货币类型
-                saleItem.setCurrencyType(CurrencyType.CNY);
-                //根据房间数量判断房间状态和是否可预订
-                if (dailyInfos1.getRoomNum() >0) {
-                    //dayCanBook:1可预订，roomstatus：1有房
-                    saleItem.setDayCanBook(1);
-                    saleItem.setRoomStatus(1);
-                }else {
-                    //dayCanBook:0不可预订，roomstatus：2满房
-                    saleItem.setDayCanBook(0);
-                    saleItem.setRoomStatus(2);
+        logger.info("天下房仓试订单接口返回值=>" + response.toString());
+        if (jsonObject.get("status").equals(200)) {
+            result.setSpHotelId(order.getInnId() + "");
+            result.setSpRatePlanId(order.getOTARatePlanId());
+            result.setSpRoomTypeId(order.getRoomTypeId());
+            result.setRoomNum(order.getHomeAmount());
+            result.setCheckInDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
+            result.setCheckOutDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd"));
+            List<RoomDetail> roomDetails = (List<RoomDetail>) JSONArray.toList(jsonObject.getJSONArray("data"), RoomDetail.class);
+            //转换oms房型信息为toms的每日入住信息
+            List<DailyInfos> dailyInfos = OrderMethodHelper.toDailyInfos(roomDetails);
+            if (null != dailyInfos && ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
+                List<SaleItem> saleItemList = new ArrayList<>();
+                for (DailyInfos dailyInfos1 : dailyInfos) {
+                    SaleItem saleItem = new SaleItem();
+                    //无早
+                    saleItem.setBreakfastType(null);
+                    //配额数量
+                    saleItem.setAvailableQuotaNum(0);
+                    //早餐数量
+                    saleItem.setBreakfastNum(0);
+                    //货币类型
+                    saleItem.setCurrencyType(CurrencyType.CNY);
+                    //根据房间数量判断房间状态和是否可预订
+                    if (dailyInfos1.getRoomNum() > 0) {
+                        //dayCanBook:1可预订，roomstatus：1有房
+                        saleItem.setDayCanBook(1);
+                        saleItem.setRoomStatus(1);
+                    } else {
+                        //dayCanBook:0不可预订，roomstatus：2满房
+                        saleItem.setDayCanBook(0);
+                        saleItem.setRoomStatus(2);
+                    }
+                    //是否可超，0否，1是
+                    saleItem.setOverDraft(0);
+                    //价格是否待查，0否，1是
+                    saleItem.setPriceNeedCheck(0);
+                    saleItem.setSaleDate(DateUtil.format(dailyInfos1.getDay(), "yyyy-MM-dd"));
+                    saleItem.setSalePrice(dailyInfos1.getPrice());
+                    saleItemList.add(saleItem);
                 }
-                //是否可超，0否，1是
-                saleItem.setOverDraft(0);
-                //价格是否待查，0否，1是
-                saleItem.setPriceNeedCheck(0);
-                saleItem.setSaleDate(dailyInfos1.getDay());
-                saleItem.setSalePrice(dailyInfos1.getPrice());
-                saleItemList.add(saleItem);
+                result.setSaleItems(saleItemList);
             }
-            result.setSaleItems(saleItemList);
-        }*/
+        } else {
+            return null;
+        }
         return result;
     }
 

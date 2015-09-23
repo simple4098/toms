@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.model.OtaInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface IOtaInfoDao {
      void saveOtaInfo(OtaInfoRefDto otaInfoRefDto);
 
      OtaInfoRefDto findOtaInfoByOtaIdAndCompanyId(OtaInfoRefDto otaInfoRefDto);
+
+     OtaInfoRefDto selectCompanyIdByAppKey(@Param("appKey") String appKey, @Param("appSecret") String appSecret);
 }

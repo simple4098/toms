@@ -143,29 +143,14 @@ public class OTAManageController extends BaseController {
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
         if (StringUtils.isNotEmpty(xml)) {
             CheckRoomAvailResponse checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
-            checkRoomAvailResponse.setResultFlag("1");
-            checkRoomAvailResponse.setResultMsg("success");
-            List<SaleItem> saleItemList = new ArrayList<>();
-            SaleItem saleItem = new SaleItem();
-            //无早
-            saleItem.setBreakfastType(BreakfastType.ZERO);
-            //配额数量
-            saleItem.setAvailableQuotaNum(0);
-            //早餐数量
-            saleItem.setBreakfastNum(0);
-            //货币类型
-            saleItem.setCurrencyType(CurrencyType.CNY);
-            saleItem.setDayCanBook(1);
-            saleItem.setRoomStatus(1);
-            //是否可超，0否，1是
-            saleItem.setOverDraft(0);
-            //价格是否待查，0否，1是
-            saleItem.setPriceNeedCheck(0);
-            saleItem.setSaleDate(new Date());
-            saleItem.setSalePrice(BigDecimal.valueOf(11));
-            saleItemList.add(saleItem);
-            checkRoomAvailResponse.setSaleItems(saleItemList);
-            return FcUtil.fcRequest(checkRoomAvailResponse);
+            if (null != checkRoomAvailResponse) {
+                checkRoomAvailResponse.setResultFlag("1");
+                checkRoomAvailResponse.setResultMsg("success");
+                return FcUtil.fcRequest(checkRoomAvailResponse);
+            } else {
+                result.setResultFlag("0");
+                result.setResultMsg("查询出错!");
+            }
         } else {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");

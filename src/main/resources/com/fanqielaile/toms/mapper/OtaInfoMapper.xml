@@ -67,5 +67,8 @@
           LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id and o.company_id='${companyId}'
           where o.ota_info_id = '${otaId}'
     </select>
+    <select id="selectCompanyIdByAppKey" resultMap="otaInfoRefId">
+        SELECT company_id,ota_info_id from otainfo_company_ref where appkey=#{appKey} and appsecret = #{appSecret}
+    </select>
 
 </mapper>

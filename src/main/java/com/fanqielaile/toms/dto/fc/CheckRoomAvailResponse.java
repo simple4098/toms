@@ -21,9 +21,9 @@ public class CheckRoomAvailResponse extends FcResult {
     //合作方价格计划id
     private String spRatePlanId;
     //入住日期
-    private Date checkInDate;
+    private String checkInDate;
     //离店日期
-    private Date checkOutDate;
+    private String checkOutDate;
     //间数
     private Integer roomNum;
     //售价信息
@@ -58,20 +58,20 @@ public class CheckRoomAvailResponse extends FcResult {
     }
 
     @XmlElement(name = "CheckInDate")
-    public Date getCheckInDate() {
+    public String getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(Date checkInDate) {
+    public void setCheckInDate(String checkInDate) {
         this.checkInDate = checkInDate;
     }
 
     @XmlElement(name = "CheckOutDate")
-    public Date getCheckOutDate() {
+    public String getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(Date checkOutDate) {
+    public void setCheckOutDate(String checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 
