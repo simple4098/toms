@@ -19,12 +19,22 @@ public class CommonApi {
     public static   String IMG_URL="";
     public static   String ProxySaleList="";
     public static   String FcAddHotelMappingUrl;
+    public static   String FcAddRoomTypeMappingUrl;
     public  String getFcAddHotelMappingUrl() {
         return FcAddHotelMappingUrl;
     }
     public  void setFcAddHotelMappingUrl(String fcAddHotelMappingUrl) {
         FcAddHotelMappingUrl = fcAddHotelMappingUrl;
     }
+
+    public  String getFcAddRoomTypeMappingUrl() {
+        return FcAddRoomTypeMappingUrl;
+    }
+
+    public  void setFcAddRoomTypeMappingUrl(String fcAddRoomTypeMappingUrl) {
+        FcAddRoomTypeMappingUrl = fcAddRoomTypeMappingUrl;
+    }
+
     public static String getImgUrl() {
         return IMG_URL;
     }

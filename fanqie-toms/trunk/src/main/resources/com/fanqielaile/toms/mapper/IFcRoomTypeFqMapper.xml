@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IFcRoomTypeFqDao">
+    <resultMap id="resultMapId" type="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto">
+        <id column="id" property="id"/>
+        <result column="inn_id" property="innId"/>
+        <result column="fc_hotel_id" property="fcHotelId"/>
+        <result column="ota_inn_ota_id" property="otaInnOtaId"/>
+        <result column="ota_info_id" property="otaInfoId"/>
+        <result column="fq_roomtype_id" property="fqRoomTypeId"/>
+        <result column="fc_roomtype_id" property="fcRoomTypeId"/>
+        <result column="room_area" property="roomArea"/>
+        <result column="fq_roomtype_name" property="fqRoomTypeName"/>
+        <result column="fc_roomtype_name" property="fcRoomTypeName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+    <resultMap id="resultDtoMapId" type="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" extends="resultMapId">
+        <result column="currency" property="fcRatePlanDto.currency"/>
+        <result column="pay_method" property="fcRatePlanDto.payMethod"/>
+        <result column="bed_type" property="fcRatePlanDto.bedType"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,company_id,inn_id,fc_hotel_id,ota_inn_ota_id,ota_info_id,fq_roomtype_id
+        ,fc_roomtype_id,room_area,fq_roomtype_name,fc_roomtype_name
+        ,created_date,updated_date,deleted
+    </sql>
+    <insert id="saveRoomTypeFq" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto">
+        insert into fc_roomtype_fq( id,company_id,inn_id,fc_hotel_id,ota_inn_ota_id,ota_info_id,fq_roomtype_id
+        ,fc_roomtype_id,room_area,fq_roomtype_name,fc_roomtype_name
+        ,created_date,updated_date,deleted)values
+        <foreach collection="fcRoomTypeFqs" item="fc"  separator=",">
+            (#{fc.uuid},#{fc.companyId},#{fc.innId},#{fc.fcHotelId},#{fc.otaInnOtaId},#{fc.otaInfoId},
+            #{fc.fqRoomTypeId},#{fc.fcRoomTypeId},#{fc.roomArea},#{fc.fqRoomTypeName},
+            #{fc.fcRoomTypeName},now(),now(),0)
+        </foreach>
+    </insert>
+
+    <select id="selectFcRoomTypeFq" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" resultMap="resultDtoMapId">
+        SELECT
+        o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
+        ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,fp.currency,fp.pay_method,fp.bed_type
+        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+
+        where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId}
+
+    </select>
+
+    <select id="selectFcRoomTypeFqById" resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  fc_roomtype_fq
+
+        where deleted=0 and  id ='${id}'
+
+    </select>
+    <update id="updateRoomTypeFqRatePlan" >
+        UPDATE fc_roomtype_fq set rate_plan_id='${ratePlanId}' where id='${fcRoomTypeFqId}'
+    </update>
+
+
+
+</mapper>

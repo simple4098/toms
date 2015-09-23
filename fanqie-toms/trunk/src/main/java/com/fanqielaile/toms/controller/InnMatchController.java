@@ -1,7 +1,8 @@
 package com.fanqielaile.toms.controller;
 
-import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
@@ -18,6 +19,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * DESC :
@@ -53,6 +58,8 @@ public class InnMatchController extends BaseController {
     private IOtaRoomPriceService otaRoomPriceService;
     @Resource
     private IFcRatePlanService fcRatePlanService;
+    @Resource
+    private IFcRoomTypeFqService fcRoomTypeFqService;
 
     //匹配列表
     @RequestMapping("/match")
@@ -75,29 +82,35 @@ public class InnMatchController extends BaseController {
     @RequestMapping("/matchDetail")
     public String matchOtaList(Model model,BangInnDto bangInnDto){
         UserInfo userInfo = getCurrentUser();
-        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(userInfo.getCompanyId(), bangInnDto.getInnId());
-        InnDto omsInn = innMatchService.obtOmsInn(bangInn);
-        OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(userInfo.getCompanyId(), OtaType.FC);
-        OtaInnOtaDto otaInnOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), infoRefDto.getOtaInfoId(), userInfo.getCompanyId());
-        if (otaInnOtaDto!=null){
-            FcHotelInfoDto fcHotelInfoDto = fcHotelInfoService.findFcHotelByHotelId(otaInnOtaDto.getWgHid());
-            //房仓酒店房型信息
-            List<FcRoomTypeInfo> roomTypeInfoDtoList = fcHotelInfoService.finFcRoomTypeByHotelId(otaInnOtaDto.getWgHid());
-            model.addAttribute("fcHotel",fcHotelInfoDto);
-            model.addAttribute("fcRoomTypeList",roomTypeInfoDtoList);
-        } else {
-            List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
-            model.addAttribute("hotel",hotel);
-        }
+        String companyId = userInfo.getCompanyId();
+        Integer innId =  bangInnDto.getInnId();
+        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId,innId);
         try {
+            InnDto omsInn = innMatchService.obtOmsInn(bangInn);
+            OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(userInfo.getCompanyId(), OtaType.FC);
+            OtaInnOtaDto otaInnOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), infoRefDto.getOtaInfoId(), companyId);
+            if (otaInnOtaDto!=null){
+                FcHotelInfoDto fcHotelInfoDto = fcHotelInfoService.findFcHotelByHotelId(otaInnOtaDto.getWgHid());
+                //房仓酒店房型信息
+                List<FcRoomTypeInfo> roomTypeInfoDtoList = fcHotelInfoService.finFcRoomTypeByHotelId(otaInnOtaDto.getWgHid());
+                //房型匹配信息
+                List<FcRoomTypeFqDto> fcRoomTypeFq = fcRoomTypeFqService.findFcRoomTypeFq(new FcRoomTypeFqDto(String.valueOf(innId), companyId, infoRefDto.getOtaInfoId()));
+                model.addAttribute("fcHotel", fcHotelInfoDto);
+                model.addAttribute("fcRoomTypeList",roomTypeInfoDtoList);
+                model.addAttribute("matchRoomTypeList",fcRoomTypeFq);
+            } else {
+                List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
+                model.addAttribute("hotel",hotel);
+            }
+
             List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
             model.addAttribute("omsRoomTypeList",list);
+            model.addAttribute("inn",bangInn);
+            model.addAttribute("omsInn",omsInn);
+            model.addAttribute("otaInnOtaDto",otaInnOtaDto);
         } catch (Exception e) {
             log.error("获取oms房型信息异常:"+e.getMessage());
         }
-        model.addAttribute("inn",bangInn);
-        model.addAttribute("omsInn",omsInn);
-        model.addAttribute("otaInnOtaDto",otaInnOtaDto);
         return "/match/inn_match_detail";
     }
 
@@ -136,6 +149,50 @@ public class InnMatchController extends BaseController {
         return  "/match/rate_list";
     }
 
+    //价格计划列表  ajax请求
+    @RequestMapping("/ajax/ratePlanJson")
+    @ResponseBody
+    public Object ratePlanList(FcRatePlan fcRatePlan){
+        Map map = new HashMap();
+        String companyId = getCurrentUser().getCompanyId();
+        fcRatePlan.setCompanyId(companyId);
+        List<FcRatePlan> ratePlan = fcRatePlanService.findFcRatePlan(fcRatePlan);
+        List<FcRatePlanDto> list = new ArrayList<FcRatePlanDto>();
+        FcRatePlanDto fc = null;
+        for (FcRatePlan f:ratePlan){
+            fc = new FcRatePlanDto();
+            BeanUtils.copyProperties(f,fc);
+            fc.setBedTypeValue(f.getBedType().getDesc());
+            fc.setCurrencyValue(f.getCurrency().getValue());
+            fc.setPayMethodValue(f.getPayMethod().getValue());
+            list.add(fc);
+        }
+
+        map.put("rateList",list);
+        return  map;
+    }
+
+    /**
+     * 更新匹配房型的 价格计划 - 如果此价格计划房仓上没有要同步到房仓
+     * @param fcRoomTypeFqId 房型匹配id
+     * @param ratePlanId 价格计划id
+     */
+    @RequestMapping("/ajax/saveFcRoomTypeFqRatePlan")
+    @ResponseBody
+    public Object saveFcRoomTypeFqRatePlan(String fcRoomTypeFqId,String ratePlanId){
+        Result result = new Result();
+        try {
+            //todo
+            fcRoomTypeFqService.updateRoomTypeRatePlan(fcRoomTypeFqId,ratePlanId);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            log.error("更新匹配房型价格计划异常:"+e);
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
+
     //房仓价格计划保存
     @RequestMapping("/ajax/saveRatePlan")
     @ResponseBody
@@ -151,8 +208,24 @@ public class InnMatchController extends BaseController {
     @RequestMapping("/ajax/delRatePlan")
     public Object delRatePlan(String ratePlanId,String innId){
         Result result = new Result();
+        //todo 删除房仓上面的价格计划
         fcRatePlanService.deletedRatePlan(ratePlanId);
         return  "redirect:/innMatch/matchDetail?innId="+innId;
+    }
+    //房仓房型与番茄房型匹配
+    @RequestMapping("/ajax/matchRoomType")
+    @ResponseBody
+    public Object matchRoomType(String json,String innId,String fcHotelId){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try{
+            fcHotelInfoService.updateMatchRoomType(companyId,innId,fcHotelId,json);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
     }
 
 }

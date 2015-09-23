@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
 import com.fanqielaile.toms.model.fc.FcRatePlan;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,4 +19,6 @@ public interface IFcRatePlanDao {
     List<FcRatePlan> selectFcRatePlan(FcRatePlan fcRatePlan);
 
     void deletedRatePlan(@Param("ratePlanId")String ratePlanId);
+
+    FcRatePlan selectFcRatePlanById(@Param("ratePlanId")String ratePlanId);
 }

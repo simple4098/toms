@@ -9,7 +9,7 @@ import com.fanqielaile.toms.enums.PayMethod;
  * DESC :房仓价格计划
  * @author : 番茄木-ZLin
  * @data : 2015/9/21
- * @version: v1.0.0  data:{'currency':currency,'payMethod':payMethod,'bedType':bedType},
+ * @version: v1.0.0
  */
 public class FcRatePlan extends Domain {
 

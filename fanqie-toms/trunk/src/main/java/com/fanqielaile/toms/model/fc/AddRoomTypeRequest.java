@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version: v1.0.0
  */
 @XmlRootElement(name = "Request")
-public class AddRoomTypeRequest {
+public class AddRoomTypeRequest  extends FcRequest {
     @XmlElement(name = "Header")
     public Header header;
    @XmlElement(name = "AddRoomTypeMappingRequest")

@@ -1,7 +1,6 @@
 package com.fanqielaile.toms.model.fc;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
@@ -10,18 +9,38 @@ import java.util.List;
  * @data : 2015/8/13
  * @version: v1.0.0
  */
+/*@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder={"FcHotelId","SpHotelId","RoomTypeList"})*/
 @XmlRootElement(name = "AddRoomTypeMappingRequest")
 public class AddRoomTypeMappingRequest {
     private  Integer FcHotelId;
     private  String SpHotelId;
-    private List<HotelInfo> HotelList;
-
-    @XmlElement(name = "HotelList")
-    public List<HotelInfo> getHotelList() {
-        return HotelList;
+    private AddRoomTypeMappingListRequest RoomTypeList;
+    @XmlElement(name = "FcHotelId")
+    public Integer getFcHotelId() {
+        return FcHotelId;
     }
 
-    public void setHotelList(List<HotelInfo> hotelList) {
-        HotelList = hotelList;
+    public void setFcHotelId(Integer fcHotelId) {
+        FcHotelId = fcHotelId;
+    }
+
+    @XmlElement(name = "SpHotelId")
+    public String getSpHotelId() {
+        return SpHotelId;
+    }
+
+    public void setSpHotelId(String spHotelId) {
+        SpHotelId = spHotelId;
+    }
+
+    @XmlElement(name = "RoomTypeList")
+    public AddRoomTypeMappingListRequest getRoomTypeList() {
+        return RoomTypeList;
+    }
+
+    public void setRoomTypeList(AddRoomTypeMappingListRequest roomTypeList) {
+        RoomTypeList = roomTypeList;
     }
 }

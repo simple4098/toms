@@ -1,14 +1,15 @@
 package com.fanqielaile.toms.model.fc;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * DESC :
- *
  * @author : 番茄木-ZLin
  * @data : 2015/8/13
  * @version: v1.0.0
  */
+@XmlRootElement(name = "RoomType")
 public class RoomType {
     private Long FcRoomTypeId;
     private String FcRoomTypeName;

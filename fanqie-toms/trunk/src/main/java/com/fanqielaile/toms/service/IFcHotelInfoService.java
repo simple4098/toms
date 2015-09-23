@@ -38,4 +38,12 @@ public interface IFcHotelInfoService {
      * @param fcHotelId 房仓酒店id
      */
     List<FcRoomTypeInfo> finFcRoomTypeByHotelId(String fcHotelId);
+
+    /**
+     *
+     * @param innId 客栈id
+     * @param fcHotelId 房仓酒店id
+     * @param json 房仓房型id与客栈房型对应json
+     */
+    void updateMatchRoomType(String companyId,String innId, String fcHotelId, String json) throws Exception;
 }
