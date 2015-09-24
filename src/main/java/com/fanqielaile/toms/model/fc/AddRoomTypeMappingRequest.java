@@ -10,37 +10,38 @@ import java.util.List;
  * @version: v1.0.0
  */
 /*@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder={"FcHotelId","SpHotelId","RoomTypeList"})*/
+@XmlAccessorType(XmlAccessType.FIELD)*/
 @XmlRootElement(name = "AddRoomTypeMappingRequest")
+@XmlType(propOrder={"fcHotelId","spHotelId","roomTypeList"})
 public class AddRoomTypeMappingRequest {
-    private  Integer FcHotelId;
-    private  String SpHotelId;
-    private AddRoomTypeMappingListRequest RoomTypeList;
+    private  Integer fcHotelId;
+    private  String spHotelId;
+    private List<RoomType> roomTypeList;
     @XmlElement(name = "FcHotelId")
     public Integer getFcHotelId() {
-        return FcHotelId;
+        return fcHotelId;
     }
 
     public void setFcHotelId(Integer fcHotelId) {
-        FcHotelId = fcHotelId;
+        this.fcHotelId = fcHotelId;
     }
 
     @XmlElement(name = "SpHotelId")
     public String getSpHotelId() {
-        return SpHotelId;
+        return spHotelId;
     }
 
-    public void setSpHotelId(String spHotelId) {
-        SpHotelId = spHotelId;
+    public void setSpHotelId(String fpHotelId) {
+        this.spHotelId = fpHotelId;
     }
 
-    @XmlElement(name = "RoomTypeList")
-    public AddRoomTypeMappingListRequest getRoomTypeList() {
-        return RoomTypeList;
+    @XmlElementWrapper(name = "RoomTypeList")
+    @XmlElement(name = "RoomType")
+    public List<RoomType> getRoomTypeList() {
+        return roomTypeList;
     }
 
-    public void setRoomTypeList(AddRoomTypeMappingListRequest roomTypeList) {
-        RoomTypeList = roomTypeList;
+    public void setRoomTypeList(List<RoomType> roomTypeList) {
+        this.roomTypeList = roomTypeList;
     }
 }

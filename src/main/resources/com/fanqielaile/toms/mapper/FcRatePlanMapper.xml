@@ -11,10 +11,11 @@
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
+        <result column="rate_plan_id" property="ratePlanId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,rate_plan_name,currency,pay_method,bed_type,company_id,created_date,updated_date,deleted
+        id,rate_plan_name,currency,pay_method,bed_type,company_id,rate_plan_id,created_date,updated_date,deleted
     </sql>
     <insert id="insertFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.FcRatePlan">
         insert into

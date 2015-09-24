@@ -5,7 +5,6 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
-import com.fanqielaile.toms.dto.FcRoomTypeInfoDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
@@ -25,10 +24,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -81,10 +77,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
         hotelInfo.setFcHotelName(hotelInfoDto.getHotelName());
         list.add(hotelInfo);
 
-        AddHotelMappingListRequest listRequest = new AddHotelMappingListRequest();
-        listRequest.setHotelList(list);
         AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
-        hotelMappingRequest.setListRequest(listRequest);
+        hotelMappingRequest.setHotelList(list);
         Header header = new Header(RequestType.addHotelMapping,dto.getAppKey(),dto.getAppSecret());
         AddHotelRequest hotelRequest = new AddHotelRequest(header,hotelMappingRequest);
         try {
@@ -140,6 +134,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     fcRoomTypeFq.setRoomArea(room.getRoomArea());
                     fcRoomTypeFq.setOtaInfoId(dto.getOtaInfoId());
                     fcRoomTypeFq.setOtaInnOtaId(innOtaDto.getId());
+                    fcRoomTypeFq.setFqRoomTypeId(room.getRoomTypeId());
                     if (!StringUtils.isEmpty(room.getFcRoomTypeId())){
                         roomType = new RoomType();
                         roomType.setFcRoomTypeId(Long.valueOf(room.getFcRoomTypeId()));
@@ -151,10 +146,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     fcRoomTypeFqs.add(fcRoomTypeFq);
                 }
 
-                AddRoomTypeMappingListRequest roomTypeMappingListRequest = new AddRoomTypeMappingListRequest();
-                roomTypeMappingListRequest.setRoomTypeList(list);
                 AddRoomTypeMappingRequest addRoomTypeMappingRequest = new AddRoomTypeMappingRequest();
-                addRoomTypeMappingRequest.setRoomTypeList(roomTypeMappingListRequest);
+                addRoomTypeMappingRequest.setRoomTypeList(list);
                 addRoomTypeMappingRequest.setFcHotelId(Integer.valueOf(fcHotelId));
                 addRoomTypeMappingRequest.setSpHotelId(innId);
                 Header header = new Header(RequestType.addRoomTypeMapping,dto.getAppKey(),dto.getAppSecret());
@@ -165,18 +158,17 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     String result = HttpClientUtil.httpPost(CommonApi.FcAddRoomTypeMappingUrl, xml);
                     log.info("fc result :"+result);
                     Response response = XmlDeal.pareFcResult(result);
-                    //todo 房仓接口xml
-                   // if (Constants.FcResultNo.equals(response.getResultNo())){
+                    //todo 匹配接口不通
+                   if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.saveRoomTypeFq(new FcRoomTypeFqDto(fcRoomTypeFqs));
-                   /* }else {
+                    }else {
                         throw  new Exception("绑定失败:"+response.getResultMsg());
-                    }*/
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
                     throw  new Exception("绑定失败:"+e.getMessage());
                 }
-
             }
         }else {
             throw  new Exception("此客栈未绑定:"+innId);

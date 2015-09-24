@@ -164,11 +164,20 @@
                     </span>
                     <c:if test="${!(empty o.fcRoomTypeId)}">
                       <c:if test="${!(empty o.fcRatePlanDto)}">
-                        <span class="price-plan">${o.fcRatePlanDto.bedType.desc}+${o.fcRatePlanDto.payMethod.value}+${o.fcRatePlanDto.currency.value}</span>
+                        <span class="price-plan">(${o.fcRatePlanDto.ratePlanId})${o.fcRatePlanDto.bedType.desc}+${o.fcRatePlanDto.payMethod.desc}+${o.fcRatePlanDto.currency.value}</span>
                       </c:if>
                       <button class="btn btn-xs btn-primary edit-btn editPopupsClass" data-fc-roomtype-fq="${o.id}" data-toggle="modal" data-target="#editPopups">编辑</button>
                     </c:if>
-                </td><td><button class="btn btn-xs btn-success" data-toggle="modal" data-target="#roomTypeUp">上架</button></td>
+                </td>
+                <td>
+                  <c:if test="${!(empty o.fcRoomTypeId)}">
+                    <c:if test="${o.sj==-1 || o.sj==0}">
+                      <button class="btn btn-xs btn-success roomTypeUpClass" data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp">上架</button></td>
+                    </c:if>
+                   <c:if test="${o.sj==1}">
+                      <button class="btn btn-xs btn-success " data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp1">下架</button></td>
+                    </c:if>
+                  </c:if>
               </tr>
               </c:forEach>
 
@@ -194,8 +203,8 @@
           <table class="table table-bordered table-hover">
             <thead>
             <tr class="active">
-            <%--  <td>序号</td>
-              <td>价格计划ID</td>--%>
+            <%--  <td>序号</td>--%>
+              <td>价格计划ID</td>
               <td>名称</td>
               <td>币种</td>
               <td>支付类型</td>
@@ -242,11 +251,12 @@
         </button>
         <h4 class="modal-title">操作确认</h4>
       </div>
+      <input type="hidden" value="" id="hiddenRoomTypeId"/>
       <div class="modal-body">
         <p>您确定将此房型上架吗？</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-dismiss="modal" id="editSave">确定</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="sjEditSave">确定</button>
       </div>
     </div>
   </div>
@@ -342,8 +352,9 @@
         var bedTypeValue = d.bedTypeValue;
         var currencyValue = d.currencyValue;
         var payMethodValue = d.payMethodValue;
+        var ratePlanId = d.ratePlanId;
         var id = d.id;
-        select+="<option value='"+id+"'"+">"+bedTypeValue+"+"+currencyValue+"+"+payMethodValue+"</option>";
+        select+="<option value='"+id+"'"+">("+ratePlanId+")"+bedTypeValue+"+"+currencyValue+"+"+payMethodValue+"</option>";
       }
       select+="</select>";
        $("#ratePlan-id").html(select)
@@ -352,18 +363,49 @@
     }
   })
 
-  //编辑价格计划
+  //编辑匹配房型的价格计划
   $(".editPopupsClass").on("click",function(){
       var _this = $(this);
       var id = _this.attr("data-fc-roomtype-fq");
       $("#hiddenRatePlanId").val(id);
 
   })
+
+   //上架之前把匹配房型id放在隐藏域里面
+  $(".roomTypeUpClass").on("click",function(){
+      var _this = $(this);
+      var id = _this.attr("data-fc-roomtype-fq-id");
+      $("#hiddenRoomTypeId").val(id);
+  })
+  //上架
+  $("#sjEditSave").on("click",function(){
+      layer.load(0, {time: 3*1000});
+      var matchRoomTypeId = $("#hiddenRoomTypeId").val();
+    $.ajax({
+      data:{"matchRoomTypeId":matchRoomTypeId},
+      type:'post',
+      dataType:'json',
+      url:'<c:url value="/innMatch/ajax/sjMatchRoomType.json"/>',
+      success:function(data){
+        if(data.status=='200'){
+          layer.msg("上架成功");
+
+          window.location.href = window.location.href;
+        }else{
+          layer.msg("上架失败:"+data.message);
+        }
+
+      },error:function(data){
+        layer.msg("上架失败:"+data.message);
+      }
+    })
+  })
+
   //管理价格计划
   $("#bangRatePlanId").on("click",function(){
+    layer.load(0, {time: 3*1000});
     var id = $("#hiddenRatePlanId").val();
     var ratePlanId = $('#selectId option:selected') .val();//选中的值
-
     $.ajax({
       data:{"fcRoomTypeFqId":id,"ratePlanId":ratePlanId},
       type:'post',
@@ -371,6 +413,8 @@
       url:'<c:url value="/innMatch/ajax/saveFcRoomTypeFqRatePlan.json"/>',
       success:function(data){
         if(data.status=='200'){
+          layer.msg("关联成功");
+
           window.location.href = window.location.href;
         }else{
           layer.msg("关联失败:"+data.message);
@@ -381,6 +425,7 @@
       }
     })
   })
+
 </script>
 </body>
 </html>

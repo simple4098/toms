@@ -22,6 +22,16 @@ public class FcRatePlan extends Domain {
     //床型
     private BedType bedType;
     private String  companyId;
+    //价格计划Id
+    private String ratePlanId;
+
+    public String getRatePlanId() {
+        return ratePlanId;
+    }
+
+    public void setRatePlanId(String ratePlanId) {
+        this.ratePlanId = ratePlanId;
+    }
 
     public String getCompanyId() {
         return companyId;
@@ -32,6 +42,11 @@ public class FcRatePlan extends Domain {
     }
 
     public String getRatePlanName() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(bedType==null?"":bedType.getDesc());
+        sb.append(payMethod == null ?"": payMethod.getValue());
+        sb.append(currency==null?"":currency.getValue());
+        setRatePlanName(sb.toString());
         return ratePlanName;
     }
 

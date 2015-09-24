@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.model.fc;
 
 import com.fanqielaile.toms.enums.BedType;
+import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.CurrencyType;
 import com.fanqielaile.toms.enums.PayMethod;
 
@@ -20,11 +21,11 @@ public class RatePlan {
     //合作方价格计划名称
     private String spRatePlanName;
     //床型
-    private BedType bedType;
+    private String bedType;
     //支付方式
-    private PayMethod payMethod;
+    private String payMethod;
     //币种
-    private CurrencyType currency;
+    private CurrencyCode currency;
 
     @XmlElement(name = "SpRatePlanId")
     public String getSpRatePlanId() {
@@ -45,29 +46,29 @@ public class RatePlan {
     }
 
     @XmlElement(name = "SpBedType")
-    public BedType getBedType() {
+    public String getBedType() {
         return bedType;
     }
 
-    public void setBedType(BedType bedType) {
+    public void setBedType(String bedType) {
         this.bedType = bedType;
     }
 
     @XmlElement(name = "PayMethod")
-    public PayMethod getPayMethod() {
+    public String getPayMethod() {
         return payMethod;
     }
 
-    public void setPayMethod(PayMethod payMethod) {
+    public void setPayMethod(String payMethod) {
         this.payMethod = payMethod;
     }
 
     @XmlElement(name = "Currency")
-    public CurrencyType getCurrency() {
+    public CurrencyCode getCurrency() {
         return currency;
     }
 
-    public void setCurrency(CurrencyType currency) {
+    public void setCurrency(CurrencyCode currency) {
         this.currency = currency;
     }
 }

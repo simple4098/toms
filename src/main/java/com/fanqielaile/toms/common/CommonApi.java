@@ -20,6 +20,34 @@ public class CommonApi {
     public static   String ProxySaleList="";
     public static   String FcAddHotelMappingUrl;
     public static   String FcAddRoomTypeMappingUrl;
+    public static   String FcSyncRatePlanUrl;
+    public static   String FcDelSyncRatePlanUrl;
+    public static   String FcSyncRateInfoUrl;
+
+    public  String getFcSyncRateInfoUrl() {
+        return FcSyncRateInfoUrl;
+    }
+
+    public  void setFcSyncRateInfoUrl(String fcSyncRateInfoUrl) {
+        FcSyncRateInfoUrl = fcSyncRateInfoUrl;
+    }
+
+    public  String getFcDelSyncRatePlanUrl() {
+        return FcDelSyncRatePlanUrl;
+    }
+
+    public  void setFcDelSyncRatePlanUrl(String fcDelSyncRatePlanUrl) {
+        FcDelSyncRatePlanUrl = fcDelSyncRatePlanUrl;
+    }
+
+    public  String getFcSyncRatePlanUrl() {
+        return FcSyncRatePlanUrl;
+    }
+
+    public  void setFcSyncRatePlanUrl(String fcSyncRatePlanUrl) {
+        FcSyncRatePlanUrl = fcSyncRatePlanUrl;
+    }
+
     public  String getFcAddHotelMappingUrl() {
         return FcAddHotelMappingUrl;
     }

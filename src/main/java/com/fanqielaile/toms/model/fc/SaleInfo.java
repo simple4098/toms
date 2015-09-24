@@ -132,7 +132,7 @@ public class SaleInfo {
         this.minAdvHours = minAdvHours;
     }
 
-    @XmlElement(name = "MinDays", required = true, nillable = true)
+    @XmlElement(name = "MinDays")
     public Integer getMinDays() {
         return minDays;
     }

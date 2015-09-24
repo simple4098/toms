@@ -26,4 +26,6 @@ public interface IFcRoomTypeFqService {
      * @param ratePlanId 价格计划id
      */
     void updateRoomTypeRatePlan(String fcRoomTypeFqId, String ratePlanId)throws Exception;
+
+    void updateSjMatchRoomType(String companyId, String matchRoomTypeId) throws Exception;
 }

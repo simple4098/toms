@@ -23,5 +23,7 @@ public enum RequestType {
     //订单状态推送接口
     syncOrderStatus,
     //酒店基本信息详情查询接口- getHotelInfo
-    getHotelInfo;
+    getHotelInfo,
+    //价格计划删除
+    deleteRatePlan;
     }
