@@ -31,6 +31,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,6 +151,7 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void syncRatePlanRequest() throws JAXBException {
         SyncRatePlanRequest syncRatePlanRequest = new SyncRatePlanRequest();
         Header header = new Header(RequestType.syncRatePlan, "S10085349", "security_test_S10085349");
@@ -176,6 +178,38 @@ public class FcStaticTest {
         syncRatePlanRequestInfo.setRatePlanList(ratePlanList);
         syncRatePlanRequest.setSyncRatePlanRequest(syncRatePlanRequestInfo);
         System.out.println(FcUtil.fcRequest(syncRatePlanRequest));
+    }
+
+    @Test
+    public void syncRateInfoRequest() throws JAXBException {
+        SyncRateInfoRequest syncRateInfoRequest = new SyncRateInfoRequest();
+        Header header = new Header(RequestType.syncRateInfo, "S10085349", "security_test_S10085349");
+        syncRateInfoRequest.setHeader(header);
+        SyncRateInfoDataRequest syncRateInfoDataRequest = new SyncRateInfoDataRequest();
+        syncRateInfoDataRequest.setSpRoomTypeId("sp2015072101");
+        syncRateInfoDataRequest.setSpRatePlanId("sp123");
+        syncRateInfoDataRequest.setSpHotelId("HT123");
+        List<SaleInfo> saleInfoList = new ArrayList<>();
+        SaleInfo saleInfo = new SaleInfo();
+        saleInfo.setSaleDate("2015-08-06");
+        saleInfo.setSalePrice(BigDecimal.valueOf(260));
+        saleInfo.setBreakfastType(2);
+        saleInfo.setBreakfastNum(2);
+        saleInfo.setFreeSale(1);
+        saleInfo.setRoomState(1);
+        saleInfo.setOverdraft(0);
+        saleInfo.setOverDraftNum(50);
+        saleInfo.setQuotaNum(100);
+        saleInfo.setMinAdvHours(36);
+        saleInfo.setMinDays(null);
+        saleInfo.setMaxDays(7);
+        saleInfo.setMinRooms(2);
+        saleInfo.setMinAdvCancelHours(12);
+        saleInfo.setCancelDescription("不能取消");
+        saleInfoList.add(saleInfo);
+        syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
+        syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
+        System.out.println(FcUtil.fcRequest(syncRateInfoRequest));
     }
 
 }
