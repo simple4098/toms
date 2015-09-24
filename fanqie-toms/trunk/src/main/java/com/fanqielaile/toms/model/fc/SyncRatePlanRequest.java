@@ -2,12 +2,14 @@ package com.fanqielaile.toms.model.fc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Created by wangdayin on 2015/9/24.
  * 同步价格计划接口请求对象
  */
 @XmlRootElement(name = "Request")
+@XmlType(propOrder = {"header", "syncRatePlanRequest"})
 public class SyncRatePlanRequest extends FcRequest {
     //xml头部
     private Header header;
