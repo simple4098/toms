@@ -120,6 +120,16 @@ public class Order extends Domain {
     private String fcBedType;
     //订单确认方式
     private ConfirmType confirmType;
+    //maiAccount
+    private int maiAccount;
+
+    public int getMaiAccount() {
+        return maiAccount;
+    }
+
+    public void setMaiAccount(int maiAccount) {
+        this.maiAccount = maiAccount;
+    }
 
     public ConfirmType getConfirmType() {
         return confirmType;

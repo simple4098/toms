@@ -107,6 +107,7 @@
                     <input type="hidden" class="tag-id" name="tagId"/>
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
+                    <input type="hidden" class="mai-account" name="maiAccount"/>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名
                             <tip style="color: red">*</tip>

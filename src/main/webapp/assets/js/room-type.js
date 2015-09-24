@@ -107,6 +107,7 @@ $('.hand-btn').on('click', function () {
 			if (data.roomType != null) {
 				$('.account-id').val(accountId);
 				$('.tag-id').val(tagId);
+				$('.mai-account').val(maiAccount);
 				$('.room-type').append('<option value="">-请选择-</option>');
 				for (var i = 0; i < data.roomType.list.length; i++) {
 					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
