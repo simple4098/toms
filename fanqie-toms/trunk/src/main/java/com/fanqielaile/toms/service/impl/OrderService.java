@@ -733,6 +733,7 @@ public class OrderService implements IOrderService {
             paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
         }
         paramDto.setTagId(order.getTagId());
+        paramDto.setMaiAccount(order.getMaiAccount());
         RoomTypeInfoDto roomType = roomTypeService.findRoomType(paramDto, userInfo);
         List<RoomTypeInfoDto> roomTypeInfoDtos = new ArrayList<>();
         //处理找出的房型信息，如果房量为空的提出数据
