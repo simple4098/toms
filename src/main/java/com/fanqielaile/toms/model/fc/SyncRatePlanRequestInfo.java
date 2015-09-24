@@ -9,6 +9,7 @@ import java.util.List;
  * Created by wangdayin on 2015/9/24.
  */
 @XmlRootElement(name = "SyncRatePlanRequest")
+@XmlType(propOrder = {"spHotelId", "operateType", "spRoomTypeId", "ratePlanList"})
 public class SyncRatePlanRequestInfo {
     //合作方酒店id
     private String spHotelId;
@@ -17,7 +18,7 @@ public class SyncRatePlanRequestInfo {
     //合作方房型id
     private String spRoomTypeId;
     //合作方价格计划id
-    private List<RatePlan> RatePlanList;
+    private List<RatePlan> ratePlanList;
 
     @XmlElement(name = "SpHotelId")
     public String getSpHotelId() {
@@ -40,7 +41,7 @@ public class SyncRatePlanRequestInfo {
     @XmlElementWrapper(name = "RatePlanList")
     @XmlElement(name = "RatePlan")
     public List<RatePlan> getRatePlanList() {
-        return RatePlanList;
+        return ratePlanList;
     }
 
     @XmlElement(name = "SpRoomTypeId")
@@ -53,6 +54,6 @@ public class SyncRatePlanRequestInfo {
     }
 
     public void setRatePlanList(List<RatePlan> ratePlanList) {
-        RatePlanList = ratePlanList;
+        this.ratePlanList = ratePlanList;
     }
 }

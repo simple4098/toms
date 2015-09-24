@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model.fc;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  * 天下房仓同步价格信息数据
  */
 @XmlRootElement(name = "SyncRateInfoRequest")
+@XmlType(propOrder = {"spHotelId", "spRoomTypeId", "spRatePlanId", "saleInfoList"})
 public class SyncRateInfoDataRequest {
     //合作方酒店id
     private String spHotelId;

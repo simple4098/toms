@@ -2,12 +2,14 @@ package com.fanqielaile.toms.model.fc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.math.BigDecimal;
 
 /**
  * Created by wangdayin on 2015/9/24.
  */
 @XmlRootElement(name = "SaleInfo")
+@XmlType(propOrder = {"saleDate", "salePrice", "breakfastType", "breakfastNum", "freeSale", "roomState", "overdraft", "overDraftNum", "quotaNum", "minAdvHours", "minDays", "maxDays", "minRooms", "minAdvCancelHours", "cancelDescription"})
 public class SaleInfo {
     //售卖日期
     private String saleDate;

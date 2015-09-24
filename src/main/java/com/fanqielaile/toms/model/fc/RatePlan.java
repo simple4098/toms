@@ -6,12 +6,14 @@ import com.fanqielaile.toms.enums.PayMethod;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Created by wangdayin on 2015/9/24.
  * 天下房仓价格计划
  */
 @XmlRootElement(name = "RatePlan")
+@XmlType(propOrder = {"spRatePlanId", "spRatePlanName", "bedType", "payMethod", "currency"})
 public class RatePlan {
     //合作方价格计划id
     private String spRatePlanId;
