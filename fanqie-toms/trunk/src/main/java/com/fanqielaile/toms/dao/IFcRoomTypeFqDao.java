@@ -20,8 +20,21 @@ public interface IFcRoomTypeFqDao {
 
     List<FcRoomTypeFqDto> selectFcRoomTypeFq(FcRoomTypeFqDto fcRoomTypeFq);
 
-    FcRoomTypeFq selectFcRoomTypeFqById(@Param("id")String fcRoomTypeFqId);
+    FcRoomTypeFqDto selectFcRoomTypeFqById(@Param("id")String fcRoomTypeFqId);
 
     //匹配房型跟价格计划关联
     void updateRoomTypeFqRatePlan(@Param("fcRoomTypeFqId")String fcRoomTypeFqId, @Param("ratePlanId")String ratePlanId);
+
+    /**
+     * 根据价格计划id 查询已经关联过后的 匹配房型
+     * @param ratePlanId 价格计划id
+     */
+    List<FcRoomTypeFqDto> selectFcRoomTypeFqByRatePlanId(@Param("ratePlanId")String ratePlanId);
+
+    /**
+     * 是否上架
+     * @param matchRoomTypeId id
+     * @param sj 1上架  0 下架  -1 没有上架
+     */
+    void updateRoomTypeFqSj(@Param("id")String matchRoomTypeId,@Param("sj") int sj);
 }

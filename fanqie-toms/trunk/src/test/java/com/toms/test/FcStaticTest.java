@@ -124,15 +124,14 @@ public class FcStaticTest {
         hotelInfo.setFcHotelId(113327);
         hotelInfo.setSpHotelId("12346");
         hotelInfo.setFcHotelName("林芝明珠大酒店");
-  /*      HotelInfo hotelInfo1 = new HotelInfo();
+        HotelInfo hotelInfo1 = new HotelInfo();
         hotelInfo1.setFcHotelId(2323);
-        hotelInfo1.setSpHotelId("11");*/
+        hotelInfo1.setSpHotelId("11");
         list.add(hotelInfo);
+        list.add(hotelInfo1);
 
-        AddHotelMappingListRequest listRequest = new AddHotelMappingListRequest();
-        listRequest.setHotelList(list);
         AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
-        hotelMappingRequest.setListRequest(listRequest);
+        hotelMappingRequest.setHotelList(list);
         Header header = new Header(RequestType.addHotelMapping,"S10085349","security_test_S10085349");
         AddHotelRequest hotelRequest = new AddHotelRequest(header,hotelMappingRequest);
         try {
@@ -162,16 +161,16 @@ public class FcStaticTest {
         syncRatePlanRequestInfo.setOperateType(OperateType.NEW);
         List<RatePlan> ratePlanList = new ArrayList<>();
         RatePlan ratePlan = new RatePlan();
-        ratePlan.setBedType(BedType.BigBed);
-        ratePlan.setCurrency(CurrencyType.CNY);
-        ratePlan.setPayMethod(PayMethod.pay);
+        ratePlan.setBedType(BedType.BigBed.getValue());
+        //ratePlan.setCurrency(CurrencyType.CNY);
+        ratePlan.setPayMethod(PayMethod.pay.getValue());
         ratePlan.setSpRatePlanId("sp123");
         ratePlan.setSpRatePlanName("提前7天预订");
         ratePlanList.add(ratePlan);
         RatePlan ratePlan1 = new RatePlan();
-        ratePlan1.setBedType(BedType.BigBed);
-        ratePlan1.setCurrency(CurrencyType.CNY);
-        ratePlan1.setPayMethod(PayMethod.pay);
+        ratePlan1.setBedType(BedType.BigBed.getValue());
+        //ratePlan1.setCurrency(CurrencyType.CNY);
+        ratePlan1.setPayMethod(PayMethod.pay.getValue());
         ratePlan1.setSpRatePlanId("sp123456");
         ratePlan1.setSpRatePlanName("提前7天预订111");
         ratePlanList.add(ratePlan1);
@@ -212,5 +211,28 @@ public class FcStaticTest {
         System.out.println(FcUtil.fcRequest(syncRateInfoRequest));
     }
 
+    @Test
+    public void deleteRatePlan() throws JAXBException {
+
+
+        List<RatePlan> ratePlanInfoList = new ArrayList<RatePlan>();
+        RatePlan ratePlan = new RatePlan();
+        ratePlan.setSpRatePlanId("111");
+        ratePlanInfoList.add(ratePlan);
+
+
+        DeleteRatePlanInfoRequest deleteRatePlanInfoRequest = new DeleteRatePlanInfoRequest();
+        deleteRatePlanInfoRequest.setSpHotelId("sdsd");
+        deleteRatePlanInfoRequest.setSpRoomTypeId("1234d");
+        deleteRatePlanInfoRequest.setRatePlanInfoList(ratePlanInfoList);
+
+        DeleteRatePlanRequest deleteRatePlanRequest = new DeleteRatePlanRequest();
+        Header header = new Header(RequestType.deleteRatePlan, "S10085349", "security_test_S10085349");
+        deleteRatePlanRequest.setHeader(header);
+        deleteRatePlanRequest.setDeleteRatePlanInfoRequest(deleteRatePlanInfoRequest);
+
+
+        System.out.println(FcUtil.fcRequest(deleteRatePlanRequest));
+    }
 }
 

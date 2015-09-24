@@ -16,26 +16,28 @@
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
+        <result column="sj" property="sj"/>
     </resultMap>
     <resultMap id="resultDtoMapId" type="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" extends="resultMapId">
         <result column="currency" property="fcRatePlanDto.currency"/>
         <result column="pay_method" property="fcRatePlanDto.payMethod"/>
         <result column="bed_type" property="fcRatePlanDto.bedType"/>
+        <result column="rate_plan_id" property="fcRatePlanDto.ratePlanId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,company_id,inn_id,fc_hotel_id,ota_inn_ota_id,ota_info_id,fq_roomtype_id
         ,fc_roomtype_id,room_area,fq_roomtype_name,fc_roomtype_name
-        ,created_date,updated_date,deleted
+        ,created_date,updated_date,deleted,sj
     </sql>
     <insert id="saveRoomTypeFq" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto">
         insert into fc_roomtype_fq( id,company_id,inn_id,fc_hotel_id,ota_inn_ota_id,ota_info_id,fq_roomtype_id
         ,fc_roomtype_id,room_area,fq_roomtype_name,fc_roomtype_name
-        ,created_date,updated_date,deleted)values
+        ,created_date,updated_date,deleted,sj)values
         <foreach collection="fcRoomTypeFqs" item="fc"  separator=",">
             (#{fc.uuid},#{fc.companyId},#{fc.innId},#{fc.fcHotelId},#{fc.otaInnOtaId},#{fc.otaInfoId},
             #{fc.fqRoomTypeId},#{fc.fcRoomTypeId},#{fc.roomArea},#{fc.fqRoomTypeName},
-            #{fc.fcRoomTypeName},now(),now(),0)
+            #{fc.fcRoomTypeName},now(),now(),0,-1)
         </foreach>
     </insert>
 
@@ -43,23 +45,38 @@
         SELECT
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
-        ,o.created_date,o.updated_date,o.deleted,fp.currency,fp.pay_method,fp.bed_type
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
         from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
         where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId}
 
     </select>
 
-    <select id="selectFcRoomTypeFqById" resultMap="resultMapId">
+    <select id="selectFcRoomTypeFqById" resultMap="resultDtoMapId">
         SELECT
-        <include refid="Base_Column_List"/>
-        from  fc_roomtype_fq
-
-        where deleted=0 and  id ='${id}'
-
+        o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
+        ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
+        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        where o.deleted=0 and o.id ='${id}'
+    </select>
+    <select id="selectFcRoomTypeFqByRatePlanId" resultMap="resultDtoMapId">
+        SELECT
+        o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
+        ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
+        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        where o.deleted=0 and o.rate_plan_id ='${ratePlanId}'
     </select>
     <update id="updateRoomTypeFqRatePlan" >
         UPDATE fc_roomtype_fq set rate_plan_id='${ratePlanId}' where id='${fcRoomTypeFqId}'
+    </update>
+
+    <update id="updateRoomTypeFqSj" >
+
+        UPDATE fc_roomtype_fq set
+         sj=#{sj}
+         where id='${id}'
     </update>
 
 

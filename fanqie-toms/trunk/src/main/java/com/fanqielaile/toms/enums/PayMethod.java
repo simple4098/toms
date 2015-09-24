@@ -7,11 +7,21 @@ package com.fanqielaile.toms.enums;
  * @version: v1.0.0
  */
 public enum  PayMethod {
-    pay("面付"),pre_pay("预付");
+    pay("面付","1"),pre_pay("预付","2");
     private String value;
+    private String desc;
 
-    PayMethod(String value) {
+    PayMethod(String desc,String value) {
         this.value = value;
+        this.desc = desc;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public String getValue() {

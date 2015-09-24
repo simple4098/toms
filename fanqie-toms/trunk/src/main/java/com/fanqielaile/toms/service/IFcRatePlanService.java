@@ -16,5 +16,5 @@ public interface IFcRatePlanService {
 
     List<FcRatePlan> findFcRatePlan(FcRatePlan fcRatePlan);
 
-    void deletedRatePlan(String ratePlanId);
+    void deletedRatePlan(String companyId,String ratePlanId)throws Exception;
 }

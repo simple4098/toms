@@ -137,9 +137,14 @@ $('#roomTypeBtn').click(function(){
         url:url,
         success:function(data){
             $(".roomtype-sort").css("display","none");
-            window.location.href=window.location.href;
-        },error:function(data){
+            if(data.status==400){
+                layer.msg("匹配失败:"+data.message);
+            }else{
 
+                window.location.href=window.location.href;
+            }
+        },error:function(data){
+            layer.msg("匹配失败:"+data.message);
         }
     })
     console.log(json)

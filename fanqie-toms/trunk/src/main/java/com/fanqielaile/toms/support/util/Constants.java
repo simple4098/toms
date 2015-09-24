@@ -34,4 +34,7 @@ public class Constants {
 
     public static   String MESSAGE_ERROR="参数异常，请检查!";
     public static   String MESSAGE_SUCCESS="成功";
+    public static   Integer FC_SJ=1;
+    public static   Integer FC_XJ=0;
+    public static   Integer FC_NOT_SJ=-1;
 }

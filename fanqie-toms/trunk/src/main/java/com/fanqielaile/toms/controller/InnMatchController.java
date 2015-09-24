@@ -164,7 +164,7 @@ public class InnMatchController extends BaseController {
             BeanUtils.copyProperties(f,fc);
             fc.setBedTypeValue(f.getBedType().getDesc());
             fc.setCurrencyValue(f.getCurrency().getValue());
-            fc.setPayMethodValue(f.getPayMethod().getValue());
+            fc.setPayMethodValue(f.getPayMethod().getDesc());
             list.add(fc);
         }
 
@@ -206,11 +206,21 @@ public class InnMatchController extends BaseController {
 
     //房仓价格计划保存
     @RequestMapping("/ajax/delRatePlan")
+    @ResponseBody
     public Object delRatePlan(String ratePlanId,String innId){
         Result result = new Result();
-        //todo 删除房仓上面的价格计划
-        fcRatePlanService.deletedRatePlan(ratePlanId);
-        return  "redirect:/innMatch/matchDetail?innId="+innId;
+        String companyId = getCurrentUser().getCompanyId();
+
+        try {
+            fcRatePlanService.deletedRatePlan(companyId,ratePlanId);
+            result.setStatus(Constants.SUCCESS200);
+        }catch (Exception e) {
+            log.error("删除价格计划:"+e.getMessage());
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return result;
+        //return  "redirect:/innMatch/matchDetail?innId="+innId;
     }
     //房仓房型与番茄房型匹配
     @RequestMapping("/ajax/matchRoomType")
@@ -220,6 +230,22 @@ public class InnMatchController extends BaseController {
         Result result = new Result();
         try{
             fcHotelInfoService.updateMatchRoomType(companyId,innId,fcHotelId,json);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
+
+    //上架
+    @RequestMapping("/ajax/sjMatchRoomType")
+    @ResponseBody
+    public Object sjMatchRoomType(String matchRoomTypeId){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try{
+            fcRoomTypeFqService.updateSjMatchRoomType(companyId, matchRoomTypeId);
             result.setStatus(Constants.SUCCESS200);
         } catch (Exception e) {
             result.setMessage(e.getMessage());

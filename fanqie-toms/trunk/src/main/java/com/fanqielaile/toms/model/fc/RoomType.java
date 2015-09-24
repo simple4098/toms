@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "RoomType")
 public class RoomType {
-    private Long FcRoomTypeId;
+    private Long   FcRoomTypeId;
     private String FcRoomTypeName;
     private String SpRoomTypeId;
     private String SpRoomTypeName;

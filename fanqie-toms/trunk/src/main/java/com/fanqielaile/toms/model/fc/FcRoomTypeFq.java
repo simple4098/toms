@@ -29,6 +29,16 @@ public class FcRoomTypeFq extends Domain {
     private String fcRoomTypeId;
     //房仓房型名称
     private String fcRoomTypeName;
+    //上架
+    private Integer sj;
+
+    public Integer getSj() {
+        return sj;
+    }
+
+    public void setSj(Integer sj) {
+        this.sj = sj;
+    }
 
     public FcRoomTypeFq() {
     }
