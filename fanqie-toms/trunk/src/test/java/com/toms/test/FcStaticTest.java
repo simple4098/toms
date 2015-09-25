@@ -196,14 +196,14 @@ public class FcStaticTest {
         saleInfo.setBreakfastNum(2);
         saleInfo.setFreeSale(1);
         saleInfo.setRoomState(1);
-        saleInfo.setOverdraft(0);
-        saleInfo.setOverDraftNum(50);
+        saleInfo.setOverdraft("");
+        saleInfo.setOverDraftNum("");
         saleInfo.setQuotaNum(100);
-        saleInfo.setMinAdvHours(36);
+        saleInfo.setMinAdvHours("");
         saleInfo.setMinDays(null);
-        saleInfo.setMaxDays(7);
-        saleInfo.setMinRooms(2);
-        saleInfo.setMinAdvCancelHours(12);
+        saleInfo.setMaxDays("");
+        saleInfo.setMinRooms(1);
+        saleInfo.setMinAdvCancelHours("");
         saleInfo.setCancelDescription("不能取消");
         saleInfoList.add(saleInfo);
         syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
@@ -233,6 +233,46 @@ public class FcStaticTest {
 
 
         System.out.println(FcUtil.fcRequest(deleteRatePlanRequest));
+    }
+
+    @Test
+    public void deleteRoom() throws JAXBException {
+
+        List<DeleteRoomType> list = new ArrayList<DeleteRoomType>();
+        DeleteRoomType deleteRoomType = new DeleteRoomType();
+        deleteRoomType.setFcRoomTypeId("111");
+        list.add(deleteRoomType);
+
+
+        DeleteRoomTypeMappingInfoRequest deleteRatePlanInfoRequest = new DeleteRoomTypeMappingInfoRequest();
+        deleteRatePlanInfoRequest.setSpHotelId("sdsd");
+        deleteRatePlanInfoRequest.setList(list);
+
+        DeleteRoomTypeMappingRequest deleteRatePlanRequest = new DeleteRoomTypeMappingRequest();
+        Header header = new Header(RequestType.deleteRatePlan, "S10085349", "security_test_S10085349");
+        deleteRatePlanRequest.setHeader(header);
+        deleteRatePlanRequest.setDeleteRoomTypeMappingInfoRequest(deleteRatePlanInfoRequest);
+
+
+        System.out.println(FcUtil.fcRequest(deleteRatePlanRequest));
+    }
+
+    @Test
+    public void deleteHotelMapping() throws JAXBException {
+        List<HotelInfo> list = new ArrayList<HotelInfo>();
+        HotelInfo hotelInfo = new HotelInfo();
+        hotelInfo.setFcHotelId(111);
+        hotelInfo.setSpHotelId("45d4s");
+        list.add(hotelInfo);
+
+        DeleteHotelInfoRequest deleteHotelInfoRequest = new DeleteHotelInfoRequest();
+        deleteHotelInfoRequest.setHotelList(list);
+
+
+        Header header = new Header(RequestType.deleteHotelMapping, "S10085349", "security_test_S10085349");
+        DeleteHotelMappingRequest deleteHotelMappingRequest = new DeleteHotelMappingRequest(header,deleteHotelInfoRequest);
+
+        System.out.println(FcUtil.fcRequest(deleteHotelMappingRequest));
     }
 }
 

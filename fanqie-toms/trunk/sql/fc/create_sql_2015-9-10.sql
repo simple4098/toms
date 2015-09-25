@@ -85,3 +85,9 @@ COMMENT ON COLUMN "public"."fc_room_type_info"."bed_type" IS '床型';
 
 
 CREATE UNIQUE INDEX "hotel_id_and_room_type_id_idx" ON "public"."fc_room_type_info" USING btree (hotel_id, room_type_id);
+
+
+
+create SEQUENCE fc_rate_plan_seq start 10000;
+
+alter table fc_rate_plan alter column rate_plan_id set default nextval('fc_rate_plan_seq');

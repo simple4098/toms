@@ -23,7 +23,7 @@ $("#btn-primary-id").on("click",function(){
      var fcHotelId = $("input[name='fcHotelId']:checked").val();
      var innId = $("#innId").val();
     if(fcHotelId==undefined){
-        alert("请选择房仓酒店id");
+        layer.msg("请选择房仓酒店id");
         return false;
     }
     $.ajax({
@@ -33,15 +33,24 @@ $("#btn-primary-id").on("click",function(){
         url:url,
         success:function(data){
             if(data.status!="200"){
-                alert(data.message);
+                layer.msg(data.message);
             }else{
-                alert("绑定成功!");
+                layer.msg("绑定成功");
+                window.location.href=window.location.href;
             }
         },error:function(data){
-            alert(data);
+            layer.msg(data.message);
         }
     })
     console.log(fcHotelId+"-"+innId);
+})
+//重新匹配
+$("#cxInMatchId").on("click",function(){
+    var _this = $(this);
+    $("#matchSuccessId").css("display","none");
+    $("#not-match-id").css("display","block");
+    _this.attr("id","btn-primary-id");
+    _this.text("提交匹配");
 })
 //保存价格计划
 $("#userPlusBtn").on("click",function(){

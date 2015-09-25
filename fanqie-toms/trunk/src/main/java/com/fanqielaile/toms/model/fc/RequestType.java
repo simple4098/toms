@@ -25,5 +25,9 @@ public enum RequestType {
     //酒店基本信息详情查询接口- getHotelInfo
     getHotelInfo,
     //价格计划删除
-    deleteRatePlan;
+    deleteRatePlan,
+    //删除房型映射
+    deleteRoomTypeMapping,
+    //删除房型映射
+    deleteHotelMapping;
     }

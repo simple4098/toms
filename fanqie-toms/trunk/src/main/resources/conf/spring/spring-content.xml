@@ -138,6 +138,8 @@
                      <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
                      <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
                      <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
+                     <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
+                     <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
               </bean>
        </beans>
        <beans profile="staging">

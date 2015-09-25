@@ -24,21 +24,21 @@ public class SaleInfo {
     //房态
     private Integer roomState;
     //是否可超
-    private Integer overdraft;
+    private String overdraft;
     //可超数额
-    private Integer overDraftNum;
+    private String overDraftNum;
     //配额数
     private Integer quotaNum;
     //最少提前预订小时数
-    private Integer minAdvHours;
+    private String minAdvHours;
     //最少入住天数
-    private Integer minDays;
+    private String minDays;
     //最大入住天数
-    private Integer maxDays;
+    private String maxDays;
     //最少预订间数
     private Integer minRooms;
     //取消最少提前小时数
-    private Integer minAdvCancelHours;
+    private String minAdvCancelHours;
     //取消说明
     private String cancelDescription;
 
@@ -97,20 +97,20 @@ public class SaleInfo {
     }
 
     @XmlElement(name = "Overdraft")
-    public Integer getOverdraft() {
+    public String getOverdraft() {
         return overdraft;
     }
 
-    public void setOverdraft(Integer overdraft) {
+    public void setOverdraft(String overdraft) {
         this.overdraft = overdraft;
     }
 
     @XmlElement(name = "OverDraftNum")
-    public Integer getOverDraftNum() {
+    public String getOverDraftNum() {
         return overDraftNum;
     }
 
-    public void setOverDraftNum(Integer overDraftNum) {
+    public void setOverDraftNum(String overDraftNum) {
         this.overDraftNum = overDraftNum;
     }
 
@@ -124,29 +124,29 @@ public class SaleInfo {
     }
 
     @XmlElement(name = "MinAdvHours")
-    public Integer getMinAdvHours() {
+    public String getMinAdvHours() {
         return minAdvHours;
     }
 
-    public void setMinAdvHours(Integer minAdvHours) {
+    public void setMinAdvHours(String minAdvHours) {
         this.minAdvHours = minAdvHours;
     }
 
-    @XmlElement(name = "MinDays")
-    public Integer getMinDays() {
+    @XmlElement(name = "MinDays", required = true)
+    public String getMinDays() {
         return minDays;
     }
 
-    public void setMinDays(Integer minDays) {
+    public void setMinDays(String minDays) {
         this.minDays = minDays;
     }
 
     @XmlElement(name = "MaxDays")
-    public Integer getMaxDays() {
+    public String getMaxDays() {
         return maxDays;
     }
 
-    public void setMaxDays(Integer maxDays) {
+    public void setMaxDays(String maxDays) {
         this.maxDays = maxDays;
     }
 
@@ -160,11 +160,11 @@ public class SaleInfo {
     }
 
     @XmlElement(name = "MinAdvCancelHours")
-    public Integer getMinAdvCancelHours() {
+    public String getMinAdvCancelHours() {
         return minAdvCancelHours;
     }
 
-    public void setMinAdvCancelHours(Integer minAdvCancelHours) {
+    public void setMinAdvCancelHours(String minAdvCancelHours) {
         this.minAdvCancelHours = minAdvCancelHours;
     }
 

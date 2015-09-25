@@ -37,4 +37,15 @@ public interface IFcRoomTypeFqDao {
      * @param sj 1上架  0 下架  -1 没有上架
      */
     void updateRoomTypeFqSj(@Param("id")String matchRoomTypeId,@Param("sj") int sj);
+
+    //根据id删除匹配关系
+    void deletedFcRoomTypeById(@Param("id")String fqRoomTypeFcId);
+
+    /**
+     *
+     * @param innId 客栈id
+     * @param companyId 公司id
+     * @param otaInfoId 渠道id
+     */
+    void deletedFcRoomTypeFqByInnIdAndCompanyId(@Param("innId")String innId, @Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
 }

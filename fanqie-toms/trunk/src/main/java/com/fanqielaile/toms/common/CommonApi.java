@@ -23,6 +23,24 @@ public class CommonApi {
     public static   String FcSyncRatePlanUrl;
     public static   String FcDelSyncRatePlanUrl;
     public static   String FcSyncRateInfoUrl;
+    public static   String FcDeleteRoomTypeUrl;
+    public static   String FcDeleteHotelMappingUrl;
+
+    public  String getFcDeleteHotelMappingUrl() {
+        return FcDeleteHotelMappingUrl;
+    }
+
+    public  void setFcDeleteHotelMappingUrl(String fcDeleteHotelMappingUrl) {
+        FcDeleteHotelMappingUrl = fcDeleteHotelMappingUrl;
+    }
+
+    public  String getFcDeleteRoomTypeUrl() {
+        return FcDeleteRoomTypeUrl;
+    }
+
+    public  void setFcDeleteRoomTypeUrl(String fcDeleteRoomTypeUrl) {
+        FcDeleteRoomTypeUrl = fcDeleteRoomTypeUrl;
+    }
 
     public  String getFcSyncRateInfoUrl() {
         return FcSyncRateInfoUrl;
