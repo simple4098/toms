@@ -676,6 +676,7 @@ public class OrderService implements IOrderService {
         //设置查询日期
         paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
         paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
+        paramDto.setMaiAccount(order.getMaiAccount());
         roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
         Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
         try {
