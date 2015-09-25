@@ -39,17 +39,19 @@
             </div>
 
               <div class="col-sm-6 widget-con">
-                <c:if test="${not empty fcHotel}">
 
+
+                  <div id="matchSuccessId"  <c:if test="${!(empty fcHotel)}">style="display: block"</c:if>>
                     <input type="radio" style="display: none" name="fcHotelId" checked value="${fcHotel.hotelId}">
                     <div class="result-box">
                       <p>名称：<span>${fcHotel.hotelName}</span></p>
                       <p>电话：<span>${fcHotel.telephone}</span></p>
                       <p>地址：<span>${fcHotel.hotelAddress}</span></p>
                     </div>
+                  </div>
 
-                </c:if>
-                <c:if test="${not empty hotel}">
+
+                  <div id="not-match-id"  <c:if test="${!(empty otaInnOtaDto)}">style="display: none"</c:if>>
                   <div class="inn-search">
                     <span>搜索可匹配标准酒店</span>
                     <input type="text" id="search-id" placeholder="输入酒店关键字搜索">
@@ -76,13 +78,17 @@
                       </label>
                     </c:forEach>
                   </div>
-                </c:if>
+                  </div>
+
                 </div>
 
           </div>
           <hr class="hr-2">
           <c:if test="${empty otaInnOtaDto}">
           <button data-url="<c:url value="/innMatch/ajax/match.json"/> " class="btn btn-primary" id="btn-primary-id">提交匹配</button>
+         </c:if>
+          <c:if test="${!(empty otaInnOtaDto)}">
+            <button data-url="<c:url value="/innMatch/ajax/match.json"/>" class="btn btn-primary" id="cxInMatchId">重新匹配</button>
          </c:if>
         </div>
       </div>
@@ -138,7 +144,7 @@
             <button class="btn btn-primary" data-url="<c:url value="/innMatch/ajax/matchRoomType.json"/>" id="roomTypeBtn">提交匹配</button>
           </div>
           <c:if test="${!(empty matchRoomTypeList)}">
-          <div class="roomtype-table">
+          <div class="roomtype-table room-list-class">
             <table class="table table-bordered table-hover">
               <thead>
               <tr class="active">
@@ -175,7 +181,7 @@
                       <button class="btn btn-xs btn-success roomTypeUpClass" data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp">上架</button></td>
                     </c:if>
                    <c:if test="${o.sj==1}">
-                      <button class="btn btn-xs btn-success " data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp1">下架</button></td>
+                      <button class="btn btn-xs btn-success xjRoomTypeUpClass" data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp1">下架</button></td>
                     </c:if>
                   </c:if>
               </tr>
@@ -183,7 +189,7 @@
 
               </tbody>
             </table>
-            <button class="btn btn-primary"  id="roomTypeBtn">房型重新匹配</button>
+            <button class="btn btn-primary"  id="rdMatchRoomTypeBtn">房型重新匹配</button>
           </div>
           </c:if>
         </div>
@@ -257,6 +263,26 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" data-dismiss="modal" id="sjEditSave">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- "下架"弹框 -->
+<div class="modal fade" id="roomTypeUp1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">操作确认</h4>
+      </div>
+      <input type="hidden" value="" id="fqRoomTypeFcId"/>
+      <div class="modal-body">
+        <p>您确定将此房型下架吗？</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="xjEditSave">确定</button>
       </div>
     </div>
   </div>
@@ -379,7 +405,7 @@
   })
   //上架
   $("#sjEditSave").on("click",function(){
-      layer.load(0, {time: 3*1000});
+      layer.load(0, {time: 4*1000});
       var matchRoomTypeId = $("#hiddenRoomTypeId").val();
     $.ajax({
       data:{"matchRoomTypeId":matchRoomTypeId},
@@ -399,6 +425,42 @@
         layer.msg("上架失败:"+data.message);
       }
     })
+  })
+  //下架之前把匹配房型id放在隐藏域里面
+  $(".xjRoomTypeUpClass").on("click",function(){
+    var _this = $(this);
+    var id = _this.attr("data-fc-roomtype-fq-id");
+    $("#fqRoomTypeFcId").val(id);
+  })
+
+  //下架
+  $("#xjEditSave").on("click",function(){
+    layer.load(0, {time: 3*1000});
+    var fqRoomTypeFcId = $("#fqRoomTypeFcId").val();
+    $.ajax({
+      data:{"fqRoomTypeFcId":fqRoomTypeFcId},
+      type:'post',
+      dataType:'json',
+      url:'<c:url value="/innMatch/ajax/xjMatchRoomType.json"/>',
+      success:function(data){
+        if(data.status=='200'){
+          layer.msg("下架成功");
+
+          window.location.href = window.location.href;
+        }else{
+          layer.msg("下架失败:"+data.message);
+        }
+
+      },error:function(data){
+        layer.msg("下架失败:"+data.message);
+      }
+    })
+  })
+  //重新匹配
+  $("#rdMatchRoomTypeBtn").on("click",function(){
+     $(".roomtype-sort").css("display","block");
+     $(".room-list-class").css("display","none");
+
   })
 
   //管理价格计划

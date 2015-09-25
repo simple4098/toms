@@ -78,6 +78,12 @@
          sj=#{sj}
          where id='${id}'
     </update>
+    <delete id="deletedFcRoomTypeById" >
+        DELETE from fc_roomtype_fq where id='${id}'
+    </delete>
+    <delete id="deletedFcRoomTypeFqByInnIdAndCompanyId">
+         DELETE from fc_roomtype_fq where inn_id='${innId}' and company_id='${companyId}' and ota_info_id='${otaInfoId}'
+    </delete>
 
 
 

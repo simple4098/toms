@@ -98,11 +98,9 @@ public class InnMatchController extends BaseController {
                 model.addAttribute("fcHotel", fcHotelInfoDto);
                 model.addAttribute("fcRoomTypeList",roomTypeInfoDtoList);
                 model.addAttribute("matchRoomTypeList",fcRoomTypeFq);
-            } else {
-                List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
-                model.addAttribute("hotel",hotel);
             }
-
+            List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
+            model.addAttribute("hotel",hotel);
             List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
             model.addAttribute("omsRoomTypeList",list);
             model.addAttribute("inn",bangInn);
@@ -229,7 +227,7 @@ public class InnMatchController extends BaseController {
         String companyId = getCurrentUser().getCompanyId();
         Result result = new Result();
         try{
-            fcHotelInfoService.updateMatchRoomType(companyId,innId,fcHotelId,json);
+            fcRoomTypeFqService.updateMatchRoomType(companyId,innId,fcHotelId,json);
             result.setStatus(Constants.SUCCESS200);
         } catch (Exception e) {
             result.setMessage(e.getMessage());
@@ -246,6 +244,22 @@ public class InnMatchController extends BaseController {
         Result result = new Result();
         try{
             fcRoomTypeFqService.updateSjMatchRoomType(companyId, matchRoomTypeId);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
+
+    //下架
+    @RequestMapping("/ajax/xjMatchRoomType")
+    @ResponseBody
+    public Object xjMatchRoomType(String fqRoomTypeFcId){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try{
+            fcRoomTypeFqService.updateXjMatchRoomType(companyId, fqRoomTypeFcId);
             result.setStatus(Constants.SUCCESS200);
         } catch (Exception e) {
             result.setMessage(e.getMessage());

@@ -7,9 +7,11 @@ import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OperateType;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.BangInn;
@@ -25,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -52,6 +56,8 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
     private BangInnDao bangInnDao;
     @Resource
     private CompanyDao companyDao;
+    @Resource
+    private IOtaInnOtaDao otaInnOtaDao;
 
     @Override
     public List<FcRoomTypeFqDto> findFcRoomTypeFq(FcRoomTypeFqDto fcRoomTypeFq) {
@@ -69,7 +75,6 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         String innId = fcRoomTypeFq.getInnId();
         String roomTypeId =fcRoomTypeFq.getFqRoomTypeId();
 
-        //todo 同步到房仓
         SyncRatePlanRequest syncRatePlanRequest = new SyncRatePlanRequest();
         Header header = new Header(RequestType.syncRatePlan, dto.getAppKey(), dto.getAppSecret());
         syncRatePlanRequest.setHeader(header);
@@ -107,7 +112,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(fcRoomTypeFq.getInnId()));
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(fcRoomTypeFq.getCompanyId(), OtaType.FC.name());
         Integer roomTypeId = Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId());
-        String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+        String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
 
@@ -136,14 +141,15 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
                         saleInfo.setFreeSale(1);
                         //1有房  2 待查  3满房
                         saleInfo.setRoomState((room.getRoomNum()!=null ||room.getRoomNum()!=0)?1:3);
-                        saleInfo.setOverdraft(0);
-                        saleInfo.setOverDraftNum(10);
-                        saleInfo.setQuotaNum(room.getRoomNum());
-                        saleInfo.setMinAdvHours(36);
-                        saleInfo.setMinDays(1);
-                        saleInfo.setMaxDays(7);
+                        saleInfo.setOverdraft("");
+                        saleInfo.setOverDraftNum("");
+                        saleInfo.setQuotaNum((room.getRoomNum()!=null ||room.getRoomNum()!=0)?room.getRoomNum():0);
+                        saleInfo.setMinAdvHours("");
+                        saleInfo.setMinDays("");
+                        saleInfo.setMaxDays("");
+                        //最少预订间数
                         saleInfo.setMinRooms(1);
-                        saleInfo.setMinAdvCancelHours(12);
+                        saleInfo.setMinAdvCancelHours("");
                         saleInfo.setCancelDescription("不能取消");
                         saleInfoList.add(saleInfo);
                     }
@@ -163,5 +169,118 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         }else {
             throw  new Exception("上架失败:"+response.getResultMsg());
         }
+    }
+
+
+    @Override
+    public void updateXjMatchRoomType(String companyId, String fqRoomTypeFcId) throws Exception{
+        FcRoomTypeFqDto fcRoomTypeFq = fcRoomTypeFqDao.selectFcRoomTypeFqById(fqRoomTypeFcId);
+        OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.FC.name());
+        List<DeleteRoomType> list = new ArrayList<DeleteRoomType>();
+        DeleteRoomType deleteRoomType = new DeleteRoomType();
+        deleteRoomType.setFcRoomTypeId(fcRoomTypeFq.getFqRoomTypeId());
+        list.add(deleteRoomType);
+
+
+        DeleteRoomTypeMappingInfoRequest deleteRatePlanInfoRequest = new DeleteRoomTypeMappingInfoRequest();
+        deleteRatePlanInfoRequest.setSpHotelId(fcRoomTypeFq.getInnId());
+        deleteRatePlanInfoRequest.setList(list);
+
+        DeleteRoomTypeMappingRequest deleteRatePlanRequest = new DeleteRoomTypeMappingRequest();
+        Header header = new Header(RequestType.deleteRoomTypeMapping, dto.getAppKey(),dto.getAppSecret());
+        deleteRatePlanRequest.setHeader(header);
+        deleteRatePlanRequest.setDeleteRoomTypeMappingInfoRequest(deleteRatePlanInfoRequest);
+
+        String xml = FcUtil.fcRequest(deleteRatePlanRequest);
+        log.info("下架xml:" + xml);
+        String result = HttpClientUtil.httpPost(CommonApi.FcDeleteRoomTypeUrl, xml);
+        log.info("fc result :"+result);
+        Response response = XmlDeal.pareFcResult(result);
+        //下架成功后 对应的匹配记录删除
+        if (Constants.FcResultNo.equals(response.getResultNo())){
+            //fcRoomTypeFqDao.updateRoomTypeFqSj(fqRoomTypeFcId, Constants.FC_XJ);
+            fcRoomTypeFqDao.deletedFcRoomTypeById(fqRoomTypeFcId);
+        }else {
+            throw  new Exception("下架失败:"+response.getResultMsg());
+        }
+    }
+
+    @Override
+    public void updateMatchRoomType(String companyId, String innId, String fcHotelId, String json) throws Exception {
+        List<MatchRoomType> matchRoomType = JacksonUtil.json2list(json, MatchRoomType.class);
+        Company company = companyDao.selectCompanyById(companyId);
+        OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+        if (bangInn!=null){
+            OtaInnOtaDto innOtaDto = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), companyId, dto.getOtaInfoId());
+            if (!CollectionUtils.isEmpty(matchRoomType)){
+                //删除绑定过的房型数据
+                List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFq(new FcRoomTypeFqDto(String.valueOf(innId), companyId, dto.getOtaInfoId()));
+                if (!CollectionUtils.isEmpty(roomTypeFqDtoList)){
+                    for (FcRoomTypeFqDto roomTypeFqDto:roomTypeFqDtoList){
+                        //FcRoomTypeId不为null才是绑定房型的 依次下架
+                        if(!StringUtils.isEmpty(roomTypeFqDto.getFcRoomTypeId())){
+                            updateXjMatchRoomType(companyId,roomTypeFqDto.getId());
+                        }
+                    }
+                    //把没有绑定的房型也删除掉。
+                    fcRoomTypeFqDao.deletedFcRoomTypeFqByInnIdAndCompanyId(innId,companyId,dto.getOtaInfoId());
+                }
+
+                List<RoomType> list = new ArrayList<RoomType>();
+                List<FcRoomTypeFq> fcRoomTypeFqs = new ArrayList<FcRoomTypeFq>();
+                RoomType roomType=null;
+                FcRoomTypeFq fcRoomTypeFq = null;
+                for (MatchRoomType room:matchRoomType){
+                    fcRoomTypeFq = new FcRoomTypeFq();
+                    fcRoomTypeFq.setCompanyId(companyId);
+                    fcRoomTypeFq.setInnId(innId);
+                    fcRoomTypeFq.setFcHotelId(fcHotelId);
+                    fcRoomTypeFq.setFcRoomTypeId(room.getFcRoomTypeId());
+                    fcRoomTypeFq.setFcRoomTypeName(room.getFcRoomTypeName());
+                    fcRoomTypeFq.setFqRoomTypeName(room.getRoomTypeName());
+                    fcRoomTypeFq.setRoomArea(room.getRoomArea());
+                    fcRoomTypeFq.setOtaInfoId(dto.getOtaInfoId());
+                    fcRoomTypeFq.setOtaInnOtaId(innOtaDto.getId());
+                    fcRoomTypeFq.setFqRoomTypeId(room.getRoomTypeId());
+                    if (!StringUtils.isEmpty(room.getFcRoomTypeId())){
+                        roomType = new RoomType();
+                        roomType.setFcRoomTypeId(Long.valueOf(room.getFcRoomTypeId()));
+                        roomType.setFcRoomTypeName(room.getFcRoomTypeName());
+                        roomType.setSpRoomTypeId(room.getRoomTypeId());
+                        roomType.setSpRoomTypeName(room.getRoomTypeName());
+                        list.add(roomType);
+                    }
+                    fcRoomTypeFqs.add(fcRoomTypeFq);
+                }
+
+                AddRoomTypeMappingRequest addRoomTypeMappingRequest = new AddRoomTypeMappingRequest();
+                addRoomTypeMappingRequest.setRoomTypeList(list);
+                addRoomTypeMappingRequest.setFcHotelId(Integer.valueOf(fcHotelId));
+                addRoomTypeMappingRequest.setSpHotelId(innId);
+                Header header = new Header(RequestType.addRoomTypeMapping,dto.getAppKey(),dto.getAppSecret());
+                AddRoomTypeRequest hotelRequest = new AddRoomTypeRequest(header,addRoomTypeMappingRequest);
+                try {
+                    String xml = FcUtil.fcRequest(hotelRequest);
+                    log.info("绑定房型:" + xml);
+                    String result = HttpClientUtil.httpPost(CommonApi.FcAddRoomTypeMappingUrl, xml);
+                    log.info("fc result :"+result);
+                    Response response = XmlDeal.pareFcResult(result);
+                    //todo 匹配接口不通
+                    if (Constants.FcResultNo.equals(response.getResultNo())){
+                        fcRoomTypeFqDao.saveRoomTypeFq(new FcRoomTypeFqDto(fcRoomTypeFqs));
+                    }else {
+                        throw  new Exception("绑定失败:"+response.getResultMsg());
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw  new Exception("绑定失败:"+e.getMessage());
+                }
+            }
+        }else {
+            throw  new Exception("此客栈未绑定:"+innId);
+        }
+
     }
 }
