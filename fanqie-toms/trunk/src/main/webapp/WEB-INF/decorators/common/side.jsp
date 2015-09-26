@@ -116,14 +116,14 @@
                         <b class="arrow icon-angle-down"></b>
                     </a>
                     <ul class="submenu">
-                      <%--  <toms:authorize uri="/innMatch/">--%>
+                        <toms:authorize uri="/innMatch/">
                             <li <c:if test="${fn:contains(url, '/innMatch/')}">class="active" </c:if> >
                                 <a href="<c:url value="/innMatch/match"/>">
                                     <i class="icon-double-angle-right"></i>
                                     客栈匹配
                                 </a>
                             </li>
-                       <%-- </toms:authorize>--%>
+                        </toms:authorize>
                         <toms:authorize uri="/order/find_orders">
                             <li
                                     <c:if test="${fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||

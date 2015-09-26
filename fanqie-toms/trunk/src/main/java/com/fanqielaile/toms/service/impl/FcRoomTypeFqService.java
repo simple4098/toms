@@ -266,7 +266,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
                     String result = HttpClientUtil.httpPost(CommonApi.FcAddRoomTypeMappingUrl, xml);
                     log.info("fc result :"+result);
                     Response response = XmlDeal.pareFcResult(result);
-                    //todo 匹配接口不通
+
                     if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.saveRoomTypeFq(new FcRoomTypeFqDto(fcRoomTypeFqs));
                     }else {

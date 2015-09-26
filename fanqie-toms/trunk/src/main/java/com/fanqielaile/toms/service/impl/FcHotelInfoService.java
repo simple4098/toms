@@ -70,18 +70,18 @@ public class FcHotelInfoService implements IFcHotelInfoService {
         Company company = companyDao.selectCompanyById(companyId);
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
         FcHotelInfoDto hotelInfoDto = fcHotelInfoDao.selectFcHotelByHotelId(fcHotelId);
-        OtaInnOtaDto otaInnOtaDto = otaInnOtaDao.selectOtaInnOtaByHid(Long.valueOf(fcHotelId), company.getId(), dto.getOtaInfoId());
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(innId));
+        OtaInnOtaDto innOtaDto = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(Integer.valueOf(innId), companyId, dto.getOtaInfoId());
 
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();
         hotelInfo.setFcHotelId(Integer.valueOf(fcHotelId));
         hotelInfo.setSpHotelId(innId);
-        hotelInfo.setFcHotelName(hotelInfoDto.getHotelName());
         list.add(hotelInfo);
 
         //先删除之前的匹配情况
-        if (otaInnOtaDto!=null){
-
+        if (innOtaDto!=null && !fcHotelId.equals(innOtaDto.getWgHid())){
+            hotelInfo.setFcHotelId(Integer.valueOf(innOtaDto.getWgHid()));
             DeleteHotelInfoRequest deleteHotelInfoRequest = new DeleteHotelInfoRequest();
             deleteHotelInfoRequest.setHotelList(list);
             Header header = new Header(RequestType.deleteHotelMapping, dto.getAppKey(),dto.getAppSecret());
@@ -93,37 +93,39 @@ public class FcHotelInfoService implements IFcHotelInfoService {
             log.info("fc result :"+result);
             Response response = XmlDeal.pareFcResult(result);
             if (Constants.FcResultNo.equals(response.getResultNo())){
-                otaInnOtaDao.deletedOtaInnOtaById(otaInnOtaDto.getId());
+                otaInnOtaDao.deletedOtaInnOtaById(innOtaDto.getId());
             }else {
                 throw  new Exception("房仓解除绑定失败:"+response.getResultMsg());
             }
             
-        //重新绑定
-        }else {
-            AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
-            hotelMappingRequest.setHotelList(list);
-            Header header = new Header(RequestType.addHotelMapping, dto.getAppKey(), dto.getAppSecret());
-            AddHotelRequest hotelRequest = new AddHotelRequest(header, hotelMappingRequest);
-            try {
-                String xml = FcUtil.fcRequest(hotelRequest);
-                log.info("房仓绑定xml:" + xml);
-                String result = HttpClientUtil.httpPost(CommonApi.FcAddHotelMappingUrl, xml);
-                log.info("fc result :" + result);
-                Response response = XmlDeal.pareFcResult(result);
-                if (Constants.FcResultNo.equals(response.getResultNo())) {
-                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(innId));
-                    if (otaInnOtaDto == null) {
-                        OtaInnOtaDto otaInnOta = OtaInnOtaDto.toFcDto(Long.valueOf(fcHotelId), bangInn.getInnName(), Integer.valueOf(innId), company, bangInn.getId(), dto.getOtaInfoId());
-                        otaInnOtaDao.saveOtaInnOta(otaInnOta);
-                    }
-                } else {
-                    throw new Exception("绑定失败:" + response.getResultMsg());
-                }
 
-            } catch (Exception e) {
-                throw new Exception("绑定失败:" + e.getMessage());
-            }
         }
+        //绑定操作
+        hotelInfo.setFcHotelName(hotelInfoDto.getHotelName());
+        AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
+        hotelMappingRequest.setHotelList(list);
+        Header header = new Header(RequestType.addHotelMapping, dto.getAppKey(), dto.getAppSecret());
+        AddHotelRequest hotelRequest = new AddHotelRequest(header, hotelMappingRequest);
+        try {
+            String xml = FcUtil.fcRequest(hotelRequest);
+            log.info("房仓绑定xml:" + xml);
+            String result = HttpClientUtil.httpPost(CommonApi.FcAddHotelMappingUrl, xml);
+            log.info("fc result :" + result);
+            Response response = XmlDeal.pareFcResult(result);
+            if (Constants.FcResultNo.equals(response.getResultNo())) {
+                OtaInnOtaDto otaInnOtaDto = otaInnOtaDao.selectOtaInnOtaByHid(Long.valueOf(fcHotelId), company.getId(), dto.getOtaInfoId());
+                if (otaInnOtaDto == null) {
+                    OtaInnOtaDto otaInnOta = OtaInnOtaDto.toFcDto(Long.valueOf(fcHotelId), bangInn.getInnName(), Integer.valueOf(innId), company, bangInn.getId(), dto.getOtaInfoId());
+                    otaInnOtaDao.saveOtaInnOta(otaInnOta);
+                }
+            } else {
+                throw new Exception("绑定失败:" + response.getResultMsg());
+            }
+
+        } catch (Exception e) {
+            throw new Exception("绑定失败:" + e.getMessage());
+        }
+
     }
 
     @Override
