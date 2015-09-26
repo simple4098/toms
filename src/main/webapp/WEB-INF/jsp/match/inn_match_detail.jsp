@@ -41,7 +41,7 @@
               <div class="col-sm-6 widget-con">
 
 
-                  <div id="matchSuccessId"  <c:if test="${!(empty fcHotel)}">style="display: block"</c:if>>
+                  <div id="matchSuccessId"  <c:if test="${empty otaInnOtaDto}">style="display: none"</c:if>>
                     <input type="radio" style="display: none" name="fcHotelId" checked value="${fcHotel.hotelId}">
                     <div class="result-box">
                       <p>名称：<span>${fcHotel.hotelName}</span></p>
@@ -69,7 +69,7 @@
                   </label>
                     <c:forEach items="${hotel}" var="ho">
                       <label>
-                        <input type="radio" name="fcHotelId" value="${ho.hotelId}">
+                        <input type="radio" <c:if test="${ho.hotelId==otaInnOtaDto.wgHid}">checked</c:if> name="fcHotelId" value="${ho.hotelId}">
                         <div class="result-box">
                           <p>名称：<span>${ho.hotelName}</span></p>
                           <p>电话：<span>${ho.telephone}</span></p>
@@ -88,7 +88,7 @@
           <button data-url="<c:url value="/innMatch/ajax/match.json"/> " class="btn btn-primary" id="btn-primary-id">提交匹配</button>
          </c:if>
           <c:if test="${!(empty otaInnOtaDto)}">
-            <button data-url="<c:url value="/innMatch/ajax/match.json"/>" class="btn btn-primary" id="cxInMatchId">重新匹配</button>
+            <button data-url="<c:url value="/innMatch/ajax/match.json"/>" class="btn btn-primary btn-primary-cx" id="cxInMatchId">重新匹配</button>
          </c:if>
         </div>
       </div>

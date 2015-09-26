@@ -68,7 +68,7 @@ public class InnMatchController extends BaseController {
         List<OtaInfoRefDto> infoRefDtoList = otaInfoService.findOtaInfoListByCompanyId(userInfo.getCompanyId());
         BangInnDto innDto = BangInnDto.userInfoToBangInnDto(userInfo,bangInnDto,infoRefDtoList);
         List<InnLabel> innLabels = innLabelService.findLabelsByCompanyId(innDto.getCompanyId());
-        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto, new PageBounds(page, 1));
+        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto, new PageBounds(page, 10));
         model.addAttribute("labels", innLabels);
         model.addAttribute("list",bangInns);
         model.addAttribute("bangInnDto",bangInnDto);

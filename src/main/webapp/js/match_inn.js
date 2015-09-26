@@ -20,8 +20,8 @@ $(".search-btn").on("click",function(){
 //绑定房仓酒店
 $("#btn-primary-id").on("click",function(){
     var url = $(this).attr("data-url");
-     var fcHotelId = $("input[name='fcHotelId']:checked").val();
-     var innId = $("#innId").val();
+    var fcHotelId = $("input[name='fcHotelId']:checked").val();
+    var innId = $("#innId").val();
     if(fcHotelId==undefined){
         layer.msg("请选择房仓酒店id");
         return false;
@@ -44,12 +44,48 @@ $("#btn-primary-id").on("click",function(){
     })
     console.log(fcHotelId+"-"+innId);
 })
+//重新绑定
+$(".btn-primary-cx").on("click",function(){
+    var _this = $(this);
+    if(_this.hasClass("push")){
+        var url = $(this).attr("data-url");
+        var fcHotelId = $("input[name='fcHotelId']:checked").val();
+        var innId = $("#innId").val();
+        var oldFcHotelId = $("#matchSuccessId").find("input[type='radio']").val()
+        if(fcHotelId==undefined){
+            layer.msg("请选择房仓酒店id");
+            return false;
+        }
+        if(fcHotelId == oldFcHotelId){
+            layer.msg("此客栈已经匹配过，不用重新匹配!");
+            return false;
+        }
+        $.ajax({
+            type:'post',
+            data:{'innId':innId,'fcHotelId':fcHotelId},
+            dataType:'json',
+            url:url,
+            success:function(data){
+                if(data.status!="200"){
+                    layer.msg(data.message);
+                }else{
+                    layer.msg("绑定成功");
+                    window.location.href=window.location.href;
+                }
+            },error:function(data){
+                layer.msg(data.message);
+            }
+        })
+        console.log(fcHotelId+"-"+innId);
+    }
+
+})
 //重新匹配
 $("#cxInMatchId").on("click",function(){
     var _this = $(this);
     $("#matchSuccessId").css("display","none");
     $("#not-match-id").css("display","block");
-    _this.attr("id","btn-primary-id");
+    _this.addClass("push");
     _this.text("提交匹配");
 })
 //保存价格计划

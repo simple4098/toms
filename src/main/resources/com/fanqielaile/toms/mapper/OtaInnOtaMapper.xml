@@ -42,7 +42,7 @@
 
        </update>
        <update id="deletedOtaInnOtaById" parameterType="java.lang.String">
-              update ota_inn_ota set deleted=1  where  id ='${id}'
+               DELETE from ota_inn_ota where id='${id}'
        </update>
 
        <select id="findOtaInnOtaByParams" parameterType="com.fanqie.core.dto.TBParam" resultMap="BaseResultMap">
