@@ -48,4 +48,17 @@ public interface IFcRoomTypeFqDao {
      * @param otaInfoId 渠道id
      */
     void deletedFcRoomTypeFqByInnIdAndCompanyId(@Param("innId")String innId, @Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
+
+    /**
+     * 根据客栈id 房型id 渠道id 查询房仓 房型匹配情况
+     * @param innId 客栈id
+     * @param roomTypeId 房型id
+     * @param otaInfoId 渠道id
+     * @param companyId 公司id
+     */
+
+    FcRoomTypeFqDto findRoomTypeFqInnIdRoomIdOtaInfoId(@Param("innId")Integer innId, @Param("roomTypeId")Integer roomTypeId, @Param("otaInfoId")String otaInfoId,@Param("companyId")String companyId);
+
+    //查询上架状态
+    List<FcRoomTypeFqDto> selectFcRoomTypeFqBySJ(@Param("otaInfoId")String otaInfoId,@Param("companyId")String companyId);
 }

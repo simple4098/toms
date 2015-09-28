@@ -51,6 +51,18 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
     }
 
     @Override
+    public List<RoomTypeInfo> obtOmsRoomInfoToFc(BangInn bangInn) throws Exception {
+        Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
+        String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
+            return JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+        }
+        return  null;
+    }
+
+    @Override
     public OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto) {
        return otaRoomPriceDao.selectOtaRoomPriceDto(roomPriceDto);
     }

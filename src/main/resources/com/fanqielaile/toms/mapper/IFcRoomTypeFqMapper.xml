@@ -51,6 +51,16 @@
         where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId}
 
     </select>
+    <select id="selectFcRoomTypeFqBySJ" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" resultMap="resultDtoMapId">
+        SELECT
+        o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
+        ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
+        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+
+        where o.deleted=0 and o.sj='1' and  o.company_id ='${companyId}'  and  o.ota_info_id ='${otaInfoId}'
+
+    </select>
 
     <select id="selectFcRoomTypeFqById" resultMap="resultDtoMapId">
         SELECT
@@ -84,6 +94,15 @@
     <delete id="deletedFcRoomTypeFqByInnIdAndCompanyId">
          DELETE from fc_roomtype_fq where inn_id='${innId}' and company_id='${companyId}' and ota_info_id='${otaInfoId}'
     </delete>
+
+    <select id="findRoomTypeFqInnIdRoomIdOtaInfoId" resultMap="resultDtoMapId">
+         SELECT
+        o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
+        ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
+        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        where o.deleted=0 and o.inn_id ='${innId}' and o.ota_info_id = '${otaInfoId}' and o.company_id = '${companyId}' and o.fq_roomtype_id='${roomTypeId}'
+    </select>
 
 
 

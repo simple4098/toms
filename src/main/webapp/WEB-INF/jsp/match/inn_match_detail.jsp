@@ -7,12 +7,20 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>客栈匹配详情</title>
-  <link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
+  <%--<link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">--%>
+
+  <link rel="stylesheet" type="text/css" href="/assets/css/userSet.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">
+  <script src="/assets/js/jquery-2.0.3.min.js"></script>
+  <script src="/assets/layer/layer.js"></script>
+
 </head>
 
 <body>
@@ -156,9 +164,9 @@
               </tr>
               </thead>
               <tbody id="roomTypeData">
-              <c:forEach items="${matchRoomTypeList}" var="o">
+              <c:forEach items="${matchRoomTypeList}" var="o" varStatus="varS">
               <tr>
-                <td>1</td>
+                <td>${varS.count}</td>
                 <td>
                   <input type="hidden" data-roomtypeid="${o.fqRoomTypeId}" data-roomtypename="${o.fqRoomTypeName}" data-area="${o.roomArea}">
                   <p class="inn-roomname">${o.fqRoomTypeName}|<span>${(empty o.fcRoomTypeId)?'未匹配':'匹配成功'}</span></p>
@@ -172,13 +180,13 @@
                       <c:if test="${!(empty o.fcRatePlanDto)}">
                         <span class="price-plan">(${o.fcRatePlanDto.ratePlanId})${o.fcRatePlanDto.bedType.desc}+${o.fcRatePlanDto.payMethod.desc}+${o.fcRatePlanDto.currency.value}</span>
                       </c:if>
-                      <button class="btn btn-xs btn-primary edit-btn editPopupsClass" data-fc-roomtype-fq="${o.id}" data-toggle="modal" data-target="#editPopups">编辑</button>
+                      <button class="btn btn-xs btn-primary edit-btn editPopupsClass" data-plan-id="${o.fcRatePlanDto.ratePlanId}" data-fc-roomtype-fq="${o.id}" data-toggle="modal" data-target="#editPopups">编辑</button>
                     </c:if>
                 </td>
                 <td>
                   <c:if test="${!(empty o.fcRoomTypeId)}">
                     <c:if test="${o.sj==-1 || o.sj==0}">
-                      <button class="btn btn-xs btn-success roomTypeUpClass" data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp">上架</button></td>
+                      <button class="btn btn-xs btn-success roomTypeUpClass" data-toggle="modal" data-plan-id="${o.fcRatePlanDto.ratePlanId}" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp">上架</button></td>
                     </c:if>
                    <c:if test="${o.sj==1}">
                       <button class="btn btn-xs btn-success xjRoomTypeUpClass" data-toggle="modal" data-fc-roomtype-fq-id="${o.id}" data-target="#roomTypeUp1">下架</button></td>
@@ -258,6 +266,7 @@
         <h4 class="modal-title">操作确认</h4>
       </div>
       <input type="hidden" value="" id="hiddenRoomTypeId"/>
+      <input type="hidden" value="" id="hiddenRoomTypeId_planId"/>
       <div class="modal-body">
         <p>您确定将此房型上架吗？</p>
       </div>
@@ -347,8 +356,8 @@
     </div>
   </div>
 </div>
-<script src="/assets/js/jquery-2.0.3.min.js"></script>
-<script src="/assets/js/bootstrap.min.js"></script>
+<%--<script src="/assets/js/jquery-2.0.3.min.js"></script>
+<script src="/assets/js/bootstrap.min.js"></script>--%>
 <script src="/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="/js/match_inn.js"></script>
 <script type="text/javascript">
@@ -371,7 +380,7 @@
     dataType:'json',
     url:'<c:url value="/innMatch/ajax/ratePlanJson.json"/>',
     success:function(data){
-      var select ="<select id='selectId'>"
+      var select ="<select id='selectId'><option>--请选择--</option>"
       var $data = data.rateList;
       for(var i=0;i<$data.length;i++){
         var d = $data[i];
@@ -393,7 +402,35 @@
   $(".editPopupsClass").on("click",function(){
       var _this = $(this);
       var id = _this.attr("data-fc-roomtype-fq");
+      var plan_id = _this.attr("data-plan-id");
       $("#hiddenRatePlanId").val(id);
+    $.ajax({
+      type:'post',
+      dataType:'json',
+      url:'<c:url value="/innMatch/ajax/ratePlanJson.json"/>',
+      success:function(data){
+        var select ="<select id='selectId'><option>--请选择--</option>"
+        var $data = data.rateList;
+        for(var i=0;i<$data.length;i++){
+          var d = $data[i];
+          var bedTypeValue = d.bedTypeValue;
+          var currencyValue = d.currencyValue;
+          var payMethodValue = d.payMethodValue;
+          var ratePlanId = d.ratePlanId;
+          var selected ='';
+          if(plan_id==ratePlanId){
+            selected ="selected";
+          }
+          var id = d.id;
+          select+="<option "+selected+" value='"+id+"'"+">("+ratePlanId+")"+bedTypeValue+"+"+currencyValue+"+"+payMethodValue+"</option>";
+        }
+        select+="</select>";
+        $("#ratePlan-id").html(select)
+      },error:function(data){
+        alert("error");
+      }
+    })
+
 
   })
 
@@ -401,12 +438,19 @@
   $(".roomTypeUpClass").on("click",function(){
       var _this = $(this);
       var id = _this.attr("data-fc-roomtype-fq-id");
+      var plan_id = _this.attr("data-plan-id");
       $("#hiddenRoomTypeId").val(id);
+      $("#hiddenRoomTypeId_planId").val(plan_id);
   })
   //上架
   $("#sjEditSave").on("click",function(){
-      layer.load(0, {time: 4*1000});
-      var matchRoomTypeId = $("#hiddenRoomTypeId").val();
+    var matchRoomTypeId = $("#hiddenRoomTypeId").val();
+    var planId = $("#hiddenRoomTypeId_planId").val();
+    if(planId.length==0){
+      layer.msg("请选择价格计划信息");
+      return false;
+    }
+    layer.load(0, {time: 4*1000});
     $.ajax({
       data:{"matchRoomTypeId":matchRoomTypeId},
       type:'post',
@@ -465,9 +509,14 @@
 
   //管理价格计划
   $("#bangRatePlanId").on("click",function(){
-    layer.load(0, {time: 3*1000});
+
     var id = $("#hiddenRatePlanId").val();
-    var ratePlanId = $('#selectId option:selected') .val();//选中的值
+    var ratePlanId = $('#selectId option:selected') .attr("value");//选中的值
+    if(id.length==0 || ratePlanId==undefined){
+      layer.msg("请选择价格计划");
+      return false;
+    }
+    layer.load(0, {time: 3*1000});
     $.ajax({
       data:{"fcRoomTypeFqId":id,"ratePlanId":ratePlanId},
       type:'post',

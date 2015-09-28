@@ -18,6 +18,8 @@ public interface IOtaRoomPriceService {
 
     List<RoomTypeInfo> obtOmsRoomInfo( BangInn bangInn) throws Exception;
 
+    List<RoomTypeInfo> obtOmsRoomInfoToFc( BangInn bangInn) throws Exception;
+
     OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto);
 
     void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto,  BangInn bangInn)throws Exception;

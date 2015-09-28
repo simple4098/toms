@@ -37,4 +37,7 @@ public class Constants {
     public static   Integer FC_SJ=1;
     public static   Integer FC_XJ=0;
     public static   Integer FC_NOT_SJ=-1;
+    public static   Integer FC_NOT_HAVE_ROOM=3;
+    public static   Integer FC_HAVE_ROOM=1;
+    public static   Integer FC_DAI_CHA=2;
 }
