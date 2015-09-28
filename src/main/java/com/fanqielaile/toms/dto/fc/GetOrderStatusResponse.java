@@ -13,8 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GetOrderStatusResponse {
     //合作方订单编码
     private String spOrderId;
-    //取消状态
-    private Integer cancelStatus;
+    //订单状态
+    private Integer orderStatus;
 
     @XmlElement(name = "SpOrderId")
     public String getSpOrderId() {
@@ -25,12 +25,12 @@ public class GetOrderStatusResponse {
         this.spOrderId = spOrderId;
     }
 
-    @XmlElement(name = "CancelStatus")
-    public Integer getCancelStatus() {
-        return cancelStatus;
+    @XmlElement(name = "OrderStatus")
+    public Integer getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setCancelStatus(Integer cancelStatus) {
-        this.cancelStatus = cancelStatus;
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }
