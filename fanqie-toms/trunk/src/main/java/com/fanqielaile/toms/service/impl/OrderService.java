@@ -813,8 +813,8 @@ public class OrderService implements IOrderService {
 
     @Override
     public Map<String, Object> createFcHotelOrder(String xml) throws Exception {
+        logger.info("天下房仓创建订单传递参数=>" + xml);
         Map<String, Object> result = new HashMap<>();
-        String logStr = "创建订单传递参数=>" + xml;
         //解析xml
         Order order = XmlDeal.getFcCreateOrder(xml);
         //创建订单
@@ -832,19 +832,17 @@ public class OrderService implements IOrderService {
 
     @Override
     public CancelHotelOrderResponse cancelFcHotelOrder(String xml) throws Exception {
+        logger.info("天下房仓取消订单传入参数=>" + xml);
         CancelHotelOrderResponse result = new CancelHotelOrderResponse();
         //解析xml
         Order orderCancel = XmlDeal.getFcCancelOrder(xml);
         //查询数据库中是否存在此订单
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderCancel.getId(), ChannelSource.FC);
         if (null == order) {
-            result.setResultFlag("0");
-            result.setResultMsg("没有此订单");
+            return null;
         } else {
             order.setReason(orderCancel.getReason());
             JsonModel jsonModel = cancelOrderMethod(order);
-            result.setResultMsg(jsonModel.getMessage());
-            result.setResultFlag("1");
             result.setSpOrderId(order.getId());
             //判断取消订单是否成功，设置响应的订单状态1,取消成功;2,取消失败;(表示此单无法取消) 3,取消待定;（表示此单）
             if (jsonModel.isSuccess()) {
@@ -858,20 +856,19 @@ public class OrderService implements IOrderService {
 
     @Override
     public GetOrderStatusResponse getFcOrderStatus(String xml) throws Exception {
+        logger.info("天下房仓查询订单状态传递参数=>" + xml);
         GetOrderStatusResponse result = new GetOrderStatusResponse();
         //解析xml
         Order orderParam = XmlDeal.getFcOrderStatus(xml);
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderParam.getId(), ChannelSource.FC);
         if (null == order) {
-            result.setResultFlag("0");
-            result.setResultMsg("获取订单状态出错，没有此订单");
+            return null;
         } else {
             //获取订单状态
             String respose = getOrderStatusMethod(order);
             JSONObject jsonObject = JSONObject.fromObject(respose);
             if (!jsonObject.get("status").equals(200)) {
-                result.setResultMsg("查询失败");
-                result.setResultFlag("1");
+                return null;
             } else {
                 if (jsonObject.get("orderStatus").equals("0")) {
                     result.setCancelStatus(2);
@@ -886,8 +883,6 @@ public class OrderService implements IOrderService {
                 } else {
                     throw new TomsRuntimeException("OMS内部错误");
                 }
-                result.setResultFlag("1");
-                result.setResultMsg("查询成功");
                 result.setSpOrderId(order.getId());
             }
         }
@@ -896,6 +891,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public CheckRoomAvailResponse checkRoomAvail(String xml) throws IOException {
+        logger.info("天下房仓试订单传入参数=>" + xml);
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
         //解析xml
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
@@ -905,17 +901,15 @@ public class OrderService implements IOrderService {
         JSONObject jsonObject = JSONObject.fromObject(response);
         logger.info("天下房仓试订单接口返回值=>" + response.toString());
         if (jsonObject.get("status").equals(200)) {
-            result.setSpHotelId(order.getInnId() + "");
+            //是否可以及时确认
+            result.setCanImmediate("1");
             result.setSpRatePlanId(order.getOTARatePlanId());
-            result.setSpRoomTypeId(order.getRoomTypeId());
-            result.setRoomNum(order.getHomeAmount());
-            result.setCheckInDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
-            result.setCheckOutDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd"));
             List<RoomDetail> roomDetails = (List<RoomDetail>) JSONArray.toList(jsonObject.getJSONArray("data"), RoomDetail.class);
             //转换oms房型信息为toms的每日入住信息
             List<DailyInfos> dailyInfos = OrderMethodHelper.toDailyInfos(roomDetails);
             if (null != dailyInfos && ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
                 List<SaleItem> saleItemList = new ArrayList<>();
+                boolean canBook = false;
                 for (DailyInfos dailyInfos1 : dailyInfos) {
                     SaleItem saleItem = new SaleItem();
                     //无早
@@ -931,10 +925,12 @@ public class OrderService implements IOrderService {
                         //dayCanBook:1可预订，roomstatus：1有房
                         saleItem.setDayCanBook(1);
                         saleItem.setRoomStatus(1);
+                        canBook = true;
                     } else {
                         //dayCanBook:0不可预订，roomstatus：2满房
                         saleItem.setDayCanBook(0);
                         saleItem.setRoomStatus(2);
+                        canBook = false;
                     }
                     //是否可超，0否，1是
                     saleItem.setOverDraft(0);
@@ -943,6 +939,12 @@ public class OrderService implements IOrderService {
                     saleItem.setSaleDate(DateUtil.format(dailyInfos1.getDay(), "yyyy-MM-dd"));
                     saleItem.setSalePrice(dailyInfos1.getPrice());
                     saleItemList.add(saleItem);
+                }
+                //设置是否可预定
+                if (canBook) {
+                    result.setCanBook("1");
+                } else {
+                    result.setCanBook("0");
                 }
                 result.setSaleItems(saleItemList);
             }
