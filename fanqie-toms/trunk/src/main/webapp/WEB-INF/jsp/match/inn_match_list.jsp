@@ -7,12 +7,19 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>客栈匹配列表</title>
-  <link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
+<%--  <link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">--%>
+
+  <link rel="stylesheet" type="text/css" href="/assets/css/userSet.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">
+  <script src="/assets/js/jquery-2.0.3.min.js"></script>
+  <script src="/assets/layer/layer.js"></script>
 </head>
 <body>
 <div class="container">
@@ -106,8 +113,6 @@
     </div>
   </div>
 </c:if>
-<script src="/assets/js/jquery-2.0.3.min.js"></script>
-<script src="/assets/js/bootstrap.min.js"></script>
 <script src="/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script>
 

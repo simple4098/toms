@@ -2,6 +2,7 @@
 package com.toms.test;
 
 import com.fanqie.util.HttpClientUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.IFcAreaDao;
 import com.fanqielaile.toms.dao.IFcCityDao;
 import com.fanqielaile.toms.dao.IFcProvinceDao;
@@ -258,11 +259,11 @@ public class FcStaticTest {
     }
 
     @Test
-    public void deleteHotelMapping() throws JAXBException {
+    public void deleteHotelMapping() throws JAXBException, IOException {
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();
-        hotelInfo.setFcHotelId(111);
-        hotelInfo.setSpHotelId("45d4s");
+        hotelInfo.setFcHotelId(125283);
+        hotelInfo.setSpHotelId("15420");
         list.add(hotelInfo);
 
         DeleteHotelInfoRequest deleteHotelInfoRequest = new DeleteHotelInfoRequest();
@@ -272,7 +273,10 @@ public class FcStaticTest {
         Header header = new Header(RequestType.deleteHotelMapping, "S10085349", "security_test_S10085349");
         DeleteHotelMappingRequest deleteHotelMappingRequest = new DeleteHotelMappingRequest(header,deleteHotelInfoRequest);
 
-        System.out.println(FcUtil.fcRequest(deleteHotelMappingRequest));
+        String xml = FcUtil.fcRequest(deleteHotelMappingRequest);
+        log.info("房仓解除绑定xml:"+xml);
+        String result = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/deleteHotelMapping", xml);
+        log.info("fc result :" + result);
     }
 }
 
