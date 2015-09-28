@@ -871,15 +871,15 @@ public class OrderService implements IOrderService {
                 return null;
             } else {
                 if (jsonObject.get("orderStatus").equals("0")) {
-                    result.setCancelStatus(2);
+                    result.setOrderStatus(2);
                 } else if (jsonObject.get("orderStatus").equals("1")) {
-                    result.setCancelStatus(3);
+                    result.setOrderStatus(3);
                 } else if (jsonObject.get("orderStatus").equals("2")) {
-                    result.setCancelStatus(4);
+                    result.setOrderStatus(4);
                 } else if (jsonObject.get("orderStatus").equals("3")) {
-                    result.setCancelStatus(4);
+                    result.setOrderStatus(4);
                 } else if ((jsonObject.get("orderStatus").equals("4"))) {
-                    result.setCancelStatus(2);
+                    result.setOrderStatus(2);
                 } else {
                     throw new TomsRuntimeException("OMS内部错误");
                 }
