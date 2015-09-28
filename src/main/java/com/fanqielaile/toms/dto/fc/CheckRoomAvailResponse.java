@@ -1,11 +1,9 @@
 package com.fanqielaile.toms.dto.fc;
 
-import com.fanqielaile.toms.model.fc.FcResult;
 import com.fanqielaile.toms.model.fc.SaleItem;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,39 +11,33 @@ import java.util.List;
  * 试订单相应对象
  */
 @XmlRootElement(name = "CheckRoomAvailResponse")
-public class CheckRoomAvailResponse extends FcResult {
+public class CheckRoomAvailResponse {
     //合作方酒店id
-    private String spHotelId;
+    private String canBook;
     //合作方房型id
-    private String spRoomTypeId;
+    private String canImmediate;
     //合作方价格计划id
     private String spRatePlanId;
-    //入住日期
-    private String checkInDate;
-    //离店日期
-    private String checkOutDate;
-    //间数
-    private Integer roomNum;
     //售价信息
     private List<SaleItem> saleItems;
 
 
-    @XmlElement(name = "SpHotelId")
-    public String getSpHotelId() {
-        return spHotelId;
+    @XmlElement(name = "CanBook")
+    public String getCanBook() {
+        return canBook;
     }
 
-    public void setSpHotelId(String spHotelId) {
-        this.spHotelId = spHotelId;
+    public void setCanBook(String canBook) {
+        this.canBook = canBook;
     }
 
-    @XmlElement(name = "SpRoomTypeId")
-    public String getSpRoomTypeId() {
-        return spRoomTypeId;
+    @XmlElement(name = "CanImmediate")
+    public String getCanImmediate() {
+        return canImmediate;
     }
 
-    public void setSpRoomTypeId(String spRoomTypeId) {
-        this.spRoomTypeId = spRoomTypeId;
+    public void setCanImmediate(String canImmediate) {
+        this.canImmediate = canImmediate;
     }
 
     @XmlElement(name = "SpRatePlanId")
@@ -55,33 +47,6 @@ public class CheckRoomAvailResponse extends FcResult {
 
     public void setSpRatePlanId(String spRatePlanId) {
         this.spRatePlanId = spRatePlanId;
-    }
-
-    @XmlElement(name = "CheckInDate")
-    public String getCheckInDate() {
-        return checkInDate;
-    }
-
-    public void setCheckInDate(String checkInDate) {
-        this.checkInDate = checkInDate;
-    }
-
-    @XmlElement(name = "CheckOutDate")
-    public String getCheckOutDate() {
-        return checkOutDate;
-    }
-
-    public void setCheckOutDate(String checkOutDate) {
-        this.checkOutDate = checkOutDate;
-    }
-
-    @XmlElement(name = "RoomNum")
-    public Integer getRoomNum() {
-        return roomNum;
-    }
-
-    public void setRoomNum(Integer roomNum) {
-        this.roomNum = roomNum;
     }
 
     @XmlElement(name = "SaleItemList")
@@ -96,13 +61,10 @@ public class CheckRoomAvailResponse extends FcResult {
     @Override
     public String toString() {
         return "CheckRoomAvailResponse{" +
-                "spHotelId='" + spHotelId + '\'' +
-                ", spRoomTypeId='" + spRoomTypeId + '\'' +
+                "canBook='" + canBook + '\'' +
+                ", canImmediate='" + canImmediate + '\'' +
                 ", spRatePlanId='" + spRatePlanId + '\'' +
-                ", checkInDate=" + checkInDate +
-                ", checkOutDate=" + checkOutDate +
-                ", roomNum=" + roomNum +
-                ", saleItems=" + saleItems.toString() +
+                ", saleItems=" + saleItems +
                 '}';
     }
 }

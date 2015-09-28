@@ -13,7 +13,7 @@ import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.model.fc.SaleItem;
+import com.fanqielaile.toms.model.fc.*;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FcUtil;
@@ -140,13 +140,14 @@ public class OTAManageController extends BaseController {
     @RequestMapping("checkRoomAvail")
     @ResponseBody
     public Object checkRoomNum(String xml) throws Exception {
-        CheckRoomAvailResponse result = new CheckRoomAvailResponse();
+        FCcheckRoomAvailResponseResult result = new FCcheckRoomAvailResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
             CheckRoomAvailResponse checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
             if (null != checkRoomAvailResponse) {
-                checkRoomAvailResponse.setResultFlag("1");
-                checkRoomAvailResponse.setResultMsg("success");
-                return FcUtil.fcRequest(checkRoomAvailResponse);
+                result.setCheckRoomAvailResponse(checkRoomAvailResponse);
+                result.setResultFlag("1");
+                result.setResultMsg("success");
+                return FcUtil.fcRequest(result);
             } else {
                 result.setResultFlag("0");
                 result.setResultMsg("查询出错!");
@@ -155,6 +156,7 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
+        logger.info("试订单接口返回值=>" + result.toString());
         return result;
     }
 
@@ -167,25 +169,33 @@ public class OTAManageController extends BaseController {
     @RequestMapping("createHotelOrder")
     @ResponseBody
     public Object createhotelOrder(String xml) throws Exception {
-        CreateHotelOrderResponse result = new CreateHotelOrderResponse();
+        FcCreateHotelOrderResponseResult result = new FcCreateHotelOrderResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
             Map<String, Object> map = this.orderService.createFcHotelOrder(xml);
             JsonModel jsonModel = (JsonModel) map.get("status");
             Order order = (Order) map.get("order");
+            CreateHotelOrderResponse createHotelOrderResponse = new CreateHotelOrderResponse();
             if (jsonModel.isSuccess()) {
-                result.setFcOrderId(order.getChannelOrderCode());
-                result.setSpOrderId(order.getId());
+                createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
+                createHotelOrderResponse.setSpOrderId(order.getId());
+                createHotelOrderResponse.setOrderStatus(1);
                 result.setResultFlag("1");
                 result.setResultMsg("创建订单成功");
             } else {
-                result.setResultFlag("0");
+                createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
+                createHotelOrderResponse.setSpOrderId(order.getId());
+                createHotelOrderResponse.setOrderStatus(2);
+                result.setResultFlag("1");
                 result.setResultMsg(jsonModel.getMessage());
             }
-
+            if (null != createHotelOrderResponse) {
+                result.setCreateHotelOrderResponse(createHotelOrderResponse);
+            }
         } else {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
+        logger.info("试订单接口返回值=>" + result.toString());
         return result;
     }
 
@@ -198,13 +208,23 @@ public class OTAManageController extends BaseController {
     @RequestMapping("cancelHotelOrder")
     @ResponseBody
     public Object cancelHotelOrder(String xml) throws Exception {
-        CancelHotelOrderResponse result = new CancelHotelOrderResponse();
+        FcCancelHotelOrderResponseResult result = new FcCancelHotelOrderResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
-            result = this.orderService.cancelFcHotelOrder(xml);
+            CancelHotelOrderResponse cancelHotelOrderResponse = this.orderService.cancelFcHotelOrder(xml);
+            if (null != cancelHotelOrderResponse) {
+                result.setResultFlag("1");
+                result.setResultMsg("success");
+                result.setCancelHotelOrderResponse(cancelHotelOrderResponse);
+            } else {
+                result.setResultFlag("0");
+                result.setResultMsg("没有找到此单");
+            }
+
         } else {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
+        logger.info("试订单接口返回值=>" + result.toString());
         return result;
     }
 
@@ -217,13 +237,22 @@ public class OTAManageController extends BaseController {
     @RequestMapping("getOrderStatus")
     @ResponseBody
     public Object getFcOrderStatus(String xml) throws Exception {
-        GetOrderStatusResponse result = new GetOrderStatusResponse();
+        FcGetOrderStatusResponseResult result = new FcGetOrderStatusResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
-            result = this.orderService.getFcOrderStatus(xml);
+            GetOrderStatusResponse fcOrderStatus = this.orderService.getFcOrderStatus(xml);
+            if (null != fcOrderStatus) {
+                result.setResultMsg("success");
+                result.setResultFlag("1");
+                result.setGetOrderStatusResponse(fcOrderStatus);
+            } else {
+                result.setResultFlag("0");
+                result.setResultMsg("查询错误");
+            }
         } else {
-            result.setResultFlag("1");
+            result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
+        logger.info("试订单接口返回值=>" + result.toString());
         return result;
     }
 

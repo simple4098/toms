@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 天下房仓推送订单状态请求对象
  */
 @XmlRootElement(name = "Request")
-public class FcOrderStatusRequest extends FcResult {
+public class FcOrderStatusRequest extends FCcheckRoomAvailResponseResult {
     @XmlElement(name = "Header")
     private Header header;
     @XmlElement(name = "SyncOrderStatusRequest")

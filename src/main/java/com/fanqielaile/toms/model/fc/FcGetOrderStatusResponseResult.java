@@ -1,17 +1,17 @@
 package com.fanqielaile.toms.model.fc;
 
+import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by wangdayin on 2015/8/31.
+ * Created by wangdayin on 2015/9/28.
  */
-@XmlRootElement(name = "Response")
-public class FcResult {
-
+public class FcGetOrderStatusResponseResult {
     private String resultFlag;
     private String resultMsg;
+
+    private GetOrderStatusResponse getOrderStatusResponse;
 
     @XmlElement(name = "ResultFlag")
     public String getResultFlag() {
@@ -31,11 +31,12 @@ public class FcResult {
         this.resultMsg = resultMsg;
     }
 
-    @Override
-    public String toString() {
-        return "FcResult{" +
-                "resultFlag='" + resultFlag + '\'' +
-                ", resultMsg='" + resultMsg + '\'' +
-                '}';
+    @XmlElement(name = "GetOrderStatusResponse")
+    public GetOrderStatusResponse getGetOrderStatusResponse() {
+        return getOrderStatusResponse;
+    }
+
+    public void setGetOrderStatusResponse(GetOrderStatusResponse getOrderStatusResponse) {
+        this.getOrderStatusResponse = getOrderStatusResponse;
     }
 }

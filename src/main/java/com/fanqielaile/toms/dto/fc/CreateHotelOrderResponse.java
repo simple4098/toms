@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.dto.fc;
 
-import com.fanqielaile.toms.model.fc.FcResult;
+import com.fanqielaile.toms.model.fc.FCcheckRoomAvailResponseResult;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by wangdayin on 2015/9/1.
  */
 @XmlRootElement(name = "CreateHotelOrderResponse")
-public class CreateHotelOrderResponse extends FcResult {
+public class CreateHotelOrderResponse {
     //合作方的订单号
     private String spOrderId;
     //订单状态

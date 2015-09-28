@@ -19,6 +19,7 @@ public  class FcUtil<T extends FcRequest> {
     public static   <T>  String  fcRequest(T t) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(t.getClass());
         Marshaller marshaller = context.createMarshaller();
+//        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
         StringWriter fw = new StringWriter();
         marshaller.marshal(t,fw);
         return  fw.toString();
