@@ -33,4 +33,12 @@ public class CancelHotelOrderResponse {
     public void setCancelStatus(Integer cancelStatus) {
         this.cancelStatus = cancelStatus;
     }
+
+    @Override
+    public String toString() {
+        return "CancelHotelOrderResponse{" +
+                "spOrderId='" + spOrderId + '\'' +
+                ", cancelStatus=" + cancelStatus +
+                '}';
+    }
 }

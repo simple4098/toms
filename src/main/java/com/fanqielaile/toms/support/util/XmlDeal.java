@@ -137,10 +137,10 @@ public class XmlDeal {
             order.setPrepayPrice(new BigDecimal(param.elementText("TotalAmount")));
             order.setOTARoomTypeId(param.elementText("BedType"));
             if (StringUtils.isNotEmpty(param.elementText("ArrivalTime"))) {
-                order.setEariestArriveTime(DateUtil.parse(param.elementText("ArrivalTime"), "yyyy-MM-dd"));
+                order.setEariestArriveTime(DateUtil.parse(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd") + " " + param.elementText("ArrivalTime"), "yyyy-MM-dd HH:mm"));
             }
             if (StringUtils.isNotEmpty(param.elementText("LatestArrivalTime"))) {
-                order.setLastestArriveTime(DateUtil.parse(param.elementText("LatestArrivalTime"), "yyyy-MM-dd"));
+                order.setLastestArriveTime(DateUtil.parse(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd") + " " + param.elementText("LatestArrivalTime"), "yyyy-MM-dd HH:mm"));
             }
             order.setCurrency(Enum.valueOf(CurrencyCode.class, param.elementText("Currency")));
             order.setFeeStatus(FeeStatus.NOT_PAY);

@@ -195,7 +195,7 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("试订单接口返回值=>" + result.toString());
+        logger.info("创建订单接口返回值=>" + result.toString());
         return result;
     }
 
@@ -224,7 +224,7 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("试订单接口返回值=>" + result.toString());
+        logger.info("取消订单接口返回值=>" + result.toString());
         return result;
     }
 
@@ -252,7 +252,7 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("试订单接口返回值=>" + result.toString());
+        logger.info("查询订单状态接口返回值=>" + result.toString());
         return result;
     }
 

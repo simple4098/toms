@@ -11,6 +11,7 @@ import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
@@ -93,6 +94,8 @@ public class OrderService implements IOrderService {
     private IFcHotelInfoDao fcHotelInfoDao;
     @Resource
     private IFcRoomTypeInfoDao fcRoomTypeInfoDao;
+    @Resource
+    private IFcRoomTypeFqDao fcRoomTypeFqDao;
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -322,11 +325,21 @@ public class OrderService implements IOrderService {
             } else {
                 order.setAccountId(bangInn.getAccountIdDi());
             }
-            OtaBangInnRoomDto otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), order.getCompanyId());
-            if (null == otaBangInnRoomDtos) {
-                return new JsonModel(false, "房型不存在");
+            if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+                OtaBangInnRoomDto otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), order.getCompanyId());
+                if (null == otaBangInnRoomDtos) {
+                    return new JsonModel(false, "房型不存在");
+                }
+                order.setRoomTypeName(otaBangInnRoomDtos.getRoomTypeName());
+            } else if (ChannelSource.FC.equals(order.getChannelSource())) {
+                OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.FC.name());
+                FcRoomTypeFqDto roomTypeFqInnIdRoomIdOtaInfoId = this.fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), otaInfoRefDto.getOtaInfoId(), order.getCompanyId());
+                if (null == roomTypeFqInnIdRoomIdOtaInfoId) {
+                    return new JsonModel(false, "房型不存在");
+                } else {
+                    order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
+                }
             }
-            order.setRoomTypeName(otaBangInnRoomDtos.getRoomTypeName());
             logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, dictionary).toString());
             String respose = "";
             JSONObject jsonObject = null;
@@ -872,13 +885,13 @@ public class OrderService implements IOrderService {
                 return null;
             } else {
                 if (jsonObject.get("orderStatus").equals("0")) {
-                    result.setOrderStatus(2);
+                    result.setOrderStatus(0);
                 } else if (jsonObject.get("orderStatus").equals("1")) {
-                    result.setOrderStatus(3);
+                    result.setOrderStatus(1);
                 } else if (jsonObject.get("orderStatus").equals("2")) {
-                    result.setOrderStatus(4);
+                    result.setOrderStatus(2);
                 } else if (jsonObject.get("orderStatus").equals("3")) {
-                    result.setOrderStatus(4);
+                    result.setOrderStatus(3);
                 } else if ((jsonObject.get("orderStatus").equals("4"))) {
                     result.setOrderStatus(2);
                 } else {
