@@ -32,12 +32,14 @@ public class Constants {
     public static final int ZERO_QUOTA = 0;
     public static final  String FcResultNo="000";
 
-    public static   String MESSAGE_ERROR="参数异常，请检查!";
-    public static   String MESSAGE_SUCCESS="成功";
-    public static   Integer FC_SJ=1;
-    public static   Integer FC_XJ=0;
-    public static   Integer FC_NOT_SJ=-1;
-    public static   Integer FC_NOT_HAVE_ROOM=3;
-    public static   Integer FC_HAVE_ROOM=1;
-    public static   Integer FC_DAI_CHA=2;
+    public static final  String MESSAGE_ERROR="参数异常，请检查!";
+    public static final  String MESSAGE_SUCCESS="成功";
+    public static final  Integer FC_SJ=1;
+    public static final Integer FC_XJ=0;
+    public static final Integer FC_NOT_SJ=-1;
+    public static final  Integer FC_NOT_HAVE_ROOM=3;
+    public static final  Integer FC_HAVE_ROOM=1;
+    public static final  Integer FC_DAI_CHA=2;
+    public static final String MAI="MAI";
+    public static final String DI="DI";
 }

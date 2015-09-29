@@ -58,7 +58,16 @@
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
         from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
-        where o.deleted=0 and o.sj='1' and  o.company_id ='${companyId}'  and  o.ota_info_id ='${otaInfoId}'
+        where o.deleted=0
+        <if test="sj!=null and sj!=''">
+            and o.sj=#{sj}
+        </if>
+        <if test="innId!=null and innId!=''">
+            and o.inn_id=#{innId}
+        </if>
+
+        and  o.company_id ='${companyId}'
+        and  o.ota_info_id ='${otaInfoId}'
 
     </select>
 

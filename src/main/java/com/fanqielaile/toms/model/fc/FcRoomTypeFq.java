@@ -49,6 +49,13 @@ public class FcRoomTypeFq extends Domain {
         this.otaInfoId = otaInfoId;
     }
 
+    public FcRoomTypeFq(Integer sj, String innId, String companyId, String otaInfoId) {
+        this.sj = sj;
+        this.innId = innId;
+        this.companyId = companyId;
+        this.otaInfoId = otaInfoId;
+    }
+
     public Double getRoomArea() {
         return roomArea;
     }

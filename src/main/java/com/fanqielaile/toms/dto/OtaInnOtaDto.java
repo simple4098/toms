@@ -3,6 +3,7 @@ package com.fanqielaile.toms.dto;
 import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaInnOta;
+import com.fanqielaile.toms.support.util.Constants;
 
 import java.math.BigDecimal;
 
@@ -51,6 +52,8 @@ public class OtaInnOtaDto extends OtaInnOta {
         otaInnOta.setBangInnId(bangInnId);
         otaInnOta.setOtaInfoId(otaInfoId);
         otaInnOta.setSj(1);
+        otaInnOta.setPriceModel(Constants.MAI);
+        otaInnOta.setsJiaModel(Constants.MAI);
         otaInnOta.setOtaId(String.valueOf(company.getOtaId()));
         return otaInnOta;
     }

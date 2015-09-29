@@ -12,6 +12,7 @@ import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.Response;
+import com.fanqielaile.toms.service.IFcRoomTypeFqService;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -48,6 +49,8 @@ public class FcService implements ITPService {
     private IOtaRoomPriceService otaRoomPriceService;
     @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
+    @Resource
+    private IFcRoomTypeFqService fcRoomTypeFqService;
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
@@ -71,6 +74,13 @@ public class FcService implements ITPService {
             }else {
                 BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
                 bangInnDao.updateBangInnTp(bangInn);
+                //下架状态的时候 要把房仓的宝贝下架掉
+                if (Constants.FC_XJ.equals(bangInn.getSj())){
+                    List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,innId,company.getId(),otaInfo.getOtaInfoId()));
+                    for (FcRoomTypeFqDto fqDto:roomTypeFqDtoList){
+                        fcRoomTypeFqService.updateXjMatchRoomType(company.getId(),fqDto.getId());
+                    }
+                }
             }
         }
     }
@@ -84,13 +94,12 @@ public class FcService implements ITPService {
     public void updateHotel(OtaInfoRefDto o, TBParam tbParam) throws Exception {
         log.info("====Fc 同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
-        List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(company.getId(), o.getOtaInfoId());
+        List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,null,company.getId(),o.getOtaInfoId()));
         for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
-            if (!StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj()==Constants.FC_SJ){
+            /*if (!StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj()==Constants.FC_SJ){*/
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
                 FCXHotelUtil.syncRateInfo(company,o,fcRoomTypeFqDto,bangInn,Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()));
-            }
-
+           /* }*/
         }
 
     }
