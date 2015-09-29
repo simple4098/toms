@@ -7,6 +7,7 @@ import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.OtaPriceModelDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OtaType;
@@ -50,6 +51,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
     private IFcRoomTypeInfoDao fcRoomTypeInfoDao;
     @Resource
     private IFcRoomTypeFqDao fcRoomTypeFqDao;
+    @Resource
+    private IOtaPriceModelDao priceModelDao;
 
 
 
@@ -75,7 +78,6 @@ public class FcHotelInfoService implements IFcHotelInfoService {
 
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();
-        hotelInfo.setFcHotelId(Integer.valueOf(fcHotelId));
         hotelInfo.setSpHotelId(innId);
         list.add(hotelInfo);
 
@@ -94,6 +96,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
             Response response = XmlDeal.pareFcResult(result);
             if (Constants.FcResultNo.equals(response.getResultNo())){
                 otaInnOtaDao.deletedOtaInnOtaById(innOtaDto.getId());
+                priceModelDao.deletePriceModelByOtaInnOta(innOtaDto.getId());
+                fcRoomTypeFqDao.deletedFcRoomTypeFqByInnIdAndCompanyId(innId,companyId,dto.getOtaInfoId());
             }else {
                 throw  new Exception("房仓解除绑定失败:"+response.getResultMsg());
             }
@@ -101,6 +105,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
 
         }
         //绑定操作
+        hotelInfo.setFcHotelId(Integer.valueOf(fcHotelId));
         hotelInfo.setFcHotelName(hotelInfoDto.getHotelName());
         AddHotelMappingRequest hotelMappingRequest = new AddHotelMappingRequest();
         hotelMappingRequest.setHotelList(list);
@@ -117,6 +122,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                 if (otaInnOtaDto == null) {
                     OtaInnOtaDto otaInnOta = OtaInnOtaDto.toFcDto(Long.valueOf(fcHotelId), bangInn.getInnName(), Integer.valueOf(innId), company, bangInn.getId(), dto.getOtaInfoId());
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
+                    OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
+                    priceModelDao.savePriceModel(otaPriceModel);
                 }
             } else {
                 throw new Exception("绑定失败:" + response.getResultMsg());
