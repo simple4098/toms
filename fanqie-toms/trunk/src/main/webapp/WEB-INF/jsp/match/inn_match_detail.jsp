@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -312,7 +313,8 @@
           <div class="form-group form-group-sm">
             <label class="col-sm-3 control-label">货币种类</label>
             <div class="col-sm-8">
-              <select name="currency" id="currencyId">
+              <toms:currencyCode/>
+              <%--<select name="currency" id="currencyId">
                 <option value="CNY">人民币</option>
                 <option value="HKD">港元</option>
                 <option value="MOP">澳门元</option>
@@ -324,28 +326,30 @@
                 <option value="JPY">日元</option>
                 <option value="KRW">韩元</option>
                 <option value="CAD">加元</option>
-              </select>
+              </select>--%>
             </div>
           </div>
           <div class="form-group form-group-sm">
             <label class="col-sm-3 control-label">支付类型</label>
             <div class="col-sm-8">
-              <select name="payMethod" id="payMethodId">
+              <toms:payMethod />
+              <%--<select name="payMethod" id="payMethodId">
                 <option value="pre_pay">预付</option>
                 <option value="pay">面付</option>
-              </select>
+              </select>--%>
             </div>
           </div>
           <div class="form-group form-group-sm">
             <label class="col-sm-3 control-label">床型</label>
             <div class="col-sm-8">
-              <select name="bedType" id="bedTypeId">
+              <toms:bedType/>
+              <%--<select name="bedType" id="bedTypeId">
                 <option value="onlyBed">单床</option>
                 <option value="BigBed">大床</option>
                 <option value="DoubleBed">双床</option>
                 <option value="ThreeBed">三床</option>
                 <option value="FourBed">四床</option>
-              </select>
+              </select>--%>
             </div>
           </div>
         </form>
