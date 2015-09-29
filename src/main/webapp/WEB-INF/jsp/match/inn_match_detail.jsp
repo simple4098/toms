@@ -30,7 +30,7 @@
   <div class="col-sm-12">
     <div class="widget-box">
       <div class="widget-header">
-        <h4 class="lighter smaller">客栈匹配</h4>
+        <h4 class="lighter smaller">客栈匹配<button type="button" onclick="history.go(-1);" class="btn btn-primary">返回</button></h4>
       </div>
 
       <div class="widget-body">
@@ -540,7 +540,6 @@
       }
     })
   })
-
 </script>
 </body>
 </html>

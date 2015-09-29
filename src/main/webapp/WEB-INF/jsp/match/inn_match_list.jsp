@@ -42,7 +42,7 @@
       </select> &nbsp;
       <input type="text" value="${bangInnDto.keywords}" placeholder="请输入客栈名称" name="keywords">
       <select class="form-control" name="innStatus">
-        <option value selected>客栈分类</option>
+        <option value selected>客栈匹配状态</option>
         <option <c:if test="${bangInnDto.innStatus.name()=='MATCH'}"> selected </c:if> value="MATCH">匹配成功</option>
         <option <c:if test="${bangInnDto.innStatus.name()=='NOT_MATCH'}"> selected </c:if> value="NOT_MATCH">未匹配</option>
       </select>
