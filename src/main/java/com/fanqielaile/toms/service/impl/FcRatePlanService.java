@@ -87,6 +87,8 @@ public class FcRatePlanService implements IFcRatePlanService {
                 Response response = XmlDeal.pareFcResult(result);
                 if (Constants.FcResultNo.equals(response.getResultNo())){
                     fcRatePlanDao.deletedRatePlan(ratePlanId);
+                    fcRoomTypeFqDao.updateRoomTypeFqRatePlan(roomTypeFqDto.getId(), null);
+                    fcRoomTypeFqDao.updateRoomTypeFqSj(roomTypeFqDto.getId(), Constants.FC_XJ);
                 }else {
                     throw  new Exception("删除价格计划失败:"+response.getResultMsg());
                 }

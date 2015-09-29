@@ -21,4 +21,8 @@
               SELECT  o.* from ota_price_model o where o.ota_wg_id=#{wgOtaId}
        </select>
 
+       <delete id="deletePriceModelByOtaInnOta">
+              DELETE from ota_price_model where ota_wg_id='${wgOtaId}'
+       </delete>
+
 </mapper>

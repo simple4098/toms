@@ -181,7 +181,7 @@ $('#roomTypeBtn').click(function(){
         type:'post',
         url:url,
         success:function(data){
-            $(".roomtype-sort").css("display","none");
+
             if(data.status==400){
                 layer.msg("匹配失败:"+data.message);
             }else{

@@ -14,4 +14,6 @@ public interface IOtaPriceModelDao {
     void  savePriceModel(OtaPriceModelDto otaPriceModelDto);
 
     OtaPriceModelDto findOtaPriceModelByWgOtaId(@Param("wgOtaId")String id);
+
+    void deletePriceModelByOtaInnOta(@Param("wgOtaId")String id);
 }
