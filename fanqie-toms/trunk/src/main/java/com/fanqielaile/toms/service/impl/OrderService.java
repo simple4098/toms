@@ -919,7 +919,7 @@ public class OrderService implements IOrderService {
                     //早餐数量
                     saleItem.setBreakfastNum(0);
                     //货币类型
-                    saleItem.setCurrencyType(CurrencyType.CNY);
+                    saleItem.setCurrencyType(CurrencyCode.CNY);
                     //根据房间数量判断房间状态和是否可预订
                     if (dailyInfos1.getRoomNum() > 0) {
                         //dayCanBook:1可预订，roomstatus：1有房

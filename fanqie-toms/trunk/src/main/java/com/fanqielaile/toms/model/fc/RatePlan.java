@@ -2,7 +2,6 @@ package com.fanqielaile.toms.model.fc;
 
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.CurrencyCode;
-import com.fanqielaile.toms.enums.CurrencyType;
 import com.fanqielaile.toms.enums.PayMethod;
 
 import javax.xml.bind.annotation.XmlElement;

@@ -7,7 +7,7 @@ import com.fanqielaile.toms.dto.fc.CreateHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 import com.fanqielaile.toms.enums.BreakfastType;
 import com.fanqielaile.toms.enums.ChannelSource;
-import com.fanqielaile.toms.enums.CurrencyType;
+import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;

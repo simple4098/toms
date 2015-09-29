@@ -1,7 +1,8 @@
 package com.fanqielaile.toms.model.fc;
 
 import com.fanqielaile.toms.enums.BreakfastType;
-import com.fanqielaile.toms.enums.CurrencyType;
+import com.fanqielaile.toms.enums.CurrencyCode;
+import com.fanqielaile.toms.enums.CurrencyCode;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,7 +24,7 @@ public class SaleItem {
     //售价
     private BigDecimal salePrice;
     //币种
-    private CurrencyType currencyType;
+    private CurrencyCode currencyType;
     //早餐类型（可选）
     private BreakfastType breakfastType;
     //早餐数量
@@ -72,11 +73,11 @@ public class SaleItem {
     }
 
     @XmlElement(name = "Currency")
-    public CurrencyType getCurrencyType() {
+    public CurrencyCode getCurrencyType() {
         return currencyType;
     }
 
-    public void setCurrencyType(CurrencyType currencyType) {
+    public void setCurrencyType(CurrencyCode currencyType) {
         this.currencyType = currencyType;
     }
 

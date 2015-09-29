@@ -73,7 +73,7 @@ public class Order extends Domain {
     //最晚到店时间
     private Date lastestArriveTime;
     //支付货币
-    private CurrencyType currency;
+    private CurrencyCode currency;
     //支付方式
     private PaymentType paymentType;
     //客人联系电话
@@ -452,11 +452,11 @@ public class Order extends Domain {
         this.lastestArriveTime = lastestArriveTime;
     }
 
-    public CurrencyType getCurrency() {
+    public CurrencyCode getCurrency() {
         return currency;
     }
 
-    public void setCurrency(CurrencyType currency) {
+    public void setCurrency(CurrencyCode currency) {
         this.currency = currency;
     }
 
@@ -608,7 +608,7 @@ public class Order extends Domain {
         handOrder.setPayment(order.getPayment());
         handOrder.setOrderTime(new Date());
         handOrder.setOTARoomTypeId(order.getRoomTypeId());
-        handOrder.setCurrency(CurrencyType.CNY);
+        handOrder.setCurrency(CurrencyCode.CNY);
         handOrder.setPaymentType(PaymentType.PREPAID);
         handOrder.setGuestMobile(order.getGuestMobile());
         handOrder.setFeeStatus(FeeStatus.PAID);
