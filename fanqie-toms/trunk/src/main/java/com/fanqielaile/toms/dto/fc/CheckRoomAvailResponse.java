@@ -3,6 +3,7 @@ package com.fanqielaile.toms.dto.fc;
 import com.fanqielaile.toms.model.fc.SaleItem;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -49,7 +50,8 @@ public class CheckRoomAvailResponse {
         this.spRatePlanId = spRatePlanId;
     }
 
-    @XmlElement(name = "SaleItemList")
+    @XmlElementWrapper(name = "SaleItemList")
+    @XmlElement(name = "SaleItem")
     public List<SaleItem> getSaleItems() {
         return saleItems;
     }
