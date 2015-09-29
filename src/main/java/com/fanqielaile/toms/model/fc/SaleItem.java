@@ -1,13 +1,10 @@
 package com.fanqielaile.toms.model.fc;
 
-import com.fanqielaile.toms.enums.BreakfastType;
-import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.CurrencyCode;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Created by wangdayin on 2015/8/31.
@@ -26,7 +23,7 @@ public class SaleItem {
     //币种
     private CurrencyCode currencyType;
     //早餐类型（可选）
-    private BreakfastType breakfastType;
+    private String breakfastType;
     //早餐数量
     private Integer breakfastNum;
     //配额数
@@ -36,7 +33,7 @@ public class SaleItem {
     //是否可超：1-可以；0-不可以
     private Integer overDraft;
 
-    @XmlElement(name = "SalaDate")
+    @XmlElement(name = "SaleDate")
     public String getSaleDate() {
         return saleDate;
     }
@@ -82,11 +79,11 @@ public class SaleItem {
     }
 
     @XmlElement(name = "BreakfastType")
-    public BreakfastType getBreakfastType() {
+    public String getBreakfastType() {
         return breakfastType;
     }
 
-    public void setBreakfastType(BreakfastType breakfastType) {
+    public void setBreakfastType(String breakfastType) {
         this.breakfastType = breakfastType;
     }
 

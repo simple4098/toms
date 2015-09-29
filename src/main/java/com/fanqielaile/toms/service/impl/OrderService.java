@@ -43,6 +43,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -913,7 +914,7 @@ public class OrderService implements IOrderService {
                 for (DailyInfos dailyInfos1 : dailyInfos) {
                     SaleItem saleItem = new SaleItem();
                     //无早
-                    saleItem.setBreakfastType(null);
+                    saleItem.setBreakfastType("");
                     //配额数量
                     saleItem.setAvailableQuotaNum(0);
                     //早餐数量
@@ -937,7 +938,8 @@ public class OrderService implements IOrderService {
                     //价格是否待查，0否，1是
                     saleItem.setPriceNeedCheck(0);
                     saleItem.setSaleDate(DateUtil.format(dailyInfos1.getDay(), "yyyy-MM-dd"));
-                    saleItem.setSalePrice(dailyInfos1.getPrice());
+//                    saleItem.setSalePrice(dailyInfos1.getPrice());
+                    saleItem.setSalePrice(new BigDecimal(new DecimalFormat("#.00").format(dailyInfos1.getPrice())));
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
