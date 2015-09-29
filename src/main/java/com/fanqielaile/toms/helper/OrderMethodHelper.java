@@ -3,7 +3,7 @@ package com.fanqielaile.toms.helper;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
-import com.fanqielaile.toms.enums.CurrencyType;
+import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.FeeStatus;
 import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.enums.PaymentType;
@@ -72,7 +72,7 @@ public class OrderMethodHelper {
         order.setOTAGid(element.elementText("TaoBaoGid"));
         order.setEariestArriveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(element.elementText("EarliestArriveTime")));
         order.setLastestArriveTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(element.elementText("LatestArriveTime")));
-        order.setCurrency(CurrencyType.CNY);
+        order.setCurrency(CurrencyCode.CNY);
         order.setComment(element.elementText("Comment"));
         if (element.elementText("PaymentType").equals("1")) {
             order.setPaymentType(PaymentType.PREPAID);

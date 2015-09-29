@@ -142,7 +142,7 @@ public class XmlDeal {
             if (StringUtils.isNotEmpty(param.elementText("LatestArrivalTime"))) {
                 order.setLastestArriveTime(DateUtil.parse(param.elementText("LatestArrivalTime"), "yyyy-MM-dd"));
             }
-            order.setCurrency(Enum.valueOf(CurrencyType.class, param.elementText("Currency")));
+            order.setCurrency(Enum.valueOf(CurrencyCode.class, param.elementText("Currency")));
             order.setFeeStatus(FeeStatus.NOT_PAY);
             //TODO 预付,成本价设置ota佣金
             order.setFcBedType(param.elementText("BedType"));

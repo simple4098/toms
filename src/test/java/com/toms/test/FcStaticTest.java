@@ -7,7 +7,7 @@ import com.fanqielaile.toms.dao.IFcAreaDao;
 import com.fanqielaile.toms.dao.IFcCityDao;
 import com.fanqielaile.toms.dao.IFcProvinceDao;
 import com.fanqielaile.toms.enums.BedType;
-import com.fanqielaile.toms.enums.CurrencyType;
+import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OperateType;
 import com.fanqielaile.toms.enums.PayMethod;
 import com.fanqielaile.toms.model.fc.FcArea;
