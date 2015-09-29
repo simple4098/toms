@@ -40,4 +40,21 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+
+    <tag>
+        <name>currencyCode</name>
+        <tag-class>com.fanqielaile.toms.support.tag.CurrencyCodeTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+    <tag>
+        <name>payMethod</name>
+        <tag-class>com.fanqielaile.toms.support.tag.PayMethodTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    <tag>
+        <name>bedType</name>
+        <tag-class>com.fanqielaile.toms.support.tag.BedTypeTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
 </taglib>
