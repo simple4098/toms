@@ -3,10 +3,12 @@ package com.fanqielaile.toms.model.fc;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by wangdayin on 2015/9/28.
  */
+@XmlRootElement(name = "Response")
 public class FcCancelHotelOrderResponseResult {
     private String resultFlag;
     private String resultMsg;
@@ -45,7 +47,7 @@ public class FcCancelHotelOrderResponseResult {
         return "FcCancelHotelOrderResponseResult{" +
                 "resultFlag='" + resultFlag + '\'' +
                 ", resultMsg='" + resultMsg + '\'' +
-                ", cancelHotelOrderResponse=" + cancelHotelOrderResponse +
+                ", cancelHotelOrderResponse=" + cancelHotelOrderResponse.toString() +
                 '}';
     }
 }

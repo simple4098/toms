@@ -33,4 +33,12 @@ public class GetOrderStatusResponse {
     public void setOrderStatus(Integer orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    @Override
+    public String toString() {
+        return "GetOrderStatusResponse{" +
+                "spOrderId='" + spOrderId + '\'' +
+                ", orderStatus=" + orderStatus +
+                '}';
+    }
 }
