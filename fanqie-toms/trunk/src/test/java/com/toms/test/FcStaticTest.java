@@ -164,14 +164,14 @@ public class FcStaticTest {
         RatePlan ratePlan = new RatePlan();
         ratePlan.setBedType(BedType.BigBed.getValue());
         //ratePlan.setCurrency(CurrencyType.CNY);
-        ratePlan.setPayMethod(PayMethod.pay.getValue());
+        ratePlan.setPayMethod(PayMethod.pre_pay.getValue());
         ratePlan.setSpRatePlanId("sp123");
         ratePlan.setSpRatePlanName("提前7天预订");
         ratePlanList.add(ratePlan);
         RatePlan ratePlan1 = new RatePlan();
         ratePlan1.setBedType(BedType.BigBed.getValue());
         //ratePlan1.setCurrency(CurrencyType.CNY);
-        ratePlan1.setPayMethod(PayMethod.pay.getValue());
+        ratePlan1.setPayMethod(PayMethod.pre_pay.getValue());
         ratePlan1.setSpRatePlanId("sp123456");
         ratePlan1.setSpRatePlanName("提前7天预订111");
         ratePlanList.add(ratePlan1);
