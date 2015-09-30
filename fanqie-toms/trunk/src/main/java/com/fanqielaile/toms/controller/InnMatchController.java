@@ -17,6 +17,7 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -84,32 +85,37 @@ public class InnMatchController extends BaseController {
         UserInfo userInfo = getCurrentUser();
         String companyId = userInfo.getCompanyId();
         Integer innId =  bangInnDto.getInnId();
-        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId,innId);
-        try {
-            InnDto omsInn = innMatchService.obtOmsInn(bangInn);
-            OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(userInfo.getCompanyId(), OtaType.FC);
-            OtaInnOtaDto otaInnOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), infoRefDto.getOtaInfoId(), companyId);
-            if (otaInnOtaDto!=null){
-                FcHotelInfoDto fcHotelInfoDto = fcHotelInfoService.findFcHotelByHotelId(otaInnOtaDto.getWgHid());
-                //房仓酒店房型信息
-                List<FcRoomTypeInfo> roomTypeInfoDtoList = fcHotelInfoService.finFcRoomTypeByHotelId(otaInnOtaDto.getWgHid());
-                //房型匹配信息
-                List<FcRoomTypeFqDto> fcRoomTypeFq = fcRoomTypeFqService.findFcRoomTypeFq(new FcRoomTypeFqDto(String.valueOf(innId), companyId, infoRefDto.getOtaInfoId()));
-                model.addAttribute("fcHotel", fcHotelInfoDto);
-                model.addAttribute("fcRoomTypeList",roomTypeInfoDtoList);
-                model.addAttribute("matchRoomTypeList",fcRoomTypeFq);
+        if(innId!=null) {
+            BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId, innId);
+            try {
+                InnDto omsInn = innMatchService.obtOmsInn(bangInn);
+                OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(userInfo.getCompanyId(), OtaType.FC);
+                OtaInnOtaDto otaInnOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), infoRefDto.getOtaInfoId(), companyId);
+                if (otaInnOtaDto != null) {
+                    FcHotelInfoDto fcHotelInfoDto = fcHotelInfoService.findFcHotelByHotelId(otaInnOtaDto.getWgHid());
+                    //房仓酒店房型信息
+                    List<FcRoomTypeInfo> roomTypeInfoDtoList = fcHotelInfoService.finFcRoomTypeByHotelId(otaInnOtaDto.getWgHid());
+                    //房型匹配信息
+                    List<FcRoomTypeFqDto> fcRoomTypeFq = fcRoomTypeFqService.findFcRoomTypeFq(new FcRoomTypeFqDto(String.valueOf(innId), companyId, infoRefDto.getOtaInfoId()));
+                    model.addAttribute("fcHotel", fcHotelInfoDto);
+                    model.addAttribute("fcRoomTypeList", roomTypeInfoDtoList);
+                    model.addAttribute("matchRoomTypeList", fcRoomTypeFq);
+                }
+                List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
+                model.addAttribute("hotel", hotel);
+                List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
+                model.addAttribute("omsRoomTypeList", list);
+                model.addAttribute("inn", bangInn);
+                model.addAttribute("omsInn", omsInn);
+                model.addAttribute("otaInnOtaDto", otaInnOtaDto);
+            } catch (Exception e) {
+                log.error("获取oms房型信息异常:" + e.getMessage());
             }
-            List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
-            model.addAttribute("hotel",hotel);
-            List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
-            model.addAttribute("omsRoomTypeList",list);
-            model.addAttribute("inn",bangInn);
-            model.addAttribute("omsInn",omsInn);
-            model.addAttribute("otaInnOtaDto",otaInnOtaDto);
-        } catch (Exception e) {
-            log.error("获取oms房型信息异常:"+e.getMessage());
+            return "/match/inn_match_detail";
+        }else {
+            model.addAttribute("msg","url 异常!客栈id不能为空!");
+            return "/error";
         }
-        return "/match/inn_match_detail";
     }
 
     //房仓客栈搜索
