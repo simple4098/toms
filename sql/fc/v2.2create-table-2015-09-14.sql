@@ -1,4 +1,130 @@
 
+/*订单表，新增字段*/
+ALTER TABLE "public"."ota_toms_order"
+ADD COLUMN "guest_email" varchar(100),
+ADD COLUMN "special_requirement" varchar(255),
+ADD COLUMN "confirm_type" varchar(50),
+ADD COLUMN "fc_bed_type" varchar(50),
+ADD COLUMN "reserved_item" varchar(200);
+
+COMMENT ON COLUMN "public"."ota_toms_order"."guest_email" IS '客人邮件联系方式';
+
+COMMENT ON COLUMN "public"."ota_toms_order"."special_requirement" IS '特殊要求';
+
+COMMENT ON COLUMN "public"."ota_toms_order"."reserved_item" IS '附加设置';
+
+COMMENT ON COLUMN "public"."ota_toms_order"."fc_bed_type" IS '天下房仓房间类型';
+
+COMMENT ON COLUMN "public"."ota_toms_order"."confirm_type" IS '订单确认方式';
+
+
+-- 每日房间信息
+ALTER TABLE "public"."ota_daily_infos"
+ADD COLUMN "break_fast_type" varchar(100),
+ADD COLUMN "break_fast_num" int4;
+
+COMMENT ON COLUMN "public"."ota_daily_infos"."break_fast_type" IS '早餐类型';
+
+COMMENT ON COLUMN "public"."ota_daily_infos"."break_fast_num" IS '早餐数量';
+
+-- 入住人信息
+ALTER TABLE "public"."ota_order_guests"
+ADD COLUMN "nationality" varchar(50);
+
+COMMENT ON COLUMN "public"."ota_order_guests"."nationality" IS '国籍';
+
+CREATE TABLE "public"."fc_hotel_info" (
+"id" varchar(64) COLLATE "default" NOT NULL,
+"created_date" timestamp(6),
+"updated_date" timestamp(6),
+"deleted" int2,
+"hotel_id" varchar(50) COLLATE "default",
+"hotel_name" varchar(100) COLLATE "default",
+"hotel_address" varchar(200) COLLATE "default",
+"telephone" varchar(200) COLLATE "default",
+"website_url" varchar(200) COLLATE "default",
+"hotel_star" int2,
+"city" varchar(100) COLLATE "default",
+"fc_distinct" varchar(100) COLLATE "default",
+"business" varchar(100) COLLATE "default",
+CONSTRAINT "fc_hotel_info_pkey" PRIMARY KEY ("id")
+)
+WITH (OIDS=FALSE)
+;
+
+ALTER TABLE "public"."fc_hotel_info" OWNER TO "ota";
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."id" IS 'ID';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."created_date" IS '创建时间';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."updated_date" IS '更新时间';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."deleted" IS '是否删除';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."hotel_id" IS '天下房仓酒店ID';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."hotel_name" IS '酒店名称';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."hotel_address" IS '酒店地址';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."telephone" IS '联系方式';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."website_url" IS '网站地址';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."hotel_star" IS '酒店星级';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."city" IS '所在城市';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."fc_distinct" IS '行政区';
+
+COMMENT ON COLUMN "public"."fc_hotel_info"."business" IS '商业区';
+
+
+
+CREATE UNIQUE INDEX "hotel_id_idx" ON "public"."fc_hotel_info" USING btree (hotel_id);
+
+
+CREATE TABLE "public"."fc_room_type_info" (
+"id" varchar(64) COLLATE "default" NOT NULL,
+"created_date" timestamp(6),
+"updated_date" timestamp(6),
+"deleted" int2,
+"hotel_id" varchar(50) COLLATE "default",
+"room_type_id" varchar(50) COLLATE "default",
+"room_type_name" varchar(200) COLLATE "default",
+"bed_type" varchar(100) COLLATE "default",
+CONSTRAINT "fc_room_type_info_pkey" PRIMARY KEY ("id")
+)
+WITH (OIDS=FALSE)
+;
+
+ALTER TABLE "public"."fc_room_type_info" OWNER TO "ota";
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."id" IS 'ID';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."created_date" IS '创建时间';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."updated_date" IS '更新时间';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."deleted" IS '是否删除';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."hotel_id" IS '酒店ID';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."room_type_id" IS '酒店房型ID';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."room_type_name" IS '酒店名称';
+
+COMMENT ON COLUMN "public"."fc_room_type_info"."bed_type" IS '床型';
+
+
+
+CREATE UNIQUE INDEX "hotel_id_and_room_type_id_idx" ON "public"."fc_room_type_info" USING btree (hotel_id, room_type_id);
+
+
+
+
+
 DROP TABLE IF EXISTS "public"."fc_area";
 CREATE TABLE "public"."fc_area" (
 "id" varchar(64) COLLATE "default" NOT NULL,
@@ -99,6 +225,8 @@ COMMENT ON COLUMN "public"."fc_roomtype_fq"."fc_roomtype_name" IS '房仓房型�
 COMMENT ON COLUMN "public"."fc_roomtype_fq"."rate_plan_id" IS '价格计划id';
 
 COMMENT ON COLUMN "public"."fc_roomtype_fq"."sj" IS '1 上架 0 下架 -1 没有上架';
+
+CREATE INDEX "fc_roomtype_fq_inn_id_fc_hotel_id_company_id_ota_inn_ota_id_idx" ON "public"."fc_roomtype_fq" USING btree (inn_id, fc_hotel_id, company_id, ota_inn_ota_id, ota_info_id, fq_roomtype_id, fc_roomtype_id, rate_plan_id);
 
 create SEQUENCE fc_rate_plan_seq start 10000;
 DROP TABLE IF EXISTS "public"."fc_rate_plan";
