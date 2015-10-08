@@ -69,13 +69,18 @@ public class ExportExcelUtil {
         HSSFSheet sheet = null;//建立sheet
         int imgAll=0;
         int roomAll=0;
+        int innIndex=1;
         if (!CollectionUtils.isEmpty(fcHotelInfoList)){
             for (FcInnInfoDto fcInnInfoDto:fcHotelInfoList){
                 Map map = fcInnInfoDto.toMap();
                 List<FcInnImg> fcInnImgList = fcInnInfoDto.getFcInnImgList();
                 List<FcRoomTypeDtoInfo> roomTypeInfoList = fcInnInfoDto.getRoomTypeInfoList();
-                imgAll += fcInnImgList.size();
-                roomAll += roomTypeInfoList.size();
+                if (!CollectionUtils.isEmpty(fcInnImgList)){
+                    imgAll += fcInnImgList.size();
+                }
+                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                    roomAll += roomTypeInfoList.size();
+                }
                 HSSFRow row = null;
                 if (workbook.getSheet("客栈列表") == null) {
                     sheet = workbook.createSheet("客栈列表");// 动态创建sheet
@@ -83,12 +88,13 @@ public class ExportExcelUtil {
                     for (int k = 0; k < innHeader.length; k++) {
                         row.createCell(k).setCellValue(innHeader[k]);// 设置单元格中表头
                     }
-                }else {
-                    for (int j = 0; j < innDataMeta.length; j++) {
-                        row.createCell(j).setCellValue(
-                                map.get(innDataMeta[j]) + "");// 设置每一个单元格的信息
-                    }
                 }
+                row = sheet.createRow(innIndex);// 设置下一行数据
+                for (int j = 0; j < innDataMeta.length; j++) {
+                    row.createCell(j).setCellValue(
+                            map.get(innDataMeta[j]) + "");// 设置每一个单元格的信息
+                }
+                innIndex++;
 
                 if (!CollectionUtils.isEmpty(roomTypeInfoList)){
                     int roomSize = roomTypeInfoList.size();

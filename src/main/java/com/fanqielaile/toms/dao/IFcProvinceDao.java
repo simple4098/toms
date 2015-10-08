@@ -12,4 +12,6 @@ import com.fanqielaile.toms.model.fc.FcProvince;
 public interface IFcProvinceDao {
 
     void  saveFcProvince(FcProvince fcProvince);
+
+    FcProvince selectProvince(String province);
 }
