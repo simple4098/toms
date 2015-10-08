@@ -56,6 +56,10 @@ public class FcHotelInfoService implements IFcHotelInfoService {
     private IOtaPriceModelDao priceModelDao;
     @Resource
     private IOtaRoomPriceService otaRoomPriceService;
+    @Resource
+    private IFcCityDao fcCityDao;
+    @Resource
+    private IFcProvinceDao fcProvinceDao;
 
 
 
@@ -156,8 +160,12 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                 //客栈
                 if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
                     InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+                    FcProvince fcProvince = fcProvinceDao.selectProvince(omsInnDto.getProvince());
+                    FcCity city = fcCityDao.selectFcCityByName(omsInnDto.getCity());
                     FcInnInfoDto fcInnInfo = new FcInnInfoDto();
                     BeanUtils.copyProperties(omsInnDto,fcInnInfo);
+                    fcInnInfo.setProvinceCode(fcProvince!=null?fcProvince.getProvinceCode():null);
+                    fcInnInfo.setCityCode(city!=null?city.getCityCode():null);
                     fcInnInfo.setInnId(String.valueOf(bangInnDto.getInnId()));
                     List<OmsImg> imgList = omsInnDto.getImgList();
                     List<FcInnImg> fcInnImgList = new ArrayList<FcInnImg>();
@@ -169,17 +177,20 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     }
                     fcInnInfo.setFcInnImgList(fcInnImgList);
                     List<RoomTypeInfo> roomTypeInfoList = otaRoomPriceService.obtOmsRoomInfoToFc(bangInnDto);
-                    List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
-                    for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-                        FcRoomTypeDtoInfo fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
-                        BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
-                        fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
-                        //todo
-                        fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
-                        roomTypeInfoDtoList.add(fcRoomTypeDtoInfo);
+                    if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                        List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
+                        for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
+                            FcRoomTypeDtoInfo fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
+                            BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
+                            fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
+                            //todo
+                            fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                            roomTypeInfoDtoList.add(fcRoomTypeDtoInfo);
 
+                        }
+                        fcInnInfo.setRoomTypeInfoList(roomTypeInfoDtoList);
                     }
-                    fcInnInfo.setRoomTypeInfoList(roomTypeInfoDtoList);
+
                     fcHotelInfoList.add(fcInnInfo);
                 }
             }

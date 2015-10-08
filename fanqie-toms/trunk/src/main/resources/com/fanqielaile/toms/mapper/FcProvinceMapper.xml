@@ -10,4 +10,8 @@
        <insert id="saveFcProvince" parameterType="com.fanqielaile.toms.model.fc.FcProvince">
           insert into fc_province(id,province_code,province_name) values (#{uuid},#{provinceCode},#{provinceName})
        </insert>
+
+       <select id="selectProvince" resultMap="mapId">
+              SELECT o.* from fc_province o where 1=1 and  o.province_name like concat('%','${value}','%') limit 1
+       </select>
 </mapper>
