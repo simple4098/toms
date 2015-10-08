@@ -1,31 +1,32 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqie.util.HttpClientUtil;
-import com.fanqie.util.JacksonUtil;
+import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
-import com.fanqielaile.toms.dto.FcHotelInfoDto;
-import com.fanqielaile.toms.dto.OtaInfoRefDto;
-import com.fanqielaile.toms.dto.OtaInnOtaDto;
-import com.fanqielaile.toms.dto.OtaPriceModelDto;
-import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
-import com.fanqielaile.toms.dto.fc.MatchRoomType;
+import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.fc.*;
+import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.*;
 import com.fanqielaile.toms.service.IFcHotelInfoService;
+import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.ExportExcelUtil;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,6 +54,8 @@ public class FcHotelInfoService implements IFcHotelInfoService {
     private IFcRoomTypeFqDao fcRoomTypeFqDao;
     @Resource
     private IOtaPriceModelDao priceModelDao;
+    @Resource
+    private IOtaRoomPriceService otaRoomPriceService;
 
 
 
@@ -138,6 +141,54 @@ public class FcHotelInfoService implements IFcHotelInfoService {
     @Override
     public List<FcRoomTypeInfo> finFcRoomTypeByHotelId(String fcHotelId) {
         return fcRoomTypeInfoDao.selectFcRoomTypeByHotelId(fcHotelId);
+
+    }
+
+    @Override
+    public void excel(String companyId,List<BangInnDto> bangInns,HttpServletResponse response) throws Exception {
+        Company company = companyDao.selectCompanyById(companyId);
+        if (!CollectionUtils.isEmpty(bangInns)){
+            List<FcInnInfoDto> fcHotelInfoList = new ArrayList<FcInnInfoDto>();
+            for (BangInnDto bangInnDto:bangInns){
+                String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.INN_INFO);
+                String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
+                JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
+                //客栈
+                if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
+                    InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+                    FcInnInfoDto fcInnInfo = new FcInnInfoDto();
+                    BeanUtils.copyProperties(omsInnDto,fcInnInfo);
+                    fcInnInfo.setInnId(String.valueOf(bangInnDto.getInnId()));
+                    List<OmsImg> imgList = omsInnDto.getImgList();
+                    List<FcInnImg> fcInnImgList = new ArrayList<FcInnImg>();
+                    for (OmsImg omsImg:imgList){
+                        FcInnImg fcInnImg = new FcInnImg();
+                        BeanUtils.copyProperties(omsImg,fcInnImg);
+                        fcInnImg.setInnId(bangInnDto.getInnId());
+                        fcInnImgList.add(fcInnImg);
+                    }
+                    fcInnInfo.setFcInnImgList(fcInnImgList);
+                    List<RoomTypeInfo> roomTypeInfoList = otaRoomPriceService.obtOmsRoomInfoToFc(bangInnDto);
+                    List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
+                    for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
+                        FcRoomTypeDtoInfo fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
+                        BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
+                        fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
+                        //todo
+                        fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                        roomTypeInfoDtoList.add(fcRoomTypeDtoInfo);
+
+                    }
+                    fcInnInfo.setRoomTypeInfoList(roomTypeInfoDtoList);
+                    fcHotelInfoList.add(fcInnInfo);
+                }
+            }
+            StringBuilder builder = new StringBuilder("未匹配列表_");
+            builder.append(DateUtil.formatDateToString(new Date(),"yyyyMMddHHmmssSSS")).append(".xls");
+            ExportExcelUtil.execlExport(fcHotelInfoList, response, builder.toString());
+
+
+        }
 
     }
 

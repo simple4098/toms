@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -272,6 +273,20 @@ public class InnMatchController extends BaseController {
             result.setStatus(Constants.ERROR400);
         }
         return  result;
+    }
+
+    //导出
+    @RequestMapping("/ajax/export")
+    public void excel(BangInnDto bangInnDto,HttpServletResponse response){
+        String companyId = getCurrentUser().getCompanyId();
+        bangInnDto.setCompanyId(companyId);
+        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto);
+        try {
+            fcHotelInfoService.excel(companyId,bangInns,response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
