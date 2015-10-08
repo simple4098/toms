@@ -102,10 +102,12 @@
         <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
         <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
         <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
-        <property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
-        <property name="innInfo" value="http://192.168.1.158:8888/api/getInnInfo"></property>
-        <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-       <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+        <!--<property name="roomType" value="http://192.168.1.158:8888/api/getRoomType"></property>
+        <property name="innInfo" value="http://192.168.1.158:8888/api/getInnInfo"></property>-->
+        <property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
+        <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
+       <!-- <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>-->
+        <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
         <!--<property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>-->
         <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
         <!--<property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>-->

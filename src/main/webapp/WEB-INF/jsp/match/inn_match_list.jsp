@@ -30,7 +30,7 @@
   </ul>--%>
     <c:set value="${pagination}" var="page"/>
   <div class="select-area">
-    <form id="inn-search" action="<c:url value="/innMatch/match"/> " method="POST">
+    <form id="inn-search" action="<c:url value="/innMatch/match"/>"  method="POST">
       <input type="hidden" id="pageId" name="page" value="${page.page}"/>
       <select class="form-control" id="kz-tags" name="innLabelId" >
         <option value="" selected>客栈分类</option>
@@ -49,6 +49,9 @@
       <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
         搜索
         <i class="icon-search icon-on-right bigger-110"></i>
+      </button>
+      <button type="button" id="exportButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
+        导出excel
       </button>
     </form>
   </div>
@@ -118,7 +121,15 @@
 
     $('#myButton').on('click', function(){
       $("#pageId").attr("value", 1);
-       $('#inn-search').submit();
+      $("#inn-search").attr("action","<c:url value="/innMatch/match"/>");
+      $("#inn-search").attr("target","");
+      $('#inn-search').submit();
+    })
+
+    $('#exportButton').on('click', function(){
+      $("#inn-search").attr("action","<c:url value="/innMatch/ajax/export"/>");
+      $("#inn-search").attr("target","_blank");
+      $('#inn-search').submit();
     })
 
     function page(page) {

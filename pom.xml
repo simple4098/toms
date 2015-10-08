@@ -51,6 +51,12 @@
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
+        <!--poi 插件-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.10-FINAL</version>
+        </dependency>
         <!-- xmemcached -->
         <dependency>
             <groupId>com.googlecode.xmemcached</groupId>

@@ -229,4 +229,9 @@ public class BangInnService implements IBangInnService {
     public List<BangInnDto> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds) {
         return  bangInnDao.selectFcBangInn(bangInnDto,pageBounds);
     }
+
+    @Override
+    public List<BangInnDto> findFcBangInn(BangInnDto bangInnDto) {
+        return  bangInnDao.selectFcExcelBangInn(bangInnDto);
+    }
 }
