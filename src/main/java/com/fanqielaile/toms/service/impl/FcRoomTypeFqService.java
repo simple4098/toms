@@ -108,7 +108,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(fcRoomTypeFq.getInnId()));
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(fcRoomTypeFq.getCompanyId(), OtaType.FC.name());
         Integer roomTypeId = Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId());
-        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId);
+        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId,null);
         if (Constants.FcResultNo.equals(response.getResultNo())){
             fcRoomTypeFqDao.updateRoomTypeFqSj(matchRoomTypeId, Constants.FC_SJ);
         }else {
