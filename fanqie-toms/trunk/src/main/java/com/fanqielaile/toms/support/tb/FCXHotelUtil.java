@@ -33,7 +33,7 @@ public class FCXHotelUtil {
     private FCXHotelUtil(){}
 
 
-    public static   Response  syncRateInfo(Company company,OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto ,BangInn bangInn,Integer roomTypeId)throws Exception{
+    public static   Response  syncRateInfo(Company company,OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto ,BangInn bangInn,Integer roomTypeId, OtaRoomPriceDto priceDto)throws Exception{
         String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
@@ -48,7 +48,7 @@ public class FCXHotelUtil {
                 if (r.getRoomTypeId().equals(roomTypeId)){
                     List<RoomDetail> roomDetail = r.getRoomDetail();
                     for (RoomDetail room:roomDetail){
-                        saleInfo = obtSaleInfoList(room,null);
+                        saleInfo = obtSaleInfoList(room,priceDto);
                         saleInfoList.add(saleInfo);
                     }
                     syncRateInfoDataRequest.setSaleInfoList(saleInfoList);

@@ -98,7 +98,8 @@ public class FcService implements ITPService {
         for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
             /*if (!StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj()==Constants.FC_SJ){*/
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
-                FCXHotelUtil.syncRateInfo(company,o,fcRoomTypeFqDto,bangInn,Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()));
+                OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
+                FCXHotelUtil.syncRateInfo(company,o,fcRoomTypeFqDto,bangInn,Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()),priceDto);
            /* }*/
         }
 
@@ -116,9 +117,10 @@ public class FcService implements ITPService {
             if ( bangInn!=null){
                 //满足这些条件 才是之前上架过。
                 if (fcRoomTypeFqDto!=null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ){
+                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(fcRoomTypeFqDto.getCompanyId(), roomTypeId, fcRoomTypeFqDto.getOtaInfoId()));
                     Company company = companyDao.selectCompanyById(o.getCompanyId());
                     //上架房型 房量 库存
-                    Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId);
+                    Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId,priceDto);
                     if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
                     }else {
