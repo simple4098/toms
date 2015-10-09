@@ -72,72 +72,80 @@ public class ExportExcelUtil {
         int innIndex=1;
         if (!CollectionUtils.isEmpty(fcHotelInfoList)){
             for (FcInnInfoDto fcInnInfoDto:fcHotelInfoList){
-                Map map = fcInnInfoDto.toMap();
-                List<FcInnImg> fcInnImgList = fcInnInfoDto.getFcInnImgList();
-                List<FcRoomTypeDtoInfo> roomTypeInfoList = fcInnInfoDto.getRoomTypeInfoList();
-                if (!CollectionUtils.isEmpty(fcInnImgList)){
-                    imgAll += fcInnImgList.size();
-                }
-                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
-                    roomAll += roomTypeInfoList.size();
-                }
-                HSSFRow row = null;
+                Map innMap = fcInnInfoDto.toMap();
+
+                HSSFRow row1 = null;
                 if (workbook.getSheet("客栈列表") == null) {
                     sheet = workbook.createSheet("客栈列表");// 动态创建sheet
-                    row = sheet.createRow(0);// 设置excel第一行
+                    row1 = sheet.createRow(0);// 设置excel第一行
                     for (int k = 0; k < innHeader.length; k++) {
-                        row.createCell(k).setCellValue(innHeader[k]);// 设置单元格中表头
+                        row1.createCell(k).setCellValue(innHeader[k]);// 设置单元格中表头
                     }
                 }
-                row = sheet.createRow(innIndex);// 设置下一行数据
+                row1 = sheet.createRow(innIndex);// 设置下一行数据
                 for (int j = 0; j < innDataMeta.length; j++) {
-                    row.createCell(j).setCellValue(
-                            map.get(innDataMeta[j]) + "");// 设置每一个单元格的信息
+                    row1.createCell(j).setCellValue(innMap.get(innDataMeta[j])+"");// 设置每一个单元格的信息
                 }
                 innIndex++;
 
-                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
-                    int roomSize = roomTypeInfoList.size();
-                    if (workbook.getSheet("客栈房型列表") == null) {
-                        sheet = workbook.createSheet("客栈房型列表");// 动态创建sheet
-                        row = sheet.createRow(0);// 设置excel第一行
-                        for (int k = 0; k < roomHeader.length; k++) {
-                            row.createCell(k).setCellValue(roomHeader[k]);// 设置单元格中表头
-                        }
-                    }
-                    for (FcRoomTypeDtoInfo typeDtoInfo:roomTypeInfoList){
-                        map = typeDtoInfo.toMap();
-                        int o=roomAll-roomSize+1;
-                        row = sheet.createRow(o);// 设置下一行数据
-                        for (int j = 0; j < roomDataMeta.length; j++) {
-                            row.createCell(j).setCellValue(
-                                    map.get(roomDataMeta[j]) + "");// 设置每一个单元格的信息
-                        }
-                        o++;
+            }
 
-                    }
-                }
+            for (FcInnInfoDto fcInnInfoDto:fcHotelInfoList){
+                List<FcInnImg> fcInnImgList = fcInnInfoDto.getFcInnImgList();
                 if (!CollectionUtils.isEmpty(fcInnImgList)){
+                    imgAll += fcInnImgList.size();
+                }
+
+                if (!CollectionUtils.isEmpty(fcInnImgList)){
+                    HSSFRow row3;
                     int imgSize = fcInnImgList.size();
                     if (workbook.getSheet("客栈图片列表") == null) {
                         sheet = workbook.createSheet("客栈图片列表");// 动态创建sheet
-                        row = sheet.createRow(0);// 设置excel第一行
-                        for (int k = 0; k < imgHeader.length; k++) {
-                            row.createCell(k).setCellValue(imgHeader[k]);// 设置单元格中表头
+                        row3 = sheet.createRow(0);// 设置excel第一行
+                        for (int k2 = 0; k2 < imgHeader.length; k2++) {
+                            row3.createCell(k2).setCellValue(imgHeader[k2]);// 设置单元格中表头
                         }
                     }
+                    int o2=imgAll-imgSize+1;
                     for (FcInnImg fcInnImg:fcInnImgList){
-                        map = fcInnImg.toMap();
-                        int o=imgAll-imgSize+1;
-                        row = sheet.createRow(o);// 设置下一行数据
-                        for (int j = 0; j < imgDataMeta.length; j++) {
-                            row.createCell(j).setCellValue(
-                                    map.get(imgDataMeta[j]) + "");// 设置每一个单元格的信息
+                        Map map2 = fcInnImg.toMap();
+                        row3 = sheet.createRow(o2);// 设置下一行数据
+                        for (int j2 = 0; j2 < imgDataMeta.length; j2++) {
+                            row3.createCell(j2).setCellValue(map2.get(imgDataMeta[j2]) + "");// 设置每一个单元格的信息
                         }
-                        o++;
+                        o2++;
                     }
                 }
 
+
+            }
+
+            for (FcInnInfoDto fcInnInfoDto:fcHotelInfoList){
+                List<FcRoomTypeDtoInfo> roomTypeInfoList = fcInnInfoDto.getRoomTypeInfoList();
+                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                    roomAll += roomTypeInfoList.size();
+                }
+                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                    HSSFRow row2;
+                    int roomSize = roomTypeInfoList.size();
+                    if (workbook.getSheet("客栈房型列表") == null) {
+                        sheet = workbook.createSheet("客栈房型列表");// 动态创建sheet
+                        row2 = sheet.createRow(0);// 设置excel第一行
+                        for (int k1 = 0; k1 < roomHeader.length; k1++) {
+                            row2.createCell(k1).setCellValue(roomHeader[k1]);// 设置单元格中表头
+                        }
+                    }
+                    int o1=roomAll-roomSize+1;
+                    for (FcRoomTypeDtoInfo typeDtoInfo:roomTypeInfoList){
+                        Map map1 = typeDtoInfo.toMap();
+                        row2 = sheet.createRow(o1);// 设置下一行数据
+                        for (int j1 = 0; j1 < roomDataMeta.length; j1++) {
+                            row2.createCell(j1).setCellValue(map1.get(roomDataMeta[j1]) + "");// 设置每一个单元格的信息
+                        }
+                        o1++;
+
+                    }
+                }
             }
         }
 
