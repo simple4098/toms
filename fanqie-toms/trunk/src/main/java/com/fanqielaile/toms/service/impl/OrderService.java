@@ -218,7 +218,7 @@ public class OrderService implements IOrderService {
     private JsonModel cancelOrderMethod(Order order) throws Exception {
         order.setOrderStatus(OrderStatus.CANCEL_ORDER);
         //判断订单是否需要同步OMS,条件根据订单是否付款
-        if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY)) {
+        if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY) || ChannelSource.FC.equals(order.getChannelSource())) {
             // 查询调用的url
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
             if (null != dictionary) {
