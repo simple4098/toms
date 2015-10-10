@@ -15,7 +15,7 @@ public interface IOtaInfoService {
 
     List<OtaInfoRefDto> findAllOtaByCompany(String companyCode);
 
-    OtaInfoRefDto findAllOtaByCompanyAndType(String companyCode,OtaType otaType);
+    OtaInfoRefDto findAllOtaByCompanyAndType(String companyId,OtaType otaType);
 
     List<OtaInfoRefDto> findOtaInfoList();
     //渠道列表（没有开通的渠道也要显示出来）

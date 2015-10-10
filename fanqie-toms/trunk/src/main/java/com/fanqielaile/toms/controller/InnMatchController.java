@@ -280,6 +280,8 @@ public class InnMatchController extends BaseController {
     public void excel(BangInnDto bangInnDto,HttpServletResponse response){
         String companyId = getCurrentUser().getCompanyId();
         bangInnDto.setCompanyId(companyId);
+        OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(companyId, OtaType.FC);
+        bangInnDto.setOtaInfoId(infoRefDto.getOtaInfoId());
         List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto);
         try {
             fcHotelInfoService.excel(companyId,bangInns,response);

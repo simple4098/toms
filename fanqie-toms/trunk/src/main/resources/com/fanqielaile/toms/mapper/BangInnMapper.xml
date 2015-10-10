@@ -235,7 +235,7 @@
 
     <select id="selectFcBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
-        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInnOtaId}'
+        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInfoId}'
         where  b.deleted=0  and b.company_id ='${companyId}'
         <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
             and oio.id is NULL
@@ -256,7 +256,7 @@
     </select>
     <select id="selectFcExcelBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
-        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInnOtaId}'
+        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInfoId}'
         where  b.deleted=0  and b.company_id ='${companyId}'
         <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
             and oio.id is NULL
@@ -264,9 +264,7 @@
         <if test="innStatus!=null and innStatus.name()=='MATCH'">
             and oio.id NOTNULL
         </if>
-        <if test="dataPermission == 0">
-            and b.user_id = #{userId}
-        </if>
+
         <if test="innLabelId !=null and innLabelId!= ''">
             and b.inn_label_id = #{innLabelId}
         </if>
