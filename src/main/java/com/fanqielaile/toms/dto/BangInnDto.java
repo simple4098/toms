@@ -180,7 +180,7 @@ public class BangInnDto extends BangInn {
             if (infoRefDtoList!=null){
                 for (OtaInfoRefDto infoRefDto:infoRefDtoList){
                     if (OtaType.FC.equals(infoRefDto.getOtaType())){
-                        bangInnDto.setOtaInnOtaId(infoRefDto.getOtaInfoId());
+                        bangInnDto.setOtaInfoId(infoRefDto.getOtaInfoId());
                     }
                 }
             }
