@@ -528,7 +528,9 @@ public class Order extends Domain {
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
         omsOrder.setOtaOrderNo(order.getChannelOrderCode());
-        omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
+        //因为存在加减价，为了屏蔽老板的误解和方便对账，这里将实付价格设置为订单总价
+//        omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
+        omsOrder.setPaidAmount(order.getTotalPrice());
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
         omsOrder.setRoomTypeNum(order.getHomeAmount());
