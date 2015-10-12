@@ -42,4 +42,7 @@ public class Constants {
     public static final  Integer FC_DAI_CHA=2;
     public static final String MAI="MAI";
     public static final String DI="DI";
+    public static final int timerThread=30;
+    public static final int onlyBedWidBed=100;
+    public static final int onlyBedWidBedBig=150;
 }
