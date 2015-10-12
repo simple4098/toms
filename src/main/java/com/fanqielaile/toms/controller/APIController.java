@@ -62,14 +62,11 @@ public class APIController extends BaseController {
             return jsonModel;
         }
         try {
-        String[] split = tbParam.getCompanyCode().split(",");
-            for (String code:split){
-                List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(code);
-                ITPService service = null;
-                for (OtaInfoRefDto o:list){
-                    service = o.getOtaType().create();
-                    service.updateOrAddHotel(tbParam,o);
-                }
+            List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
+            ITPService service = null;
+            for (OtaInfoRefDto o : list) {
+                service = o.getOtaType().create();
+                service.updateOrAddHotel(tbParam, o);
             }
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
