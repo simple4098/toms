@@ -39,6 +39,7 @@ public class FcRoomTypeDtoInfo extends RoomTypeInfo {
         map.put("roomInfo", getRoomInfo());
         map.put("bedLen", getBedLen());
         map.put("bedWid", getBedWid());
+        map.put("bedType",getBedType().getValue());
         List<FacilitiesVo> facilitiesMap = getFacilitiesMap();
         StringBuilder sb = new StringBuilder();
         if (facilitiesMap!=null){
