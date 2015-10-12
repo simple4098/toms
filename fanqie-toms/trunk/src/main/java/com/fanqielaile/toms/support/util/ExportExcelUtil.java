@@ -55,8 +55,8 @@ public class ExportExcelUtil {
         String[] innDataMeta = {"innId","innName", "addr", "frontPhone", "provinceCode", "cityCode", "businessCode","roomNum","baiduLon","baiduLat","txLon","txLat"};
 
 
-        String[] roomHeader = {"客栈id","房型名称", "房型ID","楼层", "床长", "床宽", "设施", "简介"};
-        String[] roomDataMeta = {"innId","roomTypeName", "roomTypeId" ,"floorNum", "bedLen", "bedWid", "facilities", "roomInfo"};
+        String[] roomHeader = {"客栈id","房型名称", "房型ID","楼层", "床长", "床宽", "床型","设施", "简介"};
+        String[] roomDataMeta = {"innId","roomTypeName", "roomTypeId" ,"floorNum", "bedLen", "bedWid", "bedType","facilities", "roomInfo"};
 
 
         String[] imgHeader = {"客栈id","房型ID","图片url", "图片名称"};
