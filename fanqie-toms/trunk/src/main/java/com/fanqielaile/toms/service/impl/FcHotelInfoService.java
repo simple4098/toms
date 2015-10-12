@@ -183,8 +183,16 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                             FcRoomTypeDtoInfo fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
                             BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
                             fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
-                            //todo
-                            fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                            if (roomTypeInfo.getBedWid()!=null && roomTypeInfo.getBedLen()!=null){
+                                if (roomTypeInfo.getBedWid()>Constants.onlyBedWidBedBig){
+                                    fcRoomTypeDtoInfo.setBedType(BedType.BigBed);
+                                }else {
+                                    fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                                }
+                            }else {
+                                fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                            }
+
                             roomTypeInfoDtoList.add(fcRoomTypeDtoInfo);
 
                         }
