@@ -686,7 +686,16 @@ public class OrderService implements IOrderService {
         ParamDto paramDto = new ParamDto();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
+        //设置底价和卖价的accountId
         paramDto.setAccountId(order.getAccountId() + "");
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndAccountId(userInfo.getCompanyId(), Integer.valueOf(order.getAccountId()));
+        if (1 == order.getMaiAccount()) {
+            //卖家
+            order.setAccountId(bangInn.getAccountId());
+        } else {
+            //底价
+            order.setAccountId(bangInn.getAccountIdDi());
+        }
         //设置查询日期
         paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
         paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
@@ -710,7 +719,6 @@ public class OrderService implements IOrderService {
             return result;
         } else {
             //设置innId
-            BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndAccountId(hangOrder.getCompanyId(), hangOrder.getAccountId());
             if (null != bangInn) {
                 hangOrder.setInnId(bangInn.getInnId());
                 //同步oms订单成功，保存订单到toms
