@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * DESC :价格模式
@@ -14,6 +15,13 @@ public class OtaPriceModel extends Domain {
     private BigDecimal priceModelValue;
     private PriceModelEnum priceModelEnum;
     private String  otaWgId;
+
+    public OtaPriceModel( BigDecimal priceModelValue) {
+        this.priceModelValue = priceModelValue;
+    }
+
+    public OtaPriceModel() {
+    }
 
     public BigDecimal getPriceModelValue() {
         return priceModelValue;

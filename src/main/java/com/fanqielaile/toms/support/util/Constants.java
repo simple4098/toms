@@ -43,6 +43,7 @@ public class Constants {
     public static final String MAI="MAI";
     public static final String DI="DI";
     public static final int timerThread=30;
-    public static final int onlyBedWidBed=100;
     public static final int onlyBedWidBedBig=150;
+    public static final int MAI_VALUE=2;
+    public static final int DI_VALUE=1;
 }

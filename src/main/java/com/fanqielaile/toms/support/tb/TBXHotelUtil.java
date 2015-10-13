@@ -85,7 +85,7 @@ public class TBXHotelUtil {
         req.setAddress(innDto.getAddr());
         try {
             XhotelAddResponse response = client.execute(req , company.getSessionKey());
-            log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());
+           /* log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());*/
             //存在
             if (TomsConstants.HOTEL_EXIST.equals(response.getSubCode())) {
                 return   hotelUpdate(company,innDto,andArea);
@@ -143,7 +143,7 @@ public class TBXHotelUtil {
         req.setService(TPServiceUtil.jsonService(facilitiesMap));
         try {
             XhotelRoomtypeAddResponse response = client.execute(req , company.getSessionKey());
-            log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());
+          /*  log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());*/
             if (TomsConstants.ROOM_TYPE_EXIST.equals(response.getSubCode())) {
                 return  updateRoomType(company, roomTypeInfo);
             }
@@ -209,7 +209,7 @@ public class TBXHotelUtil {
      * @param outerId 房型id
      * @param company 渠道信息
      */
-    public static XRoom roomGet(Integer outerId,OtaInfoRefDto company)   {
+    public static XRoom roomGet(Integer outerId,OtaInfoRefDto company) throws ApiException {
         log.info("roomGet outerId:" +outerId );
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomGetRequest req=new XhotelRoomGetRequest();
@@ -253,8 +253,8 @@ public class TBXHotelUtil {
             req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
-            log.info("roomSwitchJson:" + roomSwitchJson);
-            log.info("Inventory:" +json);
+           /* log.info("roomSwitchJson:" + roomSwitchJson);
+            log.info("Inventory:" +json);*/
         }
         XhotelRoomUpdateResponse response = null;
         try {
@@ -306,7 +306,7 @@ public class TBXHotelUtil {
             String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
             String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
             byte[] bytes = null;
-            log.info("图片地址:" +imgUrl +" imgName:"+imgName);
+            /*log.info("图片地址:" +imgUrl +" imgName:"+imgName);*/
             //bytes = HttpClientUtil.readImg(imgUrl);
             bytes = ImgUtil.compressionImg(imgUrl);
             req.setPic(new FileItem(imgName,bytes,"image/jpeg"));
@@ -332,13 +332,13 @@ public class TBXHotelUtil {
             req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
-            log.info("roomSwitchJson:" + roomSwitchJson);
-            log.info("Inventory:" +json);
+          /*  log.info("roomSwitchJson:" + roomSwitchJson);
+            log.info("Inventory:" +json);*/
         }
         try{
             XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
-            log.info("roomUpdate:" + response.getGid());
-            log.info("roomUpdate bady:" + response.getBody());
+            /*log.info("roomUpdate:" + response.getGid());
+            log.info("roomUpdate bady:" + response.getBody());*/
             if (!StringUtils.isEmpty(response.getSubCode())) {
                 XRoom xRoom = roomGet(outerId, company);
                 if (xRoom!=null){
@@ -456,7 +456,7 @@ public class TBXHotelUtil {
             inventory.setInventory_price(list);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
-            log.info("rateAddOrUpdate InventoryPrice:" + json);
+            /*log.info("rateAddOrUpdate InventoryPrice:" + json);*/
         }
         try {
             XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
@@ -519,7 +519,7 @@ public class TBXHotelUtil {
             inventory.setInventory_price(list);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
-            log.info("rateUpdate inventoryPrice:" + json);
+           /* log.info("rateUpdate inventoryPrice:" + json);*/
         }
         try {
             XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
@@ -589,7 +589,7 @@ public class TBXHotelUtil {
         return  null;
     }
 
-    public static void updateHotelPushRoom(OtaInfoRefDto o, PushRoom pushRoom,OtaPriceModelDto priceModel,  OtaRoomPriceDto priceDto)  {
+    public static void updateHotelPushRoom(OtaInfoRefDto o, PushRoom pushRoom,OtaPriceModelDto priceModel,  OtaRoomPriceDto priceDto) throws ApiException {
         log.info("---updateHotelPushRoom start---");
         XRoom xRoom = roomGet(pushRoom.getRoomType().getRoomTypeId(), o);
         Rate rate = rateGet(o, pushRoom.getRoomType());
@@ -654,8 +654,8 @@ public class TBXHotelUtil {
         req.setInventory(xRoom.getInventory());
         try {
             XhotelRoomUpdateResponse response = client.execute(req , company.getSessionKey());
-            log.info("roomUpdate:" + response.getGid());
-            log.info("roomUpdate bady:" + response.getBody());
+           /* log.info("roomUpdate:" + response.getGid());
+            log.info("roomUpdate bady:" + response.getBody());*/
             return response.getGid();
         } catch (ApiException e) {
             e.printStackTrace();
@@ -663,40 +663,7 @@ public class TBXHotelUtil {
         return null;
     }
 
-    /**
-     * 根据关房时间 去更新库存
-     * @param roomTypeInfo 房型信息
-     * @param infoRefDto  渠道信息
-     * @param dateList 关房时间集合
-     */
-    public static void updateRoomQuota(RoomTypeInfo roomTypeInfo, OtaInfoRefDto infoRefDto, List<String> dateList) {
-        Integer roomTypeId = roomTypeInfo.getRoomTypeId();
-        XRoom xRoom = TBXHotelUtil.roomGet(roomTypeId, infoRefDto);
-        if (xRoom!=null){
-            String obtInventory = TomsUtil.obtInventory(roomTypeInfo,dateList);
-            xRoom.setInventory(obtInventory);
-            log.info("宝贝roomTypeId：" + roomTypeId + " 同步到tp店" + obtInventory);
-            TBXHotelUtil.roomUpdate(infoRefDto, xRoom);
-        }
 
-    }
 
-    /**
-     * 根据关房时间 去更新宝贝的价格
-     * @param roomTypeInfo 房型信息
-     * @param infoRefDto  渠道
-     * @param priceModelDto 价格模式
-     * @param priceDto 特殊价格
-     */
-    public static void updateRoomRate(RoomTypeInfo roomTypeInfo,OtaInfoRefDto infoRefDto, OtaPriceModelDto priceModelDto, OtaRoomPriceDto priceDto) {
-        Rate rate = TBXHotelUtil.rateGet(infoRefDto, roomTypeInfo);
-        if (rate!=null){
-            log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(roomTypeInfo,priceModelDto));
-            String obtInventoryRate = TomsUtil.obtInventoryRate(roomTypeInfo,priceModelDto,priceDto);
-            log.info("处理之后的价格json：" + obtInventoryRate);
-            rate.setInventoryPrice(obtInventoryRate);
-            TBXHotelUtil.rateUpdate(infoRefDto, roomTypeInfo, rate);
-        }
 
-    }
 }
