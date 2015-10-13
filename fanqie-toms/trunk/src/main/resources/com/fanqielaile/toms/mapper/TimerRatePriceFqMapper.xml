@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.ITimerRatePriceDao">
+    <resultMap id="resultMapId" type="com.fanqielaile.toms.model.TimerRatePrice">
+        <id column="id" property="id"/>
+        <result column="inn_id" property="innId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="room_type_id" property="roomTypeId"/>
+        <result column="ota_info_id" property="otaInfoId"/>
+        <result column="account_id" property="accountId"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id,company_id,inn_id,room_type_id,ota_info_id,account_id
+    </sql>
+
+    <insert id="saveTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
+        insert into timer_rate_price( id,company_id,inn_id,room_type_id,ota_info_id,account_id)
+        values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId})
+    </insert>
+
+</mapper>

@@ -13,6 +13,14 @@ import java.math.BigDecimal;
  * @version: v1.0.0
  */
 public class OtaPriceModelDto extends OtaPriceModel {
+
+    public OtaPriceModelDto() {
+    }
+
+    public OtaPriceModelDto(BigDecimal priceModelValue) {
+        super(priceModelValue);
+    }
+
     public static  OtaPriceModelDto toDto(String otaInnOtaId){
         OtaPriceModelDto otaPriceModel = new OtaPriceModelDto();
         otaPriceModel.setOtaWgId(otaInnOtaId);
