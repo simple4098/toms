@@ -70,8 +70,10 @@ public class FcService implements ITPService {
             if (bangInn==null){
                 bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                 bangInnDao.createBangInn(bangInnDto);
+                log.info("fc 客栈"+tbParam.getInnId()+" 绑定");
                 //已绑定
             }else {
+                log.info("fc 客栈"+bangInn.getInnId()+" 已绑定"+" 状态:"+tbParam.isSj());
                 BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
                 bangInnDao.updateBangInnTp(bangInn);
                 //下架状态的时候 要把房仓的宝贝下架掉
@@ -124,7 +126,7 @@ public class FcService implements ITPService {
                     if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
                     }else {
-                       log.error("及时推送失败:"+response.getResultMsg());
+                       log.error("及时推送失败:" + response.getResultMsg());
                     }
 
                 } else {

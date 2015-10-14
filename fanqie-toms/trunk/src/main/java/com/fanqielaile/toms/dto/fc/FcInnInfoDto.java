@@ -111,6 +111,7 @@ public class FcInnInfoDto extends InnDto {
         map.put("baiduLat",getBaiduLat());
         map.put("txLon",getTxLon());
         map.put("txLat",getTxLat());
+        map.put("innInfo",getInnInfo());
         return map;
     }
 }

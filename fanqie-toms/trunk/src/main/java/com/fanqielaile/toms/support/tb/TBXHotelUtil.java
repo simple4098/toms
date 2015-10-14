@@ -306,7 +306,7 @@ public class TBXHotelUtil {
             String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
             String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
             byte[] bytes = null;
-            /*log.info("图片地址:" +imgUrl +" imgName:"+imgName);*/
+            log.info("图片地址:" +imgUrl +" imgName:"+imgName);
             //bytes = HttpClientUtil.readImg(imgUrl);
             bytes = ImgUtil.compressionImg(imgUrl);
             req.setPic(new FileItem(imgName,bytes,"image/jpeg"));
@@ -434,42 +434,44 @@ public class TBXHotelUtil {
      * @param sj 库存日历开关， true 关闭； false 打开
      */
     public static  String  rateAddOrUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean sj ,OtaRoomPriceDto priceDto)   {
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelRateAddRequest req=new XhotelRateAddRequest();
-        req.setGid(gid);
-        req.setRpid(rpid);
-        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())) {
-            List<InventoryRate> list = new ArrayList<InventoryRate>();
-            InventoryPrice inventory = new InventoryPrice();
-            InventoryRate rate = null;
-            double price = 0;
-            for (RoomDetail r : roomTypeInfo.getRoomDetail()) {
-                rate = new InventoryRate();
-                rate.setDate(r.getRoomDate());
-                price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                //tp店价格为分，我们自己系统价格是元
-                rate.setPrice(price * Constants.tpPriceUnit);
-                list.add(rate);
+
+        Rate rateGet = rateGet(company, roomTypeInfo);
+        if (rateGet==null) {
+            TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+            XhotelRateAddRequest req = new XhotelRateAddRequest();
+            req.setGid(gid);
+            req.setRpid(rpid);
+            req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
+            req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+            if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())) {
+                List<InventoryRate> list = new ArrayList<InventoryRate>();
+                InventoryPrice inventory = new InventoryPrice();
+                InventoryRate rate = null;
+                double price = 0;
+                for (RoomDetail r : roomTypeInfo.getRoomDetail()) {
+                    rate = new InventoryRate();
+                    rate.setDate(r.getRoomDate());
+                    price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                    //tp店价格为分，我们自己系统价格是元
+                    rate.setPrice(price * Constants.tpPriceUnit);
+                    list.add(rate);
+                }
+                inventory.setInventory_price(list);
+                String json = JacksonUtil.obj2json(inventory);
+                req.setInventoryPrice(json);
             }
-            inventory.setInventory_price(list);
-            String json = JacksonUtil.obj2json(inventory);
-            req.setInventoryPrice(json);
-            /*log.info("rateAddOrUpdate InventoryPrice:" + json);*/
-        }
-        try {
-            XhotelRateAddResponse response = client.execute(req ,  company.getSessionKey());
-            log.info("rateAddOrUpdate:" + response.getBody());
-            if (TomsConstants.RATE_REPEAT_ERROR.equals(response.getSubCode())){
-                return rateUpdate(company,gid,rpid,roomTypeInfo,priceModelDto,sj,priceDto);
+            XhotelRateAddResponse response = null;
+            try {
+                response = client.execute(req, company.getSessionKey());
+                log.info("rateAddOrUpdate:" + response.getGidAndRpid());
+            } catch (ApiException e) {
+                e.printStackTrace();
             }
-            log.info("rateAddOrUpdate:" + response.getGidAndRpid());
-            return  response.getGidAndRpid();
-        } catch (ApiException e) {
-            e.printStackTrace();
+            return response.getGidAndRpid();
+        }else {
+            return rateUpdate(company, gid, rpid, roomTypeInfo, priceModelDto, sj, priceDto);
         }
-       return null;
+
     }
     /**
      * 更新库存/ 共享room 库存 ， 不用再rate更新库存

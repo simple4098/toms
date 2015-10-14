@@ -281,3 +281,8 @@ COMMENT ON COLUMN "public"."timer_rate_price"."room_type_id" IS '房型id';
 COMMENT ON COLUMN "public"."timer_rate_price"."ota_info_id" IS '渠道id （淘宝id：1；房仓id：2）';
 
 CREATE UNIQUE INDEX "timer_rate_price_company_id_ota_info_id_account_id_idx" ON "public"."timer_rate_price" USING btree (company_id, ota_info_id, room_type_id);
+
+
+--更新表结构
+ALTER TABLE "public"."ota_inn_ota"
+ALTER COLUMN "commission_percent" TYPE numeric(3);

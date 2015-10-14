@@ -78,7 +78,6 @@ public class TBService implements ITPService {
     @Override
     /*@Log(descr ="酒店更新、增加")*/
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
-        Thread current = Thread.currentThread();
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId()!=null?tbParam.getAccountId():tbParam.getAccountIdDi(), CommonApi.INN_INFO);
@@ -95,7 +94,6 @@ public class TBService implements ITPService {
             if (!StringUtils.isEmpty(omsInnDto.getCity())) {
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
-            log.info("线程:"+current.getName()+"innId:"+tbParam.getInnId()+" name:"+omsInnDto.getBrandName());
             //推客栈、如果存在再获取客栈
             if (tbParam.getAccountId()!=null) {
                 xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);

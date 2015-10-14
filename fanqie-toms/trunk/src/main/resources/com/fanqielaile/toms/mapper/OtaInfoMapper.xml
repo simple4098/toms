@@ -30,8 +30,6 @@
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
-           /*   SELECT o.* from ota_info o left JOIN  company c on c.id = o.company_id
-              where o.deleted = 0 and c.company_code = '${companyCode}'*/
           SELECT oi.ota_info,oi.ota_type ,oi.sort,o.* from ota_info oi
           LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id
           left JOIN  company c on c.id = o.company_id
