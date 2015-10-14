@@ -6,6 +6,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OperateType;
@@ -52,6 +53,8 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
     private CompanyDao companyDao;
     @Resource
     private IOtaInnOtaDao otaInnOtaDao;
+    @Resource
+    private IOtaRoomPriceDao otaRoomPriceDao;
 
     @Override
     public List<FcRoomTypeFqDto> findFcRoomTypeFq(FcRoomTypeFqDto fcRoomTypeFq) {
@@ -108,7 +111,8 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(fcRoomTypeFq.getInnId()));
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(fcRoomTypeFq.getCompanyId(), OtaType.FC.name());
         Integer roomTypeId = Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId());
-        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId,null);
+        OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId()), fcRoomTypeFq.getOtaInfoId()));
+        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId,priceDto);
         if (Constants.FcResultNo.equals(response.getResultNo())){
             fcRoomTypeFqDao.updateRoomTypeFqSj(matchRoomTypeId, Constants.FC_SJ);
         }else {
