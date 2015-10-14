@@ -306,7 +306,7 @@ public class TBXHotelUtil {
             String imgUrl = CommonApi.IMG_URL.concat(omsImg.getImgUrl());
             String imgName = StringUtils.substring(omsImg.getImgUrl(), omsImg.getImgUrl().lastIndexOf("/"));
             byte[] bytes = null;
-            log.info("图片地址:" +imgUrl +" imgName:"+imgName);
+          /*  log.info("图片地址:" +imgUrl +" imgName:"+imgName);*/
             //bytes = HttpClientUtil.readImg(imgUrl);
             bytes = ImgUtil.compressionImg(imgUrl);
             req.setPic(new FileItem(imgName,bytes,"image/jpeg"));
