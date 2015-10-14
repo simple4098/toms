@@ -259,3 +259,25 @@ COMMENT ON COLUMN "public"."fc_rate_plan"."bed_type" IS '床型';
 COMMENT ON COLUMN "public"."fc_rate_plan"."created_date" IS '创建时间';
 
 COMMENT ON COLUMN "public"."fc_rate_plan"."updated_date" IS '更新时间';
+
+DROP TABLE IF EXISTS "public"."timer_rate_price";
+CREATE TABLE "public"."timer_rate_price" (
+"id" varchar(64) COLLATE "default" NOT NULL,
+"company_id" varchar(64) COLLATE "default",
+"inn_id" int8,
+"room_type_id" int8,
+"ota_info_id" varchar(64) COLLATE "default",
+"account_id" varchar(64) COLLATE "default",
+CONSTRAINT "timer_rate_price_pkey" PRIMARY KEY ("id")
+)
+WITH (OIDS=FALSE)
+;
+ALTER TABLE "public"."timer_rate_price" OWNER TO "ota";
+
+COMMENT ON COLUMN "public"."timer_rate_price"."inn_id" IS '客栈id';
+
+COMMENT ON COLUMN "public"."timer_rate_price"."room_type_id" IS '房型id';
+
+COMMENT ON COLUMN "public"."timer_rate_price"."ota_info_id" IS '渠道id （淘宝id：1；房仓id：2）';
+
+CREATE UNIQUE INDEX "timer_rate_price_company_id_ota_info_id_account_id_idx" ON "public"."timer_rate_price" USING btree (company_id, ota_info_id, room_type_id);
