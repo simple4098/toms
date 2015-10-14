@@ -51,12 +51,12 @@ public class ExportExcelUtil {
      */
     public static void execlExport(List<FcInnInfoDto> fcHotelInfoList, HttpServletResponse response, String fileName) throws IOException {
 
-        String[] innHeader = {"客栈id","客栈名称", "地址", "联系电话", "省份Code", "城市code", "商圈","房间数" ,"百度经度","百度纬度","腾讯经度","腾讯纬度"};
-        String[] innDataMeta = {"innId","innName", "addr", "frontPhone", "provinceCode", "cityCode", "businessCode","roomNum","baiduLon","baiduLat","txLon","txLat"};
+        String[] innHeader = {"客栈id","客栈名称", "地址", "联系电话", "省份Code", "城市code", "商圈","房间数" ,"百度经度","百度纬度","腾讯经度","腾讯纬度","描述"};
+        String[] innDataMeta = {"innId","innName", "addr", "frontPhone", "provinceCode", "cityCode", "businessCode","roomNum","baiduLon","baiduLat","txLon","txLat","innInfo"};
 
 
-        String[] roomHeader = {"客栈id","房型名称", "房型ID","楼层", "床长", "床宽", "床型","设施", "简介"};
-        String[] roomDataMeta = {"innId","roomTypeName", "roomTypeId" ,"floorNum", "bedLen", "bedWid", "bedType","facilities", "roomInfo"};
+        String[] roomHeader = {"客栈id","房型名称", "房型ID","楼层", "床长", "床宽", "面积","床型","设施", "简介"};
+        String[] roomDataMeta = {"innId","roomTypeName", "roomTypeId" ,"floorNum", "bedLen", "bedWid","roomArea", "bedType","facilities", "roomInfo"};
 
 
         String[] imgHeader = {"客栈id","房型ID","图片url", "图片名称"};

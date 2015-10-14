@@ -3,7 +3,6 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
-import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.service.ICommissionService;
 import com.fanqielaile.toms.service.IOrderService;
@@ -28,6 +27,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * DESC : 对接TB ... controller
@@ -38,7 +39,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/api")
 public class APIController extends BaseController {
+
     private static  final Logger log = LoggerFactory.getLogger(APIController.class);
+    private final Lock lock = new ReentrantLock();
     @Resource
     private ICommissionService commissionService;
     @Resource
@@ -61,6 +64,7 @@ public class APIController extends BaseController {
             jsonModel.setSuccess(false);
             return jsonModel;
         }
+        lock.lock();
         try {
             List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
             ITPService service = null;
@@ -72,6 +76,8 @@ public class APIController extends BaseController {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
             log.error(e.getMessage(),e);
+        }finally {
+            lock.unlock();
         }
 
         return  jsonModel;
