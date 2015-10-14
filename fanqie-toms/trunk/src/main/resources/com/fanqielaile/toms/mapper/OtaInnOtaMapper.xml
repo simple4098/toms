@@ -29,7 +29,7 @@
        </select>
 
        <select id="findOtaInnOtaIdsByCompanyCode" parameterType="java.lang.String" resultType="java.lang.String">
-              SELECT oo.id from ota_inn_ota oo LEFT JOIN bang_inn bi ON bi.ota_wg_id = oo.id
+              SELECT oo.id from ota_inn_ota oo LEFT JOIN bang_inn bi ON bi.id = oo.bang_inn_id
               LEFT JOIN company c ON c.id=oo.company_id
               where c.company_code='${value}' and  bi.deleted=0;
        </select>
