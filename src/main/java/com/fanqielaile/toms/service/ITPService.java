@@ -21,15 +21,11 @@ public interface ITPService {
      * @param tbParam 绿番茄传过来的参数
      */
     void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception;
-
-
-
     /**
      * 从淘宝下架、解除绑定
      * @param tbParam
      */
     void deleteHotel(TBParam tbParam, OtaInfoRefDto otaInfo  ) throws Exception;
-
     /**
      * 定时更新淘宝上的房型信息
      */
@@ -41,4 +37,10 @@ public interface ITPService {
     void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList)throws Exception;
 
     void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto)throws Exception;
+
+    /**
+     * 定时推送失败的 客栈数据
+     * @param o
+     */
+    void updateHotelFailTimer(OtaInfoRefDto o);
 }

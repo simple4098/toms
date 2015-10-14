@@ -166,4 +166,9 @@ public class FcService implements ITPService {
             throw new TomsRuntimeException("FC 无房型信息!");
         }
     }
+
+    @Override
+    public void updateHotelFailTimer(OtaInfoRefDto o){
+
+    }
 }

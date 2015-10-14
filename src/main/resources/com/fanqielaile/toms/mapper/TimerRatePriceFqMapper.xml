@@ -20,4 +20,12 @@
         values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId})
     </insert>
 
+    <select id="selectTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice" resultMap="resultMapId">
+     SELECT o.company_id,o.inn_id from timer_rate_price o
+     where o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id
+    </select>
+
+    <delete id="deletedTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
+        DELETE from timer_rate_price where company_id='${companyId}' and inn_id=#{innId} and ota_info_id='${otaInfoId}'
+    </delete>
 </mapper>

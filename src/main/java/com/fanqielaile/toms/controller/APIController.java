@@ -139,6 +139,33 @@ public class APIController extends BaseController {
     }
 
     /**
+     * 定时更新未成功酒店
+     */
+    @RequestMapping("/hotelFailTimer")
+    @ResponseBody
+    public Object hotelFailTimer(){
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
+                try {
+                    ITPService service = null;
+                    for (OtaInfoRefDto o:infoDtoList){
+                        service = o.getOtaType().create();
+                        service.updateHotelFailTimer(o);
+                    }
+                } catch (Exception e) {
+                   throw  new TomsRuntimeException("定时更新未成功酒店失败",e);
+                }
+            }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
+        return  jsonModel;
+    }
+
+    /**
      * 更新客栈的佣金
      * @param tbParam
      */

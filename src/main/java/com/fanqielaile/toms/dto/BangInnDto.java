@@ -162,14 +162,17 @@ public class BangInnDto extends BangInn {
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setInnName(omsInnDto.getInnName());
         bangInnDto.setSj(tbParam.isSj()?1:0);
-        for (PriceModel p:priceModelArray){
-            if(p.getPattern().equals("DI")){
-                bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
-            }
-            if(p.getPattern().equals("MAI")){
-                bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
+        if (priceModelArray!=null){
+            for (PriceModel p:priceModelArray){
+                if(p.getPattern().equals("DI")){
+                    bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
+                }
+                if(p.getPattern().equals("MAI")){
+                    bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
+                }
             }
         }
+
     }
 
     public static BangInnDto userInfoToBangInnDto(UserInfo userInfo,BangInnDto bangInnDto, List<OtaInfoRefDto> infoRefDtoList){

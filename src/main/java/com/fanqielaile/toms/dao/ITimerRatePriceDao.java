@@ -2,6 +2,8 @@ package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.model.TimerRatePrice;
 
+import java.util.List;
+
 /**
  * DESC :
  * @author : 番茄木-ZLin
@@ -11,4 +13,8 @@ import com.fanqielaile.toms.model.TimerRatePrice;
 public interface ITimerRatePriceDao {
 
     void  saveTimerRatePrice(TimerRatePrice timerRatePrice);
+
+    List<TimerRatePrice> selectTimerRatePrice(TimerRatePrice timerRatePrice);
+
+    void  deletedTimerRatePrice(TimerRatePrice timerRatePrice);
 }
