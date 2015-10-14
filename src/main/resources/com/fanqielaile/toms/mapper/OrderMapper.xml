@@ -126,7 +126,7 @@
     </update>
     <select id="selectOrderByPage" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
-        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id
+        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
         <where>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
                 AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
