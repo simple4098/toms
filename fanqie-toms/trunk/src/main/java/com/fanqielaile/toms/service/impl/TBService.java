@@ -278,9 +278,9 @@ public class TBService implements ITPService {
                                     TBXHotelUtil.rateUpdate(o,r,rate);
                                     xRoom.setInventory(inventory);
                                     TBXHotelUtil.roomUpdate(o,xRoom);
-                                    log.info("客栈id"+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" xRoom" + xRoom.getGid()+" inventory:"+inventory + " rate:" + rate.getGid()+" inventoryRate:"+inventoryRate);
+                                    log.info("客栈id"+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" xRoom" + xRoom.getGid()+ " rate:" + rate.getGid());
                                 }else {
-                                    log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" accountId:"+tbParam.getAccountId()+" roomTypeId:"+r.getRoomTypeId());
+                                    log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());
                                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId()));
 
                                 }
