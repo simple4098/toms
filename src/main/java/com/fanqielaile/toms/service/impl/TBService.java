@@ -96,6 +96,7 @@ public class TBService implements ITPService {
             }
             //推客栈、如果存在再获取客栈
             if (tbParam.getAccountId()!=null) {
+                log.info("========开始推客栈【"+omsInnDto.getBrandName()+"["+omsInnDto.getInnId()+"]"+"】==============");
                 xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
                 if (xHotel != null) {
                     BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
@@ -171,6 +172,7 @@ public class TBService implements ITPService {
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
             for (RoomTypeInfo r:list){
+                log.info("========开始推客栈房型【"+r.getRoomTypeName()+"["+r.getRoomTypeId()+"]"+"】==============");
                 XRoomType xRoomType = TBXHotelUtil.addRoomType(tbParam.getInnId(), Long.valueOf(otaInnOta.getWgHid()), r, otaInfo);
                 log.info("updateOrAddRoom xRoomType:" + xRoomType);
                 if (xRoomType!=null){
@@ -244,7 +246,7 @@ public class TBService implements ITPService {
                 Company company = ThreadCallableBean.getLocalThreadBean().getCompany();
                 OtaInfoRefDto o = ThreadCallableBean.getLocalThreadBean().getO();
                 TBParam tbParam = ThreadCallableBean.getLocalThreadBean().getTbParam();
-                if (proxyInns.getInnId().equals(7221) || proxyInns.getInnId().equals(51279)|| proxyInns.getInnId().equals(51770)|| proxyInns.getInnId().equals(30979)) {
+                //if (proxyInns.getInnId().equals(7221) || proxyInns.getInnId().equals(51279)|| proxyInns.getInnId().equals(51770)|| proxyInns.getInnId().equals(30979)) {
                     List<PricePattern> pricePatterns = proxyInns.getPricePatterns();
                     tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
                     for (PricePattern p : pricePatterns) {
@@ -286,7 +288,7 @@ public class TBService implements ITPService {
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
                     }
-               }
+               //}
                 return null;
             }
         };
