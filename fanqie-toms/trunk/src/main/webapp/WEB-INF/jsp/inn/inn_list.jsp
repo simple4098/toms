@@ -69,6 +69,7 @@
                             <thead style="font-size: 14px;">
                             <form class="form-page" action="<c:url value="/inn_manage/find_inns"/>" method="post">
                                 <input type="hidden" id="pageId" name="page" value="${page.page}"/>
+                                <input name="keywords" value="${keywords}" type="hidden">
                             <tr>
                                 <th>客栈名称</th>
                                 <%--<th>番茄账户名</th>--%>
