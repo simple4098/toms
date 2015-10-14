@@ -124,7 +124,7 @@ public class FcService implements ITPService {
                     if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
                     }else {
-                        throw  new Exception("及时推送失败:"+response.getResultMsg());
+                       log.error("及时推送失败:"+response.getResultMsg());
                     }
 
                 } else {

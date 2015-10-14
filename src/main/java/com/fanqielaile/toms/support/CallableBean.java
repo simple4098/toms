@@ -2,14 +2,7 @@ package com.fanqielaile.toms.support;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
-import com.fanqielaile.toms.enums.ObjType;
 import com.fanqielaile.toms.model.Company;
-import com.sun.glass.ui.mac.MacApplication;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * DESC :
