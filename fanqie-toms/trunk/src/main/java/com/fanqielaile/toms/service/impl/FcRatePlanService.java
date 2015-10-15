@@ -61,7 +61,8 @@ public class FcRatePlanService implements IFcRatePlanService {
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.FC.name());
         List<FcRoomTypeFqDto> list = fcRoomTypeFqDao.selectFcRoomTypeFqByRatePlanId(ratePlanId);
         if (!CollectionUtils.isEmpty(list)){
-            List<RatePlan> ratePlanInfoList = null;
+            throw  new Exception("此价格计划已经在使用,请勿删除");
+            /*List<RatePlan> ratePlanInfoList = null;
             RatePlan ratePlan = null;
             DeleteRatePlanInfoRequest deleteRatePlanInfoRequest=null;
             DeleteRatePlanRequest deleteRatePlanRequest = null;
@@ -93,7 +94,7 @@ public class FcRatePlanService implements IFcRatePlanService {
                     throw  new Exception("删除价格计划失败:"+response.getResultMsg());
                 }
 
-            }
+            }*/
         }else {
             fcRatePlanDao.deletedRatePlan(ratePlanId);
         }

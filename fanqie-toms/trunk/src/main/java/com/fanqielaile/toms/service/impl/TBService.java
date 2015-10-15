@@ -275,9 +275,9 @@ public class TBService implements ITPService {
                                     String inventoryRate = TomsUtil.obtInventoryRate(r, otaPriceModelDto, priceDto);
                                     String inventory = TomsUtil.obtInventory(r);
                                     rate.setInventoryPrice(inventoryRate);
-                                    //TBXHotelUtil.rateUpdate(o,r,rate);
+                                    TBXHotelUtil.rateUpdate(o,r,rate);
                                     xRoom.setInventory(inventory);
-                                    //TBXHotelUtil.roomUpdate(o,xRoom);
+                                    TBXHotelUtil.roomUpdate(o,xRoom);
                                     log.info("客栈id"+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" xRoom" + xRoom.getGid()+ " rate:" + rate.getGid());
                                 }else {
                                     log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());

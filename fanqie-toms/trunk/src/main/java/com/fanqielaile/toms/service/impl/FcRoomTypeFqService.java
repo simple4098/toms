@@ -7,6 +7,7 @@ import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
+import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OperateType;
@@ -98,6 +99,12 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         Response response = XmlDeal.pareFcResult(result);
         if (Constants.FcResultNo.equals(response.getResultNo())){
             fcRoomTypeFqDao.updateRoomTypeFqRatePlan(fcRoomTypeFqId,ratePlanId);
+            if (fcRoomTypeFq!=null){
+                FcRatePlanDto ratePlanDto = fcRoomTypeFq.getFcRatePlanDto();
+                if (ratePlanDto!=null && !ratePlanDto.getRatePlanId().equals(ratePlanId) && fcRoomTypeFq.getSj()==Constants.FC_SJ){
+                    updateSjMatchRoomType(fcRoomTypeFq.getCompanyId(), fcRoomTypeFq.getId());
+                }
+            }
         }else {
             throw  new Exception("同步价格计划失败:"+response.getResultMsg());
         }

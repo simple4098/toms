@@ -52,7 +52,7 @@ $(".btn-primary-cx").on("click",function(){
         var fcHotelId = $("input[name='fcHotelId']:checked").val();
         var innId = $("#innId").val();
         var oldFcHotelId = $("#matchSuccessId").find("input[type='radio']").val()
-        if(fcHotelId==undefined){
+        if(fcHotelId==undefined || fcHotelId.length==0){
             layer.msg("请选择房仓酒店id");
             return false;
         }

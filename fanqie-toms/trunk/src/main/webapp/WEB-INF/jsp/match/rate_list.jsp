@@ -25,7 +25,7 @@
         if(data.status=="200"){
           window.location.href = window.location.href;
         }else{
-          layer.msg(date.message);
+          layer.msg(data.message);
         }
       },error:function(data){
         layer.msg(date.message);

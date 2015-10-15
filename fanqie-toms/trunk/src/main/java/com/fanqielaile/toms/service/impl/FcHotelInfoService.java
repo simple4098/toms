@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -77,6 +78,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
 
     @Override
     public void updateMatchInn(String companyId,String innId, String fcHotelId) throws Exception {
+        Assert.hasText(fcHotelId);
         Company company = companyDao.selectCompanyById(companyId);
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
         FcHotelInfoDto hotelInfoDto = fcHotelInfoDao.selectFcHotelByHotelId(fcHotelId);
