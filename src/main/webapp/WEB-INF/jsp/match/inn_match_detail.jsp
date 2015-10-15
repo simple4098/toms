@@ -71,7 +71,7 @@
                   </div>
                   <div id="contentId">
                     <label>
-                    <input type="radio"  name="fcHotelId">
+                    <input type="radio"  name="fcHotelId" value="">
                     <div class="result-box">
                       <p>暂不匹配</p>
                     </div>
