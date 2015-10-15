@@ -151,7 +151,7 @@
     </select>
     <select id="selectOrders" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
-        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id
+        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
         LEFT JOIN company c on oto.company_id = c.id
         <where>
             <if test="companyId != null and companyId != ''">
@@ -169,7 +169,7 @@
 
     <select id="selectOrderById" parameterType="java.lang.String" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
-        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id
+        LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
         LEFT JOIN company c on bi.company_id = c.id
         <where>
             <if test="id != null and id != ''">
