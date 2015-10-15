@@ -49,16 +49,9 @@ public class TBXHotelUtil {
         req.setName(innDto.getBrandName());
         req.setUsedName(innDto.getInnName());
         req.setTel(innDto.getFrontPhone());
-        if (andArea!=null){
-            req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
-            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
-        }
         req.setAddress(innDto.getAddr());
         try {
             XhotelUpdateResponse response = client.execute(req , company.getSessionKey());
-            if (!StringUtils.isEmpty(response.getSubCode())) {
-                return hotelGet(company,innDto.getInnId());
-            }
             log.info("hotelUpdate:" + response.getXhotel());
             return response.getXhotel();
         } catch (ApiException e) {
@@ -72,29 +65,35 @@ public class TBXHotelUtil {
      * @param innDto 客栈信息
      */
     public static XHotel hotelAddOrUpdate(OtaInfoRefDto company,InnDto innDto,OtaTaoBaoArea andArea)   {
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelAddRequest req=new XhotelAddRequest();
-        req.setOuterId(innDto.getInnId());
-        req.setName(innDto.getBrandName());
-        req.setUsedName(innDto.getInnName());
-        req.setTel(innDto.getFrontPhone());
-        if (andArea!=null){
-            req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
-            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
-        }
-        req.setAddress(innDto.getAddr());
-        try {
-            XhotelAddResponse response = client.execute(req , company.getSessionKey());
-           /* log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());*/
-            //存在
-            if (TomsConstants.HOTEL_EXIST.equals(response.getSubCode())) {
-                return   hotelUpdate(company,innDto,andArea);
+        XHotel xHotel = hotelGet(company, innDto.getInnId());
+        if(xHotel==null){
+            TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+            XhotelAddRequest req=new XhotelAddRequest();
+            req.setOuterId(innDto.getInnId());
+            req.setName(innDto.getBrandName());
+            req.setUsedName(innDto.getInnName());
+            req.setTel(innDto.getFrontPhone());
+            if (andArea!=null){
+                req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
+                req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
             }
-            log.info("hotelAdd:" +response.getXhotel());
-            return response.getXhotel();
-        } catch (ApiException e) {
-            log.error(e.getMessage());
+            req.setAddress(innDto.getAddr());
+            try {
+                XhotelAddResponse response = client.execute(req , company.getSessionKey());
+           /* log.info("hotelAddOrUpdate msg:"+response.getMsg()+" error code:"+response.getErrorCode());*/
+                //存在
+                if (TomsConstants.HOTEL_EXIST.equals(response.getSubCode())) {
+                    return   hotelUpdate(company,innDto,andArea);
+                }
+                log.info("hotelAdd:" +response.getXhotel());
+                return response.getXhotel();
+            } catch (ApiException e) {
+                log.error(e.getMessage());
+            }
+        }else {
+            return   hotelUpdate(company,innDto,andArea);
         }
+
         return null;
     }
 
