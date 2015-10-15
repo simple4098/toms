@@ -47,7 +47,7 @@ public class FcCancelHotelOrderResponseResult {
         return "FcCancelHotelOrderResponseResult{" +
                 "resultFlag='" + resultFlag + '\'' +
                 ", resultMsg='" + resultMsg + '\'' +
-                ", cancelHotelOrderResponse=" + cancelHotelOrderResponse.toString() +
+                ", cancelHotelOrderResponse=" + cancelHotelOrderResponse +
                 '}';
     }
 }
