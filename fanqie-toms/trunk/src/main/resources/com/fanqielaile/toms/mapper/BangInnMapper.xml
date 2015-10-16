@@ -54,7 +54,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,sj
+        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,account_id_di,ota_wg_id,sj
        </sql>
     <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,deleted)

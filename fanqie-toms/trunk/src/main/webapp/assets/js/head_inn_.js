@@ -10,7 +10,7 @@ function obt(tagId,innId,url){
 			if(json.data.length==0){
 				return false;
 			}
-			var aLabel = ""; //存放客栈标签
+			var aLabel = "<option value>--请选择标签--</option>"; //存放客栈标签
 			var aList = "";  //存放客栈列表
 			// 遍历获取客栈标签
 			for(var attr in json.data){
