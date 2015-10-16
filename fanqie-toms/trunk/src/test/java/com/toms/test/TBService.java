@@ -383,5 +383,10 @@ public class TBService implements ITPService {
 
     }
 
+    @Override
+    public void updateHotelFailTimer(OtaInfoRefDto o)  {
+
+    }
+
 
 }

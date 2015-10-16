@@ -71,18 +71,18 @@ public class TBTestNew {
 
     public void test() throws Exception {
         OtaInfoRefDto otaInfo = new OtaInfoRefDto();
-        /*otaInfo.setAppKey("23192376");
+        otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");*/
-        otaInfo.setAppKey("1023192376");
+        otaInfo.setSessionKey("61008211bcf5e745e81bb59a3cf641d974ebb69d186733c2555889376");
+        /*otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*/
         otaInfo.setOtaInfoId("1");
         //String innId = "7060";
-        String innId = "46149";
+        String innId = "7221";
         String companyCode = "89894098";
         //String accountId = "14339";
-        String accountId = "26884";
+        String accountId = "26857";
         String otaId = "903";
         String priceModel = "MAI,DI";
         String shangJiaModel = "MAI";
@@ -90,7 +90,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("26884");
+        price1.setAccountId("26857");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();
@@ -134,9 +134,9 @@ public class TBTestNew {
             /*if (!StringUtils.isEmpty(omsInnDto.getCounty())){
                 andArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
             }*/
-            xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
+            /*xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
             if (xHotel!=null) {
-                otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
+                *//*otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(),company.getId(),otaInfo.getOtaInfoId());
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
                 //未绑定
                 BangInnDto bangInnDto = null;
@@ -162,7 +162,7 @@ public class TBTestNew {
                 }
             }else {
                 throw  new TomsRuntimeException(" 推送淘宝客栈失败!");
-            }
+            }*/
         }
 
         String otaPriceModelId="";
