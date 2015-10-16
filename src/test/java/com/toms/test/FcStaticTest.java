@@ -262,8 +262,8 @@ public class FcStaticTest {
     public void deleteHotelMapping() throws JAXBException, IOException {
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();
-        hotelInfo.setFcHotelId(125283);
-        hotelInfo.setSpHotelId("15420");
+        hotelInfo.setFcHotelId(188101);
+        hotelInfo.setSpHotelId("3698");
         list.add(hotelInfo);
 
         DeleteHotelInfoRequest deleteHotelInfoRequest = new DeleteHotelInfoRequest();
