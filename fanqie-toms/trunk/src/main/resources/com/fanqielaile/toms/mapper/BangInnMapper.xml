@@ -149,7 +149,7 @@
     <update id="updateBangInnTp" parameterType="com.fanqielaile.toms.model.BangInn">
         update bang_inn
         <trim prefix="SET" suffixOverrides=",">
-             updated_date = now(),sj=#{sj},
+             updated_date = now(),sj=#{sj}, account_id_di = #{accountIdDi},
             <if test="mobile != null and mobile != ''">
                 mobile= #{mobile},
             </if>
@@ -158,9 +158,6 @@
             </if>
             <if test="otaWgId != null and otaWgId != ''">
                 ota_wg_id = #{otaWgId},
-            </if>
-            <if test="accountIdDi != null and accountIdDi != ''">
-                account_id_di = #{accountIdDi},
             </if>
             <if test="accountId != null and accountId != ''">
                 account_id = #{accountId},

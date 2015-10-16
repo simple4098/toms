@@ -138,7 +138,12 @@ public class TBService implements ITPService {
                     bangInnDao.createBangInn(bangInnDto);
                     //已绑定
                 } else {
-                    BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+                    BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
+                    if (!tbParam.isSj()){
+                        bangInn.setAccountIdDi(null);
+                    }else {
+                        bangInn.setSj(1);
+                    }
                     bangInnDao.updateBangInnTp(bangInn);
                 }
             }
@@ -300,7 +305,7 @@ public class TBService implements ITPService {
 
 
 
-    private Callable getTask1(final OtaInfoRefDto o1,final TBParam tbParam1,final ProxyInns proxyInns) {
+    /*private Callable getTask1(final OtaInfoRefDto o1,final TBParam tbParam1,final ProxyInns proxyInns) {
         return new Callable<CallableBean>() {
             @Override
             public CallableBean call() throws Exception {
@@ -345,7 +350,7 @@ public class TBService implements ITPService {
                 return null;
             }
         };
-    }
+    }*/
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
         for (PushRoom pushRoom: pushRoomList){

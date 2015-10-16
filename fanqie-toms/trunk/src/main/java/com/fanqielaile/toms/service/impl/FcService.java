@@ -57,7 +57,7 @@ public class FcService implements ITPService {
         String innId = tbParam.getInnId();
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
-        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.INN_INFO);
+        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId()!=null?tbParam.getAccountId():tbParam.getAccountIdDi(), CommonApi.INN_INFO);
         String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         //客栈
@@ -74,7 +74,14 @@ public class FcService implements ITPService {
                 //已绑定
             }else {
                 log.info("fc 客栈"+bangInn.getInnId()+" 已绑定"+" 状态:"+tbParam.isSj());
-                BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+                BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
+                if (tbParam.getAccountId()==null) {
+                    if (!tbParam.isSj()){
+                        bangInn.setAccountIdDi(null);
+                    }else {
+                        bangInn.setSj(1);
+                    }
+                }
                 bangInnDao.updateBangInnTp(bangInn);
                 //下架状态的时候 要把房仓的宝贝下架掉
                 if (Constants.FC_XJ.equals(bangInn.getSj())){
