@@ -141,7 +141,7 @@ public class BangInnDto extends BangInn {
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setSj(tbParam.isSj()?1:0);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
-        bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));
+        /*bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));*/
         /*bangInnDto.setOtaWgId(otaInnOtaId);*/
         bangInnDto.setInnName(omsInnDto.getInnName());
         bangInnDto.setBangDate(new Date());
@@ -157,11 +157,30 @@ public class BangInnDto extends BangInn {
     }
 
     public static void toUpdateDto(BangInn bangInnDto, TBParam tbParam, InnDto omsInnDto) {
+        /*List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
+      *//*  bangInnDto.setOtaWgId(otaWgId);*//*
+        bangInnDto.setMobile(omsInnDto.getFrontPhone());
+        bangInnDto.setInnName(omsInnDto.getInnName());
+        bangInnDto.setSj(tbParam.isSj()?1:0);
+        if (priceModelArray!=null){
+            for (PriceModel p:priceModelArray){
+                if(p.getPattern().equals("DI")){
+                    bangInnDto.setAccountIdDi(Integer.valueOf(p.getAccountId()));
+                }
+                if(p.getPattern().equals("MAI")){
+                    bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
+                }
+            }
+        }*/
+        toUpdateDiDto(bangInnDto,tbParam,omsInnDto);
+        bangInnDto.setSj(tbParam.isSj()?1:0);
+
+    }
+    public static void toUpdateDiDto(BangInn bangInnDto, TBParam tbParam, InnDto omsInnDto) {
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
       /*  bangInnDto.setOtaWgId(otaWgId);*/
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setInnName(omsInnDto.getInnName());
-        bangInnDto.setSj(tbParam.isSj()?1:0);
         if (priceModelArray!=null){
             for (PriceModel p:priceModelArray){
                 if(p.getPattern().equals("DI")){

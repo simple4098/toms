@@ -57,14 +57,15 @@ public class APIController extends BaseController {
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody
     public Object hotel(TBParam tbParam){
+        lock.lock();
         JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
+        log.info("推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
         if (!validateParam){
             jsonModel.setMessage(Constants.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;
         }
-        lock.lock();
         try {
             List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
             ITPService service = null;

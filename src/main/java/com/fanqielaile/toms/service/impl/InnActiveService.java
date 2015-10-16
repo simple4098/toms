@@ -34,7 +34,7 @@ public class InnActiveService implements IInnActiveService {
     private BangInnDao bangInnDao;
     @Override
     public ActiveInnDto findActiveInnDto(ParamDto paramDto,UserInfo userInfo)throws Exception{
-        List<Integer> innIds = new ArrayList<Integer>();
+        /*List<Integer> innIds = new ArrayList<Integer>();
         StringBuilder sb = new StringBuilder();
         List<BangInnDto> bangInns = bangInnDao.selectBangInnListByUserInfo(userInfo,new PageBounds());
         for (BangInnDto bangInnDto:bangInns){
@@ -45,7 +45,7 @@ public class InnActiveService implements IInnActiveService {
             sb.deleteCharAt(sb.toString().length() - 1);
             paramDto.setInnInStr(sb.toString());
         }
-
+*/
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setDataPermission(userInfo.getDataPermission() == 1);
         paramDto.setUserId(userInfo.getId());

@@ -95,8 +95,7 @@
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
-                  <property name="url"
-                            value="jdbc:postgresql://192.168.1.159:5433/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.159:5433/dc_pms?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
                      <property name="password" value="ota"/>
                      <property name="maxWait" value="1000" />
@@ -133,7 +132,7 @@
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                      <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                      <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
-                     <property name="imgUrl" value="http://192.168.1.159"></property>
+                     <property name="imgUrl" value="http://img.fanqiele.com"></property>
                      <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
                      <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
                      <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
