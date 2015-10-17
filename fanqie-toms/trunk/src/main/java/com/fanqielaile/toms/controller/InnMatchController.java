@@ -286,7 +286,7 @@ public class InnMatchController extends BaseController {
         try {
             fcHotelInfoService.excel(companyId,bangInns,response);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("导出excel异常:"+e);
         }
 
     }
