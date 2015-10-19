@@ -70,12 +70,12 @@
                     </button>
                   </div>
                   <div id="contentId">
-                    <label>
+                    <%--<label>
                     <input type="radio"  name="fcHotelId" value="">
                     <div class="result-box">
                       <p>暂不匹配</p>
                     </div>
-                  </label>
+                  </label>--%>
                     <c:forEach items="${hotel}" var="ho">
                       <label>
                         <input type="radio" <c:if test="${ho.hotelId==otaInnOtaDto.wgHid}">checked</c:if> name="fcHotelId" value="${ho.hotelId}">
