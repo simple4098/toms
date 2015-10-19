@@ -52,7 +52,7 @@ CONSTRAINT "fc_hotel_info_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_hotel_info" OWNER TO "ota";
+--ALTER TABLE "public"."fc_hotel_info" OWNER TO "ota";
 
 COMMENT ON COLUMN "public"."fc_hotel_info"."id" IS 'ID';
 
@@ -99,7 +99,7 @@ CONSTRAINT "fc_room_type_info_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_room_type_info" OWNER TO "ota";
+--ALTER TABLE "public"."fc_room_type_info" OWNER TO "ota";
 
 COMMENT ON COLUMN "public"."fc_room_type_info"."id" IS 'ID';
 
@@ -138,7 +138,7 @@ CONSTRAINT "fc_area_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_area" OWNER TO "ota";
+--ALTER TABLE "public"."fc_area" OWNER TO "ota";
 COMMENT ON COLUMN "public"."fc_area"."city_code" IS '城市code';
 COMMENT ON COLUMN "public"."fc_area"."area_name" IS '区域名称';
 COMMENT ON COLUMN "public"."fc_area"."area_code" IS '区域code';
@@ -157,10 +157,7 @@ CONSTRAINT "fc_city_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_city" OWNER TO "ota";
-COMMENT ON COLUMN "public"."fc_city"."province_code" IS '省份code';
-COMMENT ON COLUMN "public"."fc_city"."city_name" IS '城市名称';
-COMMENT ON COLUMN "public"."fc_city"."city_code" IS '城市code';
+
 CREATE INDEX "fc_city_province_code_city_code_idx" ON "public"."fc_city" USING btree (province_code, city_code);
 
 DROP TABLE IF EXISTS "public"."fc_province";
@@ -174,9 +171,7 @@ CONSTRAINT "fc_province_pkey" PRIMARY KEY ("id")
 )
 WITH (OIDS=FALSE)
 ;
-ALTER TABLE "public"."fc_province" OWNER TO "ota";
-COMMENT ON COLUMN "public"."fc_province"."province_name" IS '省份名称';
-COMMENT ON COLUMN "public"."fc_province"."province_code" IS '省份code';
+
 CREATE INDEX "fc_province_province_code_idx" ON "public"."fc_province" USING btree (province_code);
 
 DROP TABLE IF EXISTS "public"."fc_roomtype_fq";
@@ -202,7 +197,7 @@ CONSTRAINT "fc_roomtype_fq_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_roomtype_fq" OWNER TO "ota";
+--ALTER TABLE "public"."fc_roomtype_fq" OWNER TO "ota";
 
 COMMENT ON COLUMN "public"."fc_roomtype_fq"."inn_id" IS '客栈id';
 
@@ -246,7 +241,7 @@ CONSTRAINT "fc_rate_plan_pkey" PRIMARY KEY ("id")
 WITH (OIDS=FALSE)
 ;
 
-ALTER TABLE "public"."fc_rate_plan" OWNER TO "ota";
+--ALTER TABLE "public"."fc_rate_plan" OWNER TO "ota";
 
 COMMENT ON COLUMN "public"."fc_rate_plan"."rate_plan_name" IS '名称';
 
@@ -272,7 +267,7 @@ CONSTRAINT "timer_rate_price_pkey" PRIMARY KEY ("id")
 )
 WITH (OIDS=FALSE)
 ;
-ALTER TABLE "public"."timer_rate_price" OWNER TO "ota";
+--ALTER TABLE "public"."timer_rate_price" OWNER TO "ota";
 
 COMMENT ON COLUMN "public"."timer_rate_price"."inn_id" IS '客栈id';
 
