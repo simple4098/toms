@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-  <label>
+ <%-- <label>
     <input type="radio"  name="fcHotelId">
     <div class="result-box">
       <p>暂不匹配</p>
     </div>
-  </label>
+  </label>--%>
   <c:forEach items="${hotel}" var="ho">
     <label>
       <input type="radio" name="fcHotelId" value="${ho.hotelId}">
