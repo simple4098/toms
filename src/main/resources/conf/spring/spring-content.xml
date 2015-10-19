@@ -95,7 +95,7 @@
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
                      <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url" value="jdbc:postgresql://192.168.1.159:5433/dc_pms?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+                     <property name="url" value="jdbc:postgresql://192.168.1.159:5433/dc?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
                      <property name="username" value="ota"/>
                      <property name="password" value="ota"/>
                      <property name="maxWait" value="1000" />
@@ -195,7 +195,6 @@
                      <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
                      <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
-                 <!--
                   <property name="fcAddHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/addHotelMapping"></property>
                   <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.com/USP/api_v1/addRoomTypeMapping"></property>
                   <property name="FcSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/syncRatePlan"></property>
@@ -203,7 +202,6 @@
                   <property name="FcSyncRateInfoUrl" value="http://www.fangcang.com/USP/api_v1/syncRateInfo"></property>
                   <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.com/USP/api_v1/deleteRoomTypeMapping"></property>
                   <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
-                  -->
               </bean>
        </beans>
 </beans>
