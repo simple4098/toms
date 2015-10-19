@@ -58,7 +58,7 @@ public class FcRatePlanService implements IFcRatePlanService {
     @Override
     public void deletedRatePlan(String companyId,String ratePlanId)throws Exception{
 
-        OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.FC.name());
+        /*OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.FC.name());*/
         List<FcRoomTypeFqDto> list = fcRoomTypeFqDao.selectFcRoomTypeFqByRatePlanId(ratePlanId);
         if (!CollectionUtils.isEmpty(list)){
             throw  new Exception("此价格计划已经在使用,请勿删除");
