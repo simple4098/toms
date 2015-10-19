@@ -22,7 +22,7 @@ $("#btn-primary-id").on("click",function(){
     var url = $(this).attr("data-url");
     var fcHotelId = $("input[name='fcHotelId']:checked").val();
     var innId = $("#innId").val();
-    if(fcHotelId==undefined){
+    if(fcHotelId==undefined || inn_match_detail){
         layer.msg("请选择房仓酒店id");
         return false;
     }
@@ -143,6 +143,10 @@ $('#roomTypeBtn').click(function(){
     var url = _this.attr("data-url");
     var fcHotelId = $("input[name='fcHotelId']:checked").val();
     var innId = $("#innId").val();
+    if(fcHotelId.length==0 || innId.length==0){
+        layer.msg("客栈id ,房仓酒店id为空");
+        return false;
+    }
     var $innRooms = $('#innRoomtype .inn-rooms'),
         $sortable = $('#otaRoomType .inn-rooms-box'),
         arr = [],
