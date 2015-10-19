@@ -114,7 +114,7 @@
                         </label>
 
                         <div class="col-sm-9">
-                            <input type="text" id="form-field-1" name="guestName" data-tips="姓名"
+                            <input type="text" id="form-field-1" name="guestName" data-tips="姓名" autocomplete="off"
                                    value="" placeholder="客人姓名" class="col-xs-10 col-sm-5 guest-name"
                                     />
                             <span class="help-guest-name col-xs-12 col-sm-7"></span>
@@ -128,6 +128,7 @@
 
                         <div class="col-sm-9 ">
                             <input type="text" name="guestMobile" id="tel" placeholder="客人联系方式" data-tips="手机号"
+                                   autocomplete="off"
                                    class="col-xs-10 col-sm-5 guest-mobile"/>
                         <span class="help-guest-mobile col-xs-12 col-sm-7">
 
@@ -144,7 +145,7 @@
 
                         <div class="col-xs-4">
                             <div class="input-group input-group-sm">
-                                <input type="text" name="liveTimeString" id="inTime" data-tips="入住时间"
+                                <input type="text" name="liveTimeString" id="inTime" data-tips="入住时间" autocomplete="off"
                                        class="form-control live-time"/>
 													<span class="input-group-addon">
 														<i class="icon-calendar"></i>
@@ -165,6 +166,7 @@
                         <div class="col-xs-4">
                             <div class="input-group input-group-sm">
                                 <input type="text" name="leaveTimeString" id="outTime" data-tips="离店时间"
+                                       autocomplete="off"
                                        class="form-control leave-time"/>
 													<span class="input-group-addon">
 														<i class="icon-calendar"></i>
@@ -200,6 +202,7 @@
 
                         <div class="col-sm-1">
                             <input class="home-amount" id="roomNum" name="homeAmount" data-tips="房间数" type="text"
+                                   readonly
                                    value="1"/>
                         <span class="help-name col-xs-12 col-sm-7">
 											</span>
@@ -214,6 +217,7 @@
 
                         <div class="col-sm-9 ">
                             <input type="text" name="payment" id="totalPrice" placeholder="订单总价" data-tips="销售总价"
+                                   autocomplete="off"
                                    class="col-xs-10 col-sm-5 total-price"/>
                         <span class="help-guest-mobile col-xs-12 col-sm-7">
 
