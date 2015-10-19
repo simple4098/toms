@@ -846,7 +846,25 @@ public class OrderService implements IOrderService {
         order.setOTAHotelId(otaInnOtaDto.getWgHid());
         createOrderMethod(order.getChannelSource(), order);
         //天下房仓创建订单，同步oms
-        JsonModel jsonModel = payBackDealMethod(order, new UserInfo(), OtaType.FC.name());
+        //查询当前公司设置的下单是自动或者手动
+        //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
+        OrderConfig orderConfig = new OrderConfig(otaInfo.getOtaInfoId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
+        OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
+        JsonModel jsonModel = null;
+        if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
+            //自动下单
+            //设置订单状态为：接受
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            jsonModel = payBackDealMethod(order, new UserInfo(), OtaType.FC.name());
+        } else {
+            //手动下单,手动下单修改订单状态为待处理
+            order.setOrderStatus(OrderStatus.NOT_DEAL);
+            //待处理订单写入付款金额和付款码
+            order.setFeeStatus(FeeStatus.PAID);
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.NOT_DEAL, "手动下单", ChannelSource.FC.name()));
+            jsonModel = new JsonModel(true, "付款成功");
+        }
         result.put("status", jsonModel);
         result.put("order", order);
         return result;
