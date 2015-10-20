@@ -710,6 +710,9 @@ public class OrderService implements IOrderService {
             jsonObject = JSONObject.fromObject(respose);
         } catch (Exception e) {
             hangOrder.setOrderStatus(OrderStatus.REFUSE);
+            if (null != bangInn) {
+                hangOrder.setInnId(bangInn.getInnId());
+            }
             this.orderDao.insertOrder(hangOrder);
             //创建每日价格信息
             this.dailyInfosDao.insertDailyInfos(hangOrder);
