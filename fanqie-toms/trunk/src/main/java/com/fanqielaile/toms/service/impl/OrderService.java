@@ -709,34 +709,43 @@ public class OrderService implements IOrderService {
             respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, dictionary));
             jsonObject = JSONObject.fromObject(respose);
         } catch (Exception e) {
+            hangOrder.setOrderStatus(OrderStatus.REFUSE);
+            this.orderDao.insertOrder(hangOrder);
+            //创建每日价格信息
+            this.dailyInfosDao.insertDailyInfos(hangOrder);
+            //创建入住人信息
+            this.orderGuestsDao.insertOrderGuests(hangOrder);
             result.put("status", false);
             result.put("message", "同步oms失败");
-            return result;
         }
         logger.info("OMS接口响应=>" + respose);
         if (!jsonObject.get("status").equals(200)) {
+            //手动下单失败保存手动下单订单
+            if (null != bangInn) {
+                hangOrder.setInnId(bangInn.getInnId());
+            }
+            //设置订单状态为拒绝
+            hangOrder.setOrderStatus(OrderStatus.REFUSE);
             result.put("status", false);
             result.put("message", "oms接口相应失败");
-            return result;
         } else {
             //设置innId
             if (null != bangInn) {
                 hangOrder.setInnId(bangInn.getInnId());
                 //同步oms订单成功，保存订单到toms
-                this.orderDao.insertOrder(hangOrder);
-                //创建每日价格信息
-                this.dailyInfosDao.insertDailyInfos(hangOrder);
-                //创建入住人信息
-                this.orderGuestsDao.insertOrderGuests(hangOrder);
                 result.put("status", true);
                 result.put("message", "下单成功");
-                return result;
             } else {
                 result.put("status", false);
                 result.put("message", "下单失败，客栈不存在");
-                return result;
             }
         }
+        this.orderDao.insertOrder(hangOrder);
+        //创建每日价格信息
+        this.dailyInfosDao.insertDailyInfos(hangOrder);
+        //创建入住人信息
+        this.orderGuestsDao.insertOrderGuests(hangOrder);
+        return result;
     }
 
     @Override
