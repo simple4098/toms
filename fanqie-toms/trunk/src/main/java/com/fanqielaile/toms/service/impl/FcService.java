@@ -75,7 +75,7 @@ public class FcService implements ITPService {
             }else {
                 log.info("fc 客栈"+bangInn.getInnId()+" 已绑定"+" 状态:"+tbParam.isSj());
                 BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
-                if (tbParam.getAccountId()==null) {
+                if (Constants.DI.equals(tbParam.getsJiaModel()) && tbParam.getAccountId()==null) {
                     if (!tbParam.isSj()){
                         bangInn.setAccountIdDi(null);
                     }else {
