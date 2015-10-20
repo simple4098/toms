@@ -81,6 +81,8 @@ public class FcService implements ITPService {
                     }else {
                         bangInn.setSj(1);
                     }
+                }else {
+                    BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
                 }
                 bangInnDao.updateBangInnTp(bangInn);
                 //下架状态的时候 要把房仓的宝贝下架掉
