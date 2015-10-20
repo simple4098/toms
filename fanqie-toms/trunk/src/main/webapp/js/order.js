@@ -47,6 +47,7 @@ $('.btn-order').on('click', function () {
         success: function (data) {
 
             if (data.status) {
+                $('.cancel-order-id').val(data.order.id);
                 $('.order-status').html("订单状态：" + data.order.orderStatusDesc);
                 $('.inn-name').html("客栈名称:" + data.order.innName);
                 $('.guest-name').html("客人姓名:" + data.order.guestName);
@@ -63,6 +64,12 @@ $('.btn-order').on('click', function () {
                 }
                 $('.daily-info-time').append(infoTime);
                 $('.daily-price').append(priceInfo);
+                if (data.order.channelSource == "HAND_ORDER") {
+                    $('.btn-cancel-order').attr('disabled', false);
+                } else {
+                    $('.btn-cancel-order').attr('disabled', true);
+
+                }
                 $('#jurisdiction').modal();
             }
         },
@@ -218,4 +225,34 @@ $('.btn-refuse-pay-back-sure').on('click', function () {
             layer.msg("系统错误");
         }
     })
+});
+//取消手动下单
+$(".btn-cancel-order").on('click', function () {
+    var url = $('.cancel-hand_order-url').val();
+    var orderId = $('.cancel-order-id').val();
+    layer.confirm('取消订单后，将无法恢复，确认要取消吗？', {
+        btn: ['确定', '取消'] //按钮
+    }, function () {
+        $.ajax({
+            url: url + "?orderId=" + orderId,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                if (data.status) {
+                    layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                        window.location.reload();
+                    });
+                }
+            },
+            error: function () {
+                layer.msg("系统错误");
+            }
+        })
+        //layer.msg('的确很重要', {icon: 1});
+    }, function () {
+    });
 });

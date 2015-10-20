@@ -214,4 +214,12 @@ public interface IOrderService {
      * 获取增量天下房仓接口
      */
     UploadStatus getFcAddHotelInfo() throws DocumentException;
+
+    /**
+     * 取消手动下单
+     *
+     * @param orderParamDto
+     * @return
+     */
+    JsonModel cancelHandOrder(OrderParamDto orderParamDto) throws Exception;
 }

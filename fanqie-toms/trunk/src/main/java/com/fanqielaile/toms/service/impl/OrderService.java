@@ -687,7 +687,7 @@ public class OrderService implements IOrderService {
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
         //这里的accountId为绑定客栈的ID
-        BangInnDto bangInn = bangInnDao.selectBangInnById(order.getAccountId() + "");
+        BangInnDto bangInn = bangInnDao.selectBangInnById(order.getBangInnId());
         if (1 == order.getMaiAccount()) {
             //卖家
             order.setAccountId(bangInn.getAccountId());
@@ -699,7 +699,7 @@ public class OrderService implements IOrderService {
         paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
         paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
         //设置底价和卖价的accountId
-        paramDto.setAccountId(order.getAccountId() + "");
+        paramDto.setAccountId(bangInn.getId());
         paramDto.setMaiAccount(order.getMaiAccount());
         roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
         Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
@@ -749,7 +749,9 @@ public class OrderService implements IOrderService {
         ParamDto paramDto = new ParamDto();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
-        paramDto.setAccountId(order.getAccountId() + "");
+        //这里的accountId为绑定客栈的ID
+        BangInnDto bangInnDto = this.bangInnDao.selectBangInnById(order.getBangInnId());
+        paramDto.setAccountId(bangInnDto.getId());
         if (StringUtils.isNotEmpty(order.getLeaveTime().toString())) {
             paramDto.setEndDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd"));
         }
@@ -1042,5 +1044,11 @@ public class OrderService implements IOrderService {
         return uploadStatus;
 
 
+    }
+
+    @Override
+    public JsonModel cancelHandOrder(OrderParamDto orderParamDto) throws Exception {
+        JsonModel jsonModel = cancelOrderMethod(orderParamDto);
+        return jsonModel;
     }
 }
