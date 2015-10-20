@@ -273,6 +273,23 @@ public class OrderController extends BaseController {
     }
 
     /**
+     * 取消手动下单
+     * @param orderId
+     */
+    @RequestMapping("cancel_hand_order")
+    public void cancelHandOrder(String orderId, Model model) throws Exception {
+        OrderParamDto orderParamDto = this.orderService.findOrderById(orderId);
+        if (null != orderParamDto) {
+            JsonModel jsonModel = this.orderService.cancelHandOrder(orderParamDto);
+            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
+        } else {
+            model.addAttribute(Constants.STATUS, Constants.ERROR);
+            model.addAttribute(Constants.MESSAGE, "查询订单出错，没有此订单");
+        }
+    }
+
+    /**
      * 获取房型最小库存量
      *
      * @param model

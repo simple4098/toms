@@ -257,6 +257,8 @@
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">订单详细信息展示</h4>
             </div>
+            <input type="hidden" class="cancel-hand_order-url" value="<c:url value="/order/cancel_hand_order.json"/>"/>
+            <input type="hidden" class="cancel-order-id" name="orderId" value=""/>
             <div class="modal-body">
                 <div>
                     <label class="order-status"></label><br/>
@@ -278,7 +280,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" style="float: left" class="btn btn-success btn-cancel-order">取消订单</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>

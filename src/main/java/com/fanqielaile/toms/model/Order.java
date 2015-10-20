@@ -123,6 +123,17 @@ public class Order extends Domain {
     //maiAccount
     private int maiAccount;
 
+    //绑定客栈的ID
+    private String bangInnId;
+
+    public String getBangInnId() {
+        return bangInnId;
+    }
+
+    public void setBangInnId(String bangInnId) {
+        this.bangInnId = bangInnId;
+    }
+
     public int getMaiAccount() {
         return maiAccount;
     }

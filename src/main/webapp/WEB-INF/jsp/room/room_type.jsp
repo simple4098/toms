@@ -103,7 +103,7 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal hand-order-form" id="hand-order-form" role="form">
-                    <input type="hidden" class="account-id" name="accountId"/>
+                    <input type="hidden" class="account-id" name="bangInnId"/>
                     <input type="hidden" class="tag-id" name="tagId"/>
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
