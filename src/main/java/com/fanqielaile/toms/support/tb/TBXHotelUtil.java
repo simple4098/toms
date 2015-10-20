@@ -353,6 +353,56 @@ public class TBXHotelUtil {
         return null;
 
     }
+    /**
+     * 添加商品
+     * @param outerId pms系统中的房型id
+     * @param roomTypeInfo 房型信息
+     * @param company 公司信息
+     */
+    public  static Long  roomAddOrUpdate(Integer outerId,RoomTypeInfo roomTypeInfo,OtaInfoRefDto company,RoomSwitchCalStatus status,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea) throws Exception {
+        XRoom xRoom = roomGet(outerId, company);
+        if (xRoom!=null){
+            String receiptOtherTypeDesc =  PropertiesUtil.readFile("/data.properties", "tb.receiptOtherTypeDesc");
+            String guide =  PropertiesUtil.readFile("/data.properties", "tb.guide");
+            StringBuilder builder = new StringBuilder();
+            builder.append( andArea!=null?andArea.getCityName():"").append(" ").append(otaInnOta!=null?otaInnOta.getAliasInnName():"").append(" ").append(roomTypeInfo.getRoomTypeName());
+            log.debug("roomUpdate title:"+builder.toString());
+
+            xRoom.setTitle(builder.toString());
+            xRoom.setDesc(roomTypeInfo.getRoomInfo());
+            //购买须知
+            xRoom.setGuide(guide);
+            //提供发票
+            xRoom.setHasReceipt(true);
+            xRoom.setReceiptType("B");
+            xRoom.setReceiptOtherTypeDesc(receiptOtherTypeDesc);
+            xRoom.setReceiptInfo(receiptOtherTypeDesc);
+
+            //库存
+            if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
+                List<Inventory> list = new ArrayList<Inventory>();
+                List<RoomSwitchCal> roomSwitchCals = new ArrayList<RoomSwitchCal>();
+                Inventory inventory =null;
+                RoomSwitchCal roomSwitchCal=null;
+                for (RoomDetail r:roomTypeInfo.getRoomDetail()){
+                    inventory = new Inventory();
+                    roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
+                    roomSwitchCal.setRoomSwitchCalStatus(status);
+                    inventory.setDate(r.getRoomDate());
+                    inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                    inventory.setRoomSwitchCalStatus(status);
+                    list.add(inventory);
+                    roomSwitchCals.add(roomSwitchCal);
+                }
+                String json = JacksonUtil.obj2json(list);
+                xRoom.setInventory(json);
+              return   roomUpdate(company,xRoom);
+            }
+        }else {
+          return    roomUpdate( outerId, roomTypeInfo, company, status, otaInnOta, andArea);
+        }
+        return  null;
+    }
 
     /**
      * 添加酒店RP,7天以内可以取消， 7天以外不可以取消
