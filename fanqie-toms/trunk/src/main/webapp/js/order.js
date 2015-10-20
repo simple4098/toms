@@ -64,7 +64,7 @@ $('.btn-order').on('click', function () {
                 }
                 $('.daily-info-time').append(infoTime);
                 $('.daily-price').append(priceInfo);
-                if (data.order.channelSource == "HAND_ORDER") {
+                if (data.order.channelSource == "HAND_ORDER" && data.order.orderStatus == "CONFIM_AND_ORDER") {
                     $('.btn-cancel-order').attr('disabled', false);
                 } else {
                     $('.btn-cancel-order').attr('disabled', true);
