@@ -686,9 +686,8 @@ public class OrderService implements IOrderService {
         ParamDto paramDto = new ParamDto();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
-        //设置底价和卖价的accountId
-        paramDto.setAccountId(order.getAccountId() + "");
-        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndAccountId(userInfo.getCompanyId(), Integer.valueOf(order.getAccountId()));
+        //这里的accountId为绑定客栈的ID
+        BangInnDto bangInn = bangInnDao.selectBangInnById(order.getAccountId() + "");
         if (1 == order.getMaiAccount()) {
             //卖家
             order.setAccountId(bangInn.getAccountId());
@@ -699,6 +698,8 @@ public class OrderService implements IOrderService {
         //设置查询日期
         paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
         paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
+        //设置底价和卖价的accountId
+        paramDto.setAccountId(order.getAccountId() + "");
         paramDto.setMaiAccount(order.getMaiAccount());
         roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
         Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
