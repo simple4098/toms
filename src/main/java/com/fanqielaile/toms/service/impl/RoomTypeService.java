@@ -41,9 +41,11 @@ public class RoomTypeService implements IRoomTypeService {
     public RoomTypeInfoDto findRoomType(ParamDto paramDto,UserInfo userInfo)throws  Exception{
         Company company = companyDao.selectCompanyById(userInfo.getCompanyId());
         if (!StringUtils.isEmpty(paramDto.getAccountId())){
-            BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndAccountId(userInfo.getCompanyId(), Integer.valueOf(paramDto.getAccountId()));
-            if (!paramDto.isMaiAccount()){
+            BangInn bangInn = bangInnDao.selectBangInnById(paramDto.getAccountId());
+            if (bangInn!=null && !paramDto.isMaiAccount()){
                 paramDto.setAccountId(bangInn.getAccountIdDi()!=null?String.valueOf(bangInn.getAccountIdDi()):null);
+            }else {
+                paramDto.setAccountId(bangInn.getAccountId()!=null?String.valueOf(bangInn.getAccountId()):null);
             }
         }
         if (paramDto.getAccountId()!=null){

@@ -19,7 +19,7 @@ $(function(){
 			function getInnName(num){
 				aList = "<option value>--请选择客栈--</option>";
 				for(var innList in json.data[num].bangInnList){
-					aList += "<option value='"+json.data[num].bangInnList[innList].accountId+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
+					aList += "<option value='"+json.data[num].bangInnList[innList].id+"'>"+json.data[num].bangInnList[innList].innName+"</option>"
 				};
 			}
 			// 默认加载第一个列表
