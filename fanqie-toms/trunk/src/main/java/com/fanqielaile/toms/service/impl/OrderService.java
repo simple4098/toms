@@ -500,32 +500,12 @@ public class OrderService implements IOrderService {
             result.put("message", "没有此订单！");
             return result;
         }
-        //调用oms取消订单接口
-        // 查询调用的url
-        Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
-        if (null != dictionary) {
-            //发送请求
-            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
-            String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
-            JSONObject jsonObject = JSONObject.fromObject(respose);
-            logger.info("oms取消订单返回值=>" + jsonObject.toString());
-            if (!jsonObject.get("status").equals(200)) {
-                result.put("status", "-400");
-                result.put("message", "同步OMS失败！");
-                return result;
-            } else {
-                //同步成功后在修改数据库
-                order.setOrderStatus(OrderStatus.REFUSE);
-                order.setReason("买家申请退款");
-                this.orderDao.updateOrderStatusAndReason(order);
-                result.put("status", "0");
-                result.put("message", "success");
-                return result;
-            }
-        } else {
-            result.put("status", "-400");
-            result.put("message", "处理失败");
-        }
+        //拦截申请退款的订单，将订单状态改为退款申请中
+        order.setOrderStatus(OrderStatus.PAY_BACK);
+        this.orderDao.updateOrderStatusAndReason(order);
+        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.PAY_BACK, "申请退款", ChannelSource.TAOBAO.name()));
+        result.put("status", "0");
+        result.put("message", "success");
         return result;
     }
 
