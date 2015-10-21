@@ -12,7 +12,8 @@
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
-    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_orders"/>" method="post">
+    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_pay_back_orders"/>"
+          method="post">
         <input type="hidden" class="pageId" id="pageId" name="page"/>
         <input type="hidden" name="searchType" value="${order.searchType}"/>
         <input type="hidden" name="beginDate" value="${order.beginDate}"/>
