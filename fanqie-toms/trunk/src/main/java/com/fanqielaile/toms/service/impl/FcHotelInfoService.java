@@ -172,19 +172,28 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     fcInnInfo.setProvinceCode(fcProvince!=null?fcProvince.getProvinceCode():null);
                     fcInnInfo.setCityCode(city!=null?city.getCityCode():null);
                     fcInnInfo.setInnId(String.valueOf(bangInnDto.getInnId()));
-                    List<OmsImg> imgList = omsInnDto.getImgList();
                     List<FcInnImg> fcInnImgList = new ArrayList<FcInnImg>();
-                    for (OmsImg omsImg:imgList){
+                   /* List<OmsImg> imgList = omsInnDto.getImgList();*/
+                   /* for (OmsImg omsImg:imgList){
                         fcInnImg = new FcInnImg();
                         BeanUtils.copyProperties(omsImg,fcInnImg);
                         fcInnImg.setInnId(bangInnDto.getInnId());
                         fcInnImgList.add(fcInnImg);
-                    }
-                    fcInnInfo.setFcInnImgList(fcInnImgList);
+                    }*/
                     List<RoomTypeInfo> roomTypeInfoList = otaRoomPriceService.obtOmsRoomInfoToFc(bangInnDto);
                     if (!CollectionUtils.isEmpty(roomTypeInfoList)){
                         List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
                         for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
+
+                            List<OmsImg> list = roomTypeInfo.getImgList();
+                            for (OmsImg omsImg:list){
+                                fcInnImg = new FcInnImg();
+                                BeanUtils.copyProperties(omsImg,fcInnImg);
+                                fcInnImg.setInnId(bangInnDto.getInnId());
+                                fcInnImg.setRoomTypeId(roomTypeInfo.getRoomTypeId());
+                                fcInnImgList.add(fcInnImg);
+                            }
+                            fcInnInfo.setFcInnImgList(fcInnImgList);
                             fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
                             BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
                             fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
