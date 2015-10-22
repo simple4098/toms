@@ -131,7 +131,7 @@ public class TBXHotelUtil {
         req.setName(roomTypeInfo.getRoomTypeName());
         //面积
         if (roomTypeInfo.getRoomArea()!=null){
-            req.setArea(String.valueOf(roomTypeInfo.getRoomArea()).concat("平方米"));
+            req.setArea(String.valueOf((int)Math.floor(roomTypeInfo.getRoomArea())).concat("平方米"));
         }
         //楼层
         req.setFloor(String.valueOf(roomTypeInfo.getFloorNum()));
