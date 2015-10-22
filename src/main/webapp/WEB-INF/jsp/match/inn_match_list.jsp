@@ -31,6 +31,7 @@
     <c:set value="${pagination}" var="page"/>
   <div class="select-area">
     <form id="inn-search" action="<c:url value="/innMatch/match"/>"  method="POST">
+      <input type="text" id="fromData" name="fromData" value="">
       <input type="hidden" id="pageId" name="page" value="${page.page}"/>
       <select class="form-control" id="kz-tags" name="innLabelId" >
         <option value="" selected>客栈分类</option>
