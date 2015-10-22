@@ -155,6 +155,9 @@ public class FcHotelInfoService implements IFcHotelInfoService {
         Company company = companyDao.selectCompanyById(companyId);
         if (!CollectionUtils.isEmpty(bangInns)){
             List<FcInnInfoDto> fcHotelInfoList = new ArrayList<FcInnInfoDto>();
+            FcInnInfoDto fcInnInfo = null;
+            FcInnImg fcInnImg = null;
+            FcRoomTypeDtoInfo fcRoomTypeDtoInfo = null;
             for (BangInnDto bangInnDto:bangInns){
                 String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.INN_INFO);
                 String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
@@ -164,7 +167,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
                     FcProvince fcProvince = fcProvinceDao.selectProvince(omsInnDto.getProvince());
                     FcCity city = fcCityDao.selectFcCityByName(omsInnDto.getCity());
-                    FcInnInfoDto fcInnInfo = new FcInnInfoDto();
+                    fcInnInfo = new FcInnInfoDto();
                     BeanUtils.copyProperties(omsInnDto,fcInnInfo);
                     fcInnInfo.setProvinceCode(fcProvince!=null?fcProvince.getProvinceCode():null);
                     fcInnInfo.setCityCode(city!=null?city.getCityCode():null);
@@ -172,7 +175,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     List<OmsImg> imgList = omsInnDto.getImgList();
                     List<FcInnImg> fcInnImgList = new ArrayList<FcInnImg>();
                     for (OmsImg omsImg:imgList){
-                        FcInnImg fcInnImg = new FcInnImg();
+                        fcInnImg = new FcInnImg();
                         BeanUtils.copyProperties(omsImg,fcInnImg);
                         fcInnImg.setInnId(bangInnDto.getInnId());
                         fcInnImgList.add(fcInnImg);
@@ -182,7 +185,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     if (!CollectionUtils.isEmpty(roomTypeInfoList)){
                         List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
                         for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-                            FcRoomTypeDtoInfo fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
+                            fcRoomTypeDtoInfo = new FcRoomTypeDtoInfo();
                             BeanUtils.copyProperties(roomTypeInfo,fcRoomTypeDtoInfo);
                             fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
                             if (roomTypeInfo.getBedWid()!=null && roomTypeInfo.getBedLen()!=null){
@@ -204,6 +207,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                     fcHotelInfoList.add(fcInnInfo);
                 }
             }
+            log.info("===============导出excel数据组装结束================");
             StringBuilder builder = new StringBuilder("未匹配列表_");
             builder.append(DateUtil.formatDateToString(new Date(),"yyyyMMddHHmmssSSS")).append(".xls");
             ExportExcelUtil.execlExport(fcHotelInfoList, response, builder.toString());

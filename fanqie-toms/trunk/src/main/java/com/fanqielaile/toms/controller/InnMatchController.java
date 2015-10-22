@@ -277,12 +277,12 @@ public class InnMatchController extends BaseController {
 
     //导出
     @RequestMapping("/ajax/export")
-    public void excel(BangInnDto bangInnDto,HttpServletResponse response){
+    public void excel(BangInnDto bangInnDto,HttpServletResponse response,String fromData){
         String companyId = getCurrentUser().getCompanyId();
         bangInnDto.setCompanyId(companyId);
         OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(companyId, OtaType.FC);
         bangInnDto.setOtaInfoId(infoRefDto.getOtaInfoId());
-        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto);
+        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto, new PageBounds(Integer.valueOf(fromData), 100));
         try {
             fcHotelInfoService.excel(companyId,bangInns,response);
         } catch (Exception e) {

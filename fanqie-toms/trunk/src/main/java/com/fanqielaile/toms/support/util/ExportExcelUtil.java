@@ -7,6 +7,8 @@ import com.fanqielaile.toms.model.fc.FcHotelInfo;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import java.util.Map;
  * @author tanqp
  */
 public class ExportExcelUtil {
+    private static  final Logger log = LoggerFactory.getLogger(ExportExcelUtil.class);
     /**
      * 设置头信息
      *
@@ -49,7 +52,7 @@ public class ExportExcelUtil {
      * @param fileName  文件名
      * @throws Exception
      */
-    public static void execlExport(List<FcInnInfoDto> fcHotelInfoList, HttpServletResponse response, String fileName) throws IOException {
+    public static void execlExport(List<FcInnInfoDto> fcHotelInfoList, HttpServletResponse response, String fileName) throws Exception {
 
         String[] innHeader = {"客栈id","客栈名称", "地址", "联系电话", "省份Code", "城市code", "商圈","房间数" ,"百度经度","百度纬度","腾讯经度","腾讯纬度","描述"};
         String[] innDataMeta = {"innId","innName", "addr", "frontPhone", "provinceCode", "cityCode", "businessCode","roomNum","baiduLon","baiduLat","txLon","txLat","innInfo"};
@@ -150,9 +153,12 @@ public class ExportExcelUtil {
         }
 
         try {
+            log.info("--------------开始写excel数据-----------------");
             workbook.write(response.getOutputStream());// 返回输出流
+            log.info("--------------结束写excel数据-----------------");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info("--------------excel异常-----------------");
+            throw new Exception(e.getMessage());
         } finally {
             response.getOutputStream().flush();
             response.getOutputStream().close();
