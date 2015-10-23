@@ -17,4 +17,6 @@ public interface ITimerRatePriceDao {
     List<TimerRatePrice> selectTimerRatePrice(TimerRatePrice timerRatePrice);
 
     void  deletedTimerRatePrice(TimerRatePrice timerRatePrice);
+
+    List<TimerRatePrice> selectInnRoomTypeTimerRatePrice(TimerRatePrice timerRatePrice);
 }

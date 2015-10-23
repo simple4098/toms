@@ -71,11 +71,11 @@
                                 <input type="hidden" id="pageId" name="page" value="${page.page}"/>
                                 <input name="keywords" value="${keywords}" type="hidden">
                             <tr>
-                                <th>客栈名称</th>
+                                <th width="100">客栈名称</th>
                                 <%--<th>番茄账户名</th>--%>
                                 <th class="hidden-480">联系号码</th>
 
-                                <th width="200">
+                                <th width="100">
                                     <select name="innLabelId" class="inn-label"
                                             data-url="<c:url value="/inn_manage/find_inns.json"/>">
                                         <option value="" selected>客栈分类</option>
@@ -89,7 +89,7 @@
                                     </select>
                                 </th>
                                 <th class="hidden-480">加盟编号</th>
-                                <th width="200">
+                                <th width="100">
                                     <select name="userId" class="user-id"
                                             data-url="<c:url value="/inn_manage/find_inns.json"/>">
                                         <option value="" selected>所属管理员</option>
@@ -103,7 +103,7 @@
                                     </select>
                                 </th>
                                 <th>正式加入时间</th>
-                                <th>操作</th>
+                                <th width="100">操作</th>
                             </tr>
                             </form>
                             </thead>
@@ -120,12 +120,15 @@
                                         <td>${d.userName}</td>
                                         <td><fmt:formatDate value="${d.bangDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
-                                            <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
-                                                <a class="green"
+                                           <a class="green"
                                                    href="<c:url value="/inn_manage/to_update_inn?id="/>${d.id}"/>
-                                                <i class="icon-pencil bigger-130"></i>
+                                                修改
+                                           </a>
+                                            <c:forEach var="o" items="${otaInfoList}">
+                                                <a class="btn btn-primary btn-sm" otaInfoId="${o.otaInfoId}" innId="${d.innId}" />
+                                                  ${o.otaInfo}
                                                 </a>
-                                            </div>
+                                            </c:forEach>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -203,6 +206,30 @@
             '<div>2、客栈在番茄分销系统中，在【直连订单】—【我要开店直销】模块中，申请开通 【开放合作】平台，然后在【开放授权管理】中将唯一标识码添加进去即可。</div>' +
             '</div>'
         });
+
+    });
+    $(".btn-primary").on('click',function(){
+        var _this = $(this);
+        var otaInfoId = _this.attr("otaInfoId");
+        var innId = _this.attr("innId");
+        var url = '<c:url value="/inn_manage/update_inn_ota"/>';
+        if(window.confirm('你确定要更新此渠道客栈的信息?')){
+            $.ajax({
+                data:{"otaInfoId":otaInfoId,"innId":innId},
+                type:'post',
+                dataType:'json',
+                url:url,
+                success:function(data){
+                    if(data.status=='200'){
+                        layer.msg("更新成功");
+                    }else{
+                        layer.msg("更新失败:"+data.message);
+                    }
+                },error:function(data){
+                    layer.msg("更新失败:"+data.message);
+                }
+            })
+        }
 
     });
     $('.inn-label').on('change', function () {

@@ -16,16 +16,21 @@
     </sql>
 
     <insert id="saveTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
-        insert into timer_rate_price( id,company_id,inn_id,room_type_id,ota_info_id,account_id)
-        values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId})
+        insert into timer_rate_price( id,company_id,inn_id,room_type_id,ota_info_id,account_id,deleted,error_content,created_date,updated_date)
+        values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId},0,#{errorContent},#{createdDate},#{updatedDate})
     </insert>
 
     <select id="selectTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice" resultMap="resultMapId">
      SELECT o.company_id,o.inn_id from timer_rate_price o
-     where o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id
+     where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id
+    </select>
+
+    <select id="selectInnRoomTypeTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice" resultMap="resultMapId">
+     SELECT o.company_id,o.inn_id,o.room_type_id from timer_rate_price o
+     where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'
     </select>
 
     <delete id="deletedTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
-        DELETE from timer_rate_price where company_id='${companyId}' and inn_id=#{innId} and ota_info_id='${otaInfoId}'
+        update timer_rate_price set deleted=1,updated_date=now() where company_id='${companyId}' and inn_id=#{innId} and ota_info_id='${otaInfoId}'
     </delete>
 </mapper>

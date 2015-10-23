@@ -4,6 +4,8 @@ import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -152,5 +154,18 @@ public class TomsUtil {
             return Arrays.asList(split);
         }
         return null;
+    }
+
+    public static TBParam toTbParam(BangInn bangInn,Company company,OtaInnOtaDto otaInnOtaDto){
+        TBParam tbParam = new TBParam();
+        tbParam.setInnId(String.valueOf(bangInn.getInnId()));
+        tbParam.setAccountId(String.valueOf(bangInn.getAccountId()));
+        tbParam.setCommissionPercent(otaInnOtaDto.getCommissionPercent());
+        tbParam.setPriceModel(otaInnOtaDto.getPriceModel());
+        tbParam.setSj(true);
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        tbParam.setsJiaModel(otaInnOtaDto.getsJiaModel());
+        tbParam.setCompanyCode(company.getCompanyCode());
+        return  tbParam;
     }
 }

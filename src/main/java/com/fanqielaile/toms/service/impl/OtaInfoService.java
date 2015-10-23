@@ -50,4 +50,9 @@ public class OtaInfoService implements IOtaInfoService {
             throw new  TomsRuntimeException("此渠道已经开通了!");
         }
     }
+
+    @Override
+    public OtaInfoRefDto findOtaInfoByCompanyIdAndOtaInnOtaId(String companyId, String otaInfoId) {
+        return otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(companyId,otaInfoId);
+    }
 }

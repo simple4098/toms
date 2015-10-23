@@ -271,22 +271,26 @@ public class TBService implements ITPService {
                         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
                             List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
                             for (RoomTypeInfo r : list) {
-                                //OtaInnRoomTypeGoodsDto good = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), r.getRoomTypeId());
-                                OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
-                                OtaPriceModelDto otaPriceModelDto = new OtaPriceModelDto(new BigDecimal(1));
+                                //todo 代码逻辑更新
+                                OtaInnRoomTypeGoodsDto good = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), r.getRoomTypeId());
                                 Rate rate = TBXHotelUtil.rateGet(o, r);
                                 XRoom xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), o);
-                                if (rate!=null && xRoom!=null){
+                                if (good!=null && rate!=null && xRoom!=null){
+                                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
+                                    OtaPriceModelDto otaPriceModelDto = new OtaPriceModelDto(new BigDecimal(1));
                                     String inventoryRate = TomsUtil.obtInventoryRate(r, otaPriceModelDto, priceDto);
                                     String inventory = TomsUtil.obtInventory(r);
                                     rate.setInventoryPrice(inventoryRate);
-                                    TBXHotelUtil.rateUpdate(o,r,rate);
                                     xRoom.setInventory(inventory);
-                                    TBXHotelUtil.roomUpdate(o,xRoom);
+                                    String gidAndRpId = TBXHotelUtil.rateUpdate(o, r, rate);
+                                    Long gId = TBXHotelUtil.roomUpdate(o, xRoom);
+                                    if (StringUtils.isEmpty(gidAndRpId) || gId==null){
+                                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"gidAndRpId is "+gidAndRpId+" gId is "+gId));
+                                    }
                                     log.info("客栈id"+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" xRoom" + xRoom.getGid()+ " rate:" + rate.getGid());
                                 }else {
                                     log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());
-                                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId()));
+                                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom));
                                 }
                             }
                         }
@@ -424,19 +428,12 @@ public class TBService implements ITPService {
         String companyId = o.getCompanyId();
         Company company = companyDao.selectCompanyById(companyId);
         List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
+        TBParam tbParam = null;
         for (TimerRatePrice ratePrice:timerRatePriceList){
             BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, ratePrice.getInnId());
             OtaInnOtaDto otaInnOtaDto = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(ratePrice.getInnId(), companyId, o.getOtaInfoId());
             if (bangInn!=null && otaInnOtaDto!=null){
-                TBParam tbParam = new TBParam();
-                tbParam.setInnId(String.valueOf(bangInn.getInnId()));
-                tbParam.setAccountId(String.valueOf(bangInn.getAccountId()));
-                tbParam.setCommissionPercent(otaInnOtaDto.getCommissionPercent());
-                tbParam.setPriceModel(otaInnOtaDto.getPriceModel());
-                tbParam.setSj(true);
-                tbParam.setOtaId(String.valueOf(company.getOtaId()));
-                tbParam.setsJiaModel(otaInnOtaDto.getsJiaModel());
-                tbParam.setCompanyCode(company.getCompanyCode());
+                tbParam = TomsUtil.toTbParam(bangInn, company, otaInnOtaDto);
                 try {
                     updateOrAddHotel(tbParam, o);
                     timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId,o.getOtaInfoId(),bangInn.getInnId()));

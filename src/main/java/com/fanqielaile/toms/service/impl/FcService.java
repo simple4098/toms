@@ -11,6 +11,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.TimerRatePrice;
 import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
@@ -51,6 +52,8 @@ public class FcService implements ITPService {
     private IOtaRoomPriceDao otaRoomPriceDao;
     @Resource
     private IFcRoomTypeFqService fcRoomTypeFqService;
+    @Resource
+    private ITimerRatePriceDao timerRatePriceDao;
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
@@ -71,7 +74,6 @@ public class FcService implements ITPService {
                 bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                 bangInnDao.createBangInn(bangInnDto);
                 log.info("fc 客栈"+tbParam.getInnId()+" 绑定");
-                //已绑定
             }else {
                 log.info("fc 客栈"+bangInn.getInnId()+" 已绑定"+" 状态:"+tbParam.isSj());
                 BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
@@ -86,10 +88,16 @@ public class FcService implements ITPService {
                 }
                 bangInnDao.updateBangInnTp(bangInn);
                 //下架状态的时候 要把房仓的宝贝下架掉
-                if (Constants.FC_XJ.equals(bangInn.getSj())){
-                    List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,innId,company.getId(),otaInfo.getOtaInfoId()));
-                    for (FcRoomTypeFqDto fqDto:roomTypeFqDtoList){
-                        fcRoomTypeFqService.updateXjMatchRoomType(company.getId(),fqDto.getId());
+                List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,innId,company.getId(),otaInfo.getOtaInfoId()));
+                if (!CollectionUtils.isEmpty(roomTypeFqDtoList)) {
+                    if (Constants.FC_XJ.equals(bangInn.getSj())) {
+                        for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
+                            fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fqDto.getId());
+                        }
+                    } else if (Constants.FC_SJ.equals(bangInn.getSj())) {
+                        for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
+                            fcRoomTypeFqService.updateSjMatchRoomType(company.getId(), fqDto.getId());
+                        }
                     }
                 }
             }
@@ -106,12 +114,15 @@ public class FcService implements ITPService {
         log.info("====Fc 同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,null,company.getId(),o.getOtaInfoId()));
-        for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
-            /*if (!StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj()==Constants.FC_SJ){*/
+        if (!CollectionUtils.isEmpty(roomTypeFqDtoList)){
+            for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
-                FCXHotelUtil.syncRateInfo(company,o,fcRoomTypeFqDto,bangInn,Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()),priceDto);
-           /* }*/
+                Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto);
+                if (!Constants.FcResultNo.equals(response.getResultNo())){
+                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()),Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg()));
+                }
+            }
         }
 
     }
@@ -178,6 +189,29 @@ public class FcService implements ITPService {
 
     @Override
     public void updateHotelFailTimer(OtaInfoRefDto o){
+        String companyId = o.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
+        List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectInnRoomTypeTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
+        for (TimerRatePrice ratePrice:timerRatePriceList){
+            List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,String.valueOf(ratePrice.getInnId()),company.getId(),o.getOtaInfoId()));
+            if (!CollectionUtils.isEmpty(roomTypeFqDtoList)){
+                for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
+                    BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
+                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
+                    try {
+                        Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto);
+                        if (Constants.FcResultNo.equals(response.getResultNo())){
+                            timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId,o.getOtaInfoId(),bangInn.getInnId()));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                       log.error("FC updateHotelFailTimer 异常:"+e.getMessage());
+                    }
+
+                }
+
+            }
+        }
 
     }
 }

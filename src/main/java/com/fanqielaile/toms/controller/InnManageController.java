@@ -1,22 +1,16 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.core.dto.ParamDto;
-import com.fanqielaile.toms.dto.ActiveInnDto;
+import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.dto.*;
 import com.fanqie.util.Pagination;
-import com.fanqielaile.toms.dto.BangInnDto;
-import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.helper.PaginationHelper;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.InnLabel;
-import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.service.IBangInnService;
-import com.fanqielaile.toms.service.ICompanyService;
-import com.fanqielaile.toms.service.IInnActiveService;
-import com.fanqielaile.toms.service.IUserInfoService;
+import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
@@ -26,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -48,6 +43,10 @@ public class InnManageController extends BaseController {
     private IInnActiveService innActiveService;
     @Resource
     private ICompanyService companyService;
+    @Resource
+    private IOtaInfoService otaInfoService;
+    @Resource
+    private IOtaInnOtaService otaInnOtaService;
 
     /**
      * 查询标签对应的客栈
@@ -79,6 +78,9 @@ public class InnManageController extends BaseController {
             currentUser.setInnLabelId(innLabelId);
             currentUser.setUserId(userId);
             currentUser.setKeywords(keywords);
+            //公司信息
+            Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
+            List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(company.getCompanyCode());
             List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
             model.addAttribute(Constants.DATA, bangInnList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -90,8 +92,7 @@ public class InnManageController extends BaseController {
             //管理员
             List<UserInfoDto> userInfos = this.userInfoService.findUserInfos(currentUser.getCompanyId());
             model.addAttribute("userInfos", userInfos);
-            //公司信息
-            Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
+
             model.addAttribute("company", company);
             //分页对象
             Paginator paginator = ((PageList) bangInnList).getPaginator();
@@ -100,12 +101,41 @@ public class InnManageController extends BaseController {
             model.addAttribute("innLabel", innLabelId);
             model.addAttribute("userId", userId);
             model.addAttribute("keywords", keywords);
+            model.addAttribute("otaInfoList",list);
         } catch (Exception e) {
             logger.error("查询客栈列表，列表内容查询错误", e);
         }
         return "/inn/inn_list";
     }
-
+    /**
+     * 更新渠道上的客栈所有信息
+     * @return
+     */
+    @RequestMapping("update_inn_ota")
+    @ResponseBody
+    public Object updateInnOta(String otaInfoId,String innId){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try{
+            Company company = companyService.findCompanyByid(companyId);
+            OtaInfoRefDto otaInfoRefDto = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(companyId, otaInfoId);
+            BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+            OtaInnOtaDto innOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), otaInfoId, companyId);
+            if (bangInn!=null && bangInn.getSj()==Constants.FC_SJ &&innOtaDto!=null){
+                ITPService service = otaInfoRefDto.getOtaType().create();
+                TBParam tbParam = TomsUtil.toTbParam(bangInn,company,innOtaDto);
+                service.updateOrAddHotel(tbParam,otaInfoRefDto);
+                result.setStatus(Constants.SUCCESS200);
+            }else {
+                result.setMessage("此客栈在"+otaInfoRefDto.getOtaInfo()+"已经下架了!");
+                result.setStatus(Constants.ERROR400);
+            }
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
     /**
      * 跳转到编辑页面
      *

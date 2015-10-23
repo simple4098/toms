@@ -40,7 +40,6 @@ public class BangInnDto extends BangInn {
     //关键字
     private String keywords;
     private InnStatus innStatus;
-
     public InnStatus getInnStatus() {
         return innStatus;
     }

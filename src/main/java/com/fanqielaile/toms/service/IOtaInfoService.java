@@ -23,4 +23,6 @@ public interface IOtaInfoService {
 
     //企业开通渠道
     void saveOtaInfo(OtaInfoRefDto otaInfoRefDto)throws Exception;
+
+    OtaInfoRefDto findOtaInfoByCompanyIdAndOtaInnOtaId(String companyId, String otaInfoId);
 }
