@@ -17,14 +17,16 @@ public class TimerRatePrice extends Domain {
     private String accountId;
     private Integer innId;
     private Integer roomTypeId;
+    //失败原因
+    private String errorContent;
 
     public TimerRatePrice() {
     }
 
-    public TimerRatePrice(String companyId, String otaInfoId, Integer roomTypeId,Integer innId) {
+    public TimerRatePrice(String companyId, String otaInfoId, Integer roomTypeId,Integer innId, String errorContent) {
         this.companyId = companyId;
         this.otaInfoId = otaInfoId;
-
+        this.errorContent = errorContent;
         this.roomTypeId = roomTypeId;
         this.innId = innId;
     }
@@ -37,6 +39,14 @@ public class TimerRatePrice extends Domain {
     public TimerRatePrice(String companyId, String otaInfoId) {
         this.companyId = companyId;
         this.otaInfoId = otaInfoId;
+    }
+
+    public String getErrorContent() {
+        return errorContent;
+    }
+
+    public void setErrorContent(String errorContent) {
+        this.errorContent = errorContent;
     }
 
     public String getCompanyId() {
