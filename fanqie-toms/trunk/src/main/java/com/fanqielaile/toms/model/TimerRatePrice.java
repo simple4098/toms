@@ -35,6 +35,12 @@ public class TimerRatePrice extends Domain {
         this.otaInfoId = otaInfoId;
         this.innId = innId;
     }
+    public TimerRatePrice(String companyId, String otaInfoId, Integer innId,Integer roomTypeId) {
+        this.companyId = companyId;
+        this.otaInfoId = otaInfoId;
+        this.innId = innId;
+        this.roomTypeId = roomTypeId;
+    }
 
     public TimerRatePrice(String companyId, String otaInfoId) {
         this.companyId = companyId;

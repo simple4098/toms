@@ -25,12 +25,10 @@
      where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id
     </select>
 
-    <select id="selectInnRoomTypeTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice" resultMap="resultMapId">
-     SELECT o.company_id,o.inn_id,o.room_type_id from timer_rate_price o
-     where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'
-    </select>
-
     <delete id="deletedTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
         update timer_rate_price set deleted=1,updated_date=now() where company_id='${companyId}' and inn_id=#{innId} and ota_info_id='${otaInfoId}'
+    </delete>
+    <delete id="deletedFcTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
+        update timer_rate_price set deleted=1,updated_date=now() where company_id='${companyId}' and inn_id=#{innId} and ota_info_id='${otaInfoId}' and room_type_id=#{roomTypeId}
     </delete>
 </mapper>

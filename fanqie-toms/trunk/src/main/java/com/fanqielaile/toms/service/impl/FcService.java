@@ -191,7 +191,7 @@ public class FcService implements ITPService {
     public void updateHotelFailTimer(OtaInfoRefDto o){
         String companyId = o.getCompanyId();
         Company company = companyDao.selectCompanyById(companyId);
-        List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectInnRoomTypeTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
+        List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
         for (TimerRatePrice ratePrice:timerRatePriceList){
             List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ,String.valueOf(ratePrice.getInnId()),company.getId(),o.getOtaInfoId()));
             if (!CollectionUtils.isEmpty(roomTypeFqDtoList)){
@@ -201,7 +201,7 @@ public class FcService implements ITPService {
                     try {
                         Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto);
                         if (Constants.FcResultNo.equals(response.getResultNo())){
-                            timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId,o.getOtaInfoId(),bangInn.getInnId()));
+                            timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId())));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
