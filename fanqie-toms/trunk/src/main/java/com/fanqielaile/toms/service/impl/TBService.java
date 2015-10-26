@@ -293,6 +293,8 @@ public class TBService implements ITPService {
                                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom));
                                 }
                             }
+                        }else {
+                            timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空"));
                         }
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);

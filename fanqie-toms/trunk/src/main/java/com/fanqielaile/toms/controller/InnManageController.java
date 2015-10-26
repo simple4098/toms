@@ -127,7 +127,7 @@ public class InnManageController extends BaseController {
                 service.updateOrAddHotel(tbParam,otaInfoRefDto);
                 result.setStatus(Constants.SUCCESS200);
             }else {
-                result.setMessage("此客栈在"+otaInfoRefDto.getOtaInfo()+"已经下架了!");
+                result.setMessage("此客栈在"+otaInfoRefDto.getOtaInfo()+"下架或者还没有上架");
                 result.setStatus(Constants.ERROR400);
             }
         } catch (Exception e) {
