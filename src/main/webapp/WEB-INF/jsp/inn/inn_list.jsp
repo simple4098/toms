@@ -209,11 +209,12 @@
 
     });
     $(".btn-primary").on('click',function(){
-        var _this = $(this);
-        var otaInfoId = _this.attr("otaInfoId");
-        var innId = _this.attr("innId");
-        var url = '<c:url value="/inn_manage/update_inn_ota"/>';
         if(window.confirm('你确定要更新此渠道客栈的信息?')){
+            var _this = $(this);
+            var otaInfoId = _this.attr("otaInfoId");
+            var innId = _this.attr("innId");
+            var url = '<c:url value="/inn_manage/update_inn_ota"/>';
+            var i = layer.load(0,{time: 7*1000});
             $.ajax({
                 data:{"otaInfoId":otaInfoId,"innId":innId},
                 type:'post',
