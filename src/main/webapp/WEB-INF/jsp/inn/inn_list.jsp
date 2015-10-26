@@ -210,7 +210,7 @@
     });
     $(".btn-primary").on('click',function(){
         if(window.confirm('你确定要更新此渠道客栈的信息?')){
-            layer.load(0);
+            layer.load(0,{time: 6*1000});
             var _this = $(this);
             var otaInfoId = _this.attr("otaInfoId");
             var innId = _this.attr("innId");
@@ -223,7 +223,6 @@
                 success:function(data){
                     if(data.status=='200'){
                         layer.msg("更新成功");
-                        $('.form-page').submit();
                     }else{
                         layer.msg("更新失败:"+data.message);
                     }
