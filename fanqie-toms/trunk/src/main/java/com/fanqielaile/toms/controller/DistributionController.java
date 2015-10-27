@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
@@ -7,6 +8,7 @@ import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
@@ -83,7 +85,10 @@ public class DistributionController extends BaseController{
         model.addAttribute("labels", innLabels);
         //分页对象
         Paginator paginator = ((PageList) orderConfigDtoList).getPaginator();
-        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        Pagination pagination = PaginationHelper.toPagination(paginator);
+        FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+        model.addAttribute("pagination",pagination);
+        model.addAttribute("pageDecorator",pageDecorator);
         //保存查询条件
         model.addAttribute("innLabel", innLabelId);
         model.addAttribute("orderConfigDtoList",orderConfigDtoList);
@@ -129,7 +134,10 @@ public class DistributionController extends BaseController{
         model.addAttribute("labels", innLabels);
         //分页对象
         Paginator paginator = ((PageList) orderConfigDtoList).getPaginator();
-        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        Pagination pagination = PaginationHelper.toPagination(paginator);
+        FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+        model.addAttribute("pagination",pagination);
+        model.addAttribute("pageDecorator",pageDecorator);
         //保存查询条件
         model.addAttribute("innLabel", innLabelId);
         model.addAttribute("keywords", keywords);

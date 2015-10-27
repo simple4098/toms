@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
@@ -59,45 +60,7 @@
         </table>
     </div>
     <c:if test="${not empty inn.innActiveList && page.pageCount>1}">
-        <div class="container">
-            <div class="text-center">
-                <ul class="pagination">
-
-                    <li <c:if test="${page.page==1}">class="disabled"</c:if>>
-                        <a <c:if test="${page.page!=1}">onclick="page(${page.page-1})"</c:if>>
-                            <i class="icon-double-angle-left"></i>
-                        </a>
-                    </li>
-
-                    <c:forEach begin="1" end="${page.pageCount}" step="1" varStatus="vs"  var="p">
-                        <c:if test="${vs.count<11}">
-                            <li <c:if test="${page.page==p}">class="active"</c:if>>
-                                <a onclick="page(${p})">${p}</a>
-                            </li>
-                        </c:if>
-                        <c:if test="${vs.count==10}">
-                            <li>
-                                <a >...</a>
-                            </li>
-                        </c:if>
-                        <c:if test="${vs.count>10}">
-                            <c:if test="${vs.count==page.pageCount}">
-                                <li <c:if test="${page.page==p}">class="active"</c:if>>
-                                    <a onclick="page(${p})">${p}</a>
-                                </li>
-                            </c:if>
-                        </c:if>
-                    </c:forEach>
-                    <c:if test="${page.page!=page.pageCount}">
-                        <li>
-                            <a onclick="page(${page.page+1})">
-                                <i class="icon-double-angle-right"></i>
-                            </a>
-                        </li>
-                    </c:if>
-                </ul>
-            </div>
-        </div>
+        <toms:page linkUrl="/inn_manage/activeInn"  pagerDecorator="${pageDecorator}"/>
     </c:if>
     <c:if test="${empty inn.innActiveList}">
         <div class="alert alert-danger center">

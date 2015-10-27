@@ -8,6 +8,7 @@ import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
@@ -96,7 +97,10 @@ public class InnManageController extends BaseController {
             model.addAttribute("company", company);
             //分页对象
             Paginator paginator = ((PageList) bangInnList).getPaginator();
-            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+            Pagination pagination = PaginationHelper.toPagination(paginator);
+            FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+            model.addAttribute("pagination",pagination);
+            model.addAttribute("pageDecorator",pageDecorator);
             //保存查询条件
             model.addAttribute("innLabel", innLabelId);
             model.addAttribute("userId", userId);
@@ -184,6 +188,8 @@ public class InnManageController extends BaseController {
         //paramDto.setInnIds();
         try {
             ActiveInnDto activeInnDto = innActiveService.findActiveInnDto(paramDto,currentUser);
+            FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(activeInnDto.getPagination());
+            model.addAttribute("pageDecorator",pageDecorator);
             model.addAttribute("inn",activeInnDto);
             model.addAttribute("paramDto",paramDto);
         } catch (Exception e) {
