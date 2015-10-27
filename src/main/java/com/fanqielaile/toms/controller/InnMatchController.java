@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.support.PageDecorator;
+import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
@@ -13,6 +15,7 @@ import com.fanqielaile.toms.model.fc.FcRatePlan;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.util.Constants;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
@@ -75,7 +78,10 @@ public class InnMatchController extends BaseController {
         model.addAttribute("list",bangInns);
         model.addAttribute("bangInnDto",bangInnDto);
         Paginator paginator = ((PageList) bangInns).getPaginator();
-        model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+        Pagination pagination = PaginationHelper.toPagination(paginator);
+        FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+        model.addAttribute("pagination",pagination);
+        model.addAttribute("pageDecorator",pageDecorator);
         model.addAttribute("infoList", infoRefDtoList);
         return "/match/inn_match_list";
     }

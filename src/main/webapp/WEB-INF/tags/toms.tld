@@ -11,6 +11,25 @@
     <short-name>toms</short-name>
 
     <tag>
+        <name>page</name>
+        <tag-class>com.fanqie.support.PagerTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>linkUrl</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>param</name>
+            <required>false</required>
+        </attribute>
+        <attribute>
+            <name>pagerDecorator</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>com.fanqie.support.PageDecorator</type>
+        </attribute>
+    </tag>
+    <tag>
         <name>currentUser</name>
         <tag-class>com.fanqielaile.toms.support.tag.CurrentUserTag</tag-class>
         <body-content>empty</body-content>

@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <head>
     <title>客栈接单设置</title>
     <script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
@@ -97,45 +98,7 @@
             </div>
         </div>
         <c:if test="${page.pageCount>1}">
-        <!-- PAGE CONTENT ENDS -->
-        <div class="container">
-            <div class="text-center">
-                <ul class="pagination">
-                    <li <c:if test="${page.page==1}">class="disabled"</c:if>>
-                        <a <c:if test="${page.page!=1}">onclick="page(${page.page-1})"</c:if>>
-                            <i class="icon-double-angle-left"></i>
-                        </a>
-                    </li>
-
-                    <c:forEach begin="1" end="${page.pageCount}" step="1" varStatus="vs" var="p">
-                        <c:if test="${vs.count<11}">
-                            <li <c:if test="${page.page==p}">class="active"</c:if>>
-                                <a onclick="page(${p})">${p}</a>
-                            </li>
-                        </c:if>
-                        <c:if test="${vs.count ==10}">
-                            <li>
-                                <a>...</a>
-                            </li>
-                        </c:if>
-                        <c:if test="${vs.count >10}">
-                            <c:if test="${vs.count==page.pageCount}">
-                                <li <c:if test="${page.page==p}">class="active"</c:if>>
-                                    <a onclick="page(${p})">${p}</a>
-                                </li>
-                            </c:if>
-                        </c:if>
-                    </c:forEach>
-                    <c:if test="${page.page!=page.pageCount}">
-                        <li>
-                            <a onclick="page(${page.page+1})">
-                                <i class="icon-double-angle-right"></i>
-                            </a>
-                        </li>
-                    </c:if>
-                </ul>
-            </div>
-        </div>
+            <toms:page linkUrl="/distribution/orderConfig"  pagerDecorator="${pageDecorator}"/>
         </c:if>
         <c:if test="${empty orderConfigDtoList}">
             <div class="alert alert-danger center">
