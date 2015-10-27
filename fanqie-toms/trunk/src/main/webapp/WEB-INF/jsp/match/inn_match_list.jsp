@@ -14,12 +14,12 @@
   <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
   <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">--%>
 
-  <link rel="stylesheet" type="text/css" href="/assets/css/userSet.css">
-  <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
-  <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
-  <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">
-  <script src="/assets/js/jquery-2.0.3.min.js"></script>
-  <script src="/assets/layer/layer.js"></script>
+  <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/userSet.css'/>">
+  <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
+  <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
+  <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/innRelation.css'/>">
+  <script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
+  <script src="<c:url value='/assets/layer/layer.js'/>"></script>
 </head>
 <body>
 <div class="container">
