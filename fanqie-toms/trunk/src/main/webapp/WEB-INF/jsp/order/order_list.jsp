@@ -28,6 +28,7 @@
         <input type="hidden" name="endDate" value="${order.endDate}"/>
         <input type="hidden" name="channelSource" class="channel-source-text" value="${order.channelSource}"/>
         <input type="hidden" name="orderStatus" class="order-status-text" value="${order.orderStatus}"/>
+        <input type="hidden" name="channelOrderCode" class="channel-order-code" value="${order.channelOrderCode}"/>
     </form>
     <div class="row">
         <div class="col-xs-12">
@@ -65,7 +66,6 @@
                         <div>
                             日期选择：
                             <select name="searchType" class="search-type">
-                                <option value="">请选择</option>
                                 <option
                                         <c:if test="${order.searchType == 'order_time'}">selected</c:if>
                                         value="order_time">下单日期
@@ -84,6 +84,8 @@
                             至 <input class="end-date" type="text"
                                                                         value="${order.endDate}" name="endDate"
                                                                         placeholder="截止时间"/>
+                            关键字：<input type="text" value="${order.channelOrderCode}" name="channelOrderCode"
+                                       placeholder="渠道订单号"/>
                             <button type="submit" class="btn-info btn-search">查询</button>
                         </div>
                     </form>
@@ -123,12 +125,16 @@
                                     <select name="orderStatus" class="order-status">
                                         <option selected value="">订单状态</option>
                                         <option
+                                                <c:if test="${order.orderStatus == 'ACCEPT'}">selected</c:if>
+                                                value="ACCEPT">自动接收
+                                        </option>
+                                        <option
                                                 <c:if test="${order.orderStatus == 'CONFIM_AND_ORDER'}">selected</c:if>
-                                                value="CONFIM_AND_ORDER">已确认并下单
+                                                value="CONFIM_AND_ORDER">人工确认并下单
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'CONFIM_NO_ORDER'}">selected</c:if>
-                                                value="CONFIM_NO_ORDER">已确认但不下单
+                                                value="CONFIM_NO_ORDER">人工确认但不下单
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'REFUSE'}">selected</c:if>
@@ -136,7 +142,7 @@
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'HAND_REFUSE'}">selected</c:if>
-                                                value="HAND_REFUSE">手动拒绝
+                                                value="HAND_REFUSE">人工拒绝
                                         </option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'CANCEL_ORDER'}">selected</c:if>
@@ -152,7 +158,8 @@
                                 <th>房型</th>
                                 <th>房间数</th>
                                 <th class="hidden-240">住离日期</th>
-                                <th>总价/预付金额</th>
+                                <th>总价</th>
+                                <th>预付金额</th>
                                 <th>成本价</th>
                                 <th>下单时间</th>
                                 <th>操作</th>
@@ -175,7 +182,8 @@
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
-                                        <td>${d.totalPrice}/${d.prepayPrice}</td>
+                                        <td>${d.totalPrice}</td>
+                                        <td>${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>

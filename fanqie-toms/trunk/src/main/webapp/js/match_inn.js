@@ -1,21 +1,80 @@
-
+//分页方法
+function page(page) {
+    $("#pageId").attr("value", page);
+    $("#form-page").submit();
+}
 
 //搜索房仓酒店
 $(".search-btn").on("click",function(){
     var _this = $(this);
+    var page = $(this).attr('data-value');
+    if (page <= 1 || page == null) {
+        page = 1;
+    }
     var data_url = _this.attr("data-url");
     var searchValue = $("#search-id").val();
     $.ajax({
         type:'POST',
         url:data_url,
         dataType:'html',
-        data:{'innName':searchValue},
+        data: {'innName': searchValue, 'page': page},
         success:function(data){
             $("#contentId").html(data);
         },error:function(data){
             alert(data);
         }
     })
+})
+//上一页
+$(".search-btn-up").on("click", function () {
+    var _this = $(this);
+    var maxPage = parseInt($('.max-page').val());
+    var pageNow = parseInt($('.conment-page').val());
+    if (pageNow <= 1 || pageNow == null) {
+        pageNow = 1;
+    }
+    pageNow -= 1;
+    var data_url = _this.attr("data-url");
+    var searchValue = $("#search-id").val();
+    $.ajax({
+        type: 'POST',
+        url: data_url,
+        dataType: 'html',
+        data: {'innName': searchValue, 'page': pageNow},
+        success: function (data) {
+            //$(".conment-page").val(data.page);
+            $("#contentId").html(data);
+        }, error: function (data) {
+
+        }
+    });
+})
+//下一页
+$(".search-btn-down").on("click", function () {
+    var _this = $(this);
+    var maxPage = parseInt($('.max-page').val());
+    var pageNow = parseInt($('.conment-page').val());
+    if (pageNow <= 1 || pageNow == null) {
+        pageNow = 1;
+    }
+    if (pageNow >= maxPage) {
+        pageNow = 1;
+    }
+    pageNow += 1;
+    var data_url = _this.attr("data-url");
+    var searchValue = $("#search-id").val();
+    $.ajax({
+        type: 'POST',
+        url: data_url,
+        dataType: 'html',
+        data: {'innName': searchValue, 'page': pageNow},
+        success: function (data) {
+            //$(".conment-page").val(data.page);
+            $("#contentId").html(data);
+        }, error: function (data) {
+
+        }
+    });
 })
 //绑定房仓酒店
 $("#btn-primary-id").on("click",function(){

@@ -63,11 +63,15 @@
                   <div id="not-match-id"  <c:if test="${!(empty otaInnOtaDto)}">style="display: none"</c:if>>
                   <div class="inn-search">
                     <span>搜索可匹配标准酒店</span>
-                    <input type="text" id="search-id" placeholder="输入酒店关键字搜索">
-                    <button type="button" data-url="<c:url value="/innMatch/ajax/searchInn"/>" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
+                    <input type="text" id="search-id" placeholder="输入酒店关键字搜索" value="${keyword}">
+                    <button type="button" data-value="1" data-url="<c:url value="/innMatch/ajax/searchInn"/>"
+                            id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn"
+                            autocomplete="off">
                       搜索
                       <i class="icon-search icon-on-right bigger-110"></i>
                     </button>
+                    <a class="search-btn-up" data-url="<c:url value="/innMatch/ajax/searchInn"/>">上一页</a> &nbsp;
+                    <a class="search-btn-down" data-url="<c:url value="/innMatch/ajax/searchInn"/>">下一页</a>
                   </div>
                   <div id="contentId">
                     <%--<label>
@@ -88,10 +92,9 @@
                     </c:forEach>
                   </div>
                   </div>
-
                 </div>
-
           </div>
+
           <hr class="hr-2">
           <c:if test="${empty otaInnOtaDto}">
           <button data-url="<c:url value="/innMatch/ajax/match.json"/> " class="btn btn-primary" id="btn-primary-id">提交匹配</button>
@@ -152,6 +155,7 @@
             </div>
             <hr class="hr-2">
             <button class="btn btn-primary" data-url="<c:url value="/innMatch/ajax/matchRoomType.json"/>" id="roomTypeBtn">提交匹配</button>
+
           </div>
           <c:if test="${!(empty matchRoomTypeList)}">
           <div class="roomtype-table room-list-class">

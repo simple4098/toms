@@ -1,6 +1,8 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import com.fanqielaile.toms.model.fc.FcHotelInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -42,4 +44,13 @@ public interface IFcHotelInfoDao {
      * @param fcHotelInfoDto
      */
     void updateFcHotelInfo(FcHotelInfoDto fcHotelInfoDto);
+
+    /**
+     * 分页查询房仓客栈信息
+     *
+     * @param innName
+     * @param pageBounds
+     * @return
+     */
+    List<FcHotelInfo> selectFcHotelInfoByPage(@Param("innName") String innName, PageBounds pageBounds);
 }

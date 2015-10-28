@@ -5,7 +5,7 @@ package com.fanqielaile.toms.enums;
  * 订单状态
  */
 public enum OrderStatus {
-    ACCEPT("接受"),
+    ACCEPT("自动接受"),
     DEAL("已处理"),
     NOT_DEAL("待处理"),
     CONFIM_AND_ORDER("确认并下单"),

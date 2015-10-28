@@ -3,7 +3,9 @@ package com.fanqielaile.toms.service;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
 import com.fanqielaile.toms.dto.FcRoomTypeInfoDto;
+import com.fanqielaile.toms.model.fc.FcHotelInfo;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -43,4 +45,13 @@ public interface IFcHotelInfoService {
 
     //excel 导出
     void excel(String companyId,List<BangInnDto> bangInns,HttpServletResponse response)throws Exception;
+
+    /**
+     * 分页查询房仓客栈信息
+     *
+     * @param innName
+     * @param pageBounds
+     * @return
+     */
+    List<FcHotelInfo> findFcHotelByPage(String innName, PageBounds pageBounds);
 }

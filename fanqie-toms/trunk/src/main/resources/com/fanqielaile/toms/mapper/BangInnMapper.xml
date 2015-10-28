@@ -63,7 +63,10 @@
     <select id="selectBangInnByInnLabelId" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from bang_inn where inn_label_id = #{innLabelId} and deleted=0
+        from bang_inn where deleted=0
+        <if test="innLabelId != null and innLabelId != ''">
+            and inn_label_id = #{innLabelId}
+        </if>
         <if test="userInfo.dataPermission == 0">
             and user_id = #{userInfo.id}
         </if>

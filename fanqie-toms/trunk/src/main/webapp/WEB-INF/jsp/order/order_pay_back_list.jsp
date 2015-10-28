@@ -68,7 +68,7 @@
                       元
                     </div>--%>
                     <div class="table-header">
-                        <span style="color: red">注：请和淘宝酒店管理后台选择相同的操作执行</span>
+                        <span style="color: white">注：请和淘宝酒店管理后台选择相同的操作执行</span>
                     </div>
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
@@ -85,7 +85,8 @@
                                 <th>房型</th>
                                 <th>房间数</th>
                                 <th style="width: 180px;">住离日期</th>
-                                <th>总价/预付金额</th>
+                                <th>总价</th>
+                                <th>预付金额</th>
                                 <th>成本价</th>
                                 <th>下单时间</th>
                                 <th>查看</th>
@@ -109,7 +110,8 @@
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
-                                        <td>${d.totalPrice}/${d.prepayPrice}</td>
+                                        <td>${d.totalPrice}</td>
+                                        <td>${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
