@@ -318,6 +318,8 @@ public class OrderService implements IOrderService {
                 logger.info("绑定客栈不存在" + order.getOTAHotelId());
                 return new JsonModel(false, "绑定客栈不存在");
             }
+            //公司信息
+            Company company = this.companyDao.selectCompanyById(order.getCompanyId());
             //查询当前酒店以什么模式发布
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
             if (otaInnOtaDto.getsJiaModel().equals("MAI")) {
@@ -340,11 +342,11 @@ public class OrderService implements IOrderService {
                     order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
                 }
             }
-            logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, dictionary).toString());
+            logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, company).toString());
             String respose = "";
             JSONObject jsonObject = null;
             try {
-                respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, dictionary));
+                respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(order, company));
                 jsonObject = JSONObject.fromObject(respose);
             } catch (Exception e) {
                 order.setOrderStatus(OrderStatus.REFUSE);
@@ -666,6 +668,8 @@ public class OrderService implements IOrderService {
         ParamDto paramDto = new ParamDto();
         paramDto.setCompanyId(userInfo.getCompanyId());
         paramDto.setUserId(userInfo.getId());
+        //公司信息
+        Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
         //这里的accountId为绑定客栈的ID
         BangInnDto bangInn = bangInnDao.selectBangInnById(order.getBangInnId());
         if (1 == order.getMaiAccount()) {
@@ -685,8 +689,8 @@ public class OrderService implements IOrderService {
         Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
         try {
 
-            logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, dictionary).toString());
-            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, dictionary));
+            logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, company).toString());
+            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, company));
             jsonObject = JSONObject.fromObject(respose);
         } catch (Exception e) {
             hangOrder.setOrderStatus(OrderStatus.REFUSE);
