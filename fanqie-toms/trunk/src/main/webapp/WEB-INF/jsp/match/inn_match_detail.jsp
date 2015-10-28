@@ -125,6 +125,7 @@
                       <input type="hidden"  data-roomTypeId="${room.roomTypeId}" data-roomTypeName="${room.roomTypeName}" data-area="${room.roomArea}">
                       <p class="inn-roomname">${room.roomTypeName}|<span>未匹配</span></p>
                       <p>面积：<c:if test="${!(empty room.roomArea)}">${room.roomArea}平方米</c:if> <c:if test="${empty room.roomArea}">未知</c:if> </p>
+                      <p>床数:${room.bedNum} 床长:${room.bedLen} 床宽:${room.bedWid}</p>
                     </div>
                   </c:forEach>
                 </div>
