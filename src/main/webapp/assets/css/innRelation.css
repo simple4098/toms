@@ -102,7 +102,7 @@ select.form-control {
 }
 .inn-rooms{
 	width: 232px;
-	height: 42px;
+	height: 64px;
 	border: 1px solid #ccc;
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -115,7 +115,7 @@ select.form-control {
 }
 .inn-rooms-box{
 	width: 232px;
-	height: 42px;
+	height: 64px;
 	border: 1px dashed #ccc;
 	border-radius: 5px;
 	margin-bottom: 10px;
@@ -130,7 +130,7 @@ select.form-control {
 }
 .inn-rooms-icon{
 	width: 232px;
-	height: 42px;
+	height: 64px;
 	margin-bottom: 10px;
 	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASkAAAALCAYAAAAjinsLAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsSAAALEgHS3X78AAABEElEQVRo3u3asU3DUBDG8b9pI9ISRYJkguzgjmSALOEBIHJtJQu4d80AQOcZ2CBxEUFtUZvCpgPLeq84nfT92nfFV53su0sQiVQW9Qp4BnbAAvgEXoFTlqcX63ziW2IdQHwri/oReAFu/3hugX2Wp+/WOcUvNSkJVhb1GvgA5iNlLbDJ8vRsnVd8urEOIK4dGG9Q0H9hPVkHFb/UpCTGdmLdzjqo+JVUVdVZhxCfvq8P0E2YGCQds2VjHVec0kxKgpVF3QD3E0qbLE9X1nnFJ/3uSYy3iXXa7kkwNSmJcaTf3o1phzqRIGpSEmw4K9jzf6P6vZM6W2cVvzSTkmjDxfmBfot3B3zRX5wfdXEusX4As74zkQTdPnQAAAAASUVORK5CYII=") -32px 15px no-repeat;
 }
