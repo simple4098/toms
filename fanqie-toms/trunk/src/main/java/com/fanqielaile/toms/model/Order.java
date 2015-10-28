@@ -525,16 +525,16 @@ public class Order extends Domain {
      * 处理创建订单参数
      *
      * @param order
-     * @param dictionary
+     * @param company
      * @return
      */
-    public static OrderParamDto toOrderParamDto(Order order, Dictionary dictionary) {
+    public static OrderParamDto toOrderParamDto(Order order, Company company) {
         OrderParamDto orderParamDto = new OrderParamDto();
-        orderParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
-        orderParamDto.setvName(dictionary.getvName());
-        orderParamDto.setvPWD(dictionary.getvPWD());
+        orderParamDto.setOtaId(company.getOtaId());
+        orderParamDto.setvName(company.getUserAccount());
+        orderParamDto.setvPWD(company.getUserPassword());
         OMSOrder omsOrder = new OMSOrder();
-        omsOrder.setOtaId(Integer.parseInt(dictionary.getValue()));
+        omsOrder.setOtaId(company.getOtaId());
         omsOrder.setAccountId(order.getAccountId());
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
