@@ -11,6 +11,7 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.fc.FcHotelInfo;
 import com.fanqielaile.toms.model.fc.FcRatePlan;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.service.*;
@@ -127,9 +128,20 @@ public class InnMatchController extends BaseController {
 
     //房仓客栈搜索
     @RequestMapping("/ajax/searchInn")
-    public String searchInn(Model model,BangInnDto bangInnDto){
-        List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInnDto.getInnName());
+    public String searchInn(Model model, BangInnDto bangInnDto, @RequestParam(defaultValue = "1", required = false) int page) {
+//        List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInnDto.getInnName());
+        List<FcHotelInfo> hotel = fcHotelInfoService.findFcHotelByPage(bangInnDto.getInnName(), new PageBounds(page, 3));
         model.addAttribute("hotel",hotel);
+        //封装分页信息
+        Paginator paginator = ((PageList) hotel).getPaginator();
+        Pagination pagination = PaginationHelper.toPagination(paginator);
+        FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+        model.addAttribute("pagination", pagination);
+        model.addAttribute("pageDecorator", pageDecorator);
+        model.addAttribute("keyword", bangInnDto.getInnName());
+        //当前页
+        model.addAttribute("page", page);
+        model.addAttribute("maxPage", pagination.getPageCount());
         return "/match/ajax_fc_hotel";
     }
 

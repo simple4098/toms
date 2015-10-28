@@ -6,8 +6,11 @@
       <p>暂不匹配</p>
     </div>
   </label>--%>
+<input type="hidden" name="page" class="conment-page" value="${page}"/>
+<input type="hidden" name="maxPage" class="max-page" value="${maxPage}"/>
   <c:forEach items="${hotel}" var="ho">
-    <label>
+
+  <label>
       <input type="radio" name="fcHotelId" value="${ho.hotelId}">
       <div class="result-box">
         <p>名称：<span>${ho.hotelName}</span></p>

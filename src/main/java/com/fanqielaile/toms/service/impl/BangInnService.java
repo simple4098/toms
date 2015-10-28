@@ -53,16 +53,28 @@ public class BangInnService implements IBangInnService {
     public List<BangInn> findBangInnAndLabel(UserInfo userInfo) {
         List<BangInn> results = new ArrayList<>();
         List<BangInn> labels = this.bangInnDao.selectBangInnByUser(userInfo);
+        //新增一个全部客栈分类，即查询当前登录用户下所有绑定的客栈
+        BangInn bangInn1 = new BangInn();
+        bangInn1.setInnLabelId(null);
+        labels.add(bangInn1);
         if (null != labels) {
             for (BangInn bangInn : labels) {
-                List<BangInn> inns = this.bangInnDao.selectBangInnByInnLabelId(bangInn.getInnLabelId(),userInfo);
-                InnLabel innLabel = this.innLabelDao.selectLabelById(bangInn.getInnLabelId());
-                if (null != innLabel && null != inns) {
-                    BangInn inn = new BangInn();
-                    inn.setInnLabelId(innLabel.getId());
-                    inn.setInnLabelName(innLabel.getLabelName());
-                    inn.setBangInnList(inns);
-                    results.add(inn);
+                List<BangInn> inns = this.bangInnDao.selectBangInnByInnLabelId(bangInn.getInnLabelId(), userInfo);
+                if (StringUtils.isEmpty(bangInn.getInnLabelId())) {
+                    BangInn bangInn2 = new BangInn();
+                    bangInn2.setInnLabelId(null);
+                    bangInn2.setInnLabelName("全部客栈分类");
+                    bangInn2.setBangInnList(inns);
+                    results.add(bangInn2);
+                } else {
+                    InnLabel innLabel = this.innLabelDao.selectLabelById(bangInn.getInnLabelId());
+                    if (null != innLabel && null != inns) {
+                        BangInn inn = new BangInn();
+                        inn.setInnLabelId(innLabel.getId());
+                        inn.setInnLabelName(innLabel.getLabelName());
+                        inn.setBangInnList(inns);
+                        results.add(inn);
+                    }
                 }
             }
         }

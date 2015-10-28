@@ -41,6 +41,7 @@ public class FcBaseInfoTest {
 
 
     @Test
+    @Ignore
     public void testDownLoadFromFc() throws DocumentException {
         this.orderService.getFcAddHotelInfo();
 //        FileDealUtil.deleteDir(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd")));
@@ -54,9 +55,9 @@ public class FcBaseInfoTest {
      */
 
     @Test
-    @Ignore
+//    @Ignore
     public void testMakeFcBaseInfo() throws DocumentException {
-        File file = new File("f:/all");
+        File file = new File("e:/all_10");
         if (file.isDirectory()) {
             System.out.println(file.list().length);
             File[] f = file.listFiles();

@@ -146,6 +146,9 @@
             <if test="order.searchType != null and order.searchType != ''">
                 and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
             </if>
+            <if test="order.channelOrderCode != null and order.channelOrderCode != ''">
+                and oto.channel_order_code = '${order.channelOrderCode}'
+            </if>
         </where>
         ORDER BY oto.order_time DESC
     </select>

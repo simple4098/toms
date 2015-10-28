@@ -16,6 +16,7 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ExportExcelUtil;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,11 @@ public class FcHotelInfoService implements IFcHotelInfoService {
         FcHotelInfoDto fcHotelInfoDto = new FcHotelInfoDto();
         fcHotelInfoDto.setHotelName(innName);
         return fcHotelInfoDao.selectFcHotel(fcHotelInfoDto);
+    }
+
+    @Override
+    public List<FcHotelInfo> findFcHotelByPage(String innName, PageBounds pageBounds) {
+        return this.fcHotelInfoDao.selectFcHotelInfoByPage(innName, pageBounds);
     }
 
     @Override

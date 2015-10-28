@@ -45,7 +45,6 @@ $('.btn-order').on('click', function () {
         type: 'post',
         dataType: 'json',
         success: function (data) {
-
             if (data.status) {
                 $('.cancel-order-id').val(data.order.id);
                 $('.order-status').html("订单状态：" + data.order.orderStatusDesc);
@@ -87,11 +86,13 @@ $('.btn-confirm').on('click', function () {
 /*确认下单按钮*/
 $('.btn-confirm-sure').on('click', function () {
     var url = $('.confirm-url').val();
+    layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
         type: 'post',
         dataType: 'json',
         success: function (data) {
+            layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -104,6 +105,7 @@ $('.btn-confirm-sure').on('click', function () {
         }
         ,
         error: function () {
+            layer.closeAll('loading');
             layer.msg('系统错误');
         }
     })
@@ -117,11 +119,13 @@ $('.btn-refues').on('click', function () {
 /*直接拒绝订单确认*/
 $('.btn-refues-sure').on('click', function () {
     var url = $('.refues-url').val();
+    layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
         type: 'post',
         dataType: 'json',
         success: function (data) {
+            layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -133,6 +137,7 @@ $('.btn-refues-sure').on('click', function () {
             }
         },
         error: function () {
+            layer.closeAll('loaidng');
             layer.msg("系统错误");
         }
     })
@@ -147,11 +152,13 @@ $('.btn-confirm-no').on('click', function () {
 
 $('.btn-confirm-no-sure').on('click', function () {
     var url = $('.confirm-no-url').val();
+    layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
         type: 'post',
         dataType: 'json',
         success: function (data) {
+            layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -163,6 +170,7 @@ $('.btn-confirm-no-sure').on('click', function () {
             }
         },
         error: function () {
+            layer.closeAll('loading');
             layer.msg("系统错误");
         }
     })
@@ -178,11 +186,13 @@ $('.pay-back-sure').on('click', function () {
 });
 $('.btn-pay-back-sure').on('click', function () {
     var url = $('.pay-back-sure-url').val();
+    layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
         type: 'post',
         dataType: 'json',
         success: function (data) {
+            layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -194,6 +204,7 @@ $('.btn-pay-back-sure').on('click', function () {
             }
         },
         error: function () {
+            layer.closeAll('loading');
             layer.msg("系统错误");
         }
     })
@@ -206,11 +217,13 @@ $('.refuse-pay-back').on('click', function () {
 });
 $('.btn-refuse-pay-back-sure').on('click', function () {
     var url = $('.refuse-pay-back-url').val();
+    layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
         type: 'post',
         dataType: 'json',
         success: function (data) {
+            layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -222,6 +235,7 @@ $('.btn-refuse-pay-back-sure').on('click', function () {
             }
         },
         error: function () {
+            layer.closeAll('loading');
             layer.msg("系统错误");
         }
     })
@@ -233,11 +247,13 @@ $(".btn-cancel-order").on('click', function () {
     layer.confirm('取消订单后，将无法恢复，确认要取消吗？', {
         btn: ['确定', '取消'] //按钮
     }, function () {
+        layer.msg('加载中', {icon: 16});
         $.ajax({
             url: url + "?orderId=" + orderId,
             type: 'post',
             dataType: 'json',
             success: function (data) {
+                layer.closeAll('loading');
                 if (data.status) {
                     layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                         window.location.reload();
@@ -249,6 +265,7 @@ $(".btn-cancel-order").on('click', function () {
                 }
             },
             error: function () {
+                layer.closeAll('loading');
                 layer.msg("系统错误");
             }
         })
