@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.OrderMethod;
@@ -10,6 +11,7 @@ import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
@@ -57,7 +59,10 @@ public class OrderController extends BaseController {
             model.addAttribute(Constants.DATA, orderParamDtos);
             //封装分页信息
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
-            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+            Pagination pagination = PaginationHelper.toPagination(paginator);
+            FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+            model.addAttribute("pagination",pagination);
+            model.addAttribute("pageDecorator",pageDecorator);
             //分转查询条件
             model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
