@@ -19,6 +19,7 @@ import org.dom4j.Element;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -125,6 +126,16 @@ public class Order extends Domain {
 
     //绑定客栈的ID
     private String bangInnId;
+    //订单价格比例
+    private BigDecimal percent;
+
+    public BigDecimal getPercent() {
+        return percent;
+    }
+
+    public void setPercent(BigDecimal percent) {
+        this.percent = percent;
+    }
 
     public String getBangInnId() {
         return bangInnId;
@@ -393,7 +404,7 @@ public class Order extends Domain {
     }
 
     public BigDecimal getCostPrice() {
-        return costPrice;
+        return new BigDecimal(new DecimalFormat("#0.00").format(costPrice));
     }
 
     public void setCostPrice(BigDecimal costPrice) {
@@ -615,8 +626,9 @@ public class Order extends Domain {
         handOrder.setLiveTime(order.getLiveTime());
         handOrder.setLeaveTime(order.getLeaveTime());
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
-        handOrder.setCostPrice(handOrder.getTotalPrice());
-        //TODO 设置预付，成本，ota佣金价格
+        //设置成本价，总价*（1-比例）
+        handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
+        //TODO 设置预付，成本
         handOrder.setPrepayPrice(order.getPayment());
         handOrder.setPayment(order.getPayment());
         handOrder.setOrderTime(new Date());

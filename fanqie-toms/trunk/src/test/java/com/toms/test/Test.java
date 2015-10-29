@@ -7,6 +7,7 @@ import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
@@ -24,10 +25,10 @@ public class Test {
         System.out.println(i);
         System.out.println(nextInt);*/
 
-        CurrencyCode[] values = CurrencyCode.values();
+        /*CurrencyCode[] values = CurrencyCode.values();
         for (CurrencyCode c:values){
             System.out.println(c.name()+"-"+c.getValue());
-        }
+        }*/
 
     }
 }
