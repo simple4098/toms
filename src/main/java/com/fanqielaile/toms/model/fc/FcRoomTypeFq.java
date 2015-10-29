@@ -31,6 +31,9 @@ public class FcRoomTypeFq extends Domain {
     private String fcRoomTypeName;
     //上架
     private Integer sj;
+    private String bedNum;
+    private String bedLen;
+    private String bedWid;
 
     public Integer getSj() {
         return sj;
@@ -134,5 +137,29 @@ public class FcRoomTypeFq extends Domain {
 
     public void setFcRoomTypeId(String fcRoomTypeId) {
         this.fcRoomTypeId = fcRoomTypeId;
+    }
+
+    public String getBedNum() {
+        return bedNum;
+    }
+
+    public void setBedNum(String bedNum) {
+        this.bedNum = bedNum;
+    }
+
+    public String getBedLen() {
+        return bedLen;
+    }
+
+    public void setBedLen(String bedLen) {
+        this.bedLen = bedLen;
+    }
+
+    public String getBedWid() {
+        return bedWid;
+    }
+
+    public void setBedWid(String bedWid) {
+        this.bedWid = bedWid;
     }
 }
