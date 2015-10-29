@@ -199,6 +199,9 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
                     fcRoomTypeFq.setOtaInfoId(dto.getOtaInfoId());
                     fcRoomTypeFq.setOtaInnOtaId(innOtaDto.getId());
                     fcRoomTypeFq.setFqRoomTypeId(room.getRoomTypeId());
+                    fcRoomTypeFq.setBedLen(room.getBedLen());
+                    fcRoomTypeFq.setBedNum(room.getBedNum());
+                    fcRoomTypeFq.setBedWid(room.getBedWid());
                     if (!StringUtils.isEmpty(room.getFcRoomTypeId())){
                         roomType = new RoomType();
                         roomType.setFcRoomTypeId(Long.valueOf(room.getFcRoomTypeId()));

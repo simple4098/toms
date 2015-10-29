@@ -17,6 +17,9 @@
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
         <result column="sj" property="sj"/>
+        <result column="bed_num" property="bedNum"/>
+        <result column="bed_len" property="bedLen"/>
+        <result column="bed_wid" property="bedWid"/>
     </resultMap>
     <resultMap id="resultDtoMapId" type="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" extends="resultMapId">
         <result column="currency" property="fcRatePlanDto.currency"/>
@@ -33,11 +36,11 @@
     <insert id="saveRoomTypeFq" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto">
         insert into fc_roomtype_fq( id,company_id,inn_id,fc_hotel_id,ota_inn_ota_id,ota_info_id,fq_roomtype_id
         ,fc_roomtype_id,room_area,fq_roomtype_name,fc_roomtype_name
-        ,created_date,updated_date,deleted,sj)values
+        ,created_date,updated_date,deleted,sj,bed_num,bed_len,bed_wid)values
         <foreach collection="fcRoomTypeFqs" item="fc"  separator=",">
             (#{fc.uuid},#{fc.companyId},#{fc.innId},#{fc.fcHotelId},#{fc.otaInnOtaId},#{fc.otaInfoId},
             #{fc.fqRoomTypeId},#{fc.fcRoomTypeId},#{fc.roomArea},#{fc.fqRoomTypeName},
-            #{fc.fcRoomTypeName},now(),now(),0,-1)
+            #{fc.fcRoomTypeName},now(),now(),0,-1,#{fc.bedNum},#{fc.bedLen},#{fc.bedWid})
         </foreach>
     </insert>
 
@@ -45,7 +48,7 @@
         SELECT
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
-        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id,o.bed_num,o.bed_len,o.bed_wid
         from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
         where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId}

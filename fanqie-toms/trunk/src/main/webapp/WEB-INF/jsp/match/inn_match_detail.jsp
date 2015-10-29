@@ -125,7 +125,7 @@
                 <div class="col-sm-4" id="innRoomtype">
                   <c:forEach items="${omsRoomTypeList}" var="room">
                     <div class="inn-rooms">
-                      <input type="hidden"  data-roomTypeId="${room.roomTypeId}" data-roomTypeName="${room.roomTypeName}" data-area="${room.roomArea}">
+                      <input type="hidden" bedNum="${room.bedNum}" bedLen="${room.bedLen}" bedWid="${room.bedWid}" data-roomTypeId="${room.roomTypeId}" data-roomTypeName="${room.roomTypeName}" data-area="${room.roomArea}">
                       <p class="inn-roomname">${room.roomTypeName}|<span>未匹配</span></p>
                       <p>面积：<c:if test="${!(empty room.roomArea)}">${room.roomArea}平方米</c:if> <c:if test="${empty room.roomArea}">未知</c:if> </p>
                       <p>床数:${room.bedNum} 床长:${room.bedLen} 床宽:${room.bedWid}</p>
@@ -174,9 +174,10 @@
               <tr>
                 <td>${varS.count}</td>
                 <td>
-                  <input type="hidden" data-roomtypeid="${o.fqRoomTypeId}" data-roomtypename="${o.fqRoomTypeName}" data-area="${o.roomArea}">
+                  <input type="hidden" bedNum="${room.bedNum}" bedLen="${room.bedLen}" bedWid="${room.bedWid}" data-roomtypeid="${o.fqRoomTypeId}" data-roomtypename="${o.fqRoomTypeName}" data-area="${o.roomArea}">
                   <p class="inn-roomname">${o.fqRoomTypeName}|<span>${(empty o.fcRoomTypeId)?'未匹配':'匹配成功'}</span></p>
                   <p>面积(平方米)：${(empty o.roomArea)?'未知':o.roomArea}  </p>
+                  <p>床数:${o.bedNum} 床长:${o.bedLen} 床宽:${o.bedWid}</p>
                 </td>
                 <td>${o.fcRoomTypeName}</td>
                 <td>

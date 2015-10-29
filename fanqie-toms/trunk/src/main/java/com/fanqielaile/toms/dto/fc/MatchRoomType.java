@@ -17,6 +17,33 @@ public class MatchRoomType {
     private String fcRoomTypeId;
     //房仓房型名称
     private String fcRoomTypeName;
+    private String bedNum;
+    private String bedLen;
+    private String bedWid;
+
+    public String getBedNum() {
+        return bedNum;
+    }
+
+    public void setBedNum(String bedNum) {
+        this.bedNum = bedNum;
+    }
+
+    public String getBedLen() {
+        return bedLen;
+    }
+
+    public void setBedLen(String bedLen) {
+        this.bedLen = bedLen;
+    }
+
+    public String getBedWid() {
+        return bedWid;
+    }
+
+    public void setBedWid(String bedWid) {
+        this.bedWid = bedWid;
+    }
 
     public String getRoomTypeId() {
         return roomTypeId;

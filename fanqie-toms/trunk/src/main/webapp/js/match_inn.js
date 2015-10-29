@@ -217,10 +217,22 @@ $('#roomTypeBtn').click(function(){
         var innId = obj.attr("data-roomTypeId");
         var roomTypeName = obj.attr("data-roomTypeName");
         var roomTypeArea = obj.attr("data-area");
+        var bedNum = obj.attr("bedNum");
+        var bedLen = obj.attr("bedLen");
+        var bedWid = obj.attr("bedWid");
         arr[i] = {}
         arr[i].roomTypeId = innId;
         arr[i].roomArea = roomTypeArea;
         arr[i].roomTypeName = roomTypeName;
+        if(bedNum.length!=0){
+            arr[i].bedNum = bedNum;
+        }
+        if(bedLen.length!=0){
+            arr[i].bedLen = bedLen;
+        }
+        if(bedLen.length!=0){
+            arr[i].bedWid = bedWid;
+        }
         innCode.push($(this).html())
     })
     $sortable.each(function(i){
