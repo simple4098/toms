@@ -9,6 +9,7 @@
 <c:if test="${not empty roomType.list && not empty roomType.roomDates}">
   <div class="table-left">
     <table class="table table-bordered">
+      <input type="hidden" id="maiAccountId" value="${paramDto.maiAccount}"/>
       <tr class="success">
         <td colspan="2">
           <span id="prevM">&lt;</span>

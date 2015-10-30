@@ -34,7 +34,8 @@ $(function(){
 			$('#kz-tags-r').html(aLabel);
 			$('#kz_item-r').html(aList);
 			var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
-			var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId};
+			var maiAccount = $(".maiAccount:checked").val();
+			var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 			getRoomType(postData);
 		}
 	});

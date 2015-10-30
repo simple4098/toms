@@ -3,10 +3,20 @@ $('#from_datepicker').change(function(){
 	var date = $(this).val();
 	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
 	$('#to_datepicker').val( TC.plusDate(date, '30', 'd', 'yyyy-MM-dd') );
-	var postDate = {'startDate': $('#from_datepicker').val(), 'endDate': $('#to_datepicker').val(),'tagId':tagId,'accountId':accountId};
+	var maiAccount = $('#maiAccountId').val();
+	var startDate = $('#from_datepicker').val();
+	var endDate = $('#to_datepicker').val();
+	//var postDate = {'startDate': $('#from_datepicker').val(), 'endDate': $('#to_datepicker').val(),'tagId':tagId,'accountId':accountId,'maiAccount':maiAccount};
+	if(maiAccount){
+		maiAccount=1;
+	}else{
+		maiAccount=0;
+	}
+	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
+	console.log(JSON.stringify(postData));
 	$.ajax({
 		type:'POST',
-		data: postDate,
+		data: postData,
 		url:url,
 		dataType:'html',
 		success:function(data){
