@@ -263,12 +263,14 @@ $('#submitBtn').click(function () {
 	$('.type-name').val(typeName);
 	if (formCheck() && dateCheck()) {
 		var url = $(this).attr('data-url');
+		layer.msg('加载中', {icon: 16});
 		$.ajax({
 			url: url,
 			type: 'post',
 			dataType: 'json',
 			data: $("#hand-order-form").serialize(),
 			success: function (data) {
+				layer.closeAll('loading');
 				if (data.status) {
 					layer.confirm('提示信息：下单成功', {icon: 6});
 					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
