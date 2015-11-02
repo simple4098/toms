@@ -31,7 +31,7 @@
         <include refid="Base_Column_List"/>
         from  fc_hotel_info   where deleted=0
         <if test="hotelName!=null and hotelName!=''">
-            and  hotel_name like concat('${hotelName}','%')
+            and  hotel_name like concat('%','${hotelName}','%')
         </if>
     </select>
     <select id="selectFcHotelInfoByPage" parameterType="java.lang.String" resultMap="resultMapId">
