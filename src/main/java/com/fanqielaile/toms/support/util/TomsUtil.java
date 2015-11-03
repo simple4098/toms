@@ -8,7 +8,6 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -52,6 +51,21 @@ public class TomsUtil {
         }
         return JacksonUtil.obj2json(inventoryList);
     }
+    //日期库存json字符串
+    public static String obtInventory( List<RoomDetail> roomDetailList){
+        Inventory inventory =null;
+        List<Inventory> inventoryList = new ArrayList<Inventory>();
+        if (!CollectionUtils.isEmpty(roomDetailList)){
+            for (RoomDetail roomDetail:roomDetailList){
+                inventory = new Inventory();
+                inventory.setDate(roomDetail.getRoomDate());
+                inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
+                inventoryList.add(inventory);
+            }
+            return JacksonUtil.obj2json(inventoryList);
+        }
+        return  null;
+    }
 
     //日期库存json字符串 - 根据dateList 把库存设置为0
     public static String obtInventory(RoomTypeInfo roomTypeInfo,List<String> dateList){
@@ -86,6 +100,27 @@ public class TomsUtil {
         inventoryPrice.setInventory_price(inventoryRateList);
         return  JacksonUtil.obj2json(inventoryPrice);
     }
+
+    public static String obtInventoryRate(List<RoomDetail> roomDetail,OtaPriceModelDto priceModelDto){
+        if (!CollectionUtils.isEmpty(roomDetail)){
+            List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
+            InventoryPrice inventoryPrice = new InventoryPrice();
+            InventoryRate inventoryRate = null;
+            double price = 0;
+            for (RoomDetail detail : roomDetail) {
+                inventoryRate = new InventoryRate();
+                inventoryRate.setDate(detail.getRoomDate());
+                price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                //tp店价格为分，我们自己系统价格是元
+                inventoryRate.setPrice(price * Constants.tpPriceUnit);
+                inventoryRateList.add(inventoryRate);
+            }
+            inventoryPrice.setInventory_price(inventoryRateList);
+            return  JacksonUtil.obj2json(inventoryPrice);
+        }
+        return  null;
+    }
+
     public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto,OtaRoomPriceDto priceDto){
         List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
         InventoryPrice inventoryPrice = new InventoryPrice();
@@ -99,22 +134,53 @@ public class TomsUtil {
             startDate = priceDto.getStartDate();
             endDate = priceDto.getEndDate();
         }
-            for (RoomDetail detail : r.getRoomDetail()) {
-                inventoryRate = new InventoryRate();
-                inventoryRate.setDate(detail.getRoomDate());
-                price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                price = price*Constants.tpPriceUnit;
-                Date parseDate = DateUtil.parseDate(detail.getRoomDate());
-                //在设定的范围内才对价格进行处理
-                if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
-                    price = price + value;
-                }
-                //tp店价格为分，我们自己系统价格是元
-                inventoryRate.setPrice(price);
-                inventoryRateList.add(inventoryRate);
+        for (RoomDetail detail : r.getRoomDetail()) {
+            inventoryRate = new InventoryRate();
+            inventoryRate.setDate(detail.getRoomDate());
+            price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+            price = price*Constants.tpPriceUnit;
+            Date parseDate = DateUtil.parseDate(detail.getRoomDate());
+            //在设定的范围内才对价格进行处理
+            if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                price = price + value;
             }
-            inventoryPrice.setInventory_price(inventoryRateList);
-            return JacksonUtil.obj2json(inventoryPrice);
+            //tp店价格为分，我们自己系统价格是元
+            inventoryRate.setPrice(price);
+            inventoryRateList.add(inventoryRate);
+        }
+        inventoryPrice.setInventory_price(inventoryRateList);
+        return JacksonUtil.obj2json(inventoryPrice);
+    }
+
+    public static String obtInventoryRate(List<RoomDetail> roomDetail,OtaPriceModelDto priceModelDto,OtaRoomPriceDto priceDto){
+        List<InventoryRate> inventoryRateList = new ArrayList<InventoryRate>();
+        InventoryPrice inventoryPrice = new InventoryPrice();
+        InventoryRate inventoryRate = null;
+        double price = 0;
+        Double value = null;
+        Date startDate = null;
+        Date endDate = null;
+        if (priceDto!=null) {
+            value = priceDto.getValue() * Constants.tpPriceUnit;
+            startDate = priceDto.getStartDate();
+            endDate = priceDto.getEndDate();
+        }
+        for (RoomDetail detail : roomDetail) {
+            inventoryRate = new InventoryRate();
+            inventoryRate.setDate(detail.getRoomDate());
+            price = new BigDecimal(detail.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+            price = price*Constants.tpPriceUnit;
+            Date parseDate = DateUtil.parseDate(detail.getRoomDate());
+            //在设定的范围内才对价格进行处理
+            if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                price = price + value;
+            }
+            //tp店价格为分，我们自己系统价格是元
+            inventoryRate.setPrice(price);
+            inventoryRateList.add(inventoryRate);
+        }
+        inventoryPrice.setInventory_price(inventoryRateList);
+        return JacksonUtil.obj2json(inventoryPrice);
     }
 
     public static List<OrderConfigDto> orderConfig(String innId, String[] otaInfoIds, UserInfo currentUser,HttpServletRequest request) {

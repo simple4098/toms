@@ -232,7 +232,6 @@ public class FcService implements ITPService {
                     priceDto.setStartDateStr(price.getStartDateStr());
                     priceDto.setEndDateStr(price.getEndDateStr());
                     priceDto.setValue(price.getPriceChange());
-                    priceDto.setRoomTypeId(price.getRoomTypeId());
                     priceDto.setInnId(Integer.valueOf(innId));
                     priceDto.setModifierId(userId);
                     if (fcRoomTypeFqDto!=null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ){

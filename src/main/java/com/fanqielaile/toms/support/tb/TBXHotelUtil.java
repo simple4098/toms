@@ -602,6 +602,27 @@ public class TBXHotelUtil {
         return  null;
     }
 
+    /**
+     * 获取库存
+     * @param company
+     * @param roomTypeId 房型id
+     * @return
+     */
+    public static Rate rateGet(OtaInfoRefDto company,Integer roomTypeId){
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRateGetRequest req=new XhotelRateGetRequest();
+        req.setOutRid(String.valueOf(roomTypeId));
+        req.setRateplanCode(String.valueOf(roomTypeId));
+        try {
+            XhotelRateGetResponse response = client.execute(req , company.getSessionKey());
+            log.info("rateGet:" +  response.getRate());
+            return  response.getRate();
+        } catch (ApiException e) {
+            log.error(e.getErrMsg());
+        }
+        return  null;
+    }
+
     public static String rateUpdate(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo,Rate rate)   {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
@@ -609,6 +630,24 @@ public class TBXHotelUtil {
         req.setRpid(rate.getRpid());
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        req.setInventoryPrice(rate.getInventoryPrice());
+        try {
+            XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
+            log.info("推送 rateUpdate:" +  response.getGidAndRpid());
+            return response.getGidAndRpid();
+        } catch (ApiException e) {
+            log.error(e.getMessage());
+        }
+        return  null;
+    }
+
+    public static String rateUpdate(OtaInfoRefDto company,Integer roomTypeId,Rate rate)   {
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
+        req.setGid(rate.getGid());
+        req.setRpid(rate.getRpid());
+        req.setOutRid(String.valueOf(roomTypeId));
+        req.setRateplanCode(String.valueOf(roomTypeId));
         req.setInventoryPrice(rate.getInventoryPrice());
         try {
             XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());

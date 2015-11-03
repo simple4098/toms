@@ -9,14 +9,17 @@ import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.model.TimerRatePrice;
+import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import com.fanqielaile.toms.support.tb.FCXHotelUtil;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ThreadCallableBean;
@@ -35,6 +38,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -450,7 +454,85 @@ public class TBService implements ITPService {
 
     @Override
     public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId,String companyId, String userId ,String json) throws Exception{
+        List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(),companyId,infoRefDto.getOtaInfoId());
+        if (otaInnOta!=null && otaInnOta.getSj()==0){
+            throw  new TomsRuntimeException("此客栈已经下架!");
+        }
+        OtaPriceModelDto priceModelDto = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
+        if (!CollectionUtils.isEmpty(prices)){
+            //FcRoomTypeFqDto fcRoomTypeFqDto = null;
+            OtaRoomPriceDto priceDto = null;
+            for (AddFangPrice price:prices){
+                if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange()!=null){
+                    //fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(Integer.valueOf(innId), price.getRoomTypeId(), infoRefDto.getOtaInfoId(), companyId);
+                    priceDto = new OtaRoomPriceDto(companyId,price.getRoomTypeId(),infoRefDto.getOtaInfoId());
+                    priceDto.setStartDateStr(price.getStartDateStr());
+                    priceDto.setEndDateStr(price.getEndDateStr());
+                    priceDto.setValue(price.getPriceChange());
+                    priceDto.setInnId(Integer.valueOf(innId));
+                    priceDto.setModifierId(userId);
+                    if (bangInn!=null && bangInn.getSj()==Constants.FC_SJ){
+                        List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailTb(bangInn, price.getRoomTypeId());
+                        boolean b = checkRooPrice(priceDto.getValue(), roomDetailList);
+                        if (b){
+                            XRoom xRoom = TBXHotelUtil.roomGet(price.getRoomTypeId(), infoRefDto);
+                            Rate rate = TBXHotelUtil.rateGet(infoRefDto, price.getRoomTypeId());
+                            if (xRoom!=null && rate!=null ){
+                                if (roomDetailList!= null){
+                                    String obtInventory = TomsUtil.obtInventory(roomDetailList);
+                                    xRoom.setInventory(obtInventory);
+                                    log.info("宝贝roomTypeId：" + price.getRoomTypeId() + " 同步到tp店" + obtInventory);
+                                    TBXHotelUtil.roomUpdate(infoRefDto, xRoom);
+                                    //OtaRoomPriceDto priceDto1 = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId()));
+                                    log.info("处理之前的价格json：" + TomsUtil.obtInventoryRate(roomDetailList, priceModelDto));
+                                    String obtInventoryRate = TomsUtil.obtInventoryRate(roomDetailList, priceModelDto, priceDto);
+                                    log.info("处理之后的价格json：" + obtInventoryRate);
+                                    rate.setInventoryPrice(obtInventoryRate);
+                                    String gidAndRpId = TBXHotelUtil.rateUpdate(infoRefDto, price.getRoomTypeId(), rate);
+                                    if (!StringUtils.isEmpty(gidAndRpId)){
+                                        otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                                    }else {
+                                        throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 同步失败");
+                                    }
+                                }
+                            }else {
+                                throw new TomsRuntimeException("xRoom  rate 为null"+price.getRoomTypeId()+" xRoom:"+xRoom+" rate:"+rate);
+                            }
+                        }else {
+                            log.info("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                            throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                        }
+                    }else {
+                        log.info("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
+                        throw new TomsRuntimeException("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
+                    }
+                }
+            }
+        }
 
+    }
+
+
+    private boolean checkRooPrice(double value,List<RoomDetail> roomDetailList){
+        if (value<0){
+            if (!CollectionUtils.isEmpty(roomDetailList)){
+                List<Double> priceList = new ArrayList<Double>();
+                for (RoomDetail roomDetail:roomDetailList){
+                    priceList.add(roomDetail.getRoomPrice());
+                }
+                if (!CollectionUtils.isEmpty(priceList)){
+                    Collections.sort(priceList);
+                    Double price  = priceList.get(0);
+                    //value本来为负数, 转化为整数比较
+                    if (!(price+value >= 1)){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 
