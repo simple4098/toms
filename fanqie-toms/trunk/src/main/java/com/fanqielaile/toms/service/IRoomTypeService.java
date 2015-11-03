@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
 
 import java.util.ArrayList;
@@ -22,4 +23,11 @@ public interface IRoomTypeService {
      * @param userInfo 当前用户信息
      */
     RoomTypeInfoDto  findRoomType(ParamDto paramDto,UserInfo userInfo)throws Exception;
+
+    /**
+     * 房价管理展示客栈
+     * @param bangInn 绑定的客栈信息
+     * @throws Exception
+     */
+    RoomTypeInfoDto  findRoomType( String otaInfoId,ParamDto paramDto,BangInn bangInn)throws Exception;
 }

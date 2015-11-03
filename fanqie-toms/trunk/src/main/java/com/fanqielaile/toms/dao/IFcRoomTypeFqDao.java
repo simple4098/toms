@@ -57,7 +57,10 @@ public interface IFcRoomTypeFqDao {
      * @param companyId 公司id
      */
 
-    FcRoomTypeFqDto findRoomTypeFqInnIdRoomIdOtaInfoId(@Param("innId")Integer innId, @Param("roomTypeId")Integer roomTypeId, @Param("otaInfoId")String otaInfoId,@Param("companyId")String companyId);
+    FcRoomTypeFqDto findRoomTypeFqInnIdRoomIdOtaInfoId(@Param("innId")Integer innId,
+                                                       @Param("roomTypeId")Integer roomTypeId,
+                                                       @Param("otaInfoId")String otaInfoId,
+                                                       @Param("companyId")String companyId);
 
     //查询（客栈）上/下架状态
     List<FcRoomTypeFqDto> selectFcRoomTypeFqBySJ(FcRoomTypeFqDto fcRoomTypeFqDto);

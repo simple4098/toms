@@ -26,6 +26,15 @@ public class CommonApi {
     public static   String FcSyncRateInfoUrl;
     public static   String FcDeleteRoomTypeUrl;
     public static   String FcDeleteHotelMappingUrl;
+    public static   String checkRoom;
+
+    public  String getCheckRoom() {
+        return checkRoom;
+    }
+
+    public  void setCheckRoom(String checkRoom) {
+        CommonApi.checkRoom = checkRoom;
+    }
 
     public  String getProxyOtaPercent() {
         return proxyOtaPercent;

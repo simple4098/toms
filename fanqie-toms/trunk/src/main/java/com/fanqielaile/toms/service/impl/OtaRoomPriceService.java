@@ -1,9 +1,9 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqie.util.TomsConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
+import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dao.IOtaRoomPriceDao;
@@ -102,6 +102,18 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
             }
         }
         otaRoomPriceDao.saveOtaRoomPriceDto(roomPriceDto);
+    }
+
+    @Override
+    public List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception {
+        Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
+        String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),roomTypeId, CommonApi.checkRoom);
+        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+            return JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
+        }
+        return  null;
     }
 
 

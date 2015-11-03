@@ -43,4 +43,11 @@ public interface ITPService {
      * @param o
      */
     void updateHotelFailTimer(OtaInfoRefDto o);
+
+    /**
+     * @param infoRefDto
+     * @param innId
+     * @param json  同步房型与时间
+     */
+    void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId,String companyId,String userId,String json)throws Exception;
 }

@@ -9,6 +9,8 @@ public class RoomDetail {
 	private Integer roomNum; /* 房型剩余房量 */
 	private Integer otaRoomNum;/* 分给ota剩余房量 */
 	private Integer priceStatus;/* 价格状态 0-默认价 1-周末价 2-特殊价*/
+	private Double  costPrice;//成本价
+	private Double  priceValue;//特殊处理价格
 	
 	/*兼容美团数据格式*/
 	private Integer roomPriceInt;
@@ -108,10 +110,19 @@ public class RoomDetail {
 		this.roomTypeName = roomTypeName;
 	}
 
+	public Double getCostPrice() {
+		return costPrice;
+	}
 
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
+	}
 
+	public Double getPriceValue() {
+		return priceValue;
+	}
 
-	
-
-	
+	public void setPriceValue(Double priceValue) {
+		this.priceValue = priceValue;
+	}
 }
