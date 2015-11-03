@@ -27,4 +27,5 @@ public interface IOtaRoomPriceService {
 
     //获取oms具体某一个房型数据
     List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception;
+    List<RoomDetail> obtRoomAvailTb(BangInn bangInn,Integer roomTypeId)throws Exception;
 }

@@ -6,6 +6,8 @@ $(function(){
         var url = _this.attr("data-url");
         var fan_hui_url = _this.attr("data-url-fan-hui");
         var data =  $(".table-right tr td[class='room-fc']");
+        var reg = new RegExp("^[+-]?[0-9]+(.[0-9]{1,3})?$");
+        var f = true;
         if(data.length>0) {
             var arr = [];
             data.each(function (i) {
@@ -17,13 +19,22 @@ $(function(){
                 arr[i].startDateStr = obj.val();
                 arr[i].endDateStr = endDateStrValue;
                 arr[i].priceChange = roomValue;
+                if(roomValue.length>0){
+                    if(!reg.test(roomValue)){
+                       f = false;
+                       return false;
+                    }
+                }
                 //console.log(obj.attr("roomtypeid") + " " + obj.val() + "endDate:" + endDateStrValue + " roomValue:" + roomValue);
             })
+            if(!f){
+                layer.alert("请输入正确的数字");
+                return false;
+            }
             var json = JSON.stringify(arr);
             console.log(json);
             //console.log("innId:"+innId+" otaInfoId:"+otaInfoId);
             var i = layer.load(0);
-
             $.ajax({
                 data:{"innId":innId,"otaInfoId":otaInfoId,"json":json},
                 type:'post',

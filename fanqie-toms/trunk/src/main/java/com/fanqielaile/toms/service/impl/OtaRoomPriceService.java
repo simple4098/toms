@@ -116,5 +116,17 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
         return  null;
     }
 
+    @Override
+    public List<RoomDetail> obtRoomAvailTb(BangInn bangInn,Integer roomTypeId)throws Exception {
+        Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
+        String room_type = DcUtil.omsTbRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),roomTypeId, CommonApi.checkRoom);
+        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+            return JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
+        }
+        return  null;
+    }
+
 
 }
