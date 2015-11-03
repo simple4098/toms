@@ -518,17 +518,17 @@ public class Order extends Domain {
      * 处理取消订单传递的参数
      *
      * @param order
-     * @param dictionary
+     * @param company
      * @return
      */
-    public static CancelOrderParamDto toCancelOrderParam(Order order, Dictionary dictionary) {
+    public static CancelOrderParamDto toCancelOrderParam(Order order, Company company) {
         CancelOrderParamDto cancelOrderParamDto = new CancelOrderParamDto();
-        cancelOrderParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
+        cancelOrderParamDto.setOtaId(company.getOtaId());
         cancelOrderParamDto.setOtaOrderNo(order.getChannelOrderCode());
         //取消订单传入已付金额为0
         cancelOrderParamDto.setPaidAmount(BigDecimal.ZERO);
-        cancelOrderParamDto.setvName(dictionary.getvName());
-        cancelOrderParamDto.setvPWD(dictionary.getvPWD());
+        cancelOrderParamDto.setvName(company.getUserAccount());
+        cancelOrderParamDto.setvPWD(company.getUserPassword());
         return cancelOrderParamDto;
     }
 

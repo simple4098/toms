@@ -53,4 +53,8 @@
             (#{p.uuid},#{rolePermissionRoleId},#{p.id},#{p.createdDate},#{p.updatedDate})
         </foreach>
     </insert>
+
+    <insert id="insertInfoImage" parameterType="com.fanqielaile.toms.dto.ImageInfo">
+        insert into image(id,info,create_date)VALUES (#{uuid},#{info},now())
+    </insert>
 </mapper>

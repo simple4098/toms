@@ -48,8 +48,14 @@ public class FcOrderTest {
     @Test
     @Ignore
     public void testSearchFcOrderStatus() throws Exception {
-        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?> <Request>     <Header TimeStamp=\"2015-05-09 15:19:40\" PartnerCode=\"F01114815\" RequestType= \"getOrderStatus\" Signature=\"498C4A8D16628530A20FC678E0614D49\"/> <GetOrderStatusRequest> <SpOrderId>77918027-79fc-420a-ac21-4e4ca6654d44</SpOrderId> </GetOrderStatusRequest> </Request>";
+//        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?> <Request>     <Header TimeStamp=\"2015-05-09 15:19:40\" PartnerCode=\"F01114815\" RequestType= \"getOrderStatus\" Signature=\"498C4A8D16628530A20FC678E0614D49\"/> <GetOrderStatusRequest> <SpOrderId>77918027-79fc-420a-ac21-4e4ca6654d44</SpOrderId> </GetOrderStatusRequest> </Request>";
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>\n" +
+                "  <Header TimeStamp=\"2015-11-03 11:27:21\" PartnerCode=\"S10046872\" RequestType=\"getOrderStatus\" Signature=\"BCB9B50464C929A73D5B62662FEDC1BC\"/>\n" +
+                "  <GetOrderStatusRequest>\n" +
+                "    <SpOrderId>9e353cc7-b945-4ac5-8c36-67707ae6bc3e</SpOrderId>\n" +
+                "  </GetOrderStatusRequest>\n" +
+                "</Request>";
         GetOrderStatusResponse fcOrderStatus = this.orderService.getFcOrderStatus(xml);
-        System.out.println(fcOrderStatus.toString());
+//        System.out.println(fcOrderStatus.toString());
     }
 }

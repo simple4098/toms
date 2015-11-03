@@ -75,5 +75,7 @@
     <select id="selectCompanyIdByAppKey" resultMap="otaInfoRefId">
         SELECT company_id,ota_info_id from otainfo_company_ref where appkey=#{appKey} and appsecret = #{appSecret}
     </select>
-
+    <select id="selectOtaInfoByType" parameterType="java.lang.String" resultMap="otaInfoRefId">
+        SELECT oi.* from ota_info oi where ota_type = #{otaType}
+    </select>
 </mapper>

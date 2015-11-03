@@ -1,13 +1,19 @@
 package com.toms.test;
 
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dao.IOtaInnOtaDao;
 import com.fanqielaile.toms.dao.OrderDao;
-import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dao.RoleDao;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +21,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by wangdayin on 2015/6/23.
@@ -28,6 +36,12 @@ public class OrderTest {
     private OrderDao orderDao;
     @Resource
     private IOtaInfoDao otaInfoDao;
+    @Resource
+    private IBangInnService bangInnService;
+    @Resource
+    private RoleDao roleDao;
+    @Resource
+    private IOtaInnOtaDao otaInnOtaDao;
 
     @Test
     @Ignore
@@ -69,5 +83,47 @@ public class OrderTest {
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());
         String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
         System.out.println(result.toString());
+    }
+
+    @Test
+    @Ignore
+    public void testImage() throws IOException {
+        List<BangInn> bangInns = this.bangInnService.findBangInnImages("d0392bc8-131c-8989-846e-c81c66011111");
+        if (ArrayUtils.isNotEmpty(bangInns.toArray())) {
+            for (BangInn bangInn : bangInns) {
+                //hid
+                //查询客栈绑定的客栈ID
+                OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.TB.name());
+                OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), "d0392bc8-131c-8989-846e-c81c66011111", otaInfoRefDto.getId());
+                //写入酒店信息
+                bangInn.setOtaWgId(otaInnOtaDto.getWgHid());
+                if (null != bangInn.getInnDto()) {
+                    if (ArrayUtils.isNotEmpty(bangInn.getInnDto().getImgList().toArray())) {
+                        String imageUrl = CommonApi.IMG_URL;
+                        for (OmsImg omsImg : bangInn.getInnDto().getImgList()) {
+                            imageUrl += omsImg.getImgUrl() + ",";
+                        }
+                        //写入酒店的图片信息
+                        System.out.println("insert hotel ===>");
+                        this.roleDao.insertInfoImage(new ImageInfo(bangInn.getInnName() + "|" + bangInn.getOtaWgId() + "|" + imageUrl));
+                        //写入房型信息
+                        List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage((BangInnDto) bangInn);
+                        if (ArrayUtils.isNotEmpty(roomTypeInfos.toArray())) {
+                            for (RoomTypeInfo roomTypeInfo : roomTypeInfos) {
+                                String roomImageUrl = CommonApi.IMG_URL;
+                                if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
+                                    for (OmsImg omsImg : roomTypeInfo.getImgList()) {
+                                        roomImageUrl += omsImg.getImgUrl() + ",";
+                                    }
+                                    //写入数据库
+                                    System.out.println("insert  room ===>");
+                                    this.roleDao.insertInfoImage(new ImageInfo(roomTypeInfo.getRoomTypeName() + "|" + roomTypeInfo.getRoomTypeName() + "|" + roomImageUrl));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
