@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
+import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -24,5 +25,6 @@ public interface IOtaRoomPriceService {
 
     void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto,  BangInn bangInn)throws Exception;
 
-
+    //获取oms具体某一个房型数据
+    List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception;
 }

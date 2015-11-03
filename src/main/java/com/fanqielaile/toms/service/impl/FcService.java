@@ -9,6 +9,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.TimerRatePrice;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -213,5 +216,73 @@ public class FcService implements ITPService {
             }
         }
 
+    }
+
+    @Override
+    public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId,String companyId, String userId,String json) throws Exception{
+        List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+        if (!CollectionUtils.isEmpty(prices)){
+            FcRoomTypeFqDto fcRoomTypeFqDto = null;
+            OtaRoomPriceDto priceDto = null;
+            for (AddFangPrice price:prices){
+                if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange()!=null){
+                    fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(Integer.valueOf(innId), price.getRoomTypeId(), infoRefDto.getOtaInfoId(), companyId);
+                    priceDto = new OtaRoomPriceDto(companyId,price.getRoomTypeId(),infoRefDto.getOtaInfoId());
+                    priceDto.setStartDateStr(price.getStartDateStr());
+                    priceDto.setEndDateStr(price.getEndDateStr());
+                    priceDto.setValue(price.getPriceChange());
+                    priceDto.setRoomTypeId(price.getRoomTypeId());
+                    priceDto.setInnId(Integer.valueOf(innId));
+                    priceDto.setModifierId(userId);
+                    if (fcRoomTypeFqDto!=null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ){
+                        List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailFc(bangInn,price.getRoomTypeId());
+                        boolean b = checkRooPrice(priceDto.getValue(), roomDetailList);
+                        if (b){
+                            Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto);
+                            if (Constants.FcResultNo.equals(response.getResultNo()) ){
+                                otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                            }else {
+                                log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + response.getResultMsg());
+                                throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 同步失败："+response.getResultMsg());
+                            }
+                        }else {
+                            log.info("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                            throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                        }
+
+                    }else {
+                        log.info("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
+                        throw new TomsRuntimeException("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
+                    }
+
+                }else {
+                    //priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId()));
+                    log.info("innId："+innId+" 房型id"+price.getRoomTypeId()+" 开始结束时间为空!");
+                }
+
+
+            }
+        }
+    }
+
+    private boolean checkRooPrice(double value,List<RoomDetail> roomDetailList){
+        if (value<0){
+           if (!CollectionUtils.isEmpty(roomDetailList)){
+                List<Double> priceList = new ArrayList<Double>();
+                for (RoomDetail roomDetail:roomDetailList){
+                    priceList.add(roomDetail.getRoomPrice());
+                }
+                if (!CollectionUtils.isEmpty(priceList)){
+                    Collections.sort(priceList);
+                    Double price  = priceList.get(0);
+                    //value本来为负数, 转化为整数比较
+                    if (!(price+value >= 1)){
+                        return false;
+                    }
+                }
+           }
+        }
+        return true;
     }
 }

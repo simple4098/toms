@@ -1,10 +1,12 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
+import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
@@ -16,13 +18,9 @@ import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +46,8 @@ public class DistributionController extends BaseController{
     private IBangInnService bangInnService;
     @Resource
     private IOtaRoomPriceService otaRoomPriceService;
+    @Resource
+    private IRoomTypeService roomTypeService;
 
 
     //渠道列表
@@ -148,7 +148,29 @@ public class DistributionController extends BaseController{
 
     //房价管理-客栈房型信息
     @RequestMapping("/fangPriceDetail")
-    public String fangPriceDetail(Model model, String innId, String otaInfoId){
+    public String fangPriceDetail(Model model, ParamDto paramDto, String innId, String otaInfoId){
+        UserInfo currentUser = getCurrentUser();
+        if (currentUser!=null){
+            BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), Integer.valueOf(innId));
+            try {
+                RoomTypeInfoDto roomType = roomTypeService.findRoomType(otaInfoId,paramDto, bangInn);
+                model.addAttribute("otaInfoId",otaInfoId);
+                model.addAttribute("innId",innId);
+                model.addAttribute("bangInn",bangInn);
+                model.addAttribute("roomType",roomType);
+            } catch (Exception e) {
+                log.error("房价设置异常"+e.getMessage());
+            }
+            return "/distribution/fang_price_detail_new";
+        }else {
+            return "/error";
+        }
+
+    }
+
+   //房价管理-客栈房型信息
+    @RequestMapping("/addFangPrice")
+    public String addFangPrice(Model model, String innId, String otaInfoId){
         UserInfo currentUser = getCurrentUser();
         BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), Integer.valueOf(innId));
         try {
@@ -160,10 +182,10 @@ public class DistributionController extends BaseController{
         } catch (Exception e) {
            log.error("房价设置异常"+e.getMessage());
         }
-        return "/distribution/fang_price_detail";
+        return "/distribution/fang_price_detail_new_tian";
     }
 
-    //房价管理-展示房价设置
+    /*//房价管理-展示房价设置
     @RequestMapping(value = "/ajax/room_price_detail",method = RequestMethod.POST)
     public String roomPriceDetail(Model model,OtaRoomPriceDto roomPriceDto,String roomTypeName){
         UserInfo currentUser = getCurrentUser();
@@ -189,26 +211,32 @@ public class DistributionController extends BaseController{
             model.addAttribute(Constants.STATUS, Constants.ERROR);
             model.addAttribute(Constants.MESSAGE, e.getMessage());
         }
+    }*/
+
+
+    //房价管理-同步房型价格到卖房网站
+    @RequestMapping(value = "/ajax/sync",method = RequestMethod.POST)
+    @ResponseBody
+    public Object tpPrice(String innId,String otaInfoId,String json){
+        Result result = new Result();
+        UserInfo currentUser = getCurrentUser();
+        if (currentUser!=null){
+            String companyId = currentUser.getCompanyId();
+            String userId = currentUser.getId();
+            OtaInfoRefDto infoRefDto = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(companyId, otaInfoId);
+            try {
+                ITPService service = infoRefDto.getOtaType().create();
+                service.updateRoomTypePrice(infoRefDto, innId, companyId, userId,json);
+                result.setStatus(Constants.SUCCESS200);
+            } catch (Exception e) {
+                log.error("同步价格失败:" + e.getMessage());
+                result.setMessage("同步价格失败:" + e.getMessage());
+                result.setStatus(Constants.ERROR400);
+            }
+        }
+        return result;
     }
 
-     //房价管理-同步房型价格到卖房网站
-    @RequestMapping(value = "/ajax/tpPrice",method = RequestMethod.POST)
-    public void tpPrice(Model model,OtaRoomPriceDto roomPriceDto){
-        UserInfo currentUser = getCurrentUser();
-        roomPriceDto.setCompanyId(currentUser.getCompanyId());
-        List<OtaInfoRefDto> list = otaInfoService.findOtaInfoListByCompanyId(currentUser.getCompanyId());
-        try {
-            ITPService service = null;
-            for (OtaInfoRefDto o:list) {
-                service = o.getOtaType().create();
-                service.updateRoomTypePrice(o, roomPriceDto);
-                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-            }
-        } catch (Exception e) {
-            log.error("同步价格失败:"+e.getMessage());
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, e.getMessage());
-        }
-    }
+
 
 }

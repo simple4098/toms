@@ -27,6 +27,14 @@ public class OtaInfoRefDto extends Domain {
     //排序
     private int sort;
 
+    public OtaInfoRefDto() {
+    }
+
+    public OtaInfoRefDto(String otaId, String companyId) {
+        this.otaId = otaId;
+        this.companyId = companyId;
+    }
+
     public String getId() {
         return id;
     }

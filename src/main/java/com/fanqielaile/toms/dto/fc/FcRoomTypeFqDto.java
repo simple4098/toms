@@ -44,7 +44,10 @@ public class FcRoomTypeFqDto extends FcRoomTypeFq {
         super(innId, companyId, otaInfoId);
     }
     public FcRoomTypeFqDto(Integer sj,String innId, String companyId, String otaInfoId) {
-        super(innId, companyId, otaInfoId);
-        setSj(sj);
+        super(sj,innId, companyId, otaInfoId);
+    }
+    public FcRoomTypeFqDto(Integer sj,String innId,String fqRoomTypeId ,String companyId,String otaInfoId) {
+        super( sj,  innId, fqRoomTypeId,  companyId,  otaInfoId);
+
     }
 }

@@ -109,7 +109,7 @@
                     <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
                                     fn:contains(url, '/order/find_pay_back_orders')
                  || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig')
-                 || fn:contains(url, '/innMatch/match')}">class="open active" </c:if>  >
+                 || fn:contains(url, '/innMatch/match')|| fn:contains(url, '/distribution/addFangPrice')}">class="open active" </c:if>  >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
                         <span class="menu-text"> 分销管理 </span>
@@ -137,7 +137,7 @@
                         </toms:authorize>
                         <toms:authorize uri="/distribution/fangPrice">
                             <li
-                                    <c:if test="${fn:contains(url, '/distribution/fangPrice')}">class="active"</c:if> >
+                                    <c:if test="${fn:contains(url, '/distribution/fangPrice')||fn:contains(url, '/distribution/addFangPrice')}">class="active"</c:if> >
                                 <a href="<c:url value="/distribution/fangPrice"/>">
                                     <i class="icon-double-angle-right"></i>
                                     房价管理
