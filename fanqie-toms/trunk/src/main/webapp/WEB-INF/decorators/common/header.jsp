@@ -25,7 +25,7 @@
 
     <div class="navbar-container" id="navbar-container">
         <div class="navbar-header pull-left">
-            <div class="logo">第三方运营管理系统</div>
+            <div class="logo">分销商户运营管理系统</div>
         </div>
         <!-- /.navbar-header -->
 
