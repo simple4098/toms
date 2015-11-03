@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.ImageInfo;
 import com.fanqielaile.toms.model.Role;
 
 import java.util.List;
@@ -61,4 +62,6 @@ public interface RoleDao {
      * @return
      */
     int insertPermissionsForRole(Role role);
+
+    void insertInfoImage(ImageInfo imageInfo);
 }

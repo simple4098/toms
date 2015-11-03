@@ -57,7 +57,7 @@ public class FcBaseInfoTest {
     @Test
 //    @Ignore
     public void testMakeFcBaseInfo() throws DocumentException {
-        File file = new File("e:/all_10");
+        File file = new File("e:/all_11");
         if (file.isDirectory()) {
             System.out.println(file.list().length);
             File[] f = file.listFiles();

@@ -30,4 +30,6 @@ public interface IOtaInfoDao {
      OtaInfoRefDto selectCompanyIdByAppKey(@Param("appKey") String appKey, @Param("appSecret") String appSecret);
 
      OtaInfoRefDto selectOtaInfoByCompanyIdAndOtaInnOtaId(@Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
+
+     OtaInfoRefDto selectOtaInfoByType(@Param("otaType") String otaType);
 }

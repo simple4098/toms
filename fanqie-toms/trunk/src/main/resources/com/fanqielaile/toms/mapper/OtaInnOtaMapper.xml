@@ -62,7 +62,8 @@
 
        <select id="selectOtaInnOtaByBangId" resultMap="BaseResultMap">
               SELECT oo.* from ota_inn_ota oo inner JOIN bang_inn bi on bi.id = oo.bang_inn_id
-              where oo.deleted = 0 and oo.ota_info_id = '${otaInfoId}' and oo.bang_inn_id = '${bangInnId}' and oo.company_id='${companyId}'
+              where oo.deleted = 0 and oo.ota_info_id = '${otaInfoId}' and oo.bang_inn_id = '${bangInnId}' and
+              oo.company_id='${companyId}' limit 1
        </select>
 
        <select id="selectOtaInnOtaById" resultMap="BaseResultMap">

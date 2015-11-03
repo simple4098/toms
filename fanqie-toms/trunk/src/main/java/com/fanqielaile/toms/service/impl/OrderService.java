@@ -241,10 +241,13 @@ public class OrderService implements IOrderService {
         if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY) || ChannelSource.FC.equals(order.getChannelSource())) {
             // 查询调用的url
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
+            //查询公司信息
+            OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
+            Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
             if (null != dictionary) {
                 //发送请求
-                logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
-                String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
+                logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+                String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
                 logger.info("调用OMS取消订单的返回值=>" + respose.toString());
                 JSONObject jsonObject = JSONObject.fromObject(respose);
                 if (!jsonObject.get("status").equals(200)) {
@@ -505,9 +508,12 @@ public class OrderService implements IOrderService {
     private String getOrderStatusMethod(Order order) throws Exception {
         //查询调用的url
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.ORDER_STATUS.name());
-        logger.info("查询订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
+        //查询公司信息,根据订单
+        OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
+        Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
+        logger.info("查询订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
         //查询OMS订单状态
-        String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
+        String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
         logger.info("查询订单返回值=>" + respose);
         return respose;
     }
@@ -837,10 +843,13 @@ public class OrderService implements IOrderService {
         //调用oms取消订单接口
         // 查询调用的url
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
+        OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
+        //查询公司信息
+        Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
         if (null != dictionary) {
             //发送请求
-            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, dictionary).toString());
-            String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, dictionary));
+            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+            String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
             JSONObject jsonObject = JSONObject.fromObject(respose);
             logger.info("oms取消订单返回值=>" + jsonObject.toString());
             if (!jsonObject.get("status").equals(200)) {

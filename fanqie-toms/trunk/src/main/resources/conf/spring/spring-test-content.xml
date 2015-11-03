@@ -111,7 +111,8 @@
         <!--<property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>-->
         <property name="ProxySaleList" value="http://192.168.1.158:8888/api/queryProxySaleList"></property>
         <!--<property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>-->
-        <property name="imgUrl" value="http://192.168.1.159"></property>
+        <!--<property name="imgUrl" value="http://192.168.1.159"></property>-->
+        <property name="imgUrl" value="http://img.fanqiele.com"></property>
     </bean>
 
 </beans>
