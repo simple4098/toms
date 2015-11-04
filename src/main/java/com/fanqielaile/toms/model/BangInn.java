@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.enums.BangType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * 绑定客栈信息
  * Created by wangdayin on 2015/5/15.
  */
-public class BangInn extends Domain {
+public class BangInn extends Domain implements Comparable<BangInn> {
     //所属公司ID
     private String companyId;
     //绑定时间
@@ -201,5 +202,13 @@ public class BangInn extends Domain {
 
     public void setAccountId(Integer accountId) {
         this.accountId = accountId;
+    }
+
+    @Override
+    public int compareTo(BangInn o) {
+        if (StringUtils.isEmpty(this.getInnLabelId()) || "null".equals(this.getInnLabelId())) {
+            return -1;
+        }
+        return this.getInnLabelId().compareTo(o.getInnLabelId());
     }
 }

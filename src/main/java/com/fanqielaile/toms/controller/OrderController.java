@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -190,7 +191,7 @@ public class OrderController extends BaseController {
      * @param id
      */
     @RequestMapping("refues_order")
-    public void refueseOrder(Model model, String id) throws ApiException {
+    public void refueseOrder(Model model, String id) throws Exception {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
             JsonModel jsonModel = this.orderService.refuesOrder(order, getCurrentUser());
@@ -209,7 +210,7 @@ public class OrderController extends BaseController {
      * @param id
      */
     @RequestMapping("confirm_no_order")
-    public void confirmNoOrder(Model model, String id) throws ApiException {
+    public void confirmNoOrder(Model model, String id) throws Exception {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
             JsonModel jsonModel = this.orderService.confirmNoOrder(order, getCurrentUser());
@@ -350,7 +351,7 @@ public class OrderController extends BaseController {
      * @param id
      */
     @RequestMapping("refuse_pay_back")
-    public void refusePayBack(Model model, String id) {
+    public void refusePayBack(Model model, String id) throws IOException {
         OrderParamDto order = this.orderService.findOrderById(id);
         if (null != order) {
             JsonModel jsonModel = this.orderService.refusePayBackOrder(order, getCurrentUser());

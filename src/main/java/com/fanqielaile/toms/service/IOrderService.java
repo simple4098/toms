@@ -110,7 +110,7 @@ public interface IOrderService {
      * @param id
      * @return
      */
-    OrderParamDto findOrderById(String id);
+    OrderParamDto findOrderById(String id) throws IOException;
 
     /**
      * 手动确认并下单

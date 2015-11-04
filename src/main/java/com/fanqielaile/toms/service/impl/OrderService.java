@@ -584,37 +584,54 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderParamDto findOrderById(String id) {
+    public OrderParamDto findOrderById(String id) throws IOException {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
-        if (null != orderParamDto) {
-            OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
-            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
-                otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
-            } else {
-                otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderParamDto.getInnId(), Integer.parseInt(orderParamDto.getRoomTypeId()), orderParamDto.getCompanyId());
-            }
-            if (null != otaBangInnRoomDto) {
-                orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
-            } else {
-                orderParamDto.setRoomTypeName("暂无");
-            }
-            List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
-            //价格策略
-            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
-                OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
-                if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
-                    for (DailyInfos dailyInfos : dailyInfoses) {
-                        dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
-                    }
-                }
-            } else {
-                if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
-                    for (DailyInfos dailyInfos : dailyInfoses) {
-                        dailyInfos.setCostPrice(dailyInfos.getPrice());
-                    }
+        Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
+        BigDecimal percent = BigDecimal.ZERO;
+        try {
+            //TODO 所有渠道目前只有卖价
+            String requestUrl = DcUtil.proxyOtaPercentUrl(company.getOtaId(), CommonApi.proxyOtaPercent, "2");
+            String response = HttpClientUtil.httpGets(requestUrl, null);
+            JSONObject jsonObject = JSONObject.fromObject(response);
+            if ("200".equals(jsonObject.get("status").toString())) {
+                percent = BigDecimal.valueOf((Double) jsonObject.get("percentage"));
+                if (percent != null) {
+                    percent = percent.divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
                 }
             }
-            orderParamDto.setDailyInfoses(dailyInfoses);
+        } catch (Exception e) {
+            logger.error("查询价格比例出错", e);
+        } finally {
+            if (null != orderParamDto) {
+                OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
+                if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+                    otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
+                } else {
+                    otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderParamDto.getInnId(), Integer.parseInt(orderParamDto.getRoomTypeId()), orderParamDto.getCompanyId());
+                }
+                if (null != otaBangInnRoomDto) {
+                    orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+                } else {
+                    orderParamDto.setRoomTypeName("暂无");
+                }
+                List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
+                //价格策略
+                if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+                    OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
+                    if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                        for (DailyInfos dailyInfos : dailyInfoses) {
+                            dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
+                        }
+                    }
+                } else {
+                    if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                        for (DailyInfos dailyInfos : dailyInfoses) {
+                            dailyInfos.setCostPrice(dailyInfos.getPrice().multiply((new BigDecimal(1).subtract(percent))));
+                        }
+                    }
+                }
+                orderParamDto.setDailyInfoses(dailyInfoses);
+            }
         }
         return orderParamDto;
     }
