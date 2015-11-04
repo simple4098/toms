@@ -14,6 +14,7 @@ $(function(){
             data.each(function (i) {
                 var obj = $(this).find("input[name='startDateStr']");
                 var startDateStr = obj.val();
+                var roomTypeName = obj.attr("roomTypeName");
                 var endDateStrValue = $(this).find("input[name='endDateStr']").val();
                 var roomValue = $(this).find("input[name='roomValue']").val();
                 arr[i] = {}
@@ -21,6 +22,7 @@ $(function(){
                 arr[i].startDateStr = startDateStr;
                 arr[i].endDateStr = endDateStrValue;
                 arr[i].priceChange = roomValue;
+                arr[i].roomTypeName = roomTypeName;
                 if(endDateStrValue.length!=0 || startDateStr.length!=0){
                     var dateS = new Date(startDateStr);
                     var dateE = new Date(endDateStrValue);

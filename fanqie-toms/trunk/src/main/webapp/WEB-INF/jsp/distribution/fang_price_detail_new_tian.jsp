@@ -45,7 +45,7 @@
                 <c:forEach items="${list}" var="v">
                     <tr>
                         <td class="room-fc">
-                            <input roomtypeId="${v.roomTypeId}"  name="startDateStr"  value="" type="text" class="from_datepicker" placeholder="请选择开始日期">
+                            <input roomtypeId="${v.roomTypeId}" roomTypeName="${v.roomTypeName}"  name="startDateStr"  value="" type="text" class="from_datepicker" placeholder="请选择开始日期">
                            至
                             <input   name="endDateStr"  value=""  type="text" class="to_datepicker" placeholder="请选择结束日期">
                             在卖价基础上 <input type="text" name="roomValue" />

@@ -234,6 +234,7 @@ public class FcService implements ITPService {
                     priceDto.setValue(price.getPriceChange());
                     priceDto.setInnId(Integer.valueOf(innId));
                     priceDto.setModifierId(userId);
+                    priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (fcRoomTypeFqDto!=null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ){
                         List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailFc(bangInn,price.getRoomTypeId());
                         boolean b = checkRooPrice(priceDto.getValue(), roomDetailList);
@@ -243,11 +244,11 @@ public class FcService implements ITPService {
                                 otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
                             }else {
                                 log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + response.getResultMsg());
-                                throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 同步失败："+response.getResultMsg());
+                                throw new TomsRuntimeException("房型名称:"+price.getRoomTypeName()+" 同步失败："+response.getResultMsg());
                             }
                         }else {
                             log.info("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
-                            throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                            throw new TomsRuntimeException("房型名称:"+price.getRoomTypeName()+" 减小的价格不能低于1元");
                         }
 
                     }else {

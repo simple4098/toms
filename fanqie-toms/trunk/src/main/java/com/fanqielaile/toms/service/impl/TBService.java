@@ -473,6 +473,7 @@ public class TBService implements ITPService {
                     priceDto.setValue(price.getPriceChange());
                     priceDto.setInnId(Integer.valueOf(innId));
                     priceDto.setModifierId(userId);
+                    priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (bangInn!=null && bangInn.getSj()==Constants.FC_SJ){
                         List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailTb(bangInn, price.getRoomTypeId());
                         boolean b = checkRooPrice(priceDto.getValue(), roomDetailList);
@@ -494,7 +495,7 @@ public class TBService implements ITPService {
                                     if (!StringUtils.isEmpty(gidAndRpId)){
                                         otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
                                     }else {
-                                        throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 同步失败");
+                                        throw new TomsRuntimeException("房型名称:"+price.getRoomTypeId()+" 同步失败");
                                     }
                                 }
                             }else {
@@ -502,11 +503,11 @@ public class TBService implements ITPService {
                             }
                         }else {
                             log.info("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
-                            throw new TomsRuntimeException("房型Id"+price.getRoomTypeId()+" 减小的价格不能低于1元");
+                            throw new TomsRuntimeException("房型Id"+price.getRoomTypeName()+" 减小的价格不能低于1元");
                         }
                     }else {
                         log.info("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
-                        throw new TomsRuntimeException("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
+                        throw new TomsRuntimeException("innId："+innId+" 房型名称:"+price.getRoomTypeName()+"还没有上架到房仓");
                     }
                 }
             }
