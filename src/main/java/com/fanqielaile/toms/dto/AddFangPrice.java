@@ -14,7 +14,17 @@ public class AddFangPrice {
 
     private String endDateStr;
 
+    private String roomTypeName;
+
     private Double priceChange;
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
+    }
 
     public Integer getRoomTypeId() {
         return roomTypeId;
