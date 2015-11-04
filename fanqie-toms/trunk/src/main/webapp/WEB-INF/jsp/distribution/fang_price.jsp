@@ -95,5 +95,9 @@
         $("#pageId").attr("value", page);
         $('.form-search').submit();
     };
+    $(".form-search").bind("submit",function(){
+        $("#pageId").attr("value", 1);
+        $('.form-search').submit();
+    })
 </script>
 
