@@ -57,10 +57,10 @@ $(".search-btn-down").on("click", function () {
     if (pageNow <= 1 || pageNow == null) {
         pageNow = 1;
     }
-    if (pageNow >= maxPage) {
-        pageNow = 1;
-    }
     pageNow += 1;
+    if (pageNow >= maxPage) {
+        pageNow = maxPage;
+    }
     var data_url = _this.attr("data-url");
     var searchValue = $("#search-id").val();
     $.ajax({
