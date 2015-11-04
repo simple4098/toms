@@ -89,6 +89,7 @@ $('.hand-btn').on('click', function () {
 	var url = $("#dataUrlId").attr("data-url") + ".json?v=" + new Date().getTime();
 	var tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
 	var date = $(this).val();
+	$('.btn-hand-make-order').attr('disabled', false);
 	$('#to_datepicker').val(TC.plusDate(date, '30', 'd', 'yyyy-MM-dd'));
 	var maiAccount = $(".maiAccount:checked").val();
 	var postDate = {
@@ -302,7 +303,7 @@ var formCheck = function () {
 	var isComplete = true
 	$tips.empty().hide()
 	$('#hand-order-form input').each(function (i, el) {
-		if (!$.trim($(this).val())) {
+		if (!$.trim($(this).val()) && $(this).attr('name') != 'tagId') {
 			var tips = $(this).prop('data-tips')
 			$tips.html('请填写完相关信息').show()
 			isComplete = false
