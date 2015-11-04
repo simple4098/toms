@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>客栈匹配-1</title>
+<link rel="stylesheet" type="text/css" href="../assets/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/jquery-ui-1.10.3.full.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/ace.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/innRelation.css">
+</head>
+
+<body>
+<div class="container">
+	<ul class="nav-bar clearfix">
+		<li>天下房仓</li>
+		<li>去啊旅行</li>
+		<li>携程</li>
+		<li>去哪儿</li>
+		<li>艺龙</li>
+	</ul>		
+	<div class="select-area">
+		<form id="inn-search">
+			<select class="form-control" id="kz-tags" name="innCategory">
+				<option>客栈分类</option>
+				<option value="01">分类1</option>
+				<option value="02">分类2</option>
+			</select>
+			<input type="text" placeholder="请输入客栈名称" name="innName">
+			<select class="form-control" name="innStatus">
+				<option value="1">未匹配</option>
+				<option value="2">待审核</option>
+				<option value="3">审核失败</option>
+				<option value="4">匹配成功</option>
+			</select>
+			<button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
+				搜索
+				<i class="icon-search icon-on-right bigger-110"></i>
+			</button>
+		</form>
+	</div>
+	<hr>
+	<p>共搜索出<span class="color-red">2</span>家客栈</p>
+	<table class="table table-bordered">
+		<tr>
+			<td>序列</td>
+			<td>客栈名称</td>
+			<td>具体地址</td>
+			<td>联系号码</td>
+			<td>匹配状态</td>
+			<td>操作</td>
+		</tr>
+		<tr>
+			<td>1</td>
+			<td>番茄客栈</td>
+			<td>环球中心</td>
+			<td>13888888888</td>
+			<td>匹配状态</td>
+			<td><button class="btn btn-primary btn-sm">管理酒店</button></td>
+		</tr>
+		<tr>
+			<td>2</td>
+			<td>有间客栈</td>
+			<td>会展中心</td>
+			<td>13888888888</td>
+			<td>匹配状态</td>
+			<td><button class="btn btn-primary btn-sm">管理酒店</button></td>
+		</tr>
+	</table>
+
+
+
+</div>
+<script src="../assets/js/jquery-2.0.3.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+<script src="../assets/js/jquery-ui-1.10.3.full.min.js"></script>
+<script>
+$(function(){
+	$('#myButton').on('click', function(){
+		var data = $('#inn-search').serialize()
+		console.log(data)
+		/*$.ajax({
+			type: 'GET',
+			data: data,
+			url: 'url'
+			success: function(){
+				// 更新表格操作
+			}
+		})*/
+	})
+})
+</script>
+</body>
+</html>

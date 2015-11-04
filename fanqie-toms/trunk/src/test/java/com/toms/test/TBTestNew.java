@@ -10,7 +10,9 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
@@ -31,9 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -66,9 +66,217 @@ public class TBTestNew {
     private IOtaInfoDao otaInfoDao;
     @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
+    @Resource(name = "tbService")
+    private ITPService tbService;
+
+
 
     @Test
+    public void  newInnTest() throws Exception {
+        String s ="3570193376" +
+                ",3570193376" +
+                ",3570193376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3570193376" +
+                ",3569233376" +
+                ",3570193376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3569233376" +
+                ",3641032376" +
+                ",3641032376" +
+                ",3641032376" +
+                ",3641032376" +
+                ",3641032376" +
+                ",3641032376" +
+                ",3649363376" +
+                ",3649363376" +
+                ",3649363376" +
+                ",3649363376" +
+                ",3649363376" +
+                ",3650891376" +
+                ",3650891376" +
+                ",3658378376" +
+                ",3658378376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3657072376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3657072376" +
+                ",3657072376" +
+                ",3657072376" +
+                ",3658378376" +
+                ",3658378376" +
+                ",3658378376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3656418376" +
+                ",3658378376" +
+                ",3656418376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3658432376" +
+                ",3691516376" +
+                ",3690536376" +
+                ",3690536376" +
+                ",3690536376" +
+                ",3708757376" +
+                ",3708757376" +
+                ",3708757376" +
+                ",3708757376" +
+                ",3708757376" +
+                ",3708757376" +
+                ",3715504376" +
+                ",3715504376" +
+                ",3729172376" +
+                ",3729172376" +
+                ",3729172376" +
+                ",3737825376" +
+                ",3737825376" +
+                ",3737825376" +
+                ",3742737376" +
+                ",3739932376" +
+                ",3739932376" +
+                ",3739932376" +
+                ",3739932376" +
+                ",3739932376" +
+                ",3742737376" +
+                ",3739932376" +
+                ",3767035376" +
+                ",3767035376" +
+                ",3767035376" +
+                ",3701421376" +
+                ",3825233376" +
+                ",3825233376" +
+                ",3825233376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3701421376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3825233376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3828320376" +
+                ",3825361376" +
+                ",3828320376" +
+                ",3825372376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3825372376" +
+                ",3825372376" +
+                ",3825377376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3826379376" +
+                ",3825372376" +
+                ",3828363376" +
+                ",3825385376" +
+                ",3828363376" +
+                ",3828363376" +
+                ",3825385376" +
+                ",3825385376" +
+                ",3826379376" +
+                ",3825385376";
 
+        String[] split = s.split(",");
+        List<String> list = Arrays.asList(split);
+        Set<String> set = new HashSet<String>();
+        for (String v:list){
+            set.add(v);
+        }
+        List<OtaInfoRefDto> otaInfoRefDtoList = otaInfoDao.selectAllOtaByCompany("89894098");
+        OtaInfoRefDto o = otaInfoRefDtoList.get(0);
+        TBParam tbParam = null;
+        PriceModel price1 = null;
+        for (String v:set){
+            OtaInnOtaDto otaDto = otaInnOtaDao.selectOtaInnOtaByHid(Long.valueOf(v), "d0392bc8-131c-8989-846e-c81c66011111", "1");
+            if (otaDto!=null && otaDto.getSj()==1){
+                BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId("d0392bc8-131c-8989-846e-c81c66011111", otaDto.getInnId());
+                if (bangInn!=null && bangInn.getSj()==1){
+                    String accountId = String.valueOf(bangInn.getAccountId());
+                    List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
+                    price1 =new PriceModel();
+                    price1.setAccountId(accountId);
+                    price1.setPattern("MAI");
+                    priceModelArray.add(price1);
+                    tbParam = new TBParam();
+                    tbParam.setAccountId(accountId);
+                    tbParam.setInnId(String.valueOf(bangInn.getInnId()));
+                    tbParam.setOtaId("903");
+                    tbParam.setPriceModel("MAI");
+                    tbParam.setSj(true);
+                    tbParam.setsJiaModel("MAI");
+                    tbParam.setCompanyCode("89894098");
+                    tbParam.setDeleted(false);
+                    tbParam.setPriceModelArray(priceModelArray);
+                    tbService.updateOrAddHotel(tbParam,o);
+                }else {
+                    System.out.println("下架的innId:"+otaDto.getInnId());
+                }
+            }else {
+                System.out.println("下架的innId:"+otaDto.getInnId());
+            }
+
+        }
+
+
+    }
+
+    @Test
+    public void innTest() throws Exception {
+        BangInnDto bangInnDto = new BangInnDto();
+        bangInnDto.setCompanyId("d0392bc8-131c-8989-846e-c81c66011111");
+        List<BangInn> bangInns = bangInnDao.selectBangInn(bangInnDto);
+        List<OtaInfoRefDto> otaInfoRefDtoList = otaInfoDao.selectAllOtaByCompany("89894098");
+        for (OtaInfoRefDto otaInfoRefDto:otaInfoRefDtoList){
+            TBParam tbParam = null;
+            PriceModel price1 = null;
+            for (BangInn bangInn:bangInns){
+                String accountId = String.valueOf(bangInn.getAccountId());
+                List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
+                price1 =new PriceModel();
+                price1.setAccountId(accountId);
+                price1.setPattern("MAI");
+                priceModelArray.add(price1);
+                tbParam = new TBParam();
+                tbParam.setAccountId(accountId);
+                tbParam.setInnId(String.valueOf(bangInn.getInnId()));
+                tbParam.setOtaId("903");
+                tbParam.setPriceModel("MAI");
+                tbParam.setSj(true);
+                tbParam.setsJiaModel("MAI");
+                tbParam.setCompanyCode("89894098");
+                tbParam.setDeleted(false);
+                tbParam.setPriceModelArray(priceModelArray);
+                tbService.updateOrAddHotel(tbParam,otaInfoRefDto);
+            }
+        }
+
+
+
+    }
+
+
+    @Test
     public void test() throws Exception {
         OtaInfoRefDto otaInfo = new OtaInfoRefDto();
         otaInfo.setAppKey("23192376");
@@ -79,10 +287,10 @@ public class TBTestNew {
         otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*/
         otaInfo.setOtaInfoId("1");
         //String innId = "7060";
-        String innId = "51584";
+        String innId = "52457";
         String companyCode = "89894098";
         //String accountId = "14339";
-        String accountId = "30261";
+        String accountId = "32664";
         String otaId = "903";
         String priceModel = "MAI";
         String shangJiaModel = "MAI";
@@ -90,7 +298,7 @@ public class TBTestNew {
         boolean isSj=true;
         List<PriceModel> priceModelArray = new ArrayList<PriceModel>();
         PriceModel price1 = new PriceModel();
-        price1.setAccountId("30261");
+        price1.setAccountId("32664");
         price1.setPattern("MAI");
         priceModelArray.add(price1);
         TBParam tbParam = new TBParam();

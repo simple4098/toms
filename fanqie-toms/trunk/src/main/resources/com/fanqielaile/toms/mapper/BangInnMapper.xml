@@ -60,6 +60,16 @@
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,deleted)
               values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},0)
        </insert>
+
+    <select id="selectBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="BaseResultMap">
+        SELECT
+        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,account_id_di,ota_wg_id,sj
+        from bang_inn where company_id = #{companyId} and deleted=0 /*and inn_id in (13007,40647)*/
+        and bang_date BETWEEN '2015-10-23' and '2015-10-23 23:59:59'
+
+        ORDER BY bang_date DESC,id ASC
+    </select>
+
     <select id="selectBangInnByInnLabelId" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>

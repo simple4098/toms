@@ -129,12 +129,11 @@ public class FrontendPagerDecorator extends PageDecorator {
         return new StringBuilder("<").append(tag).append(" ").append(linkAttr).append("=").append("\"").append(link).append("\"").append(">").append(tagText).append("</").append(tag).append(">");
     }
 
-    /*public static void main(String... s) {
+    public static void main(String... s) {
         Pagination pagination = new Pagination(2, 10);
         pagination.setRows(100);
         pagination.setPageCount(10);
         FrontendPagerDecorator frontendPagerDecorator = new FrontendPagerDecorator(pagination);
         System.out.print(frontendPagerDecorator.build("#", "#"));
     }
-*/
 }

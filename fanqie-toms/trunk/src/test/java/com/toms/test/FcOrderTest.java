@@ -23,9 +23,20 @@ public class FcOrderTest {
     private IOrderService orderService;
 
     @Test
-    @Ignore
+//    @Ignore
     public void testOrderCheckAvail() throws IOException {
-        String xml = "<?xml version=\"1.0\"\tencoding=\"utf-8\"?> <Request>   <Header TimeStamp=\"2015-05-09\t13:41:56\" PartnerCode=\"F01202154\" RequestType=\"checkRoomAvail\" Signature=\"D1D201EEDCCD984AA87228869D60E353\"/><CheckRoomAvailRequest><SpHotelId>39202</SpHotelId><SpRoomTypeId>102561</SpRoomTypeId><SpRatePlanId>P908787</SpRatePlanId><CheckInDate>2015-10-10</CheckInDate><CheckOutDate>2015-10-11</CheckOutDate><RoomNum>1</RoomNum></CheckRoomAvailRequest></Request>";
+//        String xml = "<?xml version=\"1.0\"\tencoding=\"utf-8\"?> <Request>   <Header TimeStamp=\"2015-05-09\t13:41:56\" PartnerCode=\"F01202154\" RequestType=\"checkRoomAvail\" Signature=\"D1D201EEDCCD984AA87228869D60E353\"/><CheckRoomAvailRequest><SpHotelId>39202</SpHotelId><SpRoomTypeId>102561</SpRoomTypeId><SpRatePlanId>P908787</SpRatePlanId><CheckInDate>2015-10-10</CheckInDate><CheckOutDate>2015-10-11</CheckOutDate><RoomNum>1</RoomNum></CheckRoomAvailRequest></Request>";
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>\n" +
+                "  <Header TimeStamp=\"2015-11-02 17:40:16\" PartnerCode=\"S10046872\" RequestType=\"checkRoomAvail\" Signature=\"573F2E48169F5194410C6AA7BD7BC4D7\"/>\n" +
+                "  <CheckRoomAvailRequest>\n" +
+                "    <SpHotelId>7745</SpHotelId>\n" +
+                "    <SpRoomTypeId>115599</SpRoomTypeId>\n" +
+                "    <SpRatePlanId>10007</SpRatePlanId>\n" +
+                "    <CheckInDate>2015-11-03</CheckInDate>\n" +
+                "    <CheckOutDate>2015-11-04</CheckOutDate>\n" +
+                "    <RoomNum>1</RoomNum>\n" +
+                "  </CheckRoomAvailRequest>\n" +
+                "</Request>";
         CheckRoomAvailResponse checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
         System.out.println("==============>" + checkRoomAvailResponse.toString());
     }
