@@ -176,6 +176,8 @@ public class RoomTypeService implements IRoomTypeService {
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ) {
             Double  d= (Double) jsonObject.get("percentage");
             percentage = new BigDecimal(d);
+        }else {
+            percentage = new BigDecimal(0);
         }
         String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
         return  obtRoomTypeInfoDto(bangInn,roomTypeUrl,otaInfoId,company.getId(),percentage);
