@@ -115,7 +115,7 @@
         <dependency>
             <groupId>com.fanqie.com</groupId>
             <artifactId>fanqie-core</artifactId>
-            <version>1.1.9</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

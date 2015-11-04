@@ -8,17 +8,28 @@ $(function(){
         var data =  $(".table-right tr td[class='room-fc']");
         var reg = new RegExp("^[+-]?[0-9]+(.[0-9]{1,3})?$");
         var f = true;
+        var f1 = true;
         if(data.length>0) {
             var arr = [];
             data.each(function (i) {
                 var obj = $(this).find("input[name='startDateStr']");
+                var startDateStr = obj.val();
                 var endDateStrValue = $(this).find("input[name='endDateStr']").val();
                 var roomValue = $(this).find("input[name='roomValue']").val();
                 arr[i] = {}
                 arr[i].roomTypeId = obj.attr("roomtypeid");
-                arr[i].startDateStr = obj.val();
+                arr[i].startDateStr = startDateStr;
                 arr[i].endDateStr = endDateStrValue;
                 arr[i].priceChange = roomValue;
+                if(endDateStrValue.length!=0 || startDateStr.length!=0){
+                    var dateS = new Date(startDateStr);
+                    var dateE = new Date(endDateStrValue);
+                    if(dateS - dateE >0){
+                        f1 = false;
+                        return false;
+                    }
+                }
+
                 if(roomValue.length>0){
                     if(!reg.test(roomValue)){
                        f = false;
@@ -29,6 +40,9 @@ $(function(){
             })
             if(!f){
                 layer.alert("请输入正确的数字");
+                return false;
+            }if(!f1){
+                layer.alert("日期有误,开始时间不能大于结束时间!");
                 return false;
             }
             var json = JSON.stringify(arr);
