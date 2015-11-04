@@ -83,7 +83,7 @@
 <%--<script src="<c:url value='/assets/layer/layer.js'/>"></script>--%>
 <%--<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>--%>
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
-<%--<script src="<c:url value='/assets/js/tomato.min.js'/>"></script>--%>
+<script src="<c:url value='/assets/js/tomato.min.js'/>"></script>
 
 <script src="<c:url value='/assets/js/fang-price.js'/>"></script>
 <script type="text/javascript">
