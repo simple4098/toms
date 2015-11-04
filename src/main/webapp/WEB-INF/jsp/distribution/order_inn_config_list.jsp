@@ -139,5 +139,9 @@
         $("#pageId").attr("value", page);
         $('.form-search').submit();
     };
+    $(".btn-sm").bind("click",function(){
+        $("#pageId").attr("value", 1);
+        $('.form-search').submit();
+    })
 </script>
 
