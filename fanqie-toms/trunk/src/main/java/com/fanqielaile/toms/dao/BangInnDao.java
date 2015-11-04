@@ -183,5 +183,5 @@ public interface BangInnDao {
     List<BangInnDto> selectFcExcelBangInn(BangInnDto bangInnDto);
 
 
-    List<BangInn> selectBangInn(BangInnDto bangInnDto);
+
 }
