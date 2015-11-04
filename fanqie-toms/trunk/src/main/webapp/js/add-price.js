@@ -32,6 +32,14 @@ $(function(){
                 return false;
             }
             var json = JSON.stringify(arr);
+            var price ='';
+            $.each(arr, function(i, o){
+                price+=o.priceChange;
+            });
+            if(price.length==0){
+                layer.alert("特殊价格不能为空!");
+                return false;
+            }
             console.log(json);
             //console.log("innId:"+innId+" otaInfoId:"+otaInfoId);
             var i = layer.load(0);
