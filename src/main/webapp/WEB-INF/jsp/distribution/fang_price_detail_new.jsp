@@ -9,7 +9,7 @@
 
 </head>
 <div class="page-content">
-
+    <c:set value="${roomType.list}" var="list"/>
     <div class="row" style=" height: 197px; ">
         <div class="col-xs-12">
             <h3 class="header smaller lighter blue">${bangInn.innName}</h3>
@@ -18,13 +18,15 @@
                   <p>售：零售价（代销商在卖房官网设置的最终展示的卖价） &nbsp; &nbsp; &nbsp;<span class="span-green">注：最终以特殊价格策略处理后的价格同步到卖房网站</span></p>
             </div>
         </div>
+     <c:if test="${not empty list}">
         <button class="button white-f"   account_id="${bangInn.accountId}" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" >修改价格</button>
+    </c:if>
 
     </div>
     <input type="hidden" inn_id="${bangInn.innId}" ota_info_id="${otaInfoId}" id="fangPriceDetailId"  value="<c:url value="/distribution/fangPriceDetail"/>"/>
     <div class="room-status-box" style="width:1024px;" id="roomTypeContainerId">
-    <c:set value="${roomType.list}" var="list"/>
-    <c:if test="${not empty roomType.list && not empty roomType.roomDates}">
+
+    <c:if test="${not empty list && not empty roomType.roomDates}">
         <div class="table-left">
             <table class="table table-bordered">
                 <tr class="success">
@@ -38,7 +40,7 @@
                     </th>
                 </tr>
                 <%--<tr class="active"><td colspan="2">房型</td></tr>--%>
-                <c:forEach items="${roomType.list}" var="v">
+                <c:forEach items="${list}" var="v">
                     <tr class="active"><td style="height: 67px;">${v.roomTypeName}</td></tr>
                 </c:forEach>
             </table>
@@ -70,7 +72,7 @@
             </table>
         </div>
     </c:if>
-    <c:if test="${empty roomType.list || empty roomType.roomDates}">
+    <c:if test="${empty list || empty roomType.roomDates}">
         <div class="alert alert-danger center">
             没有房型数据,请选择分类/客栈查询房态房量
         </div>
