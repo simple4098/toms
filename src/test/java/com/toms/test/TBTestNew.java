@@ -71,7 +71,7 @@ public class TBTestNew {
 
 
 
-    @Test
+    /*@Test
     public void  newInnTest() throws Exception {
         String s ="3570193376" +
                 ",3570193376" +
@@ -239,7 +239,7 @@ public class TBTestNew {
         }
 
 
-    }
+    }*/
 
     @Test
     public void innTest() throws Exception {
