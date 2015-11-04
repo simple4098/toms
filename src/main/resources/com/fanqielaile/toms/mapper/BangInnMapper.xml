@@ -73,6 +73,9 @@
         <if test="userInfo.dataPermission == 0">
             and user_id = #{userInfo.id}
         </if>
+        <if test="userInfo.companyId != null and userInfo.companyId != ''">
+            and company_id = #{userInfo.companyId}
+        </if>
     </select>
     <update id="updateBangInnUserId">
               update bang_inn set user_id = #{newUserId} where user_id = #{oldUserId}

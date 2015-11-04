@@ -404,7 +404,7 @@ public class Order extends Domain {
     }
 
     public BigDecimal getCostPrice() {
-        return new BigDecimal(new DecimalFormat("#0.00").format(costPrice));
+        return costPrice;
     }
 
     public void setCostPrice(BigDecimal costPrice) {
