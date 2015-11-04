@@ -70,8 +70,9 @@
                       搜索
                       <i class="icon-search icon-on-right bigger-110"></i>
                     </button>
-                    <a class="search-btn-up" data-url="<c:url value="/innMatch/ajax/searchInn"/>">上一页</a> &nbsp;
-                    <a class="search-btn-down" data-url="<c:url value="/innMatch/ajax/searchInn"/>">下一页</a>
+                    <a class="search-btn-up" href="#" data-url="<c:url value="/innMatch/ajax/searchInn"/>">上一页</a>
+                    &nbsp;
+                    <a class="search-btn-down" href="#" data-url="<c:url value="/innMatch/ajax/searchInn"/>">下一页</a>
                   </div>
                   <div id="contentId">
                     <%--<label>

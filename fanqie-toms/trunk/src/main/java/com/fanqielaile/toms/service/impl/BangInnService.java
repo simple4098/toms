@@ -62,7 +62,7 @@ public class BangInnService implements IBangInnService {
                 List<BangInn> inns = this.bangInnDao.selectBangInnByInnLabelId(bangInn.getInnLabelId(), userInfo);
                 if (StringUtils.isEmpty(bangInn.getInnLabelId())) {
                     BangInn bangInn2 = new BangInn();
-                    bangInn2.setInnLabelId(null);
+                    bangInn2.setInnLabelId("");
                     bangInn2.setInnLabelName("全部客栈分类");
                     bangInn2.setBangInnList(inns);
                     results.add(bangInn2);
@@ -78,6 +78,7 @@ public class BangInnService implements IBangInnService {
                 }
             }
         }
+        Collections.sort(results);
         return results;
     }
 
