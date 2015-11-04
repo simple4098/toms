@@ -388,5 +388,10 @@ public class TBService implements ITPService {
 
     }
 
+    @Override
+    public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId, String companyId,String userId, String json) throws Exception {
+
+    }
+
 
 }

@@ -3,21 +3,24 @@ package com.toms.test;
 
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dao.IFcAreaDao;
-import com.fanqielaile.toms.dao.IFcCityDao;
-import com.fanqielaile.toms.dao.IFcProvinceDao;
+import com.fanqielaile.toms.dao.*;
+import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OperateType;
 import com.fanqielaile.toms.enums.PayMethod;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.fc.FcArea;
 import com.fanqielaile.toms.model.fc.*;
+import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.Dom4JDriver;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +33,8 @@ import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -55,6 +60,14 @@ public class FcStaticTest {
     private IFcProvinceDao fcProvinceDao;
     @Resource
     private IFcAreaDao fcAreaDao;
+    @Resource
+    private IFcHotelInfoDao fcHotelInfoDao;
+    @Resource
+    private IFcRoomTypeInfoDao fcRoomTypeInfoDao;
+    @Resource
+    private BangInnDao bangInnDao;
+    @Resource
+    private IOtaRoomPriceService otaRoomPriceService;
 
 
     @Test
@@ -277,6 +290,48 @@ public class FcStaticTest {
         log.info("房仓解除绑定xml:"+xml);
         String result = HttpClientUtil.httpPost("http://www.fangcang.org/USP/api_v1/deleteHotelMapping", xml);
         log.info("fc result :" + result);
+    }
+
+    @Test
+    public void  readFcInn() throws IOException {
+        File file = new File("F:\\FC_inn.xls");
+        String[][] result = ExcelUtil.getData(file, 1);
+        int rowLength = result.length;
+        FcHotelInfoDto hotelInfoDto = null;
+        for(int i=0;i<rowLength;i++) {
+            hotelInfoDto = new FcHotelInfoDto();
+            hotelInfoDto.setHotelId(result[i][1]);
+            hotelInfoDto.setHotelName(result[i][2]);
+            System.out.print(result[i][2]+"\t\t");
+            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
+            System.out.println();
+
+        }
+    }
+
+    @Test
+    public void  readFcRoomTypeInn() throws IOException {
+        File file = new File("F:\\FC_ROOMTYPE.xls");
+        String[][] result = ExcelUtil.getData(file, 1);
+        int rowLength = result.length;
+        FcRoomTypeInfo fcRoomTypeInfo = null;
+        for(int i=0;i<rowLength;i++) {
+            fcRoomTypeInfo = new FcRoomTypeInfo();
+            fcRoomTypeInfo.setHotelId(result[i][1]);
+            fcRoomTypeInfo.setRoomTypeId(result[i][3]);
+            fcRoomTypeInfo.setRoomTypeName(result[i][4]);
+            //fcRoomTypeInfo.setHotelName(result[i][2]);
+            //System.out.print(result[i][1]+"\t\t"+result[i][3]+"\t\t"+result[i][4]);
+            fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
+            //System.out.println();
+
+        }
+    }
+
+    @Test
+    public  void  checkRoom() throws Exception {
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId("60978e73-851b-429d-9cf4-415300a64739", 3698);
+        List<RoomDetail> roomDetails = otaRoomPriceService.obtRoomAvailFc(bangInn, 99093);
     }
 }
 

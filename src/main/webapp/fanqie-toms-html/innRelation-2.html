@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>客栈匹配-2</title>
+<link rel="stylesheet" type="text/css" href="../assets/css/normalize.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/jquery-ui-1.10.3.full.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/ace.min.css">
+<link rel="stylesheet" type="text/css" href="../assets/css/innRelation.css">
+</head>
+
+<body>
+<div class="container">
+	<!-- 客栈匹配 -->
+	<div class="col-sm-12">
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="lighter smaller">客栈匹配</h4>
+			</div>
+	
+			<div class="widget-body">
+				<div class="widget-main clearfix">
+					<div class="col-sm-6 widget-title">番茄来了系统客栈信息</div>
+					<div class="col-sm-6 widget-title">匹配天下房仓标准酒店</div>
+					<div style="clear: both"></div>
+					<hr class="hr-2">
+					<div class="clearfix">
+						<div class="col-sm-6 widget-con">
+							<p>名称：<span>番茄来了客栈1号店</span><em>未匹配</em></p>
+							<p>电话：<span>13888888888</span></p>
+							<p>地址：<span>环球中心</span></p>
+						</div>
+						<div class="col-sm-6 widget-con">
+							<div class="inn-search">
+								<span>搜索可匹配标准酒店</span>
+								<input type="text" placeholder="输入酒店关键字搜索">
+								<button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
+									搜索
+									<i class="icon-search icon-on-right bigger-110"></i>
+								</button>
+							</div>
+							
+							<label>
+								<input type="radio" name="inn">
+								<div class="result-box">
+									<p>暂不匹配</p>
+								</div>
+							</label>
+							<label>
+								<input type="radio" name="inn">
+								<div class="result-box">
+									<p>名称：<span>番茄来了客栈1号店</span></p>
+									<p>电话：<span>13888888888</span></p>
+									<p>地址：<span>环球中心</span></p>
+								</div>
+							</label>
+							<label>
+								<input type="radio" name="inn">
+								<div class="result-box">
+									<p>名称：<span>番茄来了客栈1号店</span></p>
+									<p>电话：<span>13888888888</span></p>
+									<p>地址：<span>环球中心</span></p>
+								</div>
+							</label>
+							<label>
+								<input type="radio" name="inn">
+								<div class="result-box">
+									<p>名称：<span>番茄来了客栈1号店</span></p>
+									<p>电话：<span>13888888888</span></p>
+									<p>地址：<span>环球中心</span></p>
+								</div>
+							</label>
+						</div>
+					</div>
+					<hr class="hr-2">
+					<button class="btn btn-primary">提交匹配</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 房型匹配 -->
+	<div class="col-sm-12">
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="lighter smaller">房型匹配</h4>
+			</div>
+	
+			<div class="widget-body">
+				<div class="widget-main clearfix">
+					<div class="roomtype-sort">
+						<div class="col-sm-9 widget-title">该客栈房型信息<span>（拖动右边可匹配房型到虚线框内进行1对1匹配）</span></div>
+						<div class="col-sm-3 widget-title">匹配天下房仓房型</div>
+						<div style="clear: both"></div>
+						<hr class="hr-2">
+						<div class="clearfix">
+							<div class="col-sm-9">
+								<div class="col-sm-4" id="innRoomtype">
+									<div class="inn-rooms">
+										<input type="hidden" value="0001">
+										<p class="inn-roomname">大床房|<span>未匹配</span></p>
+										<p>面积：20平方米</p>
+									</div>
+									<div class="inn-rooms">
+										<input type="hidden" value="0002">
+										<p class="inn-roomname">大床房|<span>未匹配</span></p>
+										<p>面积：20平方米</p>
+									</div>
+									<div class="inn-rooms">
+										<input type="hidden" value="0003">
+										<p class="inn-roomname">大床房|<span>未匹配</span></p>
+										<p>面积：20平方米</p>
+									</div>
+								</div>
+								<div class="col-sm-4">
+									<div class="inn-rooms-icon"></div>
+									<div class="inn-rooms-icon"></div>
+									<div class="inn-rooms-icon"></div>
+								</div>
+								<div class="col-sm-4" id="otaRoomType">
+									<div class="inn-rooms-box connectedSortable">
+										
+									</div>
+									<div class="inn-rooms-box connectedSortable">
+										
+									</div>
+									<div class="inn-rooms-box connectedSortable">
+										
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-3 drag-con connectedSortable" id="sortable">
+								<div class="inn-rooms">
+									<input type="hidden" value="1">
+									<p>1--大床房</p>
+									<p>面积：20平方米</p>
+								</div>
+								<div class="inn-rooms">
+									<input type="hidden" value="2">
+									<p>2--大床房</p>
+									<p>面积：20平方米</p>
+								</div>
+								<div class="inn-rooms">
+									<input type="hidden" value="3">
+									<p>3--大床房</p>
+									<p>面积：20平方米</p>
+								</div>
+							</div>
+						</div>
+						<hr class="hr-2">
+						<button class="btn btn-primary" id="roomTypeBtn">提交匹配</button>
+					</div>
+					<div class="roomtype-table">
+						<table class="table table-bordered table-hover">
+							<thead>
+								<tr class="active">
+									<td>序号</td>
+									<td>酒店房型</td>
+									<td>匹配房仓标准房型</td>
+									<td>绑定价格计划</td>
+									<td>操作</td>
+								</tr>
+							</thead>
+							<tbody id="roomTypeData">
+							</tbody>
+						</table>
+						<button class="btn btn-primary" id="roomTypeBtn">房型重新匹配</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 价格计划 -->
+	<div class="col-sm-12">
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="lighter smaller">新增房价计划</h4>
+				<button class="btn btn-xs btn-success pull-right" id="addPriceBtn" data-toggle="modal" data-target="#addPricePlan">新增房价计划</button>
+			</div>
+	
+			<div class="widget-body">
+				<div class="widget-main">
+					<table class="table table-bordered table-hover">
+						<thead>
+							<tr class="active">
+								<td>序号</td>
+								<td>价格计划ID</td>
+								<td>名称</td>
+								<td>币种</td>
+								<td>支付类型</td>
+								<td>床型</td>
+								<td>状态</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody id="PriceData">
+							<tr>
+								<td>1</td>
+								<td>1001</td>
+								<td>大床+预付</td>
+								<td>人民币</td>
+								<td>预付</td>
+								<td>大床</td>
+								<td>使用中</td>
+								<td>
+									<button class="btn btn-xs btn-default edit-btn">删除</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- "编辑"弹框 -->
+<div class="modal fade" id="editPopups">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">选择价格计划</h4>
+			</div>
+			<div class="modal-body">
+				<select>
+					<option value="1001">大床+预付（1001）</option>
+					<option value="1001">大床+预付（2002）</option>
+					<option value="1001">大床+预付（3001）</option>
+					<option value="1001">大床+预付（4001）</option>
+				</select>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="editSave">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- "上架"弹框 -->
+<div class="modal fade" id="roomTypeUp">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">操作确认</h4>
+			</div>
+			<div class="modal-body">
+				<p>您确定将此房型上架吗？</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="editSave">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 新增房价计划 -->
+<div class="modal fade" id="addPricePlan">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">新增房价计划</h4>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal">
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label">货币种类</label>
+						<div class="col-sm-8">
+							<select>
+								<option value="1001">人民币</option>
+								<option value="1001">港元</option>
+								<option value="1001">澳门元</option>
+								<option value="1001">美元</option>
+								<option value="1001">台币</option>
+								<option value="1001">泰铢</option>
+								<option value="1001">新加坡元</option>
+								<option value="1001">马来西亚林吉特</option>
+								<option value="1001">日元</option>
+								<option value="1001">韩元</option>
+								<option value="1001">加元</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label">支付类型</label>
+						<div class="col-sm-8">
+							<select>
+								<option value="1001">预付</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="col-sm-3 control-label">床型</label>
+						<div class="col-sm-8">
+							<select>
+								<option value="1001">单床</option>
+								<option value="1001">大床</option>
+								<option value="1001">双床</option>
+								<option value="1001">三床</option>
+								<option value="1001">四床</option>
+								<option value="1001">大/双床</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" id="userPlusBtn">确定</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../assets/js/jquery-2.0.3.min.js"></script>
+<script src="../assets/js/bootstrap.min.js"></script>
+<script src="../assets/js/jquery-ui-1.10.3.full.min.js"></script>
+<script>
+
+
+
+// 房型匹配拖拽
+$('.inn-rooms-box').sortable({
+	connectWith: ".connectedSortable",
+	over: function(event, ui){
+		$(this).css('borderColor','#F4D611')
+	},
+	out: function(){
+		$(this).css('borderColor','#ccc')
+	},
+	stop: function(event, ui){
+		ui.item.siblings() && ui.item.siblings().appendTo($('#sortable'))
+		//ui.item.parent().css('borderWidth',0)
+	},
+	receive: function(evnet, ui){
+		ui.sender.css('borderWidth',1)
+	}
+}).disableSelection()
+
+$('#sortable').sortable({
+	connectWith: ".connectedSortable",
+	stop: function(event, ui){
+		ui.item.siblings() && ui.item.siblings().appendTo($('#sortable'))
+		ui.item.parent().css('borderWidth',0)
+	},
+	receive: function(evnet, ui){
+		ui.sender.css('borderWidth',1)
+	}
+}).disableSelection()
+
+
+$('#roomTypeBtn').click(function(){
+	var $innRooms = $('#innRoomtype .inn-rooms'),
+		$sortable = $('#otaRoomType .inn-rooms-box'),
+		arr = [],
+		innCode = [],
+		otaCode = []
+
+	$innRooms.each(function(i){
+		var innId = $(this).find('input').val()
+		arr[i] = {}
+		arr[i].innId = innId
+		innCode.push($(this).html())
+	})
+	$sortable.each(function(i){
+		var id = $(this).find('input').val()
+		if(id){
+			arr[i].id = id
+			otaCode.push($(this).find('.inn-rooms').html())
+		}
+		else{
+			arr[i].id = ''
+			otaCode.push('')
+		}
+	})
+	console.log(arr)
+
+	var htmlCode = ''
+	for(var i=0; i<arr.length; i++){
+		htmlCode += '<tr><td>'+(i+1)+'</td><td>'+innCode[i]+'</td><td>'+otaCode[i]+'</td><td><span class="price-plan"></span><button class="btn btn-xs btn-primary edit-btn" data-toggle="modal" data-target="#editPopups">编辑</button></td><td><button class="btn btn-xs btn-success" data-toggle="modal" data-target="#roomTypeUp">上架</button></td></tr>'
+	}
+	$('#roomTypeData').html( htmlCode )
+
+	// 编辑按钮
+	$('.edit-btn').on('click', function(){
+		$(this).parent().addClass('active-row')
+	})
+
+	// 保存价格计划
+	$('#editSave').click(function(){
+		var price = $(this).parents('.modal-content').find('option:selected').text()
+		$('.active-row').removeClass('active-row').children('.price-plan').text(price)
+	})
+})
+
+</script>
+</body>
+</html>

@@ -181,4 +181,7 @@ public interface BangInnDao {
     List<BangInnDto> selectFcBangInn(BangInnDto bangInnDto, PageBounds pageBounds);
 
     List<BangInnDto> selectFcExcelBangInn(BangInnDto bangInnDto);
+
+
+    List<BangInn> selectBangInn(BangInnDto bangInnDto);
 }
