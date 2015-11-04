@@ -241,7 +241,7 @@ public class TBTestNew {
 
     }*/
 
-    @Test
+   /* @Test
     public void innTest() throws Exception {
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId("d0392bc8-131c-8989-846e-c81c66011111");
@@ -274,7 +274,7 @@ public class TBTestNew {
 
 
     }
-
+*/
 
     @Test
     public void test() throws Exception {
