@@ -58,7 +58,7 @@ $('.btn-order').on('click', function () {
                 if (data.order.dailyInfoses != null) {
                     for (var i = 0; i < data.order.dailyInfoses.length; i++) {
                         infoTime = infoTime + '<td class="del">' + data.order.dailyInfoses[i].dayDesc + '</td>';
-                        priceInfo = priceInfo + '<td class="del">' + "成：" + data.order.dailyInfoses[i].price + '<br/>售：' + data.order.dailyInfoses[i].costPrice + '</td>'
+                        priceInfo = priceInfo + '<td class="del">' + "成：" + data.order.dailyInfoses[i].costPrice + '<br/>售：' + data.order.dailyInfoses[i].price + '</td>'
                     }
                 }
                 $('.daily-info-time').append(infoTime);
