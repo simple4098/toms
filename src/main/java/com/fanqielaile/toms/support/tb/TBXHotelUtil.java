@@ -76,6 +76,9 @@ public class TBXHotelUtil {
             if (andArea!=null){
                 req.setProvince(!StringUtils.isEmpty(andArea.getProvinceCode())?Long.valueOf(andArea.getProvinceCode()):110000);
                 req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
+                if (!StringUtils.isEmpty(andArea.getAreaCode())){
+                    req.setDistrict(Long.valueOf(andArea.getAreaCode()));
+                }
             }
             req.setAddress(innDto.getAddr());
             try {

@@ -98,6 +98,12 @@ public class TBService implements ITPService {
             if (!StringUtils.isEmpty(omsInnDto.getCity())) {
                 andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
             }
+            if (!StringUtils.isEmpty(omsInnDto.getCounty()) && andArea!=null) {
+                OtaTaoBaoArea countyArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(),omsInnDto.getCounty());
+                if (countyArea!=null){
+                    andArea.setAreaCode(countyArea.getAreaCode());
+                }
+            }
             //推客栈、如果存在再获取客栈
             if (tbParam.getAccountId()!=null) {
                 log.info("========开始推客栈【"+omsInnDto.getBrandName()+"["+omsInnDto.getInnId()+"]"+"】==============");
