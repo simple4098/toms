@@ -513,7 +513,7 @@ public class TBService implements ITPService {
                         }
                     }else {
                         log.info("innId："+innId+" 房型id"+price.getRoomTypeId()+"还没有上架到房仓");
-                        throw new TomsRuntimeException("innId："+innId+" 房型名称:"+price.getRoomTypeName()+"还没有上架到房仓");
+                        throw new TomsRuntimeException("innId："+innId+" 房型名称:"+price.getRoomTypeName()+"还没有上架到淘宝");
                     }
                 }
             }
