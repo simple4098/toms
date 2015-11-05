@@ -625,6 +625,8 @@ public class Order extends Domain {
         handOrder.setHomeAmount(order.getHomeAmount());
         handOrder.setLiveTime(order.getLiveTime());
         handOrder.setLeaveTime(order.getLeaveTime());
+        //设置价格比例
+        handOrder.setPercent(order.getPercent());
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
         //设置成本价，总价*（1-比例）
         handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
