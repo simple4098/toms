@@ -224,7 +224,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                <button type="button" class="close close-btn" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">订单详细信息展示</h4>
             </div>
@@ -252,7 +252,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" style="float: left" class="btn btn-success btn-cancel-order">取消订单</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-default close-btn" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>

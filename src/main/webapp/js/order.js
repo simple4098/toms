@@ -1,6 +1,10 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
+
+$('.close-btn').click(function () {
+    window.location.reload();
+})
 //分页方法
 function page(page) {
     $("#pageId").attr("value", page);
