@@ -2,6 +2,7 @@ package com.fanqielaile.toms.support.util;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.BangInn;
@@ -233,5 +234,16 @@ public class TomsUtil {
         tbParam.setsJiaModel(otaInnOtaDto.getsJiaModel());
         tbParam.setCompanyCode(company.getCompanyCode());
         return  tbParam;
+    }
+
+    //处理价格
+    public static Double price(Double price,BigDecimal percentage){
+        if (percentage!=null){
+            BigDecimal bigDecimal = new BigDecimal(100);
+            BigDecimal subtract = bigDecimal.subtract(percentage);
+            Double divide = DcUtil.divide(subtract, bigDecimal);
+            return DcUtil.formatDouble(price*divide);
+        }
+        return price;
     }
 }
