@@ -27,6 +27,7 @@
             <result column="company_id" property="companyId"/>
             <result column="company_code" property="companyCode"/>
             <result column="sort" property="sort"/>
+            <result column="usedPriceModel" property="usedPriceModel"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">

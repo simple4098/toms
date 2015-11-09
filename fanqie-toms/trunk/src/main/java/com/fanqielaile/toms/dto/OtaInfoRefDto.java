@@ -2,6 +2,7 @@ package com.fanqielaile.toms.dto;
 
 import com.fanqie.core.Domain;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 
 /**
  * DESC : 渠道也公司的关联dto
@@ -26,6 +27,15 @@ public class OtaInfoRefDto extends Domain {
     private String companyCode;
     //排序
     private int sort;
+    private UsedPriceModel usedPriceModel;
+
+    public UsedPriceModel getUsedPriceModel() {
+        return usedPriceModel;
+    }
+
+    public void setUsedPriceModel(UsedPriceModel usedPriceModel) {
+        this.usedPriceModel = usedPriceModel;
+    }
 
     public OtaInfoRefDto() {
     }

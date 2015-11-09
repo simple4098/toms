@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IOtaInnOtaDao" >
+
+       <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.OtaCommissionPercentDto">
+              <id column="id" property="id" />
+              <result column="commission_percent" property="commissionPercent"/>
+              <result column="company_id" property="companyId"/>
+              <result column="ota_id" property="otaId"/>
+              <result column="sjia_model" property="sJiaModel"/>
+              <result column="deleted" property="deleted"/>
+              <result column="created_date" property="createdDate"/>
+              <result column="updated_date" property="updatedDate"/>
+       </resultMap>
+
+       <insert id="saveOtaCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent">
+              insert into ota_commission_percent(id,deleted,commission_percent,company_id,ota_id,ota_info_id,sjia_model,created_date,updated_date)
+              values (#{uuid},0,#{commissionPercent},#{companyId},#{otaId},#{otaInfoId},#{sJiaModel},now(),now())
+       </insert>
+
+       <select id="selectCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" >
+              SELECT  * from ota_commission_percent WHERE  deleted=0 AND  company_id='${companyId}' 
+              and ota_id='${otaId}' and sjia_model='${sJiaModel}'
+       </select>
+       
+       <update id="updateOtaCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" >
+              update ota_commission_percent set commission_percent='${commissionPercent}' where  id ='${id}'
+       </update>
+
+
+</mapper>

@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.service;
 
-import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
 
 /**
  * DESC : 更新渠道下所有客栈的佣金比例
@@ -13,7 +13,6 @@ public interface ICommissionService {
 
     /**
      * 更新分佣模式
-     * @param tbParam
      */
-    void updateCommission(TBParam tbParam);
+    void updateCommission( OtaCommissionPercent commissionPercent)throws Exception;
 }

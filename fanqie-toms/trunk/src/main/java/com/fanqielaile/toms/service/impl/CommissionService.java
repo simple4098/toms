@@ -1,16 +1,15 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqie.core.dto.TBParam;
+import com.fanqielaile.toms.dao.CompanyDao;
+import com.fanqielaile.toms.dao.IOtaCommissionPercentDao;
 import com.fanqielaile.toms.dao.IOtaInnOtaDao;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.service.ICommissionService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * DESC :
@@ -25,27 +24,22 @@ public class CommissionService implements ICommissionService {
 
     @Resource
     private IOtaInnOtaDao otaInnOtaDao;
-   /* @Resource
-    private BusinLogClient businLogClient;*/
+    @Resource
+    private IOtaCommissionPercentDao commissionPercentDao;
+    @Resource
+    private CompanyDao companyDao;
+
 
     @Override
-   /* @Log(descr ="渠道佣金更新")*/
-    public void updateCommission(TBParam tbParam) {
-        List<String> list = otaInnOtaDao.findOtaInnOtaIdsByCompanyCode(tbParam.getCompanyCode());
-        if (!CollectionUtils.isEmpty(list) && tbParam.getCommissionPercent()!=null){
-           otaInnOtaDao.updateOtaInnOtaCommission(list,tbParam.getCommissionPercent(),tbParam.getCommissionType());
-            Map<String,Object> param = new HashMap<String, Object>();
-            param.put("companyCode",tbParam.getCompanyCode());
-            param.put("commissionPercent",tbParam.getCommissionPercent());
-            /*String event = JacksonUtil.obj2json(param);
-            try {
-                BusinLog businLog = new BusinLog();
-                businLog.setDescr("渠道佣金更新");
-                businLog.setEvent(event);
-                businLogClient.save(businLog);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }*/
+    public void updateCommission(OtaCommissionPercent commissionPercent)throws Exception {
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(commissionPercent);
+        if (commission!=null){
+            commission.setCommissionPercent(commissionPercent.getCommissionPercent());
+            commissionPercentDao.updateOtaCommission(commission);
+            log.info("====佣金比更新===="+commission.getCommissionPercent()+" type:"+commission.getsJiaModel()+" otaId:"+commission.getOtaId());
+        }else {
+            commissionPercentDao.saveOtaCommission(commissionPercent);
+            log.info("====佣金比新增===="+commissionPercent.getCommissionPercent()+" type:"+commissionPercent.getsJiaModel()+" otaId:"+commissionPercent.getOtaId());
         }
 
     }
