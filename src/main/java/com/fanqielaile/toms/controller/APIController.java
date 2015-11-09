@@ -3,11 +3,12 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
-import com.fanqielaile.toms.service.ICommissionService;
-import com.fanqielaile.toms.service.IOrderService;
-import com.fanqielaile.toms.service.IOtaInfoService;
-import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.dto.ParamJson;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FileDealUtil;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -48,6 +50,8 @@ public class APIController extends BaseController {
     private IOtaInfoService otaInfoService;
     @Resource
     private IOrderService orderService;
+    @Resource
+    private ICompanyService companyService;
 
     /**
      * 客栈上架、下架
@@ -168,18 +172,33 @@ public class APIController extends BaseController {
 
     /**
      * 更新客栈的佣金
-     * @param tbParam
      */
     @RequestMapping("/commission/update")
     @ResponseBody
-    public Object commissionUpdate(TBParam tbParam){
+    public Object commissionUpdate(String param){
         JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
-        if(!StringUtils.isEmpty(tbParam.getCompanyCode()) && !StringUtils.isEmpty(tbParam.getCommissionType())){
-            commissionService.updateCommission(tbParam);
-        }else {
-            jsonModel.setMessage(Constants.MESSAGE_ERROR);
+        ParamJson paramJson = JacksonUtil.json2obj(param, ParamJson.class);
+        try {
+            if(paramJson!=null && !StringUtils.isEmpty(paramJson.getCompanyCode())){
+                Company company = companyService.findCompanyByCompanyCode(paramJson.getCompanyCode());
+                OtaCommissionPercent commissionPercent = null;
+                Map<String,String> commission = paramJson.getCommission();
+                for (Map.Entry<String, String> entry : commission.entrySet()){
+                    commissionPercent = new OtaCommissionPercent();
+                    commissionPercent.setCommissionPercent(Double.valueOf(entry.getValue()));
+                    commissionPercent.setCompanyId(company.getId());
+                    commissionPercent.setsJiaModel(entry.getKey());
+                    commissionPercent.setOtaId(company.getOtaId());
+                    commissionService.updateCommission(commissionPercent);
+                }
+            }else {
+                jsonModel.setMessage(Constants.MESSAGE_ERROR);
+                jsonModel.setSuccess(false);
+                return jsonModel;
+            }
+        }catch (Exception e){
+            jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
-            return jsonModel;
         }
         return  jsonModel;
     }
