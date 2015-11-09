@@ -2,6 +2,8 @@ package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
 
+import java.util.Date;
+
 /**
  * DESC : 渠道佣金
  * @author : 番茄木-ZLin
@@ -13,6 +15,15 @@ public class OtaCommissionPercent extends Domain {
     private Integer otaId;
     private Double commissionPercent;
     private String  sJiaModel;
+
+    public OtaCommissionPercent() {
+    }
+
+    public OtaCommissionPercent(Integer otaId, String companyId, String sJiaModel) {
+        this.otaId = otaId;
+        this.companyId = companyId;
+        this.sJiaModel = sJiaModel;
+    }
 
     public String getCompanyId() {
         return companyId;
