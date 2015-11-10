@@ -345,9 +345,9 @@ public class OrderService implements IOrderService {
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), otaType);
             //查询客栈信息
-            logger.info("绑定客栈不存在" + order.getOTAHotelId());
             BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(), otaInfo.getOtaInfoId(), order.getCompanyId());
             if (null == bangInn) {
+                logger.info("绑定客栈不存在" + order.getOTAHotelId());
                 return new JsonModel(false, "绑定客栈不存在");
             }
             //公司信息
@@ -408,7 +408,7 @@ public class OrderService implements IOrderService {
                     }
                     //设置订单总价
                     //1.验证订单总价是否一致
-                    if (0 == order.getTotalPrice().compareTo(omsTotalPrice)) {
+                    if (0 == order.getTotalPrice().compareTo(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))))) {
                         order.setTotalPrice(omsTotalPrice);
                     } else {
                         flag = false;

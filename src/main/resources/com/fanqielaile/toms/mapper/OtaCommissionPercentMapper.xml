@@ -18,7 +18,8 @@
               values (#{uuid},0,#{commissionPercent},#{companyId},#{otaId},#{otaInfoId},#{sJiaModel},now(),now())
        </insert>
 
-       <select id="selectCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" >
+       <select id="selectCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent"
+               resultMap="BaseResultMap">
               SELECT  * from ota_commission_percent WHERE  deleted=0 AND  company_id='${companyId}' 
               and ota_id='${otaId}' and sjia_model='${sJiaModel}'
        </select>
