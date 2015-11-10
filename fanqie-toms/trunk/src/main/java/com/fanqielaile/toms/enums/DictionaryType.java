@@ -7,5 +7,6 @@ public enum DictionaryType {
     CANCEL_ORDER,
     ORDER_STATUS,
     CHECK_ORDER,
+    ROOM_DAY_INFO,
     CREATE_ORDER;
 }

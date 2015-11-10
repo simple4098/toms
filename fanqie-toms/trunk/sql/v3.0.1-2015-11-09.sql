@@ -28,3 +28,7 @@ COMMENT ON COLUMN "public"."ota_commission_percent"."deleted" IS '是否删除';
 COMMENT ON COLUMN "public"."ota_commission_percent"."sjia_model" IS '上架模式';
 
 COMMENT ON COLUMN "public"."ota_commission_percent"."ota_id" IS '渠道id';
+
+
+
+INSERT INTO "public"."dictionary" ("id", "desc", "url", "type", "value", "v_name", "v_pwd") VALUES ('5', '获取房型某天信息', 'http://192.168.1.159:8888/api/get_room_day_info', 'ROOM_DAY_INFO', '903', 'TB', 'tb');
