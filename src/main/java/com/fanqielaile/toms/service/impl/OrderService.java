@@ -97,6 +97,10 @@ public class OrderService implements IOrderService {
     private IFcRoomTypeInfoDao fcRoomTypeInfoDao;
     @Resource
     private IFcRoomTypeFqDao fcRoomTypeFqDao;
+    @Resource
+    private IOtaCommissionPercentDao otaCommissionPercentDao;
+
+
     @Override
     public Map<String, Object> findOrderSourceDetail(ParamDto paramDto, UserInfo userInfo) throws Exception {
         paramDto.setUserId(userInfo.getId());
@@ -129,8 +133,6 @@ public class OrderService implements IOrderService {
     }
 
 
-
-
     @Override
 //    @Log(descr = "创建订单")
     public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
@@ -154,65 +156,69 @@ public class OrderService implements IOrderService {
      * @param order
      */
     private void createOrderMethod(ChannelSource channelSource, Order order) throws IOException {
+        //查询客栈关联信息
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+        //查询价格模式（toms的增减价）
         OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(order.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
+        //价格比例
         BigDecimal percent = BigDecimal.ZERO;
         //公司信息
         Company company = this.companyDao.selectCompanyById(otaInnOtaDto.getCompanyId());
-        try {
-            //TODO 所有渠道目前只有卖价
-            String requestUrl = DcUtil.proxyOtaPercentUrl(company.getOtaId(), CommonApi.proxyOtaPercent, "2");
-            String response = HttpClientUtil.httpGets(requestUrl, null);
-            JSONObject jsonObject = JSONObject.fromObject(response);
-            if ("200".equals(jsonObject.get("status").toString())) {
-                percent = BigDecimal.valueOf((Double) jsonObject.get("percentage"));
-                if (percent != null) {
-                    percent = percent.divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
-                }
+        if (ChannelSource.TAOBAO.equals(channelSource)) {
+            //查询
+            OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+            UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
+            if (null != commission) {
+                percent = BigDecimal.valueOf(commission.getCommissionPercent());
             }
+        } else if (ChannelSource.FC.equals(channelSource)) {
+            OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
+            UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
+            if (null != commission) {
+                percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));
+            }
+        }
 
-        } catch (Exception e) {
-            logger.error("查询价格比例出错", e);
-        } finally {
-            //设置每日价格
-            if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
-                if (otaRoomPriceDto == null) {
-                    for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+        //设置每日价格
+        if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+            if (otaRoomPriceDto == null) {
+                for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                    dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
+                }
+            } else {
+                //执行特殊价加减流程
+                //1.判断入住时间是否在特殊价日期之间
+                for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                    if (DateUtil.isBetween(dailyInfos.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
+                        dailyInfos.setPrice(dailyInfos.getPrice().subtract(new BigDecimal(Double.toString(otaRoomPriceDto.getValue()))));
+                    } else {
                         dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
                     }
-                } else {
-                    //执行特殊价加减流程
-                    //1.判断入住时间是否在特殊价日期之间
-                    for (DailyInfos dailyInfos : order.getDailyInfoses()) {
-                        if (DateUtil.isBetween(dailyInfos.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
-                            dailyInfos.setPrice(dailyInfos.getPrice().subtract(new BigDecimal(Double.toString(otaRoomPriceDto.getValue()))));
-                        } else {
-                            dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
-                        }
-                    }
                 }
             }
-            //设置渠道来源
-            order.setChannelSource(channelSource);
-            order.setOrderTime(new Date());
-            //设置订单总价
-            order.setTotalPrice(OrderMethodHelper.getTotalPrice(order));
-            //设置订单号
-            order.setOrderCode(OrderMethodHelper.getOrderCode());
-            //保存价格比例10%
-            order.setPercent(percent);
-            //算成本价与OTA收益 成本价 = 总价 * （1-比例）
-            order.setCostPrice(order.getTotalPrice().multiply((new BigDecimal(1).subtract(percent))));
-            //不展示ota佣金
-//        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
-            order.setCompanyId(otaInnOtaDto.getCompanyId());
-            //创建订单
-            this.orderDao.insertOrder(order);
-            //创建每日价格信息
-            this.dailyInfosDao.insertDailyInfos(order);
-            //创建入住人信息
-            this.orderGuestsDao.insertOrderGuests(order);
         }
+        //设置渠道来源
+        order.setChannelSource(channelSource);
+        order.setOrderTime(new Date());
+        //设置订单总价
+        order.setTotalPrice(OrderMethodHelper.getTotalPrice(order));
+        //设置订单号
+        order.setOrderCode(OrderMethodHelper.getOrderCode());
+        //保存价格比例10%
+        order.setPercent(percent);
+        //算成本价与OTA收益 成本价 = 总价 * （1-比例）
+        order.setCostPrice(order.getTotalPrice().multiply((new BigDecimal(1).subtract(percent))));
+        //不展示ota佣金
+//        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
+        order.setCompanyId(otaInnOtaDto.getCompanyId());
+        //创建订单
+        this.orderDao.insertOrder(order);
+        //创建每日价格信息
+        this.dailyInfosDao.insertDailyInfos(order);
+        //创建入住人信息
+        this.orderGuestsDao.insertOrderGuests(order);
     }
 
     @Override
@@ -334,13 +340,14 @@ public class OrderService implements IOrderService {
         order.setDailyInfoses(dailyInfoses);
         //判断订单是否同步OMS
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
+
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), otaType);
             //查询客栈信息
-            BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(),otaInfo.getOtaInfoId(),order.getCompanyId());
+            logger.info("绑定客栈不存在" + order.getOTAHotelId());
+            BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(), otaInfo.getOtaInfoId(), order.getCompanyId());
             if (null == bangInn) {
-                logger.info("绑定客栈不存在" + order.getOTAHotelId());
                 return new JsonModel(false, "绑定客栈不存在");
             }
             //公司信息
@@ -367,6 +374,56 @@ public class OrderService implements IOrderService {
                     order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
                 }
             }
+            //判断oms价格与下单价格是否一致，不一致不同步oms
+            //1.查询当前订单上架的价格模式,如果是卖转低，进行价格匹配验证,并需改下单到oms的总价和每日房价
+            if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+                BigDecimal percent = order.getPercent();
+                //查询验证房型的价格url
+                Dictionary dictionaryRoom = this.dictionaryDao.selectDictionaryByType(DictionaryType.ROOM_DAY_INFO.name());
+                //验证价格
+                boolean flag = true;
+                BigDecimal omsTotalPrice = BigDecimal.ZERO;
+                if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+                    for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                        //分别通过房型调用oms价格
+                        String response = HttpClientUtil.httpGetRoomAvail(dictionaryRoom.getUrl(), order.toRoomAvail(company, order, dailyInfos));
+                        JSONObject jsonObject = JSONObject.fromObject(response);
+                        if (!jsonObject.get("status").equals(200)) {
+                            flag = false;
+                            break;
+                        } else {
+                            //验证价格是否一致
+                            RoomDetail room = (RoomDetail) JSONObject.toBean(jsonObject.getJSONObject("data"), RoomDetail.class);
+                            //判断oms返回价格*（1-比例） == 订单传入价格
+                            if (0 != dailyInfos.getPrice().compareTo(BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent))))) {
+                                flag = false;
+                                break;
+                            } else {
+                                //设置每日价格
+                                dailyInfos.setPrice(BigDecimal.valueOf(room.getRoomPrice()));
+                                omsTotalPrice = omsTotalPrice.add(BigDecimal.valueOf(room.getRoomPrice()));
+                            }
+                        }
+
+                    }
+                    //设置订单总价
+                    //1.验证订单总价是否一致
+                    if (0 == order.getTotalPrice().compareTo(omsTotalPrice)) {
+                        order.setTotalPrice(omsTotalPrice);
+                    } else {
+                        flag = false;
+                    }
+                }
+                //如果验证价格不一致，返回付款失败，价格与实际价格不一致，并调用淘宝取消订单接口
+                if (!flag) {
+                    logger.info("订单付款失败，订单中的价格与实际价格不一致");
+                    order.setOrderStatus(OrderStatus.REFUSE);
+                    order.setFeeStatus(FeeStatus.NOT_PAY);
+                    JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                    jsonModel.setMessage("付款失败，订单中的价格与实际价格不一致");
+                    return jsonModel;
+                }
+            }
             logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, company).toString());
             String respose = "";
             JSONObject jsonObject = null;
@@ -376,37 +433,16 @@ public class OrderService implements IOrderService {
             } catch (Exception e) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.PAID);
-                if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                    String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
-                    logger.info("淘宝取消订单接口返回值=>" + result);
-                    if (null != result && result.equals("success")) {
-                        this.orderDao.updateOrderStatusAndFeeStatus(order);
-                        //记录操作日志
-                        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.REFUSE, "淘宝下单到oms响应失败", null == currentUser.getId() ? ChannelSource.TAOBAO.name() : currentUser.getId()));
-                    }
-                    return new JsonModel(false, "OMS系统异常");
-                } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                    //如果付款失败，天下房仓返回创建订单失败
-                    return new JsonModel(false, "OMS系统异常，创建订单失败");
-                }
+                JsonModel resultJson = dealCancelOrder(order, currentUser, otaInfo);
+                return resultJson;
             }
             logger.info("OMS接口响应=>" + respose);
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
-                if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                    String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
-                    logger.info("淘宝取消订单接口返回值=>" + result);
-                    if (null != result && result.equals("success")) {
-                        this.orderDao.updateOrderStatusAndFeeStatus(order);
-                        //记录操作日志
-                        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.REFUSE, "淘宝下单到oms响应失败", currentUser.getId()));
-                    }
-                    return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
-                } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                    //如果付款失败，天下房仓返回创建订单失败
-                    return new JsonModel(false, jsonObject.get("status") + ":" + jsonObject.get("message"));
-                }
+                JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+                return jsonModel;
             } else {
                 if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
                     //更新淘宝订单状态
@@ -430,6 +466,31 @@ public class OrderService implements IOrderService {
 
         }
         return new JsonModel(true, "付款成功");
+    }
+
+    /**
+     * 调用渠道取消订单接口
+     *
+     * @param order
+     * @param currentUser
+     * @param otaInfo
+     * @return
+     */
+    private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
+            logger.info("淘宝取消订单接口返回值=>" + result);
+            if (null != result && result.equals("success")) {
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+                //记录操作日志
+                this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.REFUSE, "淘宝下单到oms响应失败", null == currentUser.getId() ? ChannelSource.TAOBAO.name() : currentUser.getId()));
+            }
+            return new JsonModel(false, "OMS系统异常");
+        } else if (ChannelSource.FC.equals(order.getChannelSource())) {
+            //如果付款失败，天下房仓返回创建订单失败
+            return new JsonModel(false, "OMS系统异常，创建订单失败");
+        }
+        return null;
     }
 
     /**
@@ -458,7 +519,7 @@ public class OrderService implements IOrderService {
     @Override
 //    @Log(descr = "查询订单状态")
     public Map<String, String> findOrderStatus(String xmlStr, ChannelSource channelSource) throws Exception {
-        logger.info("查询订单状态传入参数=>"+xmlStr);
+        logger.info("查询订单状态传入参数=>" + xmlStr);
         Map<String, String> result = new HashMap<>();
         //解析查询订单状态
         String orderId = XmlDeal.getOrder(xmlStr).getId();
@@ -649,7 +710,7 @@ public class OrderService implements IOrderService {
         order.setReason("手动直接拒绝");
         //淘宝更新订单
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-            jsonModel = TBCancelMethod(order, 1L,currentUser);
+            jsonModel = TBCancelMethod(order, 1L, currentUser);
         } else {
             //更新订单
             this.orderDao.updateOrderStatusAndReason(order);
@@ -673,7 +734,7 @@ public class OrderService implements IOrderService {
         //淘宝更新订单
         //淘宝订单才更新
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-            jsonModel = TBCancelMethod(order, 2L,currentUser);
+            jsonModel = TBCancelMethod(order, 2L, currentUser);
         } else {
             //更新订单
             this.orderDao.updateOrderStatusAndReason(order);
@@ -690,102 +751,93 @@ public class OrderService implements IOrderService {
         //公司信息
         Company company = this.companyDao.selectCompanyById(userInfo.getCompanyId());
         BigDecimal percent = BigDecimal.ZERO;
+        //根据模式查询比例
+        OtaCommissionPercentDto commission = null;
+        if (1 != order.getMaiAccount()) {
+            commission = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), UsedPriceModel.DI.name()));
+        } else {
+            commission = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), UsedPriceModel.MAI.name()));
+        }
+        if (null != commission) {
+            percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));
+        }
+        //下单到oms
+        //1.查询字典表
+        //查询字典表中同步OMS需要的数据
+        Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
+        String respose = "";
+        JSONObject jsonObject = null;
+        RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
+        //处理每日价格信息
+        ParamDto paramDto = new ParamDto();
+        paramDto.setCompanyId(userInfo.getCompanyId());
+        paramDto.setUserId(userInfo.getId());
+
+        //这里的accountId为绑定客栈的ID
+        BangInnDto bangInn = bangInnDao.selectBangInnById(order.getBangInnId());
+        if (1 == order.getMaiAccount()) {
+            //卖家
+            order.setAccountId(bangInn.getAccountId());
+        } else {
+            //底价
+            order.setAccountId(bangInn.getAccountIdDi());
+        }
+        //设置查询日期
+        paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
+        paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
+        //设置底价和卖价的accountId
+        paramDto.setAccountId(bangInn.getId());
+        paramDto.setMaiAccount(order.getMaiAccount());
+        roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
+        //设置比例
+        order.setPercent(percent);
+        Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
         try {
-            String strategy = "2";
-            if (1 != order.getMaiAccount()) {
-                //底价
-                strategy = "1";
-            }
-            String requestUrl = DcUtil.proxyOtaPercentUrl(company.getOtaId(), CommonApi.proxyOtaPercent, strategy);
-            String response = HttpClientUtil.httpGets(requestUrl, null);
-            JSONObject fromObject = JSONObject.fromObject(response);
-            if ("200".equals(fromObject.get("status").toString())) {
-                percent = BigDecimal.valueOf((Double) fromObject.get("percentage"));
-                if (percent != null) {
-                    percent = percent.divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP);
-                }
-            }
+
+            logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, company).toString());
+            respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, company));
+            jsonObject = JSONObject.fromObject(respose);
         } catch (Exception e) {
-            logger.error("获取价格比例出错！", e);
-        } finally {
-            //下单到oms
-            //1.查询字典表
-            //查询字典表中同步OMS需要的数据
-            Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
-            String respose = "";
-            JSONObject jsonObject = null;
-            RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
-            //处理每日价格信息
-            ParamDto paramDto = new ParamDto();
-            paramDto.setCompanyId(userInfo.getCompanyId());
-            paramDto.setUserId(userInfo.getId());
-
-            //这里的accountId为绑定客栈的ID
-            BangInnDto bangInn = bangInnDao.selectBangInnById(order.getBangInnId());
-            if (1 == order.getMaiAccount()) {
-                //卖家
-                order.setAccountId(bangInn.getAccountId());
-            } else {
-                //底价
-                order.setAccountId(bangInn.getAccountIdDi());
-            }
-            //设置查询日期
-            paramDto.setStartDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd"));
-            paramDto.setEndDate(DateUtil.format(DateUtil.addDay(order.getLeaveTime(), -1), "yyyy-MM-dd"));
-            //设置底价和卖价的accountId
-            paramDto.setAccountId(bangInn.getId());
-            paramDto.setMaiAccount(order.getMaiAccount());
-            roomTypeInfoDto = this.roomTypeService.findRoomType(paramDto, userInfo);
-            //设置比例
-            order.setPercent(percent);
-            Order hangOrder = order.makeHandOrder(order, roomTypeInfoDto);
-            try {
-
-                logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, company).toString());
-                respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, company));
-                jsonObject = JSONObject.fromObject(respose);
-            } catch (Exception e) {
-                hangOrder.setOrderStatus(OrderStatus.REFUSE);
-                if (null != bangInn) {
-                    hangOrder.setInnId(bangInn.getInnId());
-                }
-                this.orderDao.insertOrder(hangOrder);
-                //创建每日价格信息
-                this.dailyInfosDao.insertDailyInfos(hangOrder);
-                //创建入住人信息
-                this.orderGuestsDao.insertOrderGuests(hangOrder);
-                result.put("status", false);
-                result.put("message", "同步oms失败");
-            }
-            logger.info("OMS接口响应=>" + respose);
-            if (!jsonObject.get("status").equals(200)) {
-                //手动下单失败保存手动下单订单
-                if (null != bangInn) {
-                    hangOrder.setInnId(bangInn.getInnId());
-                }
-                //设置订单状态为拒绝
-                hangOrder.setOrderStatus(OrderStatus.REFUSE);
-                result.put("status", false);
-                result.put("message", "oms接口相应失败");
-            } else {
-                //设置innId
-                if (null != bangInn) {
-                    hangOrder.setInnId(bangInn.getInnId());
-                    //同步oms订单成功，保存订单到toms
-                    result.put("status", true);
-                    result.put("message", "下单成功");
-                } else {
-                    result.put("status", false);
-                    result.put("message", "下单失败，客栈不存在");
-                }
+            hangOrder.setOrderStatus(OrderStatus.REFUSE);
+            if (null != bangInn) {
+                hangOrder.setInnId(bangInn.getInnId());
             }
             this.orderDao.insertOrder(hangOrder);
             //创建每日价格信息
             this.dailyInfosDao.insertDailyInfos(hangOrder);
             //创建入住人信息
             this.orderGuestsDao.insertOrderGuests(hangOrder);
-            return result;
+            result.put("status", false);
+            result.put("message", "同步oms失败");
         }
+        logger.info("OMS接口响应=>" + respose);
+        if (!jsonObject.get("status").equals(200)) {
+            //手动下单失败保存手动下单订单
+            if (null != bangInn) {
+                hangOrder.setInnId(bangInn.getInnId());
+            }
+            //设置订单状态为拒绝
+            hangOrder.setOrderStatus(OrderStatus.REFUSE);
+            result.put("status", false);
+            result.put("message", "oms接口相应失败");
+        } else {
+            //设置innId
+            if (null != bangInn) {
+                hangOrder.setInnId(bangInn.getInnId());
+                //同步oms订单成功，保存订单到toms
+                result.put("status", true);
+                result.put("message", "下单成功");
+            } else {
+                result.put("status", false);
+                result.put("message", "下单失败，客栈不存在");
+            }
+        }
+        this.orderDao.insertOrder(hangOrder);
+        //创建每日价格信息
+        this.dailyInfosDao.insertDailyInfos(hangOrder);
+        //创建入住人信息
+        this.orderGuestsDao.insertOrderGuests(hangOrder);
+        return result;
     }
 
     @Override

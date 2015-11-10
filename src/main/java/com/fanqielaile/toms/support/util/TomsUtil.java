@@ -246,4 +246,14 @@ public class TomsUtil {
         }
         return price;
     }
+
+    //处理比例
+    public static BigDecimal getPercent(BigDecimal percentage) {
+        BigDecimal divide = BigDecimal.ZERO;
+        if (percentage != null) {
+            BigDecimal bigDecimal = new BigDecimal(100);
+            divide = BigDecimal.valueOf(DcUtil.divide(percentage, bigDecimal));
+        }
+        return divide;
+    }
 }

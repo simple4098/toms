@@ -1,10 +1,7 @@
 package com.toms.test;
 
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dao.IOtaInfoDao;
-import com.fanqielaile.toms.dao.IOtaInnOtaDao;
-import com.fanqielaile.toms.dao.OrderDao;
-import com.fanqielaile.toms.dao.RoleDao;
+import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OtaType;
@@ -42,6 +39,8 @@ public class OrderTest {
     private RoleDao roleDao;
     @Resource
     private IOtaInnOtaDao otaInnOtaDao;
+    @Resource
+    private IOtaBangInnRoomDao otaBangInnRoomDao;
 
     @Test
     @Ignore
@@ -86,7 +85,7 @@ public class OrderTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void testImage() throws IOException {
         List<BangInn> bangInns = this.bangInnService.findBangInnImages("d0392bc8-131c-8989-846e-c81c66011111");
         if (ArrayUtils.isNotEmpty(bangInns.toArray())) {
@@ -99,25 +98,26 @@ public class OrderTest {
                 bangInn.setOtaWgId(otaInnOtaDto.getWgHid());
                 if (null != bangInn.getInnDto()) {
                     if (ArrayUtils.isNotEmpty(bangInn.getInnDto().getImgList().toArray())) {
-                        String imageUrl = CommonApi.IMG_URL;
+                        String imageUrl = "";
                         for (OmsImg omsImg : bangInn.getInnDto().getImgList()) {
-                            imageUrl += omsImg.getImgUrl() + ",";
+                            imageUrl += CommonApi.IMG_URL + omsImg.getImgUrl() + ",";
                         }
                         //写入酒店的图片信息
                         System.out.println("insert hotel ===>");
-                        this.roleDao.insertInfoImage(new ImageInfo(bangInn.getInnName() + "|" + bangInn.getOtaWgId() + "|" + imageUrl));
+                        this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "||" + imageUrl));
                         //写入房型信息
                         List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage((BangInnDto) bangInn);
                         if (ArrayUtils.isNotEmpty(roomTypeInfos.toArray())) {
                             for (RoomTypeInfo roomTypeInfo : roomTypeInfos) {
-                                String roomImageUrl = CommonApi.IMG_URL;
+                                OtaBangInnRoomDto otaBangInnRoomDto = this.otaBangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(bangInn.getInnId(), roomTypeInfo.getRoomTypeId(), "d0392bc8-131c-8989-846e-c81c66011111");
+                                String roomImageUrl ="";
                                 if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
                                     for (OmsImg omsImg : roomTypeInfo.getImgList()) {
-                                        roomImageUrl += omsImg.getImgUrl() + ",";
+                                        roomImageUrl += CommonApi.IMG_URL+ omsImg.getImgUrl() + ",";
                                     }
                                     //写入数据库
                                     System.out.println("insert  room ===>");
-                                    this.roleDao.insertInfoImage(new ImageInfo(roomTypeInfo.getRoomTypeName() + "|" + roomTypeInfo.getRoomTypeName() + "|" + roomImageUrl));
+                                    this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "|" + otaBangInnRoomDto.getrId() + "|" + roomImageUrl));
                                 }
                             }
                         }

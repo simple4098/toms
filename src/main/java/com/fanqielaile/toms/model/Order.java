@@ -550,6 +550,8 @@ public class Order extends Domain {
         omsOrder.setContact(order.getGuestMobile());
         omsOrder.setOperateType(1);
         omsOrder.setOtaOrderNo(order.getChannelOrderCode());
+        //设置子渠道ID
+        omsOrder.setChildOtaId(order.getChannelSource().name());
         //因为存在加减价，为了屏蔽老板的误解和方便对账，这里将实付价格设置为订单总价
 //        omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
         omsOrder.setPaidAmount(order.getTotalPrice());
@@ -728,6 +730,18 @@ public class Order extends Domain {
         roomAvailParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
         roomAvailParamDto.setvName(dictionary.getvName());
         roomAvailParamDto.setvPWD(dictionary.getvPWD());
+        return roomAvailParamDto;
+    }
+
+    public RoomAvailParamDto toRoomAvail(Company company, Order order, DailyInfos dailyInfos) {
+        RoomAvailParamDto roomAvailParamDto = new RoomAvailParamDto();
+        roomAvailParamDto.setFrom(DateUtil.format(dailyInfos.getDay()));
+        roomAvailParamDto.setTo(DateUtil.format(dailyInfos.getDay()));
+        roomAvailParamDto.setInnId(order.getInnId());
+        roomAvailParamDto.setRoomTypeId(Integer.parseInt(order.getRoomTypeId()));
+        roomAvailParamDto.setOtaId(company.getOtaId());
+        roomAvailParamDto.setvName(company.getUserAccount());
+        roomAvailParamDto.setvPWD(company.getUserPassword());
         return roomAvailParamDto;
     }
 }
