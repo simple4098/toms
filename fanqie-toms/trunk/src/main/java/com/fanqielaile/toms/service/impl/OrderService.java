@@ -1048,6 +1048,18 @@ public class OrderService implements IOrderService {
         JSONObject jsonObject = JSONObject.fromObject(response);
         logger.info("天下房仓试订单接口返回值=>" + response.toString());
         if (jsonObject.get("status").equals(200)) {
+            //查询当前的价格模式
+            //1.查询公司信息
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
+            //查询公司信息
+            Company company = this.companyDao.selectCompanyById(otaInfo.getCompanyId());
+            BigDecimal percent = BigDecimal.ZERO;
+            //2.判断当前公司使用什么价格模式
+            if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+                //查询价格比例
+                OtaCommissionPercentDto commission = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), otaInfo.getUsedPriceModel().name()));
+                percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));
+            }
             //是否可以及时确认
             result.setCanImmediate("1");
             result.setSpRatePlanId(order.getOTARatePlanId());
@@ -1085,7 +1097,12 @@ public class OrderService implements IOrderService {
                     saleItem.setPriceNeedCheck(0);
                     saleItem.setSaleDate(DateUtil.format(dailyInfos1.getDay(), "yyyy-MM-dd"));
 //                    saleItem.setSalePrice(dailyInfos1.getPrice());
-                    saleItem.setSalePrice(new BigDecimal(new DecimalFormat("#.00").format(dailyInfos1.getPrice())));
+                    //判断当前价格模式，如果是卖转低需要转换价格:oms价格*（1-价格比例）=返回给房仓的价格
+                    if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+                        saleItem.setSalePrice(new BigDecimal(new DecimalFormat("#.00").format(dailyInfos1.getPrice().multiply((new BigDecimal(1).subtract(percent))))));
+                    } else {
+                        saleItem.setSalePrice(new BigDecimal(new DecimalFormat("#.00").format(dailyInfos1.getPrice())));
+                    }
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
