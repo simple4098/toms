@@ -180,17 +180,7 @@ public class APIController extends BaseController {
         ParamJson paramJson = JacksonUtil.json2obj(param, ParamJson.class);
         try {
             if(paramJson!=null && !StringUtils.isEmpty(paramJson.getCompanyCode())){
-                Company company = companyService.findCompanyByCompanyCode(paramJson.getCompanyCode());
-                OtaCommissionPercent commissionPercent = null;
-                Map<String,String> commission = paramJson.getCommission();
-                for (Map.Entry<String, String> entry : commission.entrySet()){
-                    commissionPercent = new OtaCommissionPercent();
-                    commissionPercent.setCommissionPercent(Double.valueOf(entry.getValue()));
-                    commissionPercent.setCompanyId(company.getId());
-                    commissionPercent.setsJiaModel(entry.getKey());
-                    commissionPercent.setOtaId(company.getOtaId());
-                    commissionService.updateCommission(commissionPercent);
-                }
+                commissionService.updateCommission(paramJson);
             }else {
                 jsonModel.setMessage(Constants.MESSAGE_ERROR);
                 jsonModel.setSuccess(false);

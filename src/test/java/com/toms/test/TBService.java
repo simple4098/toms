@@ -1,3 +1,4 @@
+/*
 package com.toms.test;
 
 import com.fanqie.core.dto.CloseDateParam;
@@ -30,14 +31,18 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * DESC : 添加/获取/更新 酒店
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
- */
+ *//*
+
 @Service("tbService")
-/*@LogModule("TP 推酒店房型service")*/
+*/
+/*@LogModule("TP 推酒店房型service")*//*
+
 public class TBService implements ITPService {
     private static  final Logger log = LoggerFactory.getLogger(TBService.class);
     @Resource
@@ -56,17 +61,24 @@ public class TBService implements ITPService {
     private IOtaInnRoomTypeGoodsDao goodsDao;
     @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
-  /*  @Resource
-    private BusinLogClient businLogClient;*/
+  */
+/*  @Resource
+    private BusinLogClient businLogClient;*//*
 
-    /**
+
+    */
+/**
      * 想淘宝添加/更新酒店
      * @param tbParam 参数
-     */
+     *//*
+
     @Override
-    /*@Log(descr ="酒店更新、增加")*/
+    */
+/*@Log(descr ="酒店更新、增加")*//*
+
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
-       /* String event = TomsUtil.event(tbParam);
+       */
+/* String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("TP推酒店");
@@ -74,7 +86,8 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }*/
+        }*//*
+
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(),company.getUserAccount(),company.getUserPassword(),tbParam.getAccountId(), CommonApi.INN_INFO);
@@ -197,9 +210,12 @@ public class TBService implements ITPService {
         }
     }
     @Override
-   /* @Log(descr ="酒店酒店删除、解绑")*/
+   */
+/* @Log(descr ="酒店酒店删除、解绑")*//*
+
     public void deleteHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
-     /*   String event = TomsUtil.event(tbParam);
+     */
+/*   String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("酒店酒店删除、解绑");
@@ -207,7 +223,8 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }*/
+        }*//*
+
         //公司基本信息
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         //客栈绑定信息
@@ -230,9 +247,11 @@ public class TBService implements ITPService {
                 for (RoomTypeInfo r:list){
                     TBXHotelUtil.roomDel(r.getRoomTypeId(), r, otaInfo, RoomSwitchCalStatus.DEL);
                     //更新库存 --删除不用更新库存
-                    /*if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
+                    */
+/*if (DcUtil.isEmpty(innRoomTypeGoodsDto.getGid()) &&DcUtil.isEmpty(innRoomTypeGoodsDto.getRpid())) {
                         TBXHotelUtil.rateUpdate(company, Long.valueOf(innRoomTypeGoodsDto.getGid()), Long.valueOf(innRoomTypeGoodsDto.getRpid()), r, otaPriceModel, true);
-                    }*/
+                    }*//*
+
                 }
             }
         }else {
@@ -243,7 +262,8 @@ public class TBService implements ITPService {
 
     @Override
     public void updateHotel(OtaInfoRefDto o,TBParam tbParam) throws Exception {
-       /* String event = TomsUtil.event(tbParam);
+       */
+/* String event = TomsUtil.event(tbParam);
         log.info("event:"+event);
         try {
             businLog.setDescr("定时更新房型信息");
@@ -251,7 +271,8 @@ public class TBService implements ITPService {
             businLogClient.save(businLog);
         } catch (Exception e) {
             log.error(e.getMessage());
-        }*/
+        }*//*
+
         log.info("====同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         tbParam.setCompanyCode(o.getCompanyCode());
@@ -395,3 +416,4 @@ public class TBService implements ITPService {
 
 
 }
+*/

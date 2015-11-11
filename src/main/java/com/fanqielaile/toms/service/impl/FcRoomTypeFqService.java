@@ -4,6 +4,7 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
@@ -14,6 +15,7 @@ import com.fanqielaile.toms.enums.OperateType;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.model.fc.*;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
 import com.fanqielaile.toms.support.tb.FCXHotelUtil;
@@ -56,6 +58,8 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
     private IOtaInnOtaDao otaInnOtaDao;
     @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
+    @Resource
+    private IOtaCommissionPercentDao commissionPercentDao;
 
     @Override
     public List<FcRoomTypeFqDto> findFcRoomTypeFq(FcRoomTypeFqDto fcRoomTypeFq) {
@@ -118,8 +122,14 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(fcRoomTypeFq.getInnId()));
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(fcRoomTypeFq.getCompanyId(), OtaType.FC.name());
         Integer roomTypeId = Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId());
-        OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId()), fcRoomTypeFq.getOtaInfoId()));
-        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId,priceDto);
+        OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(),
+                Integer.valueOf(fcRoomTypeFq.getFqRoomTypeId()),
+                fcRoomTypeFq.getOtaInfoId()));
+        OtaCommissionPercentDto commission = null;
+        if (dto.getUsedPriceModel()!=null){
+            commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), companyId, dto.getUsedPriceModel().name()));
+        }
+        Response response = FCXHotelUtil.syncRateInfo(company, dto, fcRoomTypeFq, bangInn, roomTypeId,priceDto,commission);
         if (Constants.FcResultNo.equals(response.getResultNo())){
             fcRoomTypeFqDao.updateRoomTypeFqSj(matchRoomTypeId, Constants.FC_SJ);
         }else {

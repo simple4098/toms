@@ -1,3 +1,4 @@
+/*
 
 package com.toms.test;
 
@@ -36,12 +37,14 @@ import java.math.BigDecimal;
 import java.util.*;
 
 
+*/
 /**
  * DESC :
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
- */
+ *//*
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml","/conf/spring/spring-security.xml"})
@@ -71,7 +74,8 @@ public class TBTestNew {
 
 
 
-    /*@Test
+    */
+/*@Test
     public void  newInnTest() throws Exception {
         String s ="3570193376" +
                 ",3570193376" +
@@ -239,9 +243,11 @@ public class TBTestNew {
         }
 
 
-    }*/
+    }*//*
 
-   /* @Test
+
+   */
+/* @Test
     public void innTest() throws Exception {
         BangInnDto bangInnDto = new BangInnDto();
         bangInnDto.setCompanyId("d0392bc8-131c-8989-846e-c81c66011111");
@@ -274,7 +280,8 @@ public class TBTestNew {
 
 
     }
-*/
+*//*
+
 
     @Test
     public void test() throws Exception {
@@ -282,9 +289,11 @@ public class TBTestNew {
         otaInfo.setAppKey("23192376");
         otaInfo.setAppSecret("c2e9acffbdf281c93b167601781cd228");
         otaInfo.setSessionKey("6102327e52f6e56b3f3a9aa57fab8ac2b4c18c1fe06d70e2555889376");
-        /*otaInfo.setAppKey("1023192376");
+        */
+/*otaInfo.setAppKey("1023192376");
         otaInfo.setAppSecret("sandboxfbdf281c93b167601781cd228");
-        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*/
+        otaInfo.setSessionKey("6102630889b6592676681403674c57dec774131f5d37e973636630123");*//*
+
         otaInfo.setOtaInfoId("1");
         //String innId = "7060";
         String innId = "52457";
@@ -475,7 +484,8 @@ public class TBTestNew {
                 tbParam.setInnId(String.valueOf(proxyInns.getInnId()));
                 System.out.println("客栈id:"+proxyInns.getInnId());
                 stringBuilder.append(proxyInns.getInnId()).append(",");
-               /* priceModelList = new ArrayList();
+               */
+/* priceModelList = new ArrayList();
                 for (PricePattern p:pricePatterns){
                     priceModel = new PriceModel();
                     if (p.getPattern().equals(1)){
@@ -499,7 +509,8 @@ public class TBTestNew {
                     stringBuilder.deleteCharAt(stringBuilder.length()-1);
                 }
                 tbParam.setPriceModel(stringBuilder.toString());
-                System.out.println(tbParam.toString());*/
+                System.out.println(tbParam.toString());*//*
+
                 //更新酒店
                 //updateOrAddHotel(tbParam, o);
             }
@@ -534,10 +545,13 @@ public class TBTestNew {
                 log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
             }
         }
-       /* for (PushRoom r:pushRoomList){
+       */
+/* for (PushRoom r:pushRoomList){
             TBXHotelUtil.updateHotelPushRoom(otaInfo,r);
-        }*/
+        }*//*
+
 
     }
 }
 
+*/
