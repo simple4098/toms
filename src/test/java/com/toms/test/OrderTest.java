@@ -104,6 +104,7 @@ public class OrderTest {
                         }
                         //写入酒店的图片信息
                         System.out.println("insert hotel ===>");
+                        System.out.println("innId===>"+bangInn.getInnId());
                         this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "||" + imageUrl));
                         //写入房型信息
                         List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage((BangInnDto) bangInn);
@@ -117,6 +118,7 @@ public class OrderTest {
                                     }
                                     //写入数据库
                                     System.out.println("insert  room ===>");
+                                    System.out.println("===innId="+bangInn.getInnId()+"  otabanginnroom=="+otaBangInnRoomDto.getrId());
                                     this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "|" + otaBangInnRoomDto.getrId() + "|" + roomImageUrl));
                                 }
                             }
