@@ -12,7 +12,7 @@ public class ParamJson {
 
     private String companyCode;
 
-    private Map commission;
+    private Map<String,Double> commission;
 
     public String getCompanyCode() {
         return companyCode;
@@ -22,11 +22,11 @@ public class ParamJson {
         this.companyCode = companyCode;
     }
 
-    public Map getCommission() {
+    public Map<String,Double> getCommission() {
         return commission;
     }
 
-    public void setCommission(Map commission) {
+    public void setCommission(Map<String,Double> commission) {
         this.commission = commission;
     }
 }

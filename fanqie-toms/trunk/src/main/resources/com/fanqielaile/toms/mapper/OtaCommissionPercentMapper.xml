@@ -11,22 +11,33 @@
               <result column="deleted" property="deleted"/>
               <result column="created_date" property="createdDate"/>
               <result column="updated_date" property="updatedDate"/>
+              <result column="operate_type" property="operateType"/>
        </resultMap>
 
        <insert id="saveOtaCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent">
-              insert into ota_commission_percent(id,deleted,commission_percent,company_id,ota_id,ota_info_id,sjia_model,created_date,updated_date)
-              values (#{uuid},0,#{commissionPercent},#{companyId},#{otaId},#{otaInfoId},#{sJiaModel},now(),now())
+              insert into ota_commission_percent(id,deleted,commission_percent,company_id,ota_id,sjia_model,created_date,updated_date,operate_type)
+              values (#{uuid},0,#{commissionPercent},#{companyId},#{otaId},#{sJiaModel},now(),now(),'NEW')
        </insert>
 
-       <select id="selectCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent"
-               resultMap="BaseResultMap">
+       <select id="selectCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" resultMap="BaseResultMap">
               SELECT  * from ota_commission_percent WHERE  deleted=0 AND  company_id='${companyId}' 
               and ota_id='${otaId}' and sjia_model='${sJiaModel}'
        </select>
+
+       <select id="selectCommissionList" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" resultMap="BaseResultMap">
+              SELECT  * from ota_commission_percent WHERE deleted=0 AND  company_id='${companyId}'  and ota_id='${otaId}'
+
+
+       </select>
+
        
        <update id="updateOtaCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent" >
-              update ota_commission_percent set commission_percent='${commissionPercent}' where  id ='${id}'
+              update ota_commission_percent set commission_percent='${commissionPercent}',updated_date=now(), operate_type='UPD' where  id ='${id}'
        </update>
+
+       <delete id="deletedOtaCommission" parameterType="com.fanqielaile.toms.model.OtaCommissionPercent">
+              DELETE from ota_commission_percent where id='${id}'
+       </delete>
 
 
 </mapper>

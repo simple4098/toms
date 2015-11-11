@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import com.fanqielaile.toms.enums.OperateType;
 
 import java.util.Date;
 
@@ -15,6 +16,15 @@ public class OtaCommissionPercent extends Domain {
     private Integer otaId;
     private Double commissionPercent;
     private String  sJiaModel;
+    private OperateType operateType;
+
+    public OperateType getOperateType() {
+        return operateType;
+    }
+
+    public void setOperateType(OperateType operateType) {
+        this.operateType = operateType;
+    }
 
     public OtaCommissionPercent() {
     }
@@ -23,6 +33,12 @@ public class OtaCommissionPercent extends Domain {
         this.otaId = otaId;
         this.companyId = companyId;
         this.sJiaModel = sJiaModel;
+    }
+    public OtaCommissionPercent(Integer otaId, String companyId, String sJiaModel,OperateType operateType) {
+        this.otaId = otaId;
+        this.companyId = companyId;
+        this.sJiaModel = sJiaModel;
+        this.operateType = operateType;
     }
 
     public String getCompanyId() {

@@ -2,16 +2,15 @@ package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.OtaInfoRefDto;
-import com.fanqielaile.toms.dto.OtaRoomPriceDto;
-import com.fanqielaile.toms.dto.RoomDetail;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.*;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FcUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,29 +32,26 @@ public class FCXHotelUtil {
     private FCXHotelUtil(){}
 
 
-    public static   Response  syncRateInfo(Company company,OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto ,BangInn bangInn,Integer roomTypeId, OtaRoomPriceDto priceDto)throws Exception{
-        String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
-        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
-        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+    public static   Response  syncRateInfo(Company company,OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto ,
+                                           BangInn bangInn,Integer roomTypeId, OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission)throws Exception{
+
         SyncRateInfoRequest syncRateInfoRequest = syncRateInfoRequestMethod(o);
         SyncRateInfoDataRequest syncRateInfoDataRequest = syncRateInfoDataRequestMethod(fcRoomTypeFqDto);
         List<SaleInfo> saleInfoList = new ArrayList<>();
         SaleInfo saleInfo = null;
-        //房型
-        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null){
-            List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-            for (RoomTypeInfo r:list){
-                if (r.getRoomTypeId().equals(roomTypeId)){
-                    List<RoomDetail> roomDetail = r.getRoomDetail();
-                    for (RoomDetail room:roomDetail){
-                        saleInfo = obtSaleInfoList(room,priceDto);
-                        saleInfoList.add(saleInfo);
-                    }
-                    syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
-                    syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
-                }
-
+        String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),roomTypeId, CommonApi.checkRoom);
+        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) ){
+            List<RoomDetail> roomDetail = JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
+            for (RoomDetail room:roomDetail){
+                saleInfo = obtSaleInfoList(room,priceDto,commission);
+                saleInfoList.add(saleInfo);
             }
+            syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
+            syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
+
+
         }
         String xml = FcUtil.fcRequest(syncRateInfoRequest);
         log.info("房仓推送宝贝上架xml:" + xml);
@@ -66,13 +62,14 @@ public class FCXHotelUtil {
 
 
 
-    public static Response syncRoomInfo(OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto,List<RoomDetail> roomDetail, OtaRoomPriceDto priceDto)throws Exception {
+    public static Response syncRoomInfo(OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto,List<RoomDetail> roomDetail, OtaRoomPriceDto priceDto,
+                                        OtaCommissionPercentDto commission)throws Exception {
         SyncRateInfoRequest syncRateInfoRequest = syncRateInfoRequestMethod(o);
         SyncRateInfoDataRequest syncRateInfoDataRequest = syncRateInfoDataRequestMethod(fcRoomTypeFqDto);
         List<SaleInfo> saleInfoList = new ArrayList<>();
         SaleInfo saleInfo = null;
         for (RoomDetail room:roomDetail){
-            saleInfo = obtSaleInfoList(room,priceDto);
+            saleInfo = obtSaleInfoList(room,priceDto,commission);
             saleInfoList.add(saleInfo);
         }
         syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
@@ -103,7 +100,7 @@ public class FCXHotelUtil {
     }
 
     //封装 房仓推送宝贝集合
-    private static SaleInfo obtSaleInfoList(RoomDetail room,OtaRoomPriceDto priceDto) {
+    private static SaleInfo obtSaleInfoList(RoomDetail room,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) {
         double price = 0;
         Double value = null;
         Date startDate = null;
@@ -116,6 +113,10 @@ public class FCXHotelUtil {
         List<SaleInfo> saleInfoList = new ArrayList<>();
         Date parseDate = DateUtil.parseDate(room.getRoomDate());
         price = room.getRoomPrice();
+        //售价只有MAI2DI才展示
+        if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
+            price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
+        }
         if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
             price = price + value;
         }

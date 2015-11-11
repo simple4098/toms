@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.dto.ParamJson;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
 
 /**
@@ -14,5 +15,5 @@ public interface ICommissionService {
     /**
      * 更新分佣模式
      */
-    void updateCommission( OtaCommissionPercent commissionPercent)throws Exception;
+    void updateCommission( ParamJson paramJson)throws Exception;
 }

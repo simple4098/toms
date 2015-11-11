@@ -12,6 +12,7 @@ import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.model.TimerRatePrice;
 import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
@@ -57,6 +58,8 @@ public class FcService implements ITPService {
     private IFcRoomTypeFqService fcRoomTypeFqService;
     @Resource
     private ITimerRatePriceDao timerRatePriceDao;
+    @Resource
+    private IOtaCommissionPercentDao commissionPercentDao;
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
@@ -121,7 +124,8 @@ public class FcService implements ITPService {
             for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
-                Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto);
+                OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
+                Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto,commission);
                 if (!Constants.FcResultNo.equals(response.getResultNo())){
                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()),Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg()));
                 }
@@ -132,7 +136,8 @@ public class FcService implements ITPService {
 
     @Override
     public void updateHotelRoom(OtaInfoRefDto o, List<PushRoom> pushRoomList) throws Exception {
-
+        Company company = companyDao.selectCompanyById(o.getCompanyId());
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
         for (PushRoom pushRoom: pushRoomList){
             Integer roomTypeId = pushRoom.getRoomType().getRoomTypeId();
             //查询客栈是否是上架状态
@@ -143,9 +148,8 @@ public class FcService implements ITPService {
                 //满足这些条件 才是之前上架过。
                 if (fcRoomTypeFqDto!=null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ){
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(fcRoomTypeFqDto.getCompanyId(), roomTypeId, fcRoomTypeFqDto.getOtaInfoId()));
-                    Company company = companyDao.selectCompanyById(o.getCompanyId());
                     //上架房型 房量 库存
-                    Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId,priceDto);
+                    Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId,priceDto,commission);
                     if (Constants.FcResultNo.equals(response.getResultNo())){
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
                     }else {
@@ -166,9 +170,11 @@ public class FcService implements ITPService {
     public void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto) throws Exception {
         Integer innId = roomPriceDto.getInnId();
         String companyId = roomPriceDto.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, innId);
         List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfoToFc(bangInn);
         OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(),companyId,roomPriceDto.getOtaInfoId());
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), companyId, o.getUsedPriceModel().name()));
         if (otaInnOta!=null && otaInnOta.getSj()==0){
             throw  new TomsRuntimeException("FC 此客栈已经下架!");
         }
@@ -179,7 +185,7 @@ public class FcService implements ITPService {
                 if (roomIdOtaInfo!=null && !StringUtils.isEmpty(roomIdOtaInfo.getFcRoomTypeId()) && Constants.FC_SJ.equals(roomIdOtaInfo.getSj())){
                     List<RoomDetail> roomDetail = r.getRoomDetail();
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), roomPriceDto.getOtaInfoId()));
-                    FCXHotelUtil.syncRoomInfo(o,roomIdOtaInfo,roomDetail,priceDto);
+                    FCXHotelUtil.syncRoomInfo(o,roomIdOtaInfo,roomDetail,priceDto,commission);
                 }else {
                     log.info("FC 此房型还没有在上架 roomTypeId"+r.getRoomTypeId());
                 }
@@ -202,7 +208,8 @@ public class FcService implements ITPService {
                     BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
                     try {
-                        Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto);
+                        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
+                        Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto,commission);
                         if (Constants.FcResultNo.equals(response.getResultNo())){
                             timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId())));
                         }
@@ -220,6 +227,8 @@ public class FcService implements ITPService {
 
     @Override
     public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId,String companyId, String userId,String json) throws Exception{
+        Company company = companyDao.selectCompanyById(companyId);
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
         List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
         if (!CollectionUtils.isEmpty(prices)){
@@ -239,7 +248,7 @@ public class FcService implements ITPService {
                         List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailFc(bangInn,price.getRoomTypeId());
                         boolean b = checkRooPrice(priceDto.getValue(), roomDetailList);
                         if (b){
-                            Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto);
+                            Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto,commission);
                             if (Constants.FcResultNo.equals(response.getResultNo()) ){
                                 otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
                             }else {

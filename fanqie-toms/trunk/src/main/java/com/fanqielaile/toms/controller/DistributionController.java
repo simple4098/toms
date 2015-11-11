@@ -185,35 +185,6 @@ public class DistributionController extends BaseController{
         return "/distribution/fang_price_detail_new_tian";
     }
 
-    /*//房价管理-展示房价设置
-    @RequestMapping(value = "/ajax/room_price_detail",method = RequestMethod.POST)
-    public String roomPriceDetail(Model model,OtaRoomPriceDto roomPriceDto,String roomTypeName){
-        UserInfo currentUser = getCurrentUser();
-        roomPriceDto.setCompanyId(currentUser.getCompanyId());
-        OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceService.findRoomPrice(roomPriceDto);
-        model.addAttribute("roomPrice",otaRoomPriceDto);
-        model.addAttribute("param",roomPriceDto);
-        model.addAttribute("roomTypeName",roomTypeName);
-        return "/distribution/room_price_detail";
-    }
-    //房价管理-保存房价设置
-    @RequestMapping(value = "/ajax/saveRoomPrice",method = RequestMethod.POST)
-    public void saveRoomPriceDetail(Model model,OtaRoomPriceDto roomPriceDto){
-        UserInfo currentUser = getCurrentUser();
-        roomPriceDto.setCompanyId(currentUser.getCompanyId());
-        roomPriceDto.setModifierId(currentUser.getId());
-        BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), roomPriceDto.getInnId());
-        roomPriceDto.setAccountId(bangInn.getAccountId());
-        try {
-            otaRoomPriceService.saveRoomPriceDto(roomPriceDto,bangInn);
-            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        } catch (Exception e) {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, e.getMessage());
-        }
-    }*/
-
-
     //房价管理-同步房型价格到卖房网站
     @RequestMapping(value = "/ajax/sync",method = RequestMethod.POST)
     @ResponseBody

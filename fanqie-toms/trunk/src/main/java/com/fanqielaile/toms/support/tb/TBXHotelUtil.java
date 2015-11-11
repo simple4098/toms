@@ -7,6 +7,7 @@ import com.fanqie.util.PropertiesUtil;
 import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
 import com.fanqielaile.toms.support.util.Constants;
@@ -485,7 +486,8 @@ public class TBXHotelUtil {
      * @param priceModelDto 价格策略
      * @param sj 库存日历开关， true 关闭； false 打开
      */
-    public static  String  rateAddOrUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean sj ,OtaRoomPriceDto priceDto)   {
+    public static  String  rateAddOrUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo,
+                                           OtaPriceModelDto priceModelDto,boolean sj ,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission)   {
 
         Rate rateGet = rateGet(company, roomTypeInfo);
         if (rateGet==null) {
@@ -521,7 +523,7 @@ public class TBXHotelUtil {
             }
             return response.getGidAndRpid();
         }else {
-            return rateUpdate(company, gid, rpid, roomTypeInfo, priceModelDto, sj, priceDto);
+            return rateUpdate(company, gid, rpid, roomTypeInfo, priceModelDto, sj, priceDto,commission);
         }
 
     }
@@ -535,7 +537,8 @@ public class TBXHotelUtil {
      * @param deleted 库存日历开关， true 关闭； false 打开
      * @return
      */
-    public static String rateUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo, OtaPriceModelDto priceModelDto,boolean deleted,OtaRoomPriceDto priceDto)   {
+    public static String rateUpdate(OtaInfoRefDto company,Long gid,Long rpid,RoomTypeInfo roomTypeInfo,
+                                    OtaPriceModelDto priceModelDto,boolean deleted,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission)   {
         log.info("rateUpdate gid:" + gid +" rateUpdate rpid:"+rpid);
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
@@ -561,6 +564,10 @@ public class TBXHotelUtil {
                 rate = new InventoryRate();
                 rate.setDate(r.getRoomDate());
                 price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
+                //售价只有MAI2DI才展示
+                if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
+                    price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
+                }
                 price = price*Constants.tpPriceUnit;
                 Date parseDate = DateUtil.parseDate(r.getRoomDate());
                 //在设定的范围内才对价格进行处理
@@ -682,7 +689,7 @@ public class TBXHotelUtil {
         return  null;
     }
 
-    public static void updateHotelPushRoom(OtaInfoRefDto o, PushRoom pushRoom,OtaPriceModelDto priceModel,  OtaRoomPriceDto priceDto) throws ApiException {
+    public static void updateHotelPushRoom(OtaInfoRefDto o, PushRoom pushRoom,OtaPriceModelDto priceModel,  OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws ApiException {
         log.info("---updateHotelPushRoom start---");
         XRoom xRoom = roomGet(pushRoom.getRoomType().getRoomTypeId(), o);
         Rate rate = rateGet(o, pushRoom.getRoomType());
@@ -709,6 +716,10 @@ public class TBXHotelUtil {
                 for (InventoryRate ratePrice:inventoryRateList){
                     if (ratePrice.getDate().equals(roomDate)){
                         price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
+                        //售价只有MAI2DI才展示
+                        if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
+                            price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
+                        }
                         price = price*Constants.tpPriceUnit;
                         //tp店价格为分，我们自己系统价格是元
                         Date parseDate = DateUtil.parseDate(roomDate);
