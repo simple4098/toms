@@ -44,7 +44,7 @@ public class FcRatePlan extends Domain {
     public String getRatePlanName() {
         StringBuffer sb = new StringBuffer();
         sb.append(bedType==null?"":bedType.getDesc());
-        sb.append(payMethod == null ?"": payMethod.getValue());
+        sb.append(payMethod == null ?"": payMethod.getDesc());
         sb.append(currency==null?"":currency.getValue());
         setRatePlanName(sb.toString());
         return ratePlanName;
