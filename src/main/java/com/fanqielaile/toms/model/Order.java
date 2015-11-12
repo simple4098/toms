@@ -128,6 +128,16 @@ public class Order extends Domain {
     private String bangInnId;
     //订单价格比例
     private BigDecimal percent;
+    //价格模式
+    private UsedPriceModel usedPriceModel;
+
+    public UsedPriceModel getUsedPriceModel() {
+        return usedPriceModel;
+    }
+
+    public void setUsedPriceModel(UsedPriceModel usedPriceModel) {
+        this.usedPriceModel = usedPriceModel;
+    }
 
     public BigDecimal getPercent() {
         return percent;
@@ -629,6 +639,8 @@ public class Order extends Domain {
         handOrder.setLeaveTime(order.getLeaveTime());
         //设置价格比例
         handOrder.setPercent(order.getPercent());
+        //设置价格模式
+        handOrder.setUsedPriceModel(order.getUsedPriceModel());
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
         //设置成本价，总价*（1-比例）
         handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));

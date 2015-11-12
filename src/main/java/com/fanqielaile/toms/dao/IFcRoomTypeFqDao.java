@@ -64,4 +64,12 @@ public interface IFcRoomTypeFqDao {
 
     //查询（客栈）上/下架状态
     List<FcRoomTypeFqDto> selectFcRoomTypeFqBySJ(FcRoomTypeFqDto fcRoomTypeFqDto);
+
+    /**
+     * 根据房型id查询
+     *
+     * @param roomTypeId
+     * @return
+     */
+    FcRoomTypeFqDto selectRoomTypeInfoByRoomTypeId(@Param("roomTypeId") String roomTypeId);
 }
