@@ -130,6 +130,16 @@ public class Order extends Domain {
     private BigDecimal percent;
     //价格模式
     private UsedPriceModel usedPriceModel;
+    //增减价的值
+    private BigDecimal addPrice;
+
+    public BigDecimal getAddPrice() {
+        return addPrice;
+    }
+
+    public void setAddPrice(BigDecimal addPrice) {
+        this.addPrice = addPrice;
+    }
 
     public UsedPriceModel getUsedPriceModel() {
         return usedPriceModel;
