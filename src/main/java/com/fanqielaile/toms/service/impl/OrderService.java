@@ -200,6 +200,12 @@ public class OrderService implements IOrderService {
                 }
             }
         }
+        //设置减价数额
+        if (null != otaRoomPriceDto.getValue()) {
+            order.setAddPrice(BigDecimal.valueOf(otaRoomPriceDto.getValue()));
+        } else {
+            order.setAddPrice(BigDecimal.ZERO);
+        }
         //设置渠道来源
         order.setChannelSource(channelSource);
         order.setOrderTime(new Date());
@@ -613,6 +619,17 @@ public class OrderService implements IOrderService {
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
             for (OrderParamDto orderDto : orderDtos) {
+                //设置总价和每日价格
+                if (null != orderDto.getAddPrice()) {
+                    List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
+                    BigDecimal addTatalPirce = BigDecimal.valueOf(dailyInfoses.size()).multiply(orderDto.getAddPrice());
+                    orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
+                    if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                        for (DailyInfos dailyInfos : dailyInfoses) {
+                            dailyInfos.setPrice(dailyInfos.getPrice().add(orderDto.getAddPrice()));
+                        }
+                    }
+                }
                 //淘宝
                 if (ChannelSource.TAOBAO.equals(orderDto.getChannelSource())) {
                     otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
@@ -661,6 +678,7 @@ public class OrderService implements IOrderService {
     public OrderParamDto findOrderById(String id) {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
         if (null != orderParamDto) {
+
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
             //淘宝
             if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
@@ -705,6 +723,17 @@ public class OrderService implements IOrderService {
                 }
             }
             orderParamDto.setDailyInfoses(dailyInfoses);
+        }
+        //设置总价和每日价格
+        if (null != orderParamDto.getAddPrice()) {
+            List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
+            BigDecimal addTatalPirce = BigDecimal.valueOf(dailyInfoses.size()).multiply(orderParamDto.getAddPrice());
+            orderParamDto.setTotalPrice(orderParamDto.getTotalPrice().add(addTatalPirce));
+            if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                for (DailyInfos dailyInfos : dailyInfoses) {
+                    dailyInfos.setPrice(dailyInfos.getPrice().add(orderParamDto.getAddPrice()));
+                }
+            }
         }
         return orderParamDto;
     }
