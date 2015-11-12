@@ -546,41 +546,13 @@ public class TBXHotelUtil {
         req.setRpid(rpid);
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        double price = 0;
-        Double value = null;
-        Date startDate = null;
-        Date endDate = null;
-        if (priceDto!=null) {
-            value = priceDto.getValue() * Constants.tpPriceUnit;
-            startDate = priceDto.getStartDate();
-            endDate = priceDto.getEndDate();
-        }
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
-            List<InventoryRate> list = new ArrayList<InventoryRate>();
             InventoryPrice inventory = new InventoryPrice();
-            InventoryRate rate = null;
-            for (RoomDetail r:roomTypeInfo.getRoomDetail()){
-                rate = new InventoryRate();
-                rate.setDate(r.getRoomDate());
-                price = new BigDecimal(r.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                //售价只有MAI2DI才展示
-                if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
-                    price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
-                }
-                price = price*Constants.tpPriceUnit;
-                Date parseDate = DateUtil.parseDate(r.getRoomDate());
-                //在设定的范围内才对价格进行处理
-                if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
-                    price = price + value;
-                }
-                rate.setPrice(price);
-                list.add(rate);
-            }
-            inventory.setInventory_price(list);
+            List<InventoryRate> rateList = TomsUtil.inventory(roomTypeInfo.getRoomDetail(), priceDto, priceModelDto, commission);
+            inventory.setInventory_price(rateList);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
-           /* log.info("rateUpdate inventoryPrice:" + json);*/
         }
         try {
             XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
@@ -598,18 +570,7 @@ public class TBXHotelUtil {
      * @return
      */
     public static Rate rateGet(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo){
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelRateGetRequest req=new XhotelRateGetRequest();
-        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        try {
-            XhotelRateGetResponse response = client.execute(req , company.getSessionKey());
-            log.info("rateGet:" +  response.getRate());
-            return  response.getRate();
-        } catch (ApiException e) {
-            log.error(e.getErrMsg());
-        }
-        return  null;
+        return rateGet(company,roomTypeInfo.getRoomTypeId());
     }
 
     /**
@@ -634,21 +595,7 @@ public class TBXHotelUtil {
     }
 
     public static String rateUpdate(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo,Rate rate)   {
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
-        req.setGid(rate.getGid());
-        req.setRpid(rate.getRpid());
-        req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        req.setInventoryPrice(rate.getInventoryPrice());
-        try {
-            XhotelRateUpdateResponse response = client.execute(req , company.getSessionKey());
-            log.info("推送 rateUpdate:" +  response.getGidAndRpid());
-            return response.getGidAndRpid();
-        } catch (ApiException e) {
-            log.error(e.getMessage());
-        }
-        return  null;
+        return rateUpdate(company,roomTypeInfo.getRoomTypeId(),rate);
     }
 
     public static String rateUpdate(OtaInfoRefDto company,Integer roomTypeId,Rate rate)   {
