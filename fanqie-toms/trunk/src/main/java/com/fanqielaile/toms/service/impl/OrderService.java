@@ -164,17 +164,18 @@ public class OrderService implements IOrderService {
         BigDecimal percent = BigDecimal.ZERO;
         //公司信息
         Company company = this.companyDao.selectCompanyById(otaInnOtaDto.getCompanyId());
+        UsedPriceModel usedPriceModel = null;
         if (ChannelSource.TAOBAO.equals(channelSource)) {
             //查询
             OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
-            UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            usedPriceModel = otaInfoRefDto.getUsedPriceModel();
             OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
             if (null != commission) {
                 percent = BigDecimal.valueOf(commission.getCommissionPercent());
             }
         } else if (ChannelSource.FC.equals(channelSource)) {
             OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
-            UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            usedPriceModel = otaInfoRefDto.getUsedPriceModel();
             OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
             if (null != commission) {
                 percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));
@@ -209,7 +210,12 @@ public class OrderService implements IOrderService {
         //保存价格比例10%
         order.setPercent(percent);
         //算成本价与OTA收益 成本价 = 总价 * （1-比例）
-        order.setCostPrice(order.getTotalPrice().multiply((new BigDecimal(1).subtract(percent))));
+        if (UsedPriceModel.MAI.equals(usedPriceModel)) {
+            order.setCostPrice(order.getTotalPrice().multiply((new BigDecimal(1).subtract(percent))));
+        } else {
+            order.setCostPrice(order.getTotalPrice());
+        }
+        order.setUsedPriceModel(usedPriceModel);
         //不展示ota佣金
 //        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
         order.setCompanyId(otaInnOtaDto.getCompanyId());
@@ -607,15 +613,20 @@ public class OrderService implements IOrderService {
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
             for (OrderParamDto orderDto : orderDtos) {
+                //淘宝
                 if (ChannelSource.TAOBAO.equals(orderDto.getChannelSource())) {
                     otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
                 } else {
                     otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderDto.getInnId(), Integer.parseInt(orderDto.getRoomTypeId()), orderDto.getCompanyId());
                 }
-                if (null == otaBangInnRoomDto) {
+                //房仓
+                FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(orderDto.getRoomTypeId());
+                if (null == otaBangInnRoomDto && null == fcRoomTypeFqDto) {
                     orderDto.setRoomTypeName("暂无");
-                } else {
+                } else if (null != otaBangInnRoomDto) {
                     orderDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+                } else if (null != fcRoomTypeFqDto) {
+                    orderDto.setRoomTypeName(fcRoomTypeFqDto.getFqRoomTypeName());
                 }
             }
         }
@@ -651,13 +662,18 @@ public class OrderService implements IOrderService {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
         if (null != orderParamDto) {
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
+            //淘宝
             if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
                 otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
             } else {
                 otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderParamDto.getInnId(), Integer.parseInt(orderParamDto.getRoomTypeId()), orderParamDto.getCompanyId());
             }
+            //FC
+            FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(orderParamDto.getRoomTypeId());
             if (null != otaBangInnRoomDto) {
                 orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+            } else if (null != fcRoomTypeFqDto && null == otaBangInnRoomDto) {
+                orderParamDto.setRoomTypeName(fcRoomTypeFqDto.getFqRoomTypeName());
             } else {
                 orderParamDto.setRoomTypeName("暂无");
             }
@@ -668,14 +684,23 @@ public class OrderService implements IOrderService {
                 if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                     for (DailyInfos dailyInfos : dailyInfoses) {
                         dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
-                        dailyInfos.setCostPrice(dailyInfos.getCostPrice().multiply((new BigDecimal(1).subtract(orderParamDto.getPercent()))));
+                        //判断当前下单的价格模式
+                        if (UsedPriceModel.MAI.equals(orderParamDto.getUsedPriceModel())) {
+                            dailyInfos.setCostPrice(dailyInfos.getCostPrice().multiply((new BigDecimal(1).subtract(orderParamDto.getPercent()))));
+                        } else {
+                            dailyInfos.setCostPrice(dailyInfos.getPrice());
+                        }
                     }
                 }
             } else {
                 if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                     for (DailyInfos dailyInfos : dailyInfoses) {
                         dailyInfos.setCostPrice(dailyInfos.getPrice());
-                        dailyInfos.setCostPrice(dailyInfos.getCostPrice().multiply((new BigDecimal(1).subtract(orderParamDto.getPercent()))));
+                        if (UsedPriceModel.MAI.equals(orderParamDto.getUsedPriceModel())) {
+                            dailyInfos.setCostPrice(dailyInfos.getCostPrice().multiply((new BigDecimal(1).subtract(orderParamDto.getPercent()))));
+                        } else {
+                            dailyInfos.setCostPrice(dailyInfos.getPrice());
+                        }
                     }
                 }
             }
@@ -755,8 +780,10 @@ public class OrderService implements IOrderService {
         OtaCommissionPercentDto commission = null;
         if (1 != order.getMaiAccount()) {
             commission = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), UsedPriceModel.DI.name()));
+            order.setUsedPriceModel(UsedPriceModel.DI);
         } else {
             commission = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), UsedPriceModel.MAI.name()));
+            order.setUsedPriceModel(UsedPriceModel.MAI);
         }
         if (null != commission) {
             percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));

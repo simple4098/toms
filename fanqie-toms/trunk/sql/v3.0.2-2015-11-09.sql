@@ -39,3 +39,7 @@ CREATE INDEX "ota_commission_percent_company_id_sjia_model_ota_id_operate_idx" O
 
 
 INSERT INTO "public"."dictionary" ("id", "desc", "url", "type", "value", "v_name", "v_pwd") VALUES ('5', '获取房型某天信息', 'http://192.168.1.159:8888/api/get_room_day_info', 'ROOM_DAY_INFO', '903', 'TB', 'tb');
+ALTER TABLE "public"."ota_toms_order"
+ADD COLUMN "used_price_model" varchar(20);
+
+COMMENT ON COLUMN "public"."ota_toms_order"."used_price_model" IS '当前价格模式';
