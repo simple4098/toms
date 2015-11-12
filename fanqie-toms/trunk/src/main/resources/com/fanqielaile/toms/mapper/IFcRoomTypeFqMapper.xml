@@ -51,7 +51,7 @@
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id,o.bed_num,o.bed_len,o.bed_wid
         from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
-        where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId}
+        where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId} order by o.fq_roomtype_id desc
 
     </select>
     <select id="selectFcRoomTypeFqBySJ" parameterType="com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto" resultMap="resultDtoMapId">
