@@ -201,7 +201,7 @@ public class OrderService implements IOrderService {
             }
         }
         //设置减价数额
-        if (null != otaRoomPriceDto.getValue()) {
+        if (null != otaRoomPriceDto && null != otaRoomPriceDto.getValue()) {
             order.setAddPrice(BigDecimal.valueOf(otaRoomPriceDto.getValue()));
         } else {
             order.setAddPrice(BigDecimal.ZERO);
