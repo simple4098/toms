@@ -689,8 +689,6 @@ public class OrderService implements IOrderService {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
         //查询客栈关联信息
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
-        //查询价格模式（toms的增减价）
-        OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(orderParamDto.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
         if (null != orderParamDto) {
 
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
