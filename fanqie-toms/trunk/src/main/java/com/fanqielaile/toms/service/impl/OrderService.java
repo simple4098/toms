@@ -629,13 +629,16 @@ public class OrderService implements IOrderService {
                 //设置总价和每日价格
                 if (null != orderDto.getAddPrice()) {
                     List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
-                    BigDecimal addTatalPirce = BigDecimal.valueOf(dailyInfoses.size()).multiply(orderDto.getAddPrice());
-                    orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
+                    BigDecimal addTatalPirce = BigDecimal.ZERO;
                     if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                         for (DailyInfos dailyInfos : dailyInfoses) {
-                            dailyInfos.setPrice(dailyInfos.getPrice().add(orderDto.getAddPrice()));
+                            if (1 == dailyInfos.getWeatherAdd()) {
+                                dailyInfos.setPrice(dailyInfos.getPrice().add(orderDto.getAddPrice()));
+                                addTatalPirce = addTatalPirce.add(orderDto.getAddPrice());
+                            }
                         }
                     }
+                    orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
                 }
                 //淘宝
                 if (ChannelSource.TAOBAO.equals(orderDto.getChannelSource())) {
