@@ -165,6 +165,7 @@ public class OrderService implements IOrderService {
         OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(order.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
         //价格比例
         BigDecimal percent = BigDecimal.ZERO;
+        order.setAddPrice(BigDecimal.ZERO);
         //公司信息
         Company company = this.companyDao.selectCompanyById(otaInnOtaDto.getCompanyId());
         UsedPriceModel usedPriceModel = null;
@@ -197,18 +198,17 @@ public class OrderService implements IOrderService {
                 for (DailyInfos dailyInfos : order.getDailyInfoses()) {
                     if (DateUtil.isBetween(dailyInfos.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
                         dailyInfos.setPrice(dailyInfos.getPrice().subtract(new BigDecimal(Double.toString(otaRoomPriceDto.getValue()))));
+                        //设置减价数额
+                        if (null != otaRoomPriceDto && null != otaRoomPriceDto.getValue()) {
+                            order.setAddPrice(BigDecimal.valueOf(otaRoomPriceDto.getValue()));
+                        }
                     } else {
                         dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
                     }
                 }
             }
         }
-        //设置减价数额
-        if (null != otaRoomPriceDto && null != otaRoomPriceDto.getValue()) {
-            order.setAddPrice(BigDecimal.valueOf(otaRoomPriceDto.getValue()));
-        } else {
-            order.setAddPrice(BigDecimal.ZERO);
-        }
+
         //设置渠道来源
         order.setChannelSource(channelSource);
         order.setOrderTime(new Date());
