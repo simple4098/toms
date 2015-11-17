@@ -48,6 +48,9 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.ZERO;
+
 /**
  * DESC :
  *
@@ -407,7 +410,9 @@ public class OrderService implements IOrderService {
                             //验证价格是否一致
                             RoomDetail room = (RoomDetail) JSONObject.toBean(jsonObject.getJSONObject("data"), RoomDetail.class);
                             //判断oms返回价格*（1-比例） == 订单传入价格
-                            if (0 != dailyInfos.getPrice().compareTo(BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent))))) {
+                            BigDecimal orderPrice = dailyInfos.getPrice();
+                            BigDecimal omsPrice = BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent)));
+                            if (orderPrice.multiply(omsPrice).abs().compareTo(BigDecimal.ONE) != -1) {
                                 flag = false;
                                 break;
                             } else {
@@ -420,7 +425,7 @@ public class OrderService implements IOrderService {
                     }
                     //设置订单总价
                     //1.验证订单总价是否一致
-                    if (0 == order.getTotalPrice().compareTo(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))))) {
+                    if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.ONE) == -1) {
                         order.setTotalPrice(omsTotalPrice);
                     } else {
                         flag = false;
