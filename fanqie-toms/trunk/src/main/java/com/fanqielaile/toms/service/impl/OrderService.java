@@ -201,6 +201,8 @@ public class OrderService implements IOrderService {
                         //设置减价数额
                         if (null != otaRoomPriceDto && null != otaRoomPriceDto.getValue()) {
                             order.setAddPrice(BigDecimal.valueOf(otaRoomPriceDto.getValue()));
+                            //当前下单日期执行了加减价
+                            dailyInfos.setWeatherAdd(1);
                         }
                     } else {
                         dailyInfos.setPrice(dailyInfos.getPrice().divide(otaInnOtaDto.getPriceModelValue(), 2, BigDecimal.ROUND_UP));
@@ -682,6 +684,10 @@ public class OrderService implements IOrderService {
     @Override
     public OrderParamDto findOrderById(String id) {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(id);
+        //查询客栈关联信息
+        OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
+        //查询价格模式（toms的增减价）
+        OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(orderParamDto.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
         if (null != orderParamDto) {
 
             OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
@@ -703,7 +709,6 @@ public class OrderService implements IOrderService {
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
             //价格策略
             if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
-                OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
                 if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                     for (DailyInfos dailyInfos : dailyInfoses) {
                         dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
@@ -736,7 +741,9 @@ public class OrderService implements IOrderService {
             orderParamDto.setTotalPrice(orderParamDto.getTotalPrice().add(addTatalPirce));
             if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                 for (DailyInfos dailyInfos : dailyInfoses) {
-                    dailyInfos.setPrice(dailyInfos.getPrice().add(orderParamDto.getAddPrice()));
+                    if (1 == dailyInfos.getWeatherAdd()) {
+                        dailyInfos.setPrice(dailyInfos.getPrice().add(orderParamDto.getAddPrice()));
+                    }
                 }
             }
         }

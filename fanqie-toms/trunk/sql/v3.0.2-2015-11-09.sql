@@ -46,3 +46,9 @@ ADD COLUMN "add_price" decimal;
 COMMENT ON COLUMN "public"."ota_toms_order"."add_price" IS '加减价';
 
 COMMENT ON COLUMN "public"."ota_toms_order"."used_price_model" IS '当前价格模式';
+
+ALTER TABLE "public"."ota_daily_infos"
+ADD COLUMN "weather_add" int2;
+
+COMMENT ON COLUMN "public"."ota_daily_infos"."weather_add" IS '是否加减价';
+

@@ -9,15 +9,16 @@
         <result column="order_id" property="orderId"/>
         <result column="break_fast_type" property="breakfastType"/>
         <result column="break_fast_num" property="breakfastNum"/>
+        <result property="weatherAdd" column="weather_add"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,day,price,created_date,order_id,break_fast_type,break_fast_num
+        id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add
     </sql>
     <insert id="insertDailyInfos" parameterType="com.fanqielaile.toms.model.Order">
-        INSERT INTO ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num)
+        INSERT INTO ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add)
         VALUES
         <foreach collection="dailyInfoses" item="d" separator=",">
-            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakfastType},#{d.breakfastNum})
+            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakfastType},#{d.breakfastNum},#{weatherAdd})
         </foreach>
     </insert>
     <select id="selectDailyInfoByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">
