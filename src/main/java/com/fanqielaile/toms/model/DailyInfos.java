@@ -33,6 +33,16 @@ public class DailyInfos extends Domain {
     private Integer breakfastNum;
     //房间数量
     private Integer roomNum;
+    //是否包含加减价
+    private Integer weatherAdd = 0;
+
+    public Integer getWeatherAdd() {
+        return weatherAdd;
+    }
+
+    public void setWeatherAdd(Integer weatherAdd) {
+        this.weatherAdd = weatherAdd;
+    }
 
     public Integer getRoomNum() {
         return roomNum;
