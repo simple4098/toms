@@ -108,7 +108,7 @@ public class RoomTypeService implements IRoomTypeService {
                     for (RoomDetail d:r.getRoomDetail()){
                         double price = new BigDecimal(d.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
 
-                        d.setCostPrice(TomsUtil.price(price, new BigDecimal(commission.getCommissionPercent())));
+                        d.setCostPrice(TomsUtil.price(price, commission!=null?new BigDecimal(commission.getCommissionPercent()):null));
                         Date parseDate = DateUtil.parseDate(d.getRoomDate());
 
                         //售价只有MAI2DI才展示
