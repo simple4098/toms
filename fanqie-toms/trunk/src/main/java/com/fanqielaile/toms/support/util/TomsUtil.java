@@ -194,15 +194,23 @@ public class TomsUtil {
         return  tbParam;
     }
 
-    //处理价格
+
+    public static double getPriceRoundUp(double price) {
+        return new BigDecimal(price).setScale(0, BigDecimal.ROUND_UP).doubleValue();
+    }
+
+
+        //处理价格
     public static Double price(Double price,BigDecimal percentage){
         if (percentage!=null){
             BigDecimal bigDecimal = new BigDecimal(100);
             BigDecimal subtract = bigDecimal.subtract(percentage);
             Double divide = DcUtil.divide(subtract, bigDecimal);
-            return DcUtil.formatDouble(price*divide);
+            Double formatDouble = DcUtil.formatDouble(price * divide);
+            price = formatDouble;
+           /* return getPriceRoundUp(formatDouble);*/
         }
-        return price;
+        return getPriceRoundUp(price);
     }
 
     //处理比例
@@ -214,4 +222,6 @@ public class TomsUtil {
         }
         return divide;
     }
+
+
 }
