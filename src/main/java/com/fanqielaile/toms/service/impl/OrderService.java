@@ -414,7 +414,7 @@ public class OrderService implements IOrderService {
                             //判断oms返回价格*（1-比例） == 订单传入价格
                             BigDecimal orderPrice = dailyInfos.getPrice();
                             BigDecimal omsPrice = BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent)));
-                            if (orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.ONE) != -1) {
+                            if (orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.ONE) == 1) {
                                 flag = false;
                                 break;
                             } else {
