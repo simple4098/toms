@@ -746,15 +746,16 @@ public class OrderService implements IOrderService {
         //设置总价和每日价格
         if (null != orderParamDto.getAddPrice()) {
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
-            BigDecimal addTatalPirce = BigDecimal.valueOf(dailyInfoses.size()).multiply(orderParamDto.getAddPrice());
-            orderParamDto.setTotalPrice(orderParamDto.getTotalPrice().add(addTatalPirce));
+            BigDecimal addTatalPirce = BigDecimal.ZERO;
             if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                 for (DailyInfos dailyInfos : dailyInfoses) {
                     if (1 == dailyInfos.getWeatherAdd()) {
                         dailyInfos.setPrice(dailyInfos.getPrice().add(orderParamDto.getAddPrice()));
+                        addTatalPirce = addTatalPirce.add(orderParamDto.getAddPrice());
                     }
                 }
             }
+            orderParamDto.setTotalPrice(orderParamDto.getTotalPrice().add(addTatalPirce));
         }
         return orderParamDto;
     }
