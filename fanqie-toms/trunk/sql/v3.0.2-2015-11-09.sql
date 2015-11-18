@@ -51,4 +51,5 @@ ALTER TABLE "public"."ota_daily_infos"
 ADD COLUMN "weather_add" int2;
 
 COMMENT ON COLUMN "public"."ota_daily_infos"."weather_add" IS '是否加减价';
+UPDATE ota_daily_infos SET weather_add = 0;
 
