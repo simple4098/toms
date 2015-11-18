@@ -427,7 +427,7 @@ public class OrderService implements IOrderService {
                     }
                     //设置订单总价
                     //1.验证订单总价是否一致
-                    if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.ONE) == -1) {
+                    if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())) == -1) {
                         order.setTotalPrice(omsTotalPrice);
                     } else {
                         flag = false;
