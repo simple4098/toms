@@ -405,6 +405,7 @@ public class OrderService implements IOrderService {
                         //分别通过房型调用oms价格
                         String response = HttpClientUtil.httpGetRoomAvail(dictionaryRoom.getUrl(), order.toRoomAvail(company, order, dailyInfos));
                         JSONObject jsonObject = JSONObject.fromObject(response);
+                        logger.info("调用oms获取每日入住信息返回值==>" + jsonObject.toString());
                         if (!jsonObject.get("status").equals(200)) {
                             flag = false;
                             break;
@@ -414,6 +415,9 @@ public class OrderService implements IOrderService {
                             //判断oms返回价格*（1-比例） == 订单传入价格
                             BigDecimal orderPrice = dailyInfos.getPrice();
                             BigDecimal omsPrice = BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent)));
+                            logger.info("订单每日价格为" + dailyInfos.getDay() + "====>" + orderPrice);
+                            logger.info("oms每日价格为" + dailyInfos.getDay() + "====>" + omsPrice);
+                            logger.info("验证每日价格对比值" + orderPrice.subtract(omsPrice).abs() + "对比" + 2 + "结果为：" + orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)));
                             if (orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)) != -1) {
                                 flag = false;
                                 break;
@@ -427,6 +431,10 @@ public class OrderService implements IOrderService {
                     }
                     //设置订单总价
                     //1.验证订单总价是否一致
+                    logger.info("订单总价为：" + order.getTotalPrice() + "   oms总价为：" + omsTotalPrice);
+                    logger.info("oms总价价格比例过后价格=>" + omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))));
+                    logger.info("总价只差为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs());
+                    logger.info("总价差的绝对值比较值为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())));
                     if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())) == -1) {
                         order.setTotalPrice(omsTotalPrice);
                     } else {
