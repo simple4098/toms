@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 
-public class OmsImg implements java.io.Serializable {
+public class OmsImg implements java.io.Serializable, Comparable<OmsImg> {
 	private static final long serialVersionUID = 1L;
 	private Integer id; /**/
 	private Integer omsInnId; /* OMS客栈编号 */
@@ -109,5 +109,14 @@ public class OmsImg implements java.io.Serializable {
 
 	public void setUpdateAt(Date updateAt) {
 		this.updateAt = updateAt;
+	}
+
+	@Override
+	public int compareTo(OmsImg o) {
+		if (null != this.getSeq() && null != o.getSeq()) {
+			return this.getSeq().compareTo(o.getSeq());
+		} else {
+			return 0;
+		}
 	}
 }

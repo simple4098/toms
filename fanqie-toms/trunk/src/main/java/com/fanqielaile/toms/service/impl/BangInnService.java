@@ -204,6 +204,8 @@ public class BangInnService implements IBangInnService {
                             for (OmsImg omsImg : roomTypeInfo.getImgList()) {
                                 omsImg.setSuffix(omsImg.getImgUrl().split("\\.")[1]);
                             }
+                            //排序
+                            Collections.sort(roomTypeInfo.getImgList());
                         }
                     }
                 }
@@ -228,6 +230,7 @@ public class BangInnService implements IBangInnService {
                     omsImg.setSuffix(omsImg.getImgUrl().split("\\.")[1]);
                 }
             }
+            Collections.sort(omsInnDto.getImgList());
             return omsInnDto;
         }
         return null;
