@@ -39,9 +39,30 @@ public class InnDto {
 	@JsonIgnore
 	private Date updateAt; /**/
 
+	//开业时间
+	private String openTime;
+	//最后一次装修时间
+	private String lastDecorateTime;
+
 	private List<OmsImg> imgList;/* 客栈图片 */
 
 	private List<FacilitiesVo> facilitiesMap;
+
+	public String getOpenTime() {
+		return openTime;
+	}
+
+	public void setOpenTime(String openTime) {
+		this.openTime = openTime;
+	}
+
+	public String getLastDecorateTime() {
+		return lastDecorateTime;
+	}
+
+	public void setLastDecorateTime(String lastDecorateTime) {
+		this.lastDecorateTime = lastDecorateTime;
+	}
 
 	public String getInnId() {
 		return innId;
