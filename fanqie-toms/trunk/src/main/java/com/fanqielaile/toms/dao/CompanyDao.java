@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.model.Company;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface CompanyDao {
      * @return
      */
     List<Company> selectCompanyByCompany(Company company);
+
+    List<Company> selectCompanyByCompany(Company company,PageBounds pageBounds);
 
     /**
      * 根据公司唯一码查询公司

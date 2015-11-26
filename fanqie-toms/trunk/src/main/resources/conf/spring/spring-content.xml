@@ -59,6 +59,7 @@
                      <tx:method name="insert*" propagation="REQUIRED" />
                      <tx:method name="save*" propagation="REQUIRED" />
                      <tx:method name="update*" propagation="REQUIRED" />
+                     <tx:method name="validated*" propagation="REQUIRED" />
                      <tx:method name="modify*" propagation="REQUIRED" />
                      <tx:method name="edit*" propagation="REQUIRED" />
                      <tx:method name="delete*" propagation="REQUIRED" />
@@ -135,6 +136,7 @@
                      <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
                      <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
+                     <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
                      <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
                      <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
                      <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
@@ -174,6 +176,7 @@
                     <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
                     <property name="imgUrl" value="http://img.test.fanqiele.com"></property>
                   <property name="proxyOtaPercent" value="http://115.28.149.182:8282/proxysale/api/channel/"></property>
+                  <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
                   <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
                   <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
                   <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
@@ -201,6 +204,7 @@
                      <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
                   <property name="proxyOtaPercent" value="http://www.afanqie.com/proxysale/api/channel/"></property>
+                  <property name="fcHotelInfo" value="http://www.fangcang.com/USP/api_v1/getHotelInfo"></property>
                   <property name="fcAddHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/addHotelMapping"></property>
                   <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.com/USP/api_v1/addRoomTypeMapping"></property>
                   <property name="FcSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/syncRatePlan"></property>

@@ -16,9 +16,11 @@ import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.event.TomsApplicationEvent;
 import com.fanqielaile.toms.support.listener.RolePermissionChangeListener;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -48,6 +50,11 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
+    public List<Company> findCompanyByCompany(Company company,PageBounds pageBounds) {
+        return this.companyDao.selectCompanyByCompany(company,pageBounds);
+    }
+
+    @Override
     public Company findCompanyByCompanyCode(String companyCode) {
         return this.companyDao.selectCompanyByCompanyCode(companyCode);
     }
@@ -63,6 +70,13 @@ public class CompanyService implements ICompanyService {
                 Company companyCode = companyDao.selectCompanyByCompanyCode(company.getCompanyCode());
                 if (companyCode==null ||(companyCode!=null && companyCode.getId().equals(company.getId()))){
                     companyDao.updateCompany(company);
+                    List<UserInfoDto> userInfoDtoList = userInfoDao.selectUserInfos(companyCode.getId());
+                    if (!CollectionUtils.isEmpty(userInfoDtoList)){
+                        for (UserInfoDto u:userInfoDtoList){
+                            u.setCompanyType(company.getCompanyType());
+                        }
+                        userInfoDao.updateUserInfoList(userInfoDtoList);
+                    }
                 }else {
                     throw new Exception("修改公司异常，公司编码不是唯一的!");
                 }
@@ -113,6 +127,7 @@ public class CompanyService implements ICompanyService {
         userInfo.setDataPermission(1);
         userInfo.setCompanyId(company.getId());
         userInfo.setUserType(UserType.ADMIN);
+        userInfo.setCompanyType(company.getCompanyType());
         this.userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
     }
 
