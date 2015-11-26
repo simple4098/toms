@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.model.Company;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public interface ICompanyService {
      * @return
      */
     List<Company> findCompanyByCompany(Company company);
+    List<Company> findCompanyByCompany(Company company,PageBounds pageBounds);
 
     /**
      * 根据公司code查询公司信息

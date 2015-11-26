@@ -1,16 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    String path = request.getContextPath();
-    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
-%>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <title>账号设置</title>
-<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
-<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/layer/layer.js"></script>
-<script src="<%=basePath%>/js/my-system.js"></script>
+<link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/userSet.css'/>">
+<script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
+<script src="<c:url value='/assets/layer/layer.js'/>"></script>
+<script src="<c:url value='/js/my-system.js'/>"></script>
 <div class="page-content">
-    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/user/find_companys"/>" method="post">
+    <c:set value="${pagination}" var="page"/>
+    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/system/find_companys"/>" method="post">
+        <input type="hidden" id="pageId" name="page" value="${page.page}"/>
     </form>
     <div class="row">
         <div class="col-xs-12">
@@ -40,6 +39,7 @@
                                     账户名称
                                 </th>
                                 <th>账户密码</th>
+                                <th>公司类型</th>
                                 <th class="hidden-480">权限</th>
                                 <th class="hidden-480">操作</th>
                             </tr>
@@ -56,6 +56,7 @@
                                         <td class="hidden-480">${d.otaId}</td>
                                         <td>${d.userAccount}</td>
                                         <td>${d.userPassword}</td>
+                                        <td>${d.companyType!=null?d.companyType.desc:''}</td>
                                         <td class="hidden-480">
                                             <button type="button" data-whatever="${d.id}"
                                                     class="btn btn-info btn-sm permission-btn " data-toggle="modal"
@@ -83,6 +84,9 @@
                         </table>
                     </div>
                 </div>
+                <c:if test="${page.pageCount>1}">
+                    <toms:page linkUrl="/system/find_companys"  pagerDecorator="${pageDecorator}"/>
+                </c:if>
             </div>
         </div>
         <c:if test="${empty data}">
@@ -184,6 +188,20 @@
                         </div>
                     </div>
                     <div class="space-4"></div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-4">公司类型</label>
+                        <div class="col-sm-9">
+                            <toms:companyType/>
+                        <span class="help-name col-xs-12 col-sm-7">
+
+											</span>
+
+                            <div class="space-2"></div>
+
+                            <div class="help-block" id="input-size-slider1"></div>
+                        </div>
+                    </div>
+                    <div class="space-4"></div>
 
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
@@ -270,6 +288,7 @@
                     <input type="hidden" class="password-permission" name="otaId"/>
                     <input type="hidden" class="telephone-permission" name="userAccount"/>
                     <input type="hidden" class="user-name-permission" name="userPassword"/>
+                    <input type="hidden" class="company-type" name="companyType"/>
 
                     <div class="checkbox">
                         <label>
@@ -303,5 +322,12 @@
         </div>
     </div>
 </div>
-<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
-<script src="<%=basePath%>/js/company-list.js"></script>
+<script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
+<script src="<c:url value='/js/company-list.js'/>"></script>
+<script>
+    //分页方法
+    function page(page) {
+        $("#pageId").attr("value", page);
+        $('.form-page').submit();
+    }
+</script>

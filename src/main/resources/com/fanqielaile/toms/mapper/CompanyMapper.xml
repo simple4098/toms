@@ -18,15 +18,16 @@
         <result column="ota_id" property="otaId"/>
         <result column="user_account" property="userAccount"/>
         <result column="user_password" property="userPassword"/>
+        <result column="company_type" property="companyType"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password
+        id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password,company_type
     </sql>
     <insert id="insertCompany" parameterType="com.fanqielaile.toms.model.Company">
         insert into
-        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password)
+        company(id,creator_id,created_date,updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password,company_type)
         values
-        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type},#{otaId},#{userAccount},#{userPassword})
+        (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{companyName},#{companyCode},#{type},#{otaId},#{userAccount},#{userPassword},#{companyType})
        </insert>
     <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
@@ -76,6 +77,9 @@
             </if>
             <if test="userPassword != null and userPassword != ''">
                 user_password = #{userPassword},
+            </if>
+            <if test="companyType != null and companyType != ''">
+                company_type = #{companyType.name},
             </if>
 
         </trim>

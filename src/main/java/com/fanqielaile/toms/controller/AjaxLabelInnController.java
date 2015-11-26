@@ -2,6 +2,7 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.CompanyAjaxDto;
+import com.fanqielaile.toms.enums.CompanyType;
 import com.fanqielaile.toms.helper.BangInnDataCheckHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.IBangInnService;
@@ -64,7 +65,7 @@ public class AjaxLabelInnController extends BaseController{
         if (BangInnDataCheckHelper.checkBangInn(bangInnDto)) {
             //添加之前检查公司是否存在
             Company checkCompany = this.companyService.findCompanyByCompanyCode(bangInnDto.getCompanyCode());
-            if (null != checkCompany) {
+            if (null != checkCompany && CompanyType.OPEN.equals(checkCompany.getCompanyType())) {
                 //检查是否重复绑定
                 BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(checkCompany.getId(), bangInnDto.getInnId());
                 if (null == bangInn) {
@@ -80,7 +81,7 @@ public class AjaxLabelInnController extends BaseController{
                     return new JsonModel(false, "该客栈已绑定过");
                 }
             } else {
-                return new JsonModel(false, "请检查公司唯一码是否正确！");
+                return new JsonModel(false, "请检查公司唯一码是否正确、公司类型只能是线下专业类型");
             }
         } else {
             return new JsonModel(false, "请检查传递的参数!");

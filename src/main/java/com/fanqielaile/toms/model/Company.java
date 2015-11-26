@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import com.fanqielaile.toms.enums.CompanyType;
 
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ public class Company extends Domain {
     private String userPassword;
     //区别公司来源
     private int type = 1;
+    private CompanyType companyType;
     //appkey, appSecret
     /*private String appKey;
     private String appSecret;
@@ -61,6 +63,14 @@ public class Company extends Domain {
     public void setSessionKey(String sessionKey) {
         this.sessionKey = sessionKey;
     }*/
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
+    }
 
     public int getType() {
         return type;

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
@@ -64,6 +65,17 @@
                     <div class="col-sm-9">
                         <input type="text" class="col-xs-10 col-sm-5 ace "  name="userPassword"
                                value="${data.userPassword}"/>
+                        <span class="help-tel col-xs-12 col-sm-7"></span>
+                    </div>
+                </div>
+                <div class="space-4"></div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly"> 公司类型 </label>
+                    <div class="col-sm-9">
+                       <%-- <input type="text" readonly class="col-xs-10 col-sm-5 ace "  name="userPassword"
+                               value="${data.companyType.desc}"/>--%>
+                        <toms:companyType/>
+
                         <span class="help-tel col-xs-12 col-sm-7"></span>
                     </div>
                 </div>

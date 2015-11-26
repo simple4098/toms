@@ -126,6 +126,7 @@ $('.btn-info').on('click', function () {
     $('.password-permission').val($('.pawd').val());
     $('.telephone-permission').val($('.tel').val());
     $('.user-name-permission').val($('.user-name').val());
+    $('.company-type').val($('.companyType').val());
 //        return false;
 });
 /*验证登陆名*/
