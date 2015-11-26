@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
+import com.fanqielaile.toms.enums.CompanyType;
 import com.fanqielaile.toms.enums.UserType;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -44,6 +45,15 @@ public class UserInfo extends Domain implements UserDetails {
     private String userId;
     //关键字
     private String keywords;
+    private CompanyType companyType;
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
+    }
 
     public String getKeywords() {
         return keywords;
