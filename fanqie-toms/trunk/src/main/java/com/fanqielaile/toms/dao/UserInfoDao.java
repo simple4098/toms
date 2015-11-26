@@ -96,4 +96,6 @@ public interface UserInfoDao {
    List<UserInfoDto> selectUserInfoByPagination(@Param("companyId") String companyId, PageBounds pageBounds);
 
    void deleteUserInfoByCompanyId(@Param("companyId")String companyId);
+
+   void updateUserInfoList(@Param("userInfoDtoList") List<UserInfoDto> userInfoDtoList);
 }
