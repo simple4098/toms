@@ -20,6 +20,7 @@ public class CommonApi {
     public static   String ProxySaleList="";
     public static   String proxyOtaPercent="";
     public static   String FcAddHotelMappingUrl;
+    public static   String fcHotelInfo;
     public static   String FcAddRoomTypeMappingUrl;
     public static   String FcSyncRatePlanUrl;
     public static   String FcDelSyncRatePlanUrl;
@@ -27,6 +28,14 @@ public class CommonApi {
     public static   String FcDeleteRoomTypeUrl;
     public static   String FcDeleteHotelMappingUrl;
     public static   String checkRoom;
+
+    public  String getFcHotelInfo() {
+        return fcHotelInfo;
+    }
+
+    public  void setFcHotelInfo(String fcHotelInfo) {
+        CommonApi.fcHotelInfo = fcHotelInfo;
+    }
 
     public  String getCheckRoom() {
         return checkRoom;
