@@ -76,4 +76,14 @@
         <tag-class>com.fanqielaile.toms.support.tag.BedTypeTag</tag-class>
         <body-content>empty</body-content>
     </tag>
+    <tag>
+        <name>companyType</name>
+        <tag-class>com.fanqielaile.toms.support.tag.CompanyTypeTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    <tag>
+        <name>usedPriceModel</name>
+        <tag-class>com.fanqielaile.toms.support.tag.UsedPriceModelTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
 </taglib>

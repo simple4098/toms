@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.InnLabel;
@@ -139,10 +140,18 @@ public interface IBangInnService {
     BangInnDto findBangInnByInnIdCompanyId(Integer innId,String companyId);
 
     /**
-     *
-     * @param bangInnDto
-     * @return
+     * 分页查询房仓的客栈列表
      */
     List<BangInnDto> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds);
+
+    /**
+     *  查询不同渠道的客栈列表，
+     * @param bangInnDto 查询参数
+     * @param otaInfo 渠道信息
+     * @param pageBounds 分页对象
+     * @return
+     */
+    List<BangInnDto> findOTABangInn(BangInnDto bangInnDto, OtaInfoRefDto otaInfo, PageBounds pageBounds);
+
     List<BangInnDto> findFcBangInn(BangInnDto bangInnDto);
 }

@@ -28,6 +28,8 @@
             <result column="company_code" property="companyCode"/>
             <result column="sort" property="sort"/>
             <result column="used_price_model" property="usedPriceModel"/>
+            <result column="tb_type" property="tbType"/>
+            <result column="create_date" property="createdDate"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
@@ -57,6 +59,13 @@
           where oi.deleted=0
        </select>
 
+        <select id="selectAllOtaInfo" resultMap="otaInfoRefId" >
+            SELECT oi.ota_info,oi.ota_type ,oi.sort,oi.id as ota_info_id  from ota_info oi where oi.deleted=0
+        </select>
+        <select id="selectOtaInfo" parameterType="java.lang.String" resultMap="otaInfoRefId">
+            SELECT oi.ota_info,oi.ota_type ,oi.sort,oi.id as ota_info_id  from ota_info oi where oi.deleted=0 and oi.id='${otaInfoId}'
+        </select>
+
        <select id="selectOtaInfoListByCompanyId" parameterType="java.lang.String" resultMap="otaInfoRefId">
           SELECT oi.ota_info,oi.ota_type ,oi.sort,o.* from ota_info oi
           LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id
@@ -64,8 +73,8 @@
        </select>
 
     <insert id="saveOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto">
-        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status)
-              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1)
+        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status,used_price_model,create_date,tb_type)
+              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1,#{usedPriceModel.name},now(),'NULL')
     </insert>
 
     <select id="findOtaInfoByOtaIdAndCompanyId" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultMap="otaInfoRefId">
@@ -79,5 +88,16 @@
     </select>
     <select id="selectOtaInfoByType" parameterType="java.lang.String" resultMap="otaInfoRefId">
         SELECT oi.* from ota_info oi where ota_type = #{otaType}
+    </select>
+    <update id="updateOtaInfoTbType" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" >
+        update otainfo_company_ref set tb_type=#{tbType.name} where ota_info_id ='${otaInfoId}' and company_id='${companyId}'
+    </update>
+
+    <select id="selectOtaByAppKey" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultType="java.lang.String">
+        SELECT  o.company_id from otainfo_company_ref o where o.appkey='${appKey}' and o.company_id != '${companyId}'
+    </select>
+    <select id="selectOtaInfoByAppKey" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultMap="otaInfoRefId">
+        SELECT  o.* from otainfo_company_ref o where o.appkey='${appKey}'
+        ORDER BY o.create_date ASC limit 1;
     </select>
 </mapper>

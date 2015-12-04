@@ -14,6 +14,7 @@ public interface ICommissionService {
 
     /**
      * 更新分佣模式
+     * @param paramJson json参数；绿番茄（见接口文档）
      */
     void updateCommission( ParamJson paramJson)throws Exception;
 }

@@ -183,5 +183,23 @@ public interface BangInnDao {
     List<BangInnDto> selectFcExcelBangInn(BangInnDto bangInnDto);
 
 
+    /**
+     * 查询不同渠道的客栈列表
+     * @param bangInnDto 查询对象
+     * @param pageBounds 分页对象
+     */
+    List<BangInnDto> selectOTABangInn(BangInnDto bangInnDto, PageBounds pageBounds);
 
+    /**
+     * 查询innId在没有在companyList当中， 如果在就返回数据，不在就返回null
+     * @param bangInnDto 参数 companyIdList ，innId
+     */
+    List<BangInn> selectBangInnByCompanyListInnId(BangInnDto bangInnDto);
+
+    /**
+     * 此公司在渠道上上架的的客栈列表
+     * @param companyId 公司id
+     * @param otaInfoId 渠道id
+     */
+    List<BangInnDto> selectBangInnByCompanyIdSj(@Param("companyId") String companyId, @Param("otaInfoId") String otaInfoId);
 }

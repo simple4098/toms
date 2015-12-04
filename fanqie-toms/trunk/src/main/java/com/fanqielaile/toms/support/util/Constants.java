@@ -30,11 +30,18 @@ public class Constants {
     //天下房仓增量临时保存路径
     public static final String FcDownLoadSavePath = "fcDownLoadSavePath";
     public static final int ZERO_QUOTA = 0;
-    public static final  String FcResultNo="000";
+    //天下房仓返回值
+    public static final String FcResultNo="000";
+    public static final String FcPartnerCodeNo="108";
+    public static final String FcSignatureNo="103";
+    public static final String FcPartnerCodeFailureNo="002";
+    //淘宝测试酒店
+    public static final String TB_InnId="test123456";
+    public static final String OPTION="===请选择===";
 
-    public static final  String MESSAGE_ERROR="参数异常，请检查!";
-    public static final  String MESSAGE_SUCCESS="成功";
-    public static final  Integer FC_SJ=1;
+    public static final String MESSAGE_ERROR="参数异常，请检查!";
+    public static final String MESSAGE_SUCCESS="成功";
+    public static final Integer FC_SJ=1;
     public static final Integer FC_XJ=0;
     public static final Integer FC_NOT_SJ=-1;
     public static final  Integer FC_NOT_HAVE_ROOM=3;
@@ -42,7 +49,7 @@ public class Constants {
     public static final  Integer FC_DAI_CHA=2;
     public static final String MAI="MAI";
     public static final String DI="DI";
-    public static final int timerThread=50;
+    public static final int timerThread=2;
     public static final int onlyBedWidBedBig=150;
     public static final int MAI_VALUE=2;
     public static final int DI_VALUE=1;

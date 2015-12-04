@@ -52,6 +52,9 @@
        <result column="ota_inn_ota_id" property="otaInnOtaId"/>
        <result column="ota_info_id" property="otaInfoId"/>
     </resultMap>
+    <resultMap id="fcId_otaInn" type="com.fanqielaile.toms.dto.BangInnDto" extends="fcId">
+       <result column="sjia_model" property="sJiaModel"/>
+    </resultMap>
 
     <sql id="Base_Column_List">
         id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,account_id_di,ota_wg_id,sj
@@ -260,6 +263,50 @@
         </if>
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
+
+    <select id="selectOTABangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
+
+        SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
+        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.ota_info_id='${otaInfoId}'
+        where  b.deleted=0  and b.company_id='${companyId}'
+        <if test="companyIdList!=null and companyIdList.size()>0">
+            and b.inn_id NOT IN ( SELECT inn_id from bang_inn where  company_id in
+            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator="," >
+               '${item}'
+            </foreach>
+            )
+        </if>
+        <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
+            and oio.id is NULL
+        </if>
+        <if test="innStatus!=null and innStatus.name()=='MATCH'">
+            and oio.id NOTNULL
+        </if>
+        <if test="dataPermission == 0">
+            and b.user_id = #{userId}
+        </if>
+        <if test="innLabelId !=null and innLabelId!= ''">
+            and b.inn_label_id = #{innLabelId}
+        </if>
+        <if test="keywords != null and keywords != ''">
+            and inn_name like concat('%',#{keywords},'%')
+        </if>
+        ORDER BY b.bang_date DESC,b.id ASC
+
+    </select>
+
+
+    <select id="selectBangInnByCompanyListInnId"  parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
+        SELECT b.* from bang_inn b where  b.deleted=0  AND b.inn_id=#{innId}
+        <if test="companyIdList!=null and companyIdList.size()>0">
+            and b.company_id in
+            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator="," >
+                '${item}'
+            </foreach>
+        </if>
+
+    </select>
+
     <select id="selectFcExcelBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInfoId}'
@@ -277,6 +324,12 @@
         <if test="keywords != null and keywords != ''">
             and inn_name like concat('%',#{keywords},'%')
         </if>
+        ORDER BY b.bang_date DESC,b.id ASC
+    </select>
+    <select id="selectBangInnByCompanyIdSj"  resultMap="fcId_otaInn" >
+        SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id,oio.sjia_model from bang_inn b
+        LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id
+        where b.sj=1 and oio.sj=1 and oio.ota_info_id='${otaInfoId}'  and b.company_id ='${companyId}'
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
 </mapper>

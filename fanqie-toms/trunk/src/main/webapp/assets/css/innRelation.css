@@ -1,4 +1,8 @@
 @charset "UTF-8";
+
+.background{
+	background-color: beige;
+}
 .color-red{
 	color: #f00;
 }
@@ -29,7 +33,9 @@
 .nav-bar li:first-child{
 	border-left: 1px solid #ccc;
 }
-
+.nav-bar li a{
+	display: block;
+}
 .select-area input{
 	line-height: inherit!important;
 	height: 30px;
@@ -149,4 +155,59 @@ select.form-control {
 /*价格计划*/
 #addPriceBtn{
 	margin: 6px 13px 0 0;
+}
+
+/*
+-------------------------------
+	OTA客栈匹配开通验证环节
+-------------------------------
+*/
+
+/* 验证错误提示 */
+.form-field-tips{
+	color: red;
+	/* display: none; */
+	text-align: center;
+}
+/* widget-box 样式自定义 */
+.widget-custom .row{
+	margin: 0;
+}
+.widget-custom .widget-main{
+	padding: 12px 0 0 0;
+}
+.widget-custom .form-actions{
+	margin: 0;
+}
+.container-custom h3 span{
+	color: #dd5a43;
+	font-size: 12px;
+}
+.float-box{
+	overflow: hidden;
+	padding: 15px 100px 50px;
+}
+.float-box >div{
+	width: 400px;
+	cursor: pointer;
+	border: 1px solid #ccc;
+	padding: 60px  10px;
+	background: #dfdfe3;
+	transition:0.5s ease-out;
+}
+.float-box >div:hover{
+	background: #f6f6f8;
+}
+.float-box >div:hover p{
+	text-shadow:0px 0px 4px #8d8b8b;
+	transition: all 0.5s ease-out;
+}
+.float-box >div:nth-child(1){
+	float: left;
+}
+.float-box >div:nth-child(2){
+	float: right;
+}
+.float-box >div p span{
+	font-weight: 600;
 }

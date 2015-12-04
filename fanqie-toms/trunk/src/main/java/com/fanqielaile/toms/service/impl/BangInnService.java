@@ -5,10 +5,7 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
-import com.fanqielaile.toms.dto.BangInnDto;
-import com.fanqielaile.toms.dto.InnDto;
-import com.fanqielaile.toms.dto.OmsImg;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.InnLabel;
@@ -38,6 +35,8 @@ public class BangInnService implements IBangInnService {
     private UserInfoDao userInfoDao;
     @Resource
     private CompanyDao companyDao;
+    @Resource
+    private IOtaInfoDao otaInfoDao;
 
     @Override
     public List<BangInn> findBangInnByInnLabelId(String innLabelId) {
@@ -244,6 +243,18 @@ public class BangInnService implements IBangInnService {
     @Override
     public List<BangInnDto> findFcBangInn(BangInnDto bangInnDto,PageBounds pageBounds) {
         return  bangInnDao.selectFcBangInn(bangInnDto,pageBounds);
+    }
+
+    @Override
+    public List<BangInnDto> findOTABangInn(BangInnDto bangInnDto, OtaInfoRefDto otaInfo, PageBounds pageBounds) {
+        List<String> companyIdList = otaInfoDao.selectOtaByAppKey(otaInfo);
+        OtaInfoRefDto infoRefDto = otaInfoDao.selectOtaInfoByAppKey(otaInfo);
+        //如果infoRefDto 中的公司id不跟当前的登录者的公司id相同的时候，就要排除共同拥有的innId
+        if (infoRefDto!=null && !infoRefDto.getCompanyId().equals(otaInfo.getCompanyId())){
+            bangInnDto.setCompanyIdList(companyIdList);
+        }
+        bangInnDto.setOtaInfoId(otaInfo.getOtaInfoId());
+        return bangInnDao.selectOTABangInn(bangInnDto,pageBounds);
     }
 
     @Override

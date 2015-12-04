@@ -125,11 +125,11 @@
                                                    href="<c:url value="/inn_manage/to_update_inn?id="/>${d.id}"/>
                                                 修改
                                            </a>
-                                            <c:forEach var="o" items="${otaInfoList}">
+                                            <%--<c:forEach var="o" items="${otaInfoList}">
                                                 <a class="btn btn-primary btn-sm" otaInfoId="${o.otaInfoId}" innId="${d.innId}" />
                                                   ${o.otaInfo}
                                                 </a>
-                                            </c:forEach>
+                                            </c:forEach>--%>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -171,7 +171,7 @@
         });
 
     });
-    $(".btn-primary").on('click',function(){
+  /*  $(".btn-primary").on('click',function(){
         if(window.confirm('你确定要更新此渠道客栈的信息?')){
             layer.load(0,{time: 6*1000});
             var _this = $(this);
@@ -195,7 +195,7 @@
             })
         }
 
-    });
+    });*/
     $('.inn-label').on('change', function () {
         $("#pageId").attr("value", 1);
         $('.form-page').submit();

@@ -74,7 +74,7 @@
     </c:if>
     <c:if test="${empty list || empty roomType.roomDates}">
         <div class="alert alert-danger center">
-            没有房型数据,请选择分类/客栈查询房态房量
+            没有房型数据,请选择分类/客栈查询房态房量 ${error}
         </div>
     </c:if>
         </div>
