@@ -11,6 +11,7 @@ import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,7 @@ public class OrderTest {
 
     @Test
     @Ignore
-    public void testAddOrder() throws Exception {
+    public void testAddTBOrder() throws Exception {
         String xmlStr = "<BookRQ><TaoBaoOrderId>13877840338999</TaoBaoOrderId><TaoBaoHotelId>16568171123</TaoBaoHotelId><HotelId>26062</HotelId><TaoBaoRoomTypeId>35553709123</TaoBaoRoomTypeId><RoomTypeId>1018425</RoomTypeId><TaoBaoRatePlanId>4161001123</TaoBaoRatePlanId><RatePlanCode>1019240</RatePlanCode><TaoBaoGid>12136001123</TaoBaoGid><CheckIn>2015-08-30</CheckIn><CheckOut>2015-08-31</CheckOut><EarliestArriveTime>2015-08-27 20:00:00</EarliestArriveTime><LatestArriveTime>2016-08-28 22:00:00</LatestArriveTime><RoomNum>1</RoomNum><TotalPrice>102</TotalPrice><ContactName>测试联系人</ContactName><ContactTel>13920682209</ContactTel><PaymentType>5</PaymentType><DailyInfos><DailyInfo><Day>2015-08-29</Day><Price>102</Price></DailyInfo></DailyInfos><OrderGuests><OrderGuest><Name>入住人1</Name><RoomPos>1</RoomPos></OrderGuest></OrderGuests><Comment>测试</Comment></BookRQ>";
         this.orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
     }
@@ -95,31 +96,33 @@ public class OrderTest {
                 OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.TB.name());
                 OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), "d0392bc8-131c-8989-846e-c81c66011111", otaInfoRefDto.getId());
                 //写入酒店信息
-                bangInn.setOtaWgId(otaInnOtaDto.getWgHid());
-                if (null != bangInn.getInnDto()) {
-                    if (ArrayUtils.isNotEmpty(bangInn.getInnDto().getImgList().toArray())) {
-                        String imageUrl = "";
-                        for (OmsImg omsImg : bangInn.getInnDto().getImgList()) {
-                            imageUrl += CommonApi.IMG_URL + omsImg.getImgUrl() + ",";
-                        }
-                        //写入酒店的图片信息
-                        System.out.println("insert hotel ===>");
-                        System.out.println("innId===>"+bangInn.getInnId());
-                        this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "||" + imageUrl));
-                        //写入房型信息
-                        List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage((BangInnDto) bangInn);
-                        if (ArrayUtils.isNotEmpty(roomTypeInfos.toArray())) {
-                            for (RoomTypeInfo roomTypeInfo : roomTypeInfos) {
-                                OtaBangInnRoomDto otaBangInnRoomDto = this.otaBangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(bangInn.getInnId(), roomTypeInfo.getRoomTypeId(), "d0392bc8-131c-8989-846e-c81c66011111");
-                                String roomImageUrl ="";
-                                if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
-                                    for (OmsImg omsImg : roomTypeInfo.getImgList()) {
-                                        roomImageUrl += CommonApi.IMG_URL+ omsImg.getImgUrl() + ",";
+                if (null != otaInnOtaDto.getWgHid()) {
+                    bangInn.setOtaWgId(otaInnOtaDto.getWgHid());
+                    if (null != bangInn.getInnDto()) {
+                        if (ArrayUtils.isNotEmpty(bangInn.getInnDto().getImgList().toArray())) {
+                            String imageUrl = "";
+                            for (OmsImg omsImg : bangInn.getInnDto().getImgList()) {
+                                imageUrl += CommonApi.IMG_URL + omsImg.getImgUrl() + ",";
+                            }
+                            //写入酒店的图片信息
+                            System.out.println("insert hotel ===>");
+                            System.out.println("innId===>" + bangInn.getInnId());
+                            this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "||" + imageUrl));
+                            //写入房型信息
+                            List<RoomTypeInfo> roomTypeInfos = this.bangInnService.findBangInnRoomImage((BangInnDto) bangInn);
+                            if (ArrayUtils.isNotEmpty(roomTypeInfos.toArray())) {
+                                for (RoomTypeInfo roomTypeInfo : roomTypeInfos) {
+                                    OtaBangInnRoomDto otaBangInnRoomDto = this.otaBangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(bangInn.getInnId(), roomTypeInfo.getRoomTypeId(), "d0392bc8-131c-8989-846e-c81c66011111");
+                                    String roomImageUrl = "";
+                                    if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
+                                        for (OmsImg omsImg : roomTypeInfo.getImgList()) {
+                                            roomImageUrl += CommonApi.IMG_URL + omsImg.getImgUrl() + ",";
+                                        }
+                                        //写入数据库
+                                        System.out.println("insert  room ===>");
+                                        System.out.println("===innId=" + bangInn.getInnId() + "  otabanginnroom==" + otaBangInnRoomDto.getrId());
+                                        this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "|" + otaBangInnRoomDto.getrId() + "|" + roomImageUrl));
                                     }
-                                    //写入数据库
-                                    System.out.println("insert  room ===>");
-                                    System.out.println("===innId="+bangInn.getInnId()+"  otabanginnroom=="+otaBangInnRoomDto.getrId());
-                                    this.roleDao.insertInfoImage(new ImageInfo(bangInn.getOtaWgId() + "|" + otaBangInnRoomDto.getrId() + "|" + roomImageUrl));
                                 }
                             }
                         }

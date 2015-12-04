@@ -62,6 +62,7 @@ public class OrderMethodHelper {
         order.setRoomTypeId(element.elementText("RoomTypeId"));
         order.setGuestName(element.elementText("ContactName"));
         order.setTotalPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
+        order.setBasicTotalPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
         order.setHomeAmount(Integer.parseInt(element.elementText("RoomNum")));
         order.setLiveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckIn")));
         order.setLeaveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckOut")));
@@ -107,6 +108,7 @@ public class OrderMethodHelper {
                 infos.setOrderId(orderId);
                 infos.setDay(new SimpleDateFormat("yyyy-MM-dd").parse(e.elementText("Day")));
                 infos.setPrice(new BigDecimal(e.elementText("Price")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
+                infos.setBasicPrice(new BigDecimal(e.elementText("Price")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
                 dailyInfoses.add(infos);
             }
         }

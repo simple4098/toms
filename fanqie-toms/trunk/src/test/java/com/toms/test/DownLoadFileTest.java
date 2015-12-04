@@ -24,7 +24,7 @@ public class DownLoadFileTest {
 
 //        FileDealUtil.downLoadFromUrl("http://image.fangcang.com/upload/USP/increment_2015-09-15.zip", "2015-09-15.zip", new DownLoadFileTest().getCurrentPath()+"/fc_data/2015-09-15");
 //        FileDealUtil.unZipFiles(new File(new DownLoadFileTest().getCurrentPath()+"/fc_data/2015-09-15/2015-09-15.zip"),new DownLoadFileTest().getCurrentPath()+ "/fc_data/2015-09-15/");
-        FileDealUtil.deleteDir(new File(new DownLoadFileTest().getCurrentPath() + "/fc_data"));
+//        FileDealUtil.deleteDir(new File(new DownLoadFileTest().getCurrentPath() + "/fc_data"));
 
     }
 

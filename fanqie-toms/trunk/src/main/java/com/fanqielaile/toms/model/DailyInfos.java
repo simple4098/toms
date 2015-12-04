@@ -21,6 +21,8 @@ public class DailyInfos extends Domain {
     private Date day;
     //价格
     private BigDecimal price;
+    //下单的价格
+    private BigDecimal basicPrice;
     //订单ID
     private String orderId;
     //售价
@@ -35,6 +37,14 @@ public class DailyInfos extends Domain {
     private Integer roomNum;
     //是否包含加减价
     private Integer weatherAdd = 0;
+
+    public BigDecimal getBasicPrice() {
+        return basicPrice;
+    }
+
+    public void setBasicPrice(BigDecimal basicPrice) {
+        this.basicPrice = basicPrice;
+    }
 
     public Integer getWeatherAdd() {
         return weatherAdd;

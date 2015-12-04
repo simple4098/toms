@@ -4,7 +4,6 @@ import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.DateUtil;
-import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
@@ -47,9 +46,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.*;
-
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.ZERO;
 
 /**
  * DESC :
@@ -246,6 +242,7 @@ public class OrderService implements IOrderService {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        logger.info("取消订单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
             return new JsonModel(false, "订单不存在");
         }
@@ -304,6 +301,7 @@ public class OrderService implements IOrderService {
             Order orderXml = XmlDeal.getOrder(xmlStr);
             //获取订单号，判断订单是否存在
             Order order = this.orderDao.selectOrderByIdAndChannelSource(orderXml.getId(), channelSource);
+            logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
             //付款金额
             order.setPayment(orderXml.getPayment());
             //支付宝付款码
@@ -339,27 +337,17 @@ public class OrderService implements IOrderService {
      * @throws Exception
      */
     private JsonModel payBackDealMethod(Order order, UserInfo currentUser, String otaType) throws Exception {
-        // 房态更新时间
-        if (StringUtils.isNotEmpty(order.getOTAGid())) {
-            OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
-            if (null != roomTypeGoodsDto) {
-                order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
-            }
-        }
-        //获取入住人信息
-        List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
-        order.setOrderGuestses(orderGuestses);
-        if (null == order) {
-            return new JsonModel(false, "订单不存在");
-        }
-        //获取每日房价信息
-        List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
-        order.setDailyInfoses(dailyInfoses);
+        //组装order参数
+        order = packageOrder(order);
         //判断订单是否同步OMS
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
 
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
+            //判断是否为异步下单
+            if (1 == dictionary.getWeatherAsynchronous()) {
+                dictionary.setUrl(dictionary.getAsynchronousUrl());
+            }
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), otaType);
             //查询客栈信息
             BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(), otaInfo.getOtaInfoId(), order.getCompanyId());
@@ -376,82 +364,17 @@ public class OrderService implements IOrderService {
             } else {
                 order.setAccountId(bangInn.getAccountIdDi());
             }
-            if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                OtaBangInnRoomDto otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), order.getCompanyId());
-                if (null == otaBangInnRoomDtos) {
-                    return new JsonModel(false, "房型不存在");
-                }
-                order.setRoomTypeName(otaBangInnRoomDtos.getRoomTypeName());
-            } else if (ChannelSource.FC.equals(order.getChannelSource())) {
-                OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.FC.name());
-                FcRoomTypeFqDto roomTypeFqInnIdRoomIdOtaInfoId = this.fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), otaInfoRefDto.getOtaInfoId(), order.getCompanyId());
-                if (null == roomTypeFqInnIdRoomIdOtaInfoId) {
-                    return new JsonModel(false, "房型不存在");
-                } else {
-                    order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
-                }
-            }
+            //封装订单房型名称信息
+            order = packageOrderRoomTypeName(order);
             //判断oms价格与下单价格是否一致，不一致不同步oms
             //1.查询当前订单上架的价格模式,如果是卖转低，进行价格匹配验证,并需改下单到oms的总价和每日房价
-            if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
-                BigDecimal percent = order.getPercent();
-                //查询验证房型的价格url
-                Dictionary dictionaryRoom = this.dictionaryDao.selectDictionaryByType(DictionaryType.ROOM_DAY_INFO.name());
-                //验证价格
-                boolean flag = true;
-                BigDecimal omsTotalPrice = BigDecimal.ZERO;
-                if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
-                    for (DailyInfos dailyInfos : order.getDailyInfoses()) {
-                        //分别通过房型调用oms价格
-                        String response = HttpClientUtil.httpGetRoomAvail(dictionaryRoom.getUrl(), order.toRoomAvail(company, order, dailyInfos));
-                        JSONObject jsonObject = JSONObject.fromObject(response);
-                        logger.info("调用oms获取每日入住信息返回值==>" + jsonObject.toString());
-                        if (!jsonObject.get("status").equals(200)) {
-                            flag = false;
-                            break;
-                        } else {
-                            //验证价格是否一致
-                            RoomDetail room = (RoomDetail) JSONObject.toBean(jsonObject.getJSONObject("data"), RoomDetail.class);
-                            //判断oms返回价格*（1-比例） == 订单传入价格
-                            BigDecimal orderPrice = dailyInfos.getPrice();
-                            BigDecimal omsPrice = BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent)));
-                            logger.info("订单每日价格为" + dailyInfos.getDay() + "====>" + orderPrice);
-                            logger.info("oms每日价格为" + dailyInfos.getDay() + "====>" + omsPrice);
-                            logger.info("验证每日价格对比值" + orderPrice.subtract(omsPrice).abs() + "对比" + 2 + "结果为：" + orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)));
-                            if (orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)) != -1) {
-                                flag = false;
-                                break;
-                            } else {
-                                //设置每日价格
-                                dailyInfos.setPrice(BigDecimal.valueOf(room.getRoomPrice()));
-                                omsTotalPrice = omsTotalPrice.add(BigDecimal.valueOf(room.getRoomPrice()));
-                            }
-                        }
-
-                    }
-                    //设置订单总价
-                    //1.验证订单总价是否一致
-                    logger.info("订单总价为：" + order.getTotalPrice() + "   oms总价为：" + omsTotalPrice);
-                    logger.info("oms总价价格比例过后价格=>" + omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))));
-                    logger.info("总价只差为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs());
-                    logger.info("总价差的绝对值比较值为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())));
-                    if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())) == -1) {
-                        order.setTotalPrice(omsTotalPrice);
-                    } else {
-                        flag = false;
-                    }
-                }
-                //如果验证价格不一致，返回付款失败，价格与实际价格不一致，并调用淘宝取消订单接口
-                if (!flag) {
-                    logger.info("订单付款失败，订单中的价格与实际价格不一致");
-                    order.setOrderStatus(OrderStatus.REFUSE);
-                    order.setFeeStatus(FeeStatus.NOT_PAY);
-                    JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
-                    jsonModel.setMessage("付款失败，订单中的价格与实际价格不一致");
-                    return jsonModel;
-                }
+            Map<String, Object> objectMap = dealMAIToDIMethod(order, currentUser, otaInfo, company);
+            if (true == objectMap.get("status")) {
+                order = (Order) objectMap.get("order");
+            } else {
+                return (JsonModel) objectMap.get("jsonModel");
             }
-            logger.info("OMS接口传递参数=>" + order.toOrderParamDto(order, company).toString());
+            logger.info("OMS下单接口传递参数=>" + order.toOrderParamDto(order, company).toString());
             String respose = "";
             JSONObject jsonObject = null;
             try {
@@ -472,18 +395,17 @@ public class OrderService implements IOrderService {
                 return jsonModel;
             } else {
                 if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                    //更新淘宝订单状态
-                    String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
-                    logger.info("淘宝更新订单返回值=>" + result);
-                    if (null != result && result.equals("success")) {
-                        //同步成功后在修改数据库
-                        order.setFeeStatus(FeeStatus.PAID);
-                        this.orderDao.updateOrderStatusAndFeeStatus(order);
-                        //记录操作日志
-                        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
-                        return new JsonModel(true, "付款成功");
+                    //同步
+                    //判断当前配置下单请求是否为同步
+                    if (1 != dictionary.getWeatherAsynchronous()) {
+                        logger.info("同步下单，单号为：" + order.getChannelOrderCode());
+                        return pushSuccessToTB(order, currentUser, otaInfo);
                     } else {
-                        return new JsonModel(false, "调用淘宝更新接口出错");
+                        logger.info("异步下单，单号为：" + order.getChannelOrderCode());
+                        order.setFeeStatus(FeeStatus.PAID);
+                        order.setOrderStatus(OrderStatus.DEALING);
+                        this.orderDao.updateOrderStatusAndFeeStatus(order);
+                        return new JsonModel(true, "付款成功");
                     }
                 } else if (ChannelSource.FC.equals(order.getChannelSource())) {
                     //天下房仓返回创建订单成功
@@ -496,6 +418,160 @@ public class OrderService implements IOrderService {
     }
 
     /**
+     * 处理卖转低模式
+     * @param order
+     * @param currentUser
+     * @param otaInfo
+     * @param company
+     * @return
+     * @throws IOException
+     */
+    private Map<String, Object> dealMAIToDIMethod(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo, Company company) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+            BigDecimal percent = order.getPercent();
+            //查询验证房型的价格url
+            Dictionary dictionaryRoom = this.dictionaryDao.selectDictionaryByType(DictionaryType.ROOM_DAY_INFO.name());
+            //验证价格
+            boolean flag = true;
+            BigDecimal omsTotalPrice = BigDecimal.ZERO;
+            if (ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+                for (DailyInfos dailyInfos : order.getDailyInfoses()) {
+                    logger.info("调用oms获取每日入住信息传入参数==>" + order.toRoomAvail(company, order, dailyInfos).toString());
+                    //分别通过房型调用oms价格
+                    String response = HttpClientUtil.httpGetRoomAvail(dictionaryRoom.getUrl(), order.toRoomAvail(company, order, dailyInfos));
+                    JSONObject jsonObject = JSONObject.fromObject(response);
+                    logger.info("调用oms获取每日入住信息返回值==>" + jsonObject.toString());
+                    if (!jsonObject.get("status").equals(200)) {
+                        flag = false;
+                        break;
+                    } else {
+                        //验证价格是否一致
+                        RoomDetail room = (RoomDetail) JSONObject.toBean(jsonObject.getJSONObject("data"), RoomDetail.class);
+                        //判断oms返回价格*（1-比例） == 订单传入价格
+                        BigDecimal orderPrice = dailyInfos.getPrice();
+                        BigDecimal omsPrice = BigDecimal.valueOf(room.getRoomPrice()).multiply((new BigDecimal(1).subtract(percent)));
+                        logger.info("订单每日价格为" + dailyInfos.getDay() + "====>" + orderPrice);
+                        logger.info("oms每日价格为" + dailyInfos.getDay() + "====>" + omsPrice);
+                        logger.info("验证每日价格对比值" + orderPrice.subtract(omsPrice).abs() + "对比" + 2 + "结果为：" + orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)));
+                        if (orderPrice.subtract(omsPrice).abs().compareTo(BigDecimal.valueOf(2)) != -1) {
+                            flag = false;
+                            break;
+                        } else {
+                            //设置每日价格
+                            dailyInfos.setPrice(BigDecimal.valueOf(room.getRoomPrice()));
+                            omsTotalPrice = omsTotalPrice.add(BigDecimal.valueOf(room.getRoomPrice()));
+                        }
+                    }
+
+                }
+                //设置订单总价
+                //1.验证订单总价是否一致
+                logger.info("订单总价为：" + order.getTotalPrice() + "   oms总价为：" + omsTotalPrice);
+                logger.info("oms总价价格比例过后价格=>" + omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))));
+                logger.info("总价只差为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs());
+                logger.info("总价差的绝对值比较值为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())));
+                if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())) == -1) {
+                    order.setTotalPrice(omsTotalPrice);
+                } else {
+                    flag = false;
+                }
+            }
+            //如果验证价格不一致，返回付款失败，价格与实际价格不一致，并调用淘宝取消订单接口
+            if (!flag) {
+                logger.info("订单付款失败，订单中的价格与实际价格不一致，订单号为orderCode=" + order.getChannelOrderCode());
+                order.setOrderStatus(OrderStatus.REFUSE);
+                order.setFeeStatus(FeeStatus.NOT_PAY);
+                JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                jsonModel.setMessage("付款失败，订单中的价格与实际价格不一致");
+                result.put("order", order);
+                result.put("jsonModel", jsonModel);
+                result.put("status", false);
+                return result;
+            }
+        }
+        result.put("status", true);
+        result.put("order", order);
+        return result;
+    }
+
+    /**
+     * 封装订单房型信息
+     *
+     * @param order
+     * @return
+     */
+    private Order packageOrderRoomTypeName(Order order) {
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            OtaBangInnRoomDto otaBangInnRoomDtos = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), order.getCompanyId());
+            if (null == otaBangInnRoomDtos) {
+                logger.info("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+                throw new TomsRuntimeException("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+            }
+            order.setRoomTypeName(otaBangInnRoomDtos.getRoomTypeName());
+        } else if (ChannelSource.FC.equals(order.getChannelSource())) {
+            OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.FC.name());
+            FcRoomTypeFqDto roomTypeFqInnIdRoomIdOtaInfoId = this.fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(order.getInnId(), Integer.parseInt(order.getRoomTypeId()), otaInfoRefDto.getOtaInfoId(), order.getCompanyId());
+            if (null == roomTypeFqInnIdRoomIdOtaInfoId) {
+                logger.info("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+                throw new TomsRuntimeException("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+            } else {
+                order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
+            }
+        }
+        return order;
+    }
+
+    /**
+     * 组装订单参数
+     *
+     * @param order
+     * @return
+     */
+    private Order packageOrder(Order order) {
+        // 房态更新时间
+        if (StringUtils.isNotEmpty(order.getOTAGid())) {
+            OtaInnRoomTypeGoodsDto roomTypeGoodsDto = this.otaInnRoomTypeGoodsDao.findRoomTypeByRid(Long.parseLong(order.getOTAGid()));
+            if (null != roomTypeGoodsDto) {
+                order.setOrderCreateTime(roomTypeGoodsDto.getProductDate());
+            }
+        }
+        //获取入住人信息
+        List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
+        order.setOrderGuestses(orderGuestses);
+        //获取每日房价信息
+        List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
+        order.setDailyInfoses(dailyInfoses);
+        return order;
+    }
+
+    /**
+     * 推送确认订单到淘宝
+     *
+     * @param order
+     * @param currentUser
+     * @param otaInfo
+     * @return
+     */
+    private JsonModel pushSuccessToTB(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
+        logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
+        //更新淘宝订单状态
+        String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
+        logger.info("淘宝更新订单返回值=>" + result);
+        if (null != result && result.equals("success")) {
+            //同步成功后在修改数据库
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            order.setFeeStatus(FeeStatus.PAID);
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            //记录操作日志
+            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
+            return new JsonModel(true, "付款成功");
+        } else {
+            return new JsonModel(false, "调用淘宝更新接口出错");
+        }
+    }
+
+    /**
      * 调用渠道取消订单接口
      *
      * @param order
@@ -505,6 +581,7 @@ public class OrderService implements IOrderService {
      */
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
             String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
             logger.info("淘宝取消订单接口返回值=>" + result);
             if (null != result && result.equals("success")) {
@@ -531,6 +608,7 @@ public class OrderService implements IOrderService {
     private JsonModel TBCancelMethod(Order order, long parm, UserInfo currentUser) throws ApiException {
         //更新淘宝订单状态
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+        logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
         String result = TBXHotelUtil.orderUpdate(order, otaInfo, parm);
         logger.info("淘宝更新订单返回值=>" + result);
         if (null != result && result.equals("success")) {
@@ -552,6 +630,7 @@ public class OrderService implements IOrderService {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        logger.info("查询订单状态订单单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
             result.put("status", "-302");
             result.put("message", "订单不存在");
@@ -618,10 +697,17 @@ public class OrderService implements IOrderService {
             result.put("message", "没有此订单！");
             return result;
         }
-        //拦截申请退款的订单，将订单状态改为退款申请中
-        order.setOrderStatus(OrderStatus.PAY_BACK);
+        //判断订单状态，只有已接收并付款订单才需要手动确认退款
+        if (OrderStatus.ACCEPT.equals(order.getOrderStatus()) && FeeStatus.PAID.equals(order.getFeeStatus())) {
+            //拦截申请退款的订单，将订单状态改为退款申请中
+            order.setOrderStatus(OrderStatus.PAY_BACK);
+            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.PAY_BACK, "申请退款", ChannelSource.TAOBAO.name()));
+        } else {
+            //直接修改订单状态为已取消
+            order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+            order.setReason("买家申请退款");
+        }
         this.orderDao.updateOrderStatusAndReason(order);
-        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.PAY_BACK, "申请退款", ChannelSource.TAOBAO.name()));
         result.put("status", "0");
         result.put("message", "success");
         return result;
@@ -897,7 +983,7 @@ public class OrderService implements IOrderService {
             //设置订单状态为拒绝
             hangOrder.setOrderStatus(OrderStatus.REFUSE);
             result.put("status", false);
-            result.put("message", "oms接口相应失败");
+            result.put("message", jsonObject.get("message"));
         } else {
             //设置innId
             if (null != bangInn) {
@@ -1249,5 +1335,37 @@ public class OrderService implements IOrderService {
     public JsonModel cancelHandOrder(OrderParamDto orderParamDto) throws Exception {
         JsonModel jsonModel = cancelOrderMethod(orderParamDto);
         return jsonModel;
+    }
+
+    @Override
+    public void SynchronousOmsOrderStatus(Order order) {
+        //验证订单是否存在
+        Order orderDb = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != orderDb) {
+            //判断当前渠道
+            String otaType = "";
+            JsonModel jsonModel = null;
+            if (ChannelSource.FC.equals(orderDb.getChannelSource())) {
+                otaType = "FC";
+            } else if (ChannelSource.TAOBAO.equals(orderDb.getChannelSource())) {
+                otaType = "TB";
+            } else {
+                throw new TomsRuntimeException("查询otaInfo表中渠道出错,订单号为：" + orderDb.getChannelOrderCode());
+            }
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), otaType);
+            //判断oms订单返回状态,返回成功，同步淘宝确认有房，返回失败，同步淘宝确认无房
+            if (order.getOmsOrderStatus()) {
+                //确认有房
+                jsonModel = pushSuccessToTB(orderDb, new UserInfo(), otaInfo);
+            } else {
+                //确认无房
+                orderDb.setOrderStatus(OrderStatus.REFUSE);
+                jsonModel = dealCancelOrder(orderDb, new UserInfo(), otaInfo);
+            }
+            logger.info("同步oms订单状态" + jsonModel.toString());
+
+        } else {
+            logger.info("同步oms订单状态，渠道订单号为：" + order.getChannelOrderCode() + "不存在");
+        }
     }
 }

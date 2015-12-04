@@ -222,4 +222,11 @@ public interface IOrderService {
      * @return
      */
     JsonModel cancelHandOrder(OrderParamDto orderParamDto) throws Exception;
+
+    /**
+     * 同步oms订单状态
+     *
+     * @param order
+     */
+    void SynchronousOmsOrderStatus(Order order);
 }

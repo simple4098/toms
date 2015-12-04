@@ -55,7 +55,7 @@ public class FcBaseInfoTest {
      */
 
     @Test
-//    @Ignore
+    @Ignore
     public void testMakeFcBaseInfo() throws DocumentException {
         File file = new File("e:/all_11");
         if (file.isDirectory()) {

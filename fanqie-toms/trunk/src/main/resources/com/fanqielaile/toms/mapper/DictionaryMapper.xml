@@ -9,9 +9,11 @@
         <result column="url" property="url"/>
         <result column="v_name" property="vName"/>
         <result column="v_pwd" property="vPWD"/>
+        <result column="asynchronous_url" property="asynchronousUrl"/>
+        <result column="weather_asynchronous" property="weatherAsynchronous"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,type,value,url,v_name,v_pwd,"desc"
+        id,type,value,url,v_name,v_pwd,"desc",asynchronous_url,weather_asynchronous
     </sql>
     <select id="selectDictionaryByType" parameterType="java.lang.String" resultMap="BaseResultsMap">
         SELECT
