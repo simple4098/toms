@@ -2,6 +2,7 @@ package com.fanqielaile.toms.dto;
 
 import com.fanqie.core.Domain;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.enums.TBType;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 
 /**
@@ -28,6 +29,23 @@ public class OtaInfoRefDto extends Domain {
     //排序
     private int sort;
     private UsedPriceModel usedPriceModel;
+    private TBType tbType;
+    private OtaCommissionPercentDto commissionPercentDto;
+    public OtaCommissionPercentDto getCommissionPercentDto() {
+        return commissionPercentDto;
+    }
+
+    public void setCommissionPercentDto(OtaCommissionPercentDto commissionPercentDto) {
+        this.commissionPercentDto = commissionPercentDto;
+    }
+
+    public TBType getTbType() {
+        return tbType;
+    }
+
+    public void setTbType(TBType tbType) {
+        this.tbType = tbType;
+    }
 
     public UsedPriceModel getUsedPriceModel() {
         return usedPriceModel;

@@ -6,9 +6,10 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ParamJson;
-import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.OtaCommissionPercent;
-import com.fanqielaile.toms.service.*;
+import com.fanqielaile.toms.service.ICommissionService;
+import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.service.IOtaInfoService;
+import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FileDealUtil;
@@ -28,12 +29,11 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * DESC : 对接TB ... controller
+ * DESC : 对接OTA ... controller
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
@@ -50,13 +50,10 @@ public class APIController extends BaseController {
     private IOtaInfoService otaInfoService;
     @Resource
     private IOrderService orderService;
-    @Resource
-    private ICompanyService companyService;
 
     /**
      * 客栈上架、下架
-     * @param tbParam
-     * @return
+     * @param tbParam 上架的参数（见文档）
      */
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody

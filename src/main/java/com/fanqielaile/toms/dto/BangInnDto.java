@@ -40,6 +40,35 @@ public class BangInnDto extends BangInn {
     //关键字
     private String keywords;
     private InnStatus innStatus;
+    //要排除企业id集合
+    private List<String> companyIdList;
+    //上架模式
+    private String sJiaModel;
+
+    public List<String> getCompanyIdList() {
+        return companyIdList;
+    }
+
+    public BangInnDto() {
+    }
+
+    public BangInnDto(List<String> companyIdList ,Integer innId) {
+        this.companyIdList = companyIdList;
+        setInnId(innId);
+    }
+
+    public String getsJiaModel() {
+        return sJiaModel;
+    }
+
+    public void setsJiaModel(String sJiaModel) {
+        this.sJiaModel = sJiaModel;
+    }
+
+    public void setCompanyIdList(List<String> companyIdList) {
+        this.companyIdList = companyIdList;
+    }
+
     public InnStatus getInnStatus() {
         return innStatus;
     }
@@ -197,10 +226,10 @@ public class BangInnDto extends BangInn {
         bangInnDto.setCompanyId(userInfo.getCompanyId());
         bangInnDto.setDataPermission(userInfo.getDataPermission());
         bangInnDto.setUserId(userInfo.getUserId());
-        if (StringUtils.isEmpty(bangInnDto.getOtaInnOtaId())){
+        if (StringUtils.isEmpty(bangInnDto.getOtaInfoId())){
             if (infoRefDtoList!=null){
                 for (OtaInfoRefDto infoRefDto:infoRefDtoList){
-                    if (OtaType.FC.equals(infoRefDto.getOtaType())){
+                    if (OtaType.TB.equals(infoRefDto.getOtaType())){
                         bangInnDto.setOtaInfoId(infoRefDto.getOtaInfoId());
                     }
                 }

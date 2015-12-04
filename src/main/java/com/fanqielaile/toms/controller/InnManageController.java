@@ -81,7 +81,7 @@ public class InnManageController extends BaseController {
             currentUser.setKeywords(keywords);
             //公司信息
             Company company = this.companyService.findCompanyByid(currentUser.getCompanyId());
-            List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(company.getCompanyCode());
+            /*List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(company.getCompanyCode());*/
             List<BangInnDto> bangInnList = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(page, defaultRows));
             model.addAttribute(Constants.DATA, bangInnList);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -105,7 +105,7 @@ public class InnManageController extends BaseController {
             model.addAttribute("innLabel", innLabelId);
             model.addAttribute("userId", userId);
             model.addAttribute("keywords", keywords);
-            model.addAttribute("otaInfoList",list);
+            /*model.addAttribute("otaInfoList",list);*/
         } catch (Exception e) {
             logger.error("查询客栈列表，列表内容查询错误", e);
         }

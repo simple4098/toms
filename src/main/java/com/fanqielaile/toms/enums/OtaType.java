@@ -6,8 +6,7 @@ import com.fanqielaile.toms.service.impl.TBService;
 import com.fanqielaile.toms.support.SpringContextUtil;
 
 /**
- * DESC :
- *
+ * DESC : 渠道类型
  * @author : 番茄木-ZLin
  * @data : 2015/7/3
  * @version: v1.0.0
@@ -22,6 +21,11 @@ public enum OtaType {
         @Override
         public ITPService create() {
             return (FcService)SpringContextUtil.getBean("fcService");
+        }
+    },XC{
+        @Override
+        public ITPService create() {
+            return (FcService)SpringContextUtil.getBean("xcService");
         }
     };
     public abstract ITPService create();

@@ -224,4 +224,50 @@ public class TomsUtil {
     }
 
 
+    public static TBParam toOtaParam(BangInn bangInn, Company company, Integer sj,OtaInfoRefDto otaInfoRefDto) {
+        String priceModel = otaInfoRefDto.getUsedPriceModel().name();
+        TBParam tbParam = new TBParam();
+        tbParam.setInnId(String.valueOf(bangInn.getInnId()));
+        tbParam.setAccountId(String.valueOf(bangInn.getAccountId()));
+        if (otaInfoRefDto.getCommissionPercentDto()!=null){
+            tbParam.setCommissionPercent(new BigDecimal(otaInfoRefDto.getCommissionPercentDto().getCommissionPercent()));
+        }else {
+            tbParam.setCommissionPercent(new BigDecimal(1));
+        }
+        tbParam.setPriceModel(priceModel);
+        tbParam.setSj(sj==1);
+        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        tbParam.setsJiaModel(priceModel);
+        tbParam.setCompanyCode(company.getCompanyCode());
+        return  tbParam;
+    }
+
+    public static List<ProxyInns> toProxyInns(List<BangInnDto> bangInnDtoList){
+        if (!CollectionUtils.isEmpty(bangInnDtoList)){
+            List<ProxyInns> list = new ArrayList<ProxyInns>();
+            ProxyInns p = null;
+            List<PricePattern> pricePatterns = null;
+            PricePattern pricePattern = null;
+            for (BangInnDto b:bangInnDtoList){
+                p = new ProxyInns();
+                pricePatterns = new ArrayList<PricePattern>();
+                pricePattern = new PricePattern();
+                if (Constants.MAI.equals(b.getsJiaModel())){
+                    pricePattern.setPattern(Constants.MAI_VALUE);
+                    pricePattern.setAccountId(b.getAccountId());
+                    pricePatterns.add(pricePattern);
+                }
+                if (Constants.DI.equals(b.getsJiaModel())){
+                    pricePattern.setPattern(Constants.DI_VALUE);
+                    pricePattern.setAccountId(b.getAccountIdDi());
+                    pricePatterns.add(pricePattern);
+                }
+                p.setPricePatterns(pricePatterns);
+                p.setInnId(b.getInnId());
+                list.add(p);
+            }
+            return list;
+        }
+        return null;
+    }
 }

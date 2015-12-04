@@ -112,10 +112,19 @@
         <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
         <property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
         <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
-        <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
-        <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
+        <property name="checkRoom" value="http://oms.fanqiele.com/api/check_room_avail"></property>
+        <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+        <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
         <property name="imgUrl" value="http://img.fanqiele.com"></property>
-        <property name="checkRoom" value="http://192.168.1.189:8081/api/check_room_avail"></property>
+        <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
+        <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
+        <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
+        <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
+        <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
+        <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
+        <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
+        <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
+        <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
     </bean>
 
 </beans>

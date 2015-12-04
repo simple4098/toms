@@ -10,6 +10,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.support.exception.VettedOTAException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ImgUtil;
 import com.fanqielaile.toms.support.util.TPServiceUtil;
@@ -715,6 +716,19 @@ public class TBXHotelUtil {
     }
 
 
+    /**
+     * 通过去啊获取酒店信息
+     * @param infoRefDto 渠道信息
+     */
+    public static void vettedOtaAppKey(OtaInfoRefDto infoRefDto,String innId)throws Exception {
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
+        XhotelGetRequest req=new XhotelGetRequest();
+        req.setOuterId(innId);
+        XhotelGetResponse response = client.execute(req , infoRefDto.getSessionKey());
+        if (!TomsConstants.HOTEL_NOT_EXIST.equals(response.getSubCode())){
+            throw new VettedOTAException(response.getMsg());
+        }
+    }
 
 
 }

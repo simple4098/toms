@@ -26,6 +26,8 @@
                      <mvc:mapping path="/notice/*"/>
                      <mvc:mapping path="/system/*"/>
                      <mvc:mapping path="/operate/*"/>
+                     <mvc:mapping path="/innMatch/*"/>
+                     <mvc:mapping path="/distribution/*"/>
                      <bean class="com.fanqielaile.toms.support.interceptor.LoginUserInterceptor"/>
               </mvc:interceptor>
               <mvc:interceptor>

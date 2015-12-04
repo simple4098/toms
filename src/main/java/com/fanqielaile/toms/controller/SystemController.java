@@ -1,14 +1,20 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.*;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 /*import com.tomato.framework.log.support.UserInfoContext;*/
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,14 +312,22 @@ public class SystemController extends BaseController {
      * @return
      */
     @RequestMapping("find_companys")
-    public String findCompany(Model model) {
+    public String findCompany(Model model,@RequestParam(defaultValue = "1", required = false) int page) {
         try {
-            List<Company> companyList = this.companyService.findCompanyByCompany(null);
+            //List<Company> companyList = this.companyService.findCompanyByCompany(null);
+            List<Company> companyList = this.companyService.findCompanyByCompany(null,new PageBounds(page, defaultRows));
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.DATA, companyList);
             //封装权限信息
             List<Permission> permissionList = this.permissionService.findPermissionByCompanyId(null);
             model.addAttribute("permissions", permissionList);
+            //分页对象
+            Paginator paginator = ((PageList) companyList).getPaginator();
+            Pagination pagination = PaginationHelper.toPagination(paginator);
+            FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+            model.addAttribute("pagination",pagination);
+            model.addAttribute("pageDecorator",pageDecorator);
+
         } catch (Exception e) {
             logger.error("查询当前公司下属员工,查询失败", e);
         }

@@ -1,16 +1,13 @@
 package com.fanqielaile.toms.controller;
 
-import com.fanqie.support.PageDecorator;
+import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.helper.PaginationHelper;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.InnLabel;
-import com.fanqielaile.toms.model.Result;
-import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.FcHotelInfo;
 import com.fanqielaile.toms.model.fc.FcRatePlan;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
@@ -18,16 +15,18 @@ import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
 import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.ModelViewUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -39,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DESC :
+ * DESC : 不同渠道下的客栈匹配
  * @author : 番茄木-ZLin
  * @data : 2015/9/11
  * @version: v1.0.0
@@ -66,15 +65,28 @@ public class InnMatchController extends BaseController {
     private IFcRatePlanService fcRatePlanService;
     @Resource
     private IFcRoomTypeFqService fcRoomTypeFqService;
+    @Resource
+    private ICompanyService companyService;
 
-    //匹配列表
+    /**
+     * 匹配列表
+     * @param bangInnDto 绑定客栈参数
+     * @param page 当前页
+     */
     @RequestMapping("/match")
     public String matchList(Model model,BangInnDto bangInnDto,@RequestParam(defaultValue = "1", required = false) int page){
         UserInfo userInfo = getCurrentUser();
-        List<OtaInfoRefDto> infoRefDtoList = otaInfoService.findOtaInfoListByCompanyId(userInfo.getCompanyId());
+        List<OtaInfoRefDto> infoRefDtoList = otaInfoService.findAllOtaInfo();
         BangInnDto innDto = BangInnDto.userInfoToBangInnDto(userInfo,bangInnDto,infoRefDtoList);
+        OtaInfoRefDto otaInfo = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(userInfo.getCompanyId(), innDto.getOtaInfoId());
+        model.addAttribute("infoList", infoRefDtoList);
+        model.addAttribute("otaInfoId",innDto.getOtaInfoId());
+        if (otaInfo==null){
+            OtaInfoRefDto infoRefDto =  otaInfoService.findOtaInfo(innDto.getOtaInfoId());
+            return  ModelViewUtil.view(infoRefDto);
+        }
         List<InnLabel> innLabels = innLabelService.findLabelsByCompanyId(innDto.getCompanyId());
-        List<BangInnDto> bangInns = bangInnService.findFcBangInn(bangInnDto, new PageBounds(page, 10));
+        List<BangInnDto> bangInns = bangInnService.findOTABangInn(bangInnDto, otaInfo ,new PageBounds(page, defaultRows));
         model.addAttribute("labels", innLabels);
         model.addAttribute("list",bangInns);
         model.addAttribute("bangInnDto",bangInnDto);
@@ -83,11 +95,72 @@ public class InnMatchController extends BaseController {
         FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
         model.addAttribute("pagination",pagination);
         model.addAttribute("pageDecorator",pageDecorator);
-        model.addAttribute("infoList", infoRefDtoList);
-        return "/match/inn_match_list";
+        return ModelViewUtil.otaListView(otaInfo);
     }
 
-    //客栈匹配详情
+    /**
+     * 验证不同的渠道的appKey是不是正确的
+     * @param otaInfoRefDto appKey appSecret
+     */
+    @RequestMapping(value = "/vetted",method = RequestMethod.POST)
+    @ResponseBody
+    public Object vetted(OtaInfoRefDto otaInfoRefDto){
+       Result result = new Result();
+       UserInfo user = getCurrentUser();
+       OtaInfoRefDto infoRefDto =  otaInfoService.findOtaInfo(otaInfoRefDto.getOtaInfoId());
+       if (infoRefDto!=null &&user!=null){
+          otaInfoRefDto.setCompanyId(user.getCompanyId());
+          otaInfoRefDto.setOtaId(otaInfoRefDto.getOtaInfoId());
+          ITPService service = infoRefDto.getOtaType().create();
+          result =  service.validatedOTAAccuracy(otaInfoRefDto);
+       }
+       return result;
+    }
+
+    /**
+     * 保存淘宝这个渠道直连方式
+     * @param otaInfoRefDto appKey appSecret
+     */
+    @RequestMapping(value = "/change_type",method = RequestMethod.POST)
+    @ResponseBody
+    public Object changeType(OtaInfoRefDto otaInfoRefDto){
+       Result result = new Result();
+       UserInfo user = getCurrentUser();
+       OtaInfoRefDto infoRefDto =  otaInfoService.findOtaInfo(otaInfoRefDto.getOtaInfoId());
+       if (infoRefDto!=null && OtaType.TB.equals(infoRefDto.getOtaType()) && user!=null){
+           otaInfoRefDto.setCompanyId(user.getCompanyId());
+           result = otaInfoService.updateOtaInfoTbType(otaInfoRefDto);
+       }
+       return result;
+    }
+
+    /**
+     * 渠道上/下架
+     */
+    @RequestMapping("/update_inn_ota")
+    @ResponseBody
+    public Object updateInnOta(String otaInfoId,String innId,Integer sj){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try{
+            Company company = companyService.findCompanyByid(companyId);
+            OtaInfoRefDto otaInfoRefDto = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(companyId, otaInfoId);
+            BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+            ITPService service = otaInfoRefDto.getOtaType().create();
+            TBParam tbParam = TomsUtil.toOtaParam(bangInn,company,sj,otaInfoRefDto);
+            service.updateOrAddHotel(tbParam,otaInfoRefDto);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
+
+    /**
+     * 客栈匹配详情
+     * @param bangInnDto 绑定客栈参数
+     */
     @RequestMapping("/matchDetail")
     public String matchOtaList(Model model,BangInnDto bangInnDto){
         UserInfo userInfo = getCurrentUser();
@@ -117,7 +190,7 @@ public class InnMatchController extends BaseController {
                 model.addAttribute("omsInn", omsInn);
                 model.addAttribute("otaInnOtaDto", otaInnOtaDto);
             } catch (Exception e) {
-                log.error("获取oms房型信息异常:" + e.getMessage());
+                log.error("获取oms房型信息异常:" + e);
             }
             return "/match/inn_match_detail";
         }else {
