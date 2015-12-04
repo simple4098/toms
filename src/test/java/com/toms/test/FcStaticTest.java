@@ -194,6 +194,7 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void syncRateInfoRequest() throws JAXBException {
         SyncRateInfoRequest syncRateInfoRequest = new SyncRateInfoRequest();
         Header header = new Header(RequestType.syncRateInfo, "S10085349", "security_test_S10085349");
@@ -226,6 +227,7 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void deleteRatePlan() throws JAXBException {
 
 
@@ -250,6 +252,7 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void deleteRoom() throws JAXBException {
 
         List<DeleteRoomType> list = new ArrayList<DeleteRoomType>();
@@ -272,6 +275,7 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void deleteHotelMapping() throws JAXBException, IOException {
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();
@@ -293,42 +297,45 @@ public class FcStaticTest {
     }
 
     @Test
+    @Ignore
     public void  readFcInn() throws IOException {
-        File file = new File("F:\\FC_inn.xls");
-        String[][] result = ExcelUtil.getData(file, 1);
-        int rowLength = result.length;
-        FcHotelInfoDto hotelInfoDto = null;
-        for(int i=0;i<rowLength;i++) {
-            hotelInfoDto = new FcHotelInfoDto();
-            hotelInfoDto.setHotelId(result[i][1]);
-            hotelInfoDto.setHotelName(result[i][2]);
-            System.out.print(result[i][2]+"\t\t");
-            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
-            System.out.println();
-
-        }
+//        File file = new File("F:\\FC_inn.xls");
+//        String[][] result = ExcelUtil.getData(file, 1);
+//        int rowLength = result.length;
+//        FcHotelInfoDto hotelInfoDto = null;
+//        for(int i=0;i<rowLength;i++) {
+//            hotelInfoDto = new FcHotelInfoDto();
+//            hotelInfoDto.setHotelId(result[i][1]);
+//            hotelInfoDto.setHotelName(result[i][2]);
+//            System.out.print(result[i][2]+"\t\t");
+//            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
+//            System.out.println();
+//
+//        }
     }
 
     @Test
+    @Ignore
     public void  readFcRoomTypeInn() throws IOException {
-        File file = new File("F:\\FC_ROOMTYPE.xls");
-        String[][] result = ExcelUtil.getData(file, 1);
-        int rowLength = result.length;
-        FcRoomTypeInfo fcRoomTypeInfo = null;
-        for(int i=0;i<rowLength;i++) {
-            fcRoomTypeInfo = new FcRoomTypeInfo();
-            fcRoomTypeInfo.setHotelId(result[i][1]);
-            fcRoomTypeInfo.setRoomTypeId(result[i][3]);
-            fcRoomTypeInfo.setRoomTypeName(result[i][4]);
-            //fcRoomTypeInfo.setHotelName(result[i][2]);
-            //System.out.print(result[i][1]+"\t\t"+result[i][3]+"\t\t"+result[i][4]);
-            fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
-            //System.out.println();
-
-        }
+//        File file = new File("F:\\FC_ROOMTYPE.xls");
+//        String[][] result = ExcelUtil.getData(file, 1);
+//        int rowLength = result.length;
+//        FcRoomTypeInfo fcRoomTypeInfo = null;
+//        for(int i=0;i<rowLength;i++) {
+//            fcRoomTypeInfo = new FcRoomTypeInfo();
+//            fcRoomTypeInfo.setHotelId(result[i][1]);
+//            fcRoomTypeInfo.setRoomTypeId(result[i][3]);
+//            fcRoomTypeInfo.setRoomTypeName(result[i][4]);
+//            //fcRoomTypeInfo.setHotelName(result[i][2]);
+//            //System.out.print(result[i][1]+"\t\t"+result[i][3]+"\t\t"+result[i][4]);
+//            fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
+//            //System.out.println();
+//
+//        }
     }
 
     @Test
+    @Ignore
     public  void  checkRoom() throws Exception {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId("60978e73-851b-429d-9cf4-415300a64739", 3698);
         List<RoomDetail> roomDetails = otaRoomPriceService.obtRoomAvailFc(bangInn, 99093);

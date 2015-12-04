@@ -1,3 +1,4 @@
+/*
 package com.toms.test;
 
 import org.apache.poi.hssf.usermodel.*;
@@ -11,13 +12,15 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+*/
 /**
  * DESC :
  *
  * @author : 番茄木-ZLin
  * @data : 2015/10/27
  * @version: v1.0.0
- */
+ *//*
+
 public class ExcelUtil {
 
 
@@ -32,7 +35,8 @@ public class ExcelUtil {
         }
     }
 
-    /**
+    */
+/**
 
      * 读取Excel的内容，第一维数组存储的是一行中格列的值，二维数组存储的是多少个行
 
@@ -46,7 +50,8 @@ public class ExcelUtil {
 
      * @throws IOException
 
-     */
+ *//*
+
 
     public static String[][] getData(File file, int ignoreRows) throws FileNotFoundException, IOException {
 
@@ -173,7 +178,8 @@ public class ExcelUtil {
 
 
 
-    /**
+    */
+/**
 
      * 去掉字符串右边的空格
 
@@ -181,7 +187,8 @@ public class ExcelUtil {
 
      * @return 处理后的字符串
 
-     */
+ *//*
+
 
     public static String rightTrim(String str) {
 
@@ -209,4 +216,4 @@ public class ExcelUtil {
 
     }
 
-}
+}*/

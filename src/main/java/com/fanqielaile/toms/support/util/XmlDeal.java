@@ -135,6 +135,7 @@ public class XmlDeal {
             order.setLiveTime(DateUtil.parse(param.elementText("CheckInDate"), "yyyy-MM-dd"));
             order.setLeaveTime(DateUtil.parse(param.elementText("CheckOutDate"), "yyyy-MM-dd"));
             order.setPrepayPrice(new BigDecimal(param.elementText("TotalAmount")));
+            order.setBasicTotalPrice(new BigDecimal(param.elementText("TotalAmount")));
             order.setOTARoomTypeId(param.elementText("BedType"));
             if (StringUtils.isNotEmpty(param.elementText("ArrivalTime"))) {
                 order.setEariestArriveTime(DateUtil.parse(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd") + " " + param.elementText("ArrivalTime"), "yyyy-MM-dd HH:mm"));
@@ -216,6 +217,7 @@ public class XmlDeal {
             for (Element element : elements) {
                 DailyInfos dailyInfos = new DailyInfos();
                 dailyInfos.setOrderId(orderId);
+                dailyInfos.setBasicPrice(new BigDecimal(element.elementText("SalePrice")));
                 dailyInfos.setPrice(new BigDecimal(element.elementText("SalePrice")));
                 dailyInfos.setDay(DateUtil.parse(element.elementText("SaleDate"), "yyyy-MM-dd"));
                 dailyInfos.setBreakfastType(getFcBreakFastType(element.elementText("BreakfastType")));
@@ -421,5 +423,10 @@ public class XmlDeal {
             }
         }
         return result;
+    }
+
+    public static Order getOrderByOmsXml(String xml) {
+        Order order = new Order();
+        return order;
     }
 }

@@ -13,6 +13,7 @@ public enum OrderStatus {
     CANCEL_ORDER("已取消"),
     HAND_REFUSE("直接拒绝"),
     PAY_BACK("退款申请中"),
+    DEALING("处理中"),
     REFUSE("自动拒绝");
     private String text;
 

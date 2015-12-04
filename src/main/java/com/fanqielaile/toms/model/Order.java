@@ -47,6 +47,8 @@ public class Order extends Domain {
     private String guestName;
     //订单总价
     private BigDecimal totalPrice;
+    //订单下单总价
+    private BigDecimal basicTotalPrice;
     //房间数量
     private int homeAmount;
     //入住时间
@@ -132,6 +134,25 @@ public class Order extends Domain {
     private UsedPriceModel usedPriceModel;
     //增减价的值
     private BigDecimal addPrice;
+    //oms订单状态
+    private boolean omsOrderStatus;
+
+
+    public boolean getOmsOrderStatus() {
+        return omsOrderStatus;
+    }
+
+    public BigDecimal getBasicTotalPrice() {
+        return basicTotalPrice;
+    }
+
+    public void setBasicTotalPrice(BigDecimal basicTotalPrice) {
+        this.basicTotalPrice = basicTotalPrice;
+    }
+
+    public void setOmsOrderStatus(boolean omsOrderStatus) {
+        this.omsOrderStatus = omsOrderStatus;
+    }
 
     public BigDecimal getAddPrice() {
         return addPrice;
@@ -652,6 +673,7 @@ public class Order extends Domain {
         //设置价格模式
         handOrder.setUsedPriceModel(order.getUsedPriceModel());
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
+        handOrder.setBasicTotalPrice(handOrder.getTotalPrice());
         //设置成本价，总价*（1-比例）
         handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
         //TODO 设置预付，成本
@@ -722,6 +744,7 @@ public class Order extends Domain {
                             dailyInfos.setOrderId(order.getId());
                             dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
                             dailyInfos.setPrice(new BigDecimal(Double.toString(roomDetail.getRoomPrice())));
+                            dailyInfos.setBasicPrice(dailyInfos.getPrice());
                             dailyInfos.setCreatedDate(new Date());
                             dailyInfoses.add(dailyInfos);
                         }

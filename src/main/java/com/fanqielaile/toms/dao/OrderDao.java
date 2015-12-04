@@ -76,4 +76,12 @@ public interface OrderDao {
      * @return
      */
     List<Order> selectOrderChancelSource(@Param("companyId") String companyId);
+
+    /**
+     * 根据渠道订单号和渠道查询订单
+     *
+     * @param order
+     * @return
+     */
+    Order selectOrderByChannelOrderCodeAndSource(@Param("order") Order order);
 }

@@ -17,6 +17,26 @@ public class Dictionary {
     private String vName;
     //签名的密码
     private String vPWD;
+    //异步请求url
+    private String asynchronousUrl;
+    //是否是异步请求
+    private int weatherAsynchronous;
+
+    public String getAsynchronousUrl() {
+        return asynchronousUrl;
+    }
+
+    public void setAsynchronousUrl(String asynchronousUrl) {
+        this.asynchronousUrl = asynchronousUrl;
+    }
+
+    public int getWeatherAsynchronous() {
+        return weatherAsynchronous;
+    }
+
+    public void setWeatherAsynchronous(int weatherAsynchronous) {
+        this.weatherAsynchronous = weatherAsynchronous;
+    }
 
     public String getType() {
         return type;
