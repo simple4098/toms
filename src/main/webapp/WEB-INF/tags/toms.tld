@@ -86,4 +86,9 @@
         <tag-class>com.fanqielaile.toms.support.tag.UsedPriceModelTag</tag-class>
         <body-content>empty</body-content>
     </tag>
+    <tag>
+        <name>currentCompanyType</name>
+        <tag-class>com.fanqielaile.toms.support.tag.CurrentCompanyTypeTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
 </taglib>
