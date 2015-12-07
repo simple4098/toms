@@ -120,6 +120,8 @@ public class XmlDeal {
         Order order = new Order();
         try {
             Element element = dealXmlStr(xml);
+            Element header = element.element("Header");
+            order.setPartnerCode(header.attributeValue("PartnerCode"));
             Element param = element.element("CreateHotelOrderRequest");
             Element contacter = param.element("Contacter");
             order.setId(order.getUuid());

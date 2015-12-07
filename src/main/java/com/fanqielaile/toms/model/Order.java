@@ -136,7 +136,16 @@ public class Order extends Domain {
     private BigDecimal addPrice;
     //oms订单状态
     private boolean omsOrderStatus;
+    //房仓合作商的code
+    private String partnerCode;
 
+    public String getPartnerCode() {
+        return partnerCode;
+    }
+
+    public void setPartnerCode(String partnerCode) {
+        this.partnerCode = partnerCode;
+    }
 
     public boolean getOmsOrderStatus() {
         return omsOrderStatus;
