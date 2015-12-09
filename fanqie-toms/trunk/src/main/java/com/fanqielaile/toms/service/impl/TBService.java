@@ -264,6 +264,7 @@ public class TBService implements ITPService {
             ExecutorService es = Executors.newFixedThreadPool(threadNum);
             CompletionService cs = new ExecutorCompletionService(es);
             for (ProxyInns proxyInns:proxyList){
+
                 cs.submit(getTask(company, o, tbParam, proxyInns));
             }
         }
