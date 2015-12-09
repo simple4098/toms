@@ -369,7 +369,7 @@ public class OrderService implements IOrderService {
             //判断oms价格与下单价格是否一致，不一致不同步oms
             //1.查询当前订单上架的价格模式,如果是卖转低，进行价格匹配验证,并需改下单到oms的总价和每日房价
             Map<String, Object> objectMap = dealMAIToDIMethod(order, currentUser, otaInfo, company);
-            if (true == objectMap.get("status")) {
+            if (true == (Boolean)objectMap.get("status")) {
                 order = (Order) objectMap.get("order");
             } else {
                 return (JsonModel) objectMap.get("jsonModel");
