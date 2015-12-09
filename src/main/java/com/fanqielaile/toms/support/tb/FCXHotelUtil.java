@@ -54,8 +54,6 @@ public class FCXHotelUtil {
             }
             syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
             syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
-
-
         }
         String xml = FcUtil.fcRequest(syncRateInfoRequest);
         log.info("房仓推送宝贝上架xml:" + xml);
