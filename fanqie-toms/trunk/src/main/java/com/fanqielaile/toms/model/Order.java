@@ -14,6 +14,7 @@ import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -667,7 +668,11 @@ public class Order extends Domain {
         handOrder.setId(order.getId());
         handOrder.setAccountId(order.getAccountId());
         handOrder.setChannelSource(ChannelSource.HAND_ORDER);
-        handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
+        if (StringUtils.isNotEmpty(order.getChannelOrderCode())) {
+            handOrder.setChannelOrderCode(order.getChannelOrderCode());
+        } else {
+            handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
+        }
         //手动下单将渠道订单code跟order_code设置为相同
         handOrder.setOrderCode(handOrder.getChannelOrderCode());
         handOrder.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
