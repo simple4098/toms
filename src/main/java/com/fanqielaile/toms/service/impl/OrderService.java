@@ -169,17 +169,11 @@ public class OrderService implements IOrderService {
             //查询
             OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
             usedPriceModel = otaInfoRefDto.getUsedPriceModel();
-            OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
-            if (null != commission) {
-                percent = BigDecimal.valueOf(commission.getCommissionPercent());
-            }
+            percent = getOtaPercent(company, usedPriceModel);
         } else if (ChannelSource.FC.equals(channelSource)) {
             OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
             usedPriceModel = otaInfoRefDto.getUsedPriceModel();
-            OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
-            if (null != commission) {
-                percent = TomsUtil.getPercent(BigDecimal.valueOf(commission.getCommissionPercent()));
-            }
+            percent = getOtaPercent(company, usedPriceModel);
         }
 
         //设置每日价格
@@ -232,6 +226,15 @@ public class OrderService implements IOrderService {
         this.dailyInfosDao.insertDailyInfos(order);
         //创建入住人信息
         this.orderGuestsDao.insertOrderGuests(order);
+    }
+
+    private BigDecimal getOtaPercent(Company company, UsedPriceModel usedPriceModel) {
+        BigDecimal percent = BigDecimal.ZERO;
+        OtaCommissionPercentDto commission = otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), usedPriceModel.name()));
+        if (null != commission) {
+            percent = BigDecimal.valueOf(commission.getCommissionPercent());
+        }
+        return TomsUtil.getPercent(percent);
     }
 
     @Override

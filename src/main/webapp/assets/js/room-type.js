@@ -113,6 +113,14 @@ $('.hand-btn').on('click', function () {
 				$('.room-type').append('<option value="">-请选择-</option>');
 				for (var i = 0; i < data.roomType.list.length; i++) {
 					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
+					$('.channel-order-code').val(null);
+					$('.guest-name').val(null);
+					$('.guest-mobile').val(null);
+					$('.live-time').val(null);
+					$('.leave-time').val(null);
+					$('.total-price').val(null);
+					$('.comment').val(null);
+
 					$('#hangOrder').modal();
 				}
 			}
@@ -303,7 +311,7 @@ var formCheck = function () {
 	var isComplete = true
 	$tips.empty().hide()
 	$('#hand-order-form input').each(function (i, el) {
-		if (!$.trim($(this).val()) && $(this).attr('name') != 'tagId') {
+		if (!$.trim($(this).val()) && $(this).attr('name') != 'tagId' && $(this).attr('name') != 'channelOrderCode') {
 			var tips = $(this).prop('data-tips')
 			$tips.html('请填写完相关信息').show()
 			isComplete = false

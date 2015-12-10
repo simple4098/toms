@@ -108,6 +108,19 @@
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
                     <input type="hidden" class="mai-account" name="maiAccount"/>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-11"> 渠道订单号
+                        </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-11" name="channelOrderCode" data-tips="渠道订单号"
+                                   autocomplete="off"
+                                   value="" placeholder="渠道订单号" class="col-xs-10 col-sm-5 channel-order-code"
+                                    />
+                        </div>
+                    </div>
+                    <div class="space-4"></div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名
                             <tip style="color: red">*</tip>
