@@ -412,6 +412,9 @@ public class OrderService implements IOrderService {
                     }
                 } else if (ChannelSource.FC.equals(order.getChannelSource())) {
                     //天下房仓返回创建订单成功
+                    order.setOrderStatus(OrderStatus.ACCEPT);
+                    order.setFeeStatus(FeeStatus.PAID);
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
                     return new JsonModel(true, "创建订单成功");
                 }
             }
@@ -859,9 +862,8 @@ public class OrderService implements IOrderService {
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             jsonModel = payBackDealMethod(order, currentUser, OtaType.TB.name());
         } else {
-            //TODO DO SOMETHING
-            jsonModel.setSuccess(true);
-            jsonModel.setMessage("下单成功");
+            jsonModel = payBackDealMethod(order, currentUser, OtaType.FC.name());
+
         }
         return jsonModel;
     }
