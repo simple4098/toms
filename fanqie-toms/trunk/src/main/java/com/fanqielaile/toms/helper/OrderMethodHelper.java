@@ -219,4 +219,9 @@ public class OrderMethodHelper {
         }
         return result;
     }
+
+    public static boolean getOrderStatusByOmsPush(String status) {
+        //TODO 判断oms返回订单状态是否成功
+        return false;
+    }
 }

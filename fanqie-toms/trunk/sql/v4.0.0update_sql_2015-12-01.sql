@@ -29,3 +29,10 @@ ADD COLUMN "partner_code" varchar(100);
 
 COMMENT ON COLUMN "public"."ota_toms_order"."partner_code" IS '房仓合作商的code';
 
+-- 新增toms订单表字段，保存oms订单号
+ALTER TABLE "public"."ota_toms_order"
+ADD COLUMN "oms_order_code" varchar(100);
+
+COMMENT ON COLUMN "public"."ota_toms_order"."oms_order_code" IS 'oms订单号';
+
+

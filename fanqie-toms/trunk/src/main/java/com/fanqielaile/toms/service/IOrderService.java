@@ -229,4 +229,11 @@ public interface IOrderService {
      * @param order
      */
     void SynchronousOmsOrderStatus(Order order);
+
+    /**
+     * 推送订单状态
+     *
+     * @param pushXml
+     */
+    void pushOrderStatusMethod(String pushXml) throws Exception;
 }
