@@ -372,7 +372,7 @@ public class OrderService implements IOrderService {
             //判断oms价格与下单价格是否一致，不一致不同步oms
             //1.查询当前订单上架的价格模式,如果是卖转低，进行价格匹配验证,并需改下单到oms的总价和每日房价
             Map<String, Object> objectMap = dealMAIToDIMethod(order, currentUser, otaInfo, company);
-            if (true == (Boolean)objectMap.get("status")) {
+            if (true == (Boolean) objectMap.get("status")) {
                 order = (Order) objectMap.get("order");
             } else {
                 return (JsonModel) objectMap.get("jsonModel");
@@ -397,6 +397,8 @@ public class OrderService implements IOrderService {
                 jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
                 return jsonModel;
             } else {
+                logger.info("oms返回oms订单号为：" + jsonObject.get("orderNo"));
+                order.setOmsOrderCode((String) jsonObject.get("orderNo"));
                 if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
                     //同步
                     //判断当前配置下单请求是否为同步
@@ -425,6 +427,7 @@ public class OrderService implements IOrderService {
 
     /**
      * 处理卖转低模式
+     *
      * @param order
      * @param currentUser
      * @param otaInfo
@@ -651,16 +654,16 @@ public class OrderService implements IOrderService {
             result.put("message", "查询失败");
             return result;
         } else {
-            JSONObject orderJson = JSONObject.fromObject(jsonObject.get("order"));
-            if (orderJson.get("status").equals("0")) {
+            String omsOrderStatus = (String) jsonObject.get("orderStatus");
+            if (omsOrderStatus.equals("0")) {
                 result.put("status", "100");
-            } else if (orderJson.get("status").equals("1")) {
+            } else if (omsOrderStatus.equals("1")) {
                 result.put("status", "1");
-            } else if (orderJson.get("status").equals("2")) {
+            } else if (omsOrderStatus.equals("2")) {
                 result.put("status", "6");
-            } else if (orderJson.get("status").equals("3")) {
+            } else if (omsOrderStatus.equals("3")) {
                 result.put("status", "4");
-            } else if ((orderJson.get("status").equals("4"))) {
+            } else if (omsOrderStatus.equals("4")) {
                 result.put("status", "6");
             } else {
                 throw new TomsRuntimeException("OMS内部错误");
@@ -990,6 +993,8 @@ public class OrderService implements IOrderService {
             result.put("status", false);
             result.put("message", jsonObject.get("message"));
         } else {
+            //将oms订单号保存
+            hangOrder.setOmsOrderCode((String) jsonObject.get("orderNo"));
             //设置innId
             if (null != bangInn) {
                 hangOrder.setInnId(bangInn.getInnId());
@@ -1371,6 +1376,32 @@ public class OrderService implements IOrderService {
 
         } else {
             logger.info("同步oms订单状态，渠道订单号为：" + order.getChannelOrderCode() + "不存在");
+        }
+    }
+
+    @Override
+    public void pushOrderStatusMethod(String pushXml) throws Exception {
+        //解析oms推送订单状态
+        Order orderByOmsPush = XmlDeal.getOrderByOmsPush(pushXml);
+        //oms订单成功.查询本地是否存在此单
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderByOmsPush);
+        if (null != order) {
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), "TB");
+            //1.判断订单状态是否正常
+            if (orderByOmsPush.getOmsOrderStatus()) {
+                //下单成功，调用淘宝更新订单接口
+                //TODO 目前只有淘宝异步订单
+                JsonModel jsonModel = pushSuccessToTB(order, new UserInfo(), otaInfo);
+                logger.info("异步下单调用淘宝成功更新订单接口：" + jsonModel.toString());
+            } else {
+                //2.订单状态异常
+                order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                order.setReason("oms异步订单状态异常");
+                JsonModel jsonModel = TBCancelMethod(order, 1L, new UserInfo());
+                logger.info("异步下单调用淘宝取消订单更新订单接口" + jsonModel.toString());
+            }
+        } else {
+            logger.info("异步下单oms回调，传入的参数，在toms中未找到该订单，oms回调传入参数：" + order.toString());
         }
     }
 }

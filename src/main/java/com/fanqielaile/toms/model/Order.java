@@ -139,6 +139,16 @@ public class Order extends Domain {
     private boolean omsOrderStatus;
     //房仓合作商的code
     private String partnerCode;
+    //oms订单号
+    private String omsOrderCode;
+
+    public String getOmsOrderCode() {
+        return omsOrderCode;
+    }
+
+    public void setOmsOrderCode(String omsOrderCode) {
+        this.omsOrderCode = omsOrderCode;
+    }
 
     public String getPartnerCode() {
         return partnerCode;

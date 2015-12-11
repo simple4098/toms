@@ -6,6 +6,7 @@ import com.fanqielaile.toms.dto.PushRoom;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.enums.*;
+import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.OrderGuests;
 import com.fanqielaile.toms.model.fc.FcArea;
@@ -429,6 +430,22 @@ public class XmlDeal {
 
     public static Order getOrderByOmsXml(String xml) {
         Order order = new Order();
+        return order;
+    }
+
+    /**
+     * 解析oms推送订单状态xml
+     *
+     * @param pushXml
+     * @return
+     * @throws Exception
+     */
+    public static Order getOrderByOmsPush(String pushXml) throws Exception {
+        Order order = new Order();
+        Element element = dealXmlStr(pushXml);
+        order.setChannelOrderCode(element.elementText("OtaOrderNo"));
+        order.setOmsOrderCode(element.elementText("OrderNo"));
+        order.setOmsOrderStatus(OrderMethodHelper.getOrderStatusByOmsPush(element.elementText("Status")));
         return order;
     }
 }
