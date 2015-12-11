@@ -287,7 +287,7 @@ public class FcService implements ITPService {
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
                         List<RoomDetail> roomDetailList = otaRoomPriceService.obtRoomAvailFc(bangInn, price.getRoomTypeId());
-                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList);
+                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b) {
                             Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto, commission);
                             if (Constants.FcResultNo.equals(response.getResultNo())) {
