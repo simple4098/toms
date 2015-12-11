@@ -54,6 +54,16 @@ public class RoomTypeInfo implements Serializable
     private List<OmsImg> imgList; /* 房型图片 */
     private List<RoomDetail> roomDetail; /* 房型价格详细信息 */
 
+    //oms 床型
+    private String bedType;
+
+    public String getBedType() {
+        return bedType;
+    }
+
+    public void setBedType(String bedType) {
+        this.bedType = bedType;
+    }
 
     public Integer getRecommend() {
         return recommend;
