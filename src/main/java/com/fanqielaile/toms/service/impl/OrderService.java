@@ -1279,9 +1279,11 @@ public class OrderService implements IOrderService {
                     }
                     //判断当前是否执行了加减价，需要把加减价算上
                     OtaRoomPriceDto otaRoomPriceDto = this.otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(order.getRoomTypeId()), otaInfo.getOtaInfoId()));
-                    if (null != otaRoomPriceDto) {
+                    if (null != otaRoomPriceDto && dailyInfos1.getDay().getTime() >= otaRoomPriceDto.getStartDate().getTime() && dailyInfos1.getDay().getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
                         saleItem.setSalePrice(saleItem.getSalePrice().add(BigDecimal.valueOf(otaRoomPriceDto.getValue())));
                     }
+                    //将价格小数全部收上去
+                    saleItem.setSalePrice(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(saleItem.getSalePrice().doubleValue())));
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
@@ -1295,6 +1297,7 @@ public class OrderService implements IOrderService {
         } else {
             return null;
         }
+        logger.info("天下房仓试订单返回值：" + result.toString());
         return result;
     }
 

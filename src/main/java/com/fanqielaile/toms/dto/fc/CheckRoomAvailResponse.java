@@ -66,7 +66,7 @@ public class CheckRoomAvailResponse {
                 "canBook='" + canBook + '\'' +
                 ", canImmediate='" + canImmediate + '\'' +
                 ", spRatePlanId='" + spRatePlanId + '\'' +
-                ", saleItems=" + saleItems +
+                ", saleItems=" + saleItems.toString() +
                 '}';
     }
 }
