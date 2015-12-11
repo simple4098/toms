@@ -1277,6 +1277,11 @@ public class OrderService implements IOrderService {
                     } else {
                         saleItem.setSalePrice(new BigDecimal(new DecimalFormat("#.00").format(dailyInfos1.getPrice())));
                     }
+                    //判断当前是否执行了加减价，需要把加减价算上
+                    OtaRoomPriceDto otaRoomPriceDto = this.otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(order.getRoomTypeId()), otaInfo.getOtaInfoId()));
+                    if (null != otaRoomPriceDto) {
+                        saleItem.setSalePrice(saleItem.getSalePrice().add(BigDecimal.valueOf(otaRoomPriceDto.getValue())));
+                    }
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
