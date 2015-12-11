@@ -17,14 +17,14 @@ import java.util.Map;
  */
 public class FcRoomTypeDtoInfo extends RoomTypeInfo {
 
-    private BedType bedType;
+    private BedType fcBedType;
 
-    public BedType getBedType() {
-        return bedType;
+    public BedType getFcBedType() {
+        return fcBedType;
     }
 
-    public void setBedType(BedType bedType) {
-        this.bedType = bedType;
+    public void setFcBedType(BedType fcBedType) {
+        this.fcBedType = fcBedType;
     }
 
     public Map toMap() {
@@ -39,7 +39,7 @@ public class FcRoomTypeDtoInfo extends RoomTypeInfo {
         map.put("roomInfo", getRoomInfo());
         map.put("bedLen", getBedLen());
         map.put("bedWid", getBedWid());
-        map.put("bedType",getBedType().getValue());
+        map.put("bedType",getFcBedType().getValue());
         List<FacilitiesVo> facilitiesMap = getFacilitiesMap();
         StringBuilder sb = new StringBuilder();
         if (facilitiesMap!=null){
