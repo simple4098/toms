@@ -455,7 +455,7 @@ public class TBService implements ITPService {
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (bangInn!=null && bangInn.getSj()==Constants.FC_SJ){
                         List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailTb(bangInn, price.getRoomTypeId());
-                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList);
+                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b){
                             XRoom xRoom = TBXHotelUtil.roomGet(price.getRoomTypeId(), infoRefDto);
                             Rate rate = TBXHotelUtil.rateGet(infoRefDto, price.getRoomTypeId());

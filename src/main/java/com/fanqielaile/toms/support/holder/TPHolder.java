@@ -5,14 +5,18 @@ import com.fanqielaile.toms.dao.BangInnDao;
 import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,15 +96,20 @@ public class TPHolder {
      * @param value 加减价的值
      * @param roomDetailList 要加减价的时间集合
      */
-    public boolean checkRooPrice(double value,List<RoomDetail> roomDetailList) {
+    public boolean checkRooPrice(double value,List<RoomDetail> roomDetailList, OtaCommissionPercentDto commission) {
         if (value < 0) {
             if (!CollectionUtils.isEmpty(roomDetailList)) {
                 List<Double> priceList = new ArrayList<>();
+                Double price = null;
                 for (RoomDetail roomDetail : roomDetailList) {
-                    priceList.add(roomDetail.getRoomPrice());
+                    price = roomDetail.getRoomPrice();
+                    if (commission != null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())) {
+                        price = TomsUtil.price(price, new BigDecimal(commission.getCommissionPercent()));
+                    }
+                    priceList.add(price);
                 }
                 Collections.sort(priceList);
-                Double price = priceList.get(0);
+                price = priceList.get(0);
                 //value本来为负数, 转化为整数比较
                 if (!(price + value >= 1)) {
                         return false;
