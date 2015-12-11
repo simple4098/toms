@@ -205,12 +205,12 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                             fcRoomTypeDtoInfo.setInnId(bangInnDto.getInnId());
                             if (roomTypeInfo.getBedWid()!=null && roomTypeInfo.getBedLen()!=null){
                                 if (roomTypeInfo.getBedWid()>Constants.onlyBedWidBedBig){
-                                    fcRoomTypeDtoInfo.setBedType(BedType.BigBed);
+                                    fcRoomTypeDtoInfo.setFcBedType(BedType.BigBed);
                                 }else {
-                                    fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                                    fcRoomTypeDtoInfo.setFcBedType(BedType.onlyBed);
                                 }
                             }else {
-                                fcRoomTypeDtoInfo.setBedType(BedType.onlyBed);
+                                fcRoomTypeDtoInfo.setFcBedType(BedType.onlyBed);
                             }
 
                             roomTypeInfoDtoList.add(fcRoomTypeDtoInfo);
