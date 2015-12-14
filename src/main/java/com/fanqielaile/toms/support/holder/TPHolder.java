@@ -85,10 +85,13 @@ public class TPHolder {
      */
     private void validateCommon(  OtaInfoRefDto otaInfo,Integer inn)throws Exception{
         List<String> list = otaInfoDao.selectOtaByAppKey(otaInfo);
-        List<BangInn> bangInnList = bangInnDao.selectBangInnByCompanyListInnId(new BangInnDto(list, inn));
-        if (!CollectionUtils.isEmpty(bangInnList)) {
-            throw new Exception(otaInfo.getTbType().name()+" 此客栈在相同appKey的另一个公司存在!");
+        if (!CollectionUtils.isEmpty(list)){
+            List<BangInn> bangInnList = bangInnDao.selectBangInnByCompanyListInnId(new BangInnDto(list, inn));
+            if (!CollectionUtils.isEmpty(bangInnList)) {
+                throw new Exception(otaInfo.getTbType().name()+" 此客栈在相同appKey的另一个公司存在!");
+            }
         }
+
     }
 
     /**
