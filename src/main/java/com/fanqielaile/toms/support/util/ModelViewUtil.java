@@ -41,7 +41,7 @@ public class ModelViewUtil {
             return "/match/inn_fc_match_list";
         }
         if (otaInfo!=null && OtaType.TB.equals(otaInfo.getOtaType())){
-            if(TBType.NULL==otaInfo.getTbType()){
+            if(TBType.DEFAULT==otaInfo.getTbType()){
                 return "/match/ota/tb_type";
             }
             return "/match/inn_tb_match_list";
