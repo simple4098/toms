@@ -42,7 +42,7 @@
              SELECT good.* from bang_inn o
              INNER JOIN ota_inn_ota oia ON oia.bang_inn_id = o.id
              INNER JOIN ota_inn_roomtype_goods good ON good.ota_wg_id = oia.id
-             where oia.sj=1 and o.company_id='${companyId}' and good.room_type_id='${roomTypeId}'
+             where oia.sj=1 and o.company_id='${companyId}' and good.room_type_id='${roomTypeId}' limit 1
       </select>
 
       <select id="selectGoodsByInnIdAndCompany" resultMap="BaseResultMap">
