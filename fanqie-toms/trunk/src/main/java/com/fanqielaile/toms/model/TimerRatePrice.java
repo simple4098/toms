@@ -1,8 +1,7 @@
 package com.fanqielaile.toms.model;
 
 import com.fanqie.core.Domain;
-
-import java.util.Date;
+import com.fanqielaile.toms.enums.TimerRateType;
 
 /**
  * DESC : 记录定时任务执行失败的客栈
@@ -19,23 +18,26 @@ public class TimerRatePrice extends Domain {
     private Integer roomTypeId;
     //失败原因
     private String errorContent;
+    private TimerRateType rateType;
+
 
     public TimerRatePrice() {
     }
 
-    public TimerRatePrice(String companyId, String otaInfoId, Integer roomTypeId,Integer innId, String errorContent) {
+    public TimerRatePrice(String companyId, String otaInfoId, Integer roomTypeId, Integer innId, String errorContent, TimerRateType rateType) {
         this.companyId = companyId;
         this.otaInfoId = otaInfoId;
         this.errorContent = errorContent;
         this.roomTypeId = roomTypeId;
         this.innId = innId;
+        this.rateType = rateType;
     }
     public TimerRatePrice(String companyId, String otaInfoId, Integer innId) {
         this.companyId = companyId;
         this.otaInfoId = otaInfoId;
         this.innId = innId;
     }
-    public TimerRatePrice(String companyId, String otaInfoId, Integer innId,Integer roomTypeId) {
+    public TimerRatePrice(String companyId, String otaInfoId, Integer innId, Integer roomTypeId) {
         this.companyId = companyId;
         this.otaInfoId = otaInfoId;
         this.innId = innId;
@@ -47,6 +49,13 @@ public class TimerRatePrice extends Domain {
         this.otaInfoId = otaInfoId;
     }
 
+    public TimerRateType getRateType() {
+        return rateType;
+    }
+
+    public void setRateType(TimerRateType rateType) {
+        this.rateType = rateType;
+    }
     public String getErrorContent() {
         return errorContent;
     }

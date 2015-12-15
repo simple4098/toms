@@ -8,6 +8,7 @@ import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.ITPService;
@@ -31,8 +32,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -166,7 +165,7 @@ public class TBService implements ITPService {
     }
 
     //添加更新宝贝
-    private   void updateOrAddRoom(TBParam tbParam,OtaInfoRefDto otaInfo,OtaPriceModelDto otaPriceModel,OtaInnOtaDto otaInnOta,OtaTaoBaoArea andArea)throws Exception{
+    private   void updateOrAddRoom(TBParam tbParam, OtaInfoRefDto otaInfo, OtaPriceModelDto otaPriceModel, OtaInnOtaDto otaInnOta, OtaTaoBaoArea andArea)throws Exception{
         String otaPriceModelId="";
         String otaInnOtaId="";
         if (StringUtils.isEmpty(otaPriceModel.getId())){
@@ -235,7 +234,7 @@ public class TBService implements ITPService {
     }
 
     @Override
-    public void updateHotel(OtaInfoRefDto o,TBParam tbParam) throws Exception {
+    public void updateHotel(OtaInfoRefDto o, TBParam tbParam) throws Exception {
         log.info("====同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         tbParam.setCompanyCode(o.getCompanyCode());
@@ -264,13 +263,12 @@ public class TBService implements ITPService {
             ExecutorService es = Executors.newFixedThreadPool(threadNum);
             CompletionService cs = new ExecutorCompletionService(es);
             for (ProxyInns proxyInns:proxyList){
-
                 cs.submit(getTask(company, o, tbParam, proxyInns));
             }
         }
     }
 
-    private Callable getTask(final  Company company1,final OtaInfoRefDto o1,final TBParam tbParam1,final ProxyInns proxyInns) {
+    private Callable getTask(final Company company1, final OtaInfoRefDto o1, final TBParam tbParam1, final ProxyInns proxyInns) {
         return new Callable<CallableBean>() {
             @Override
             public CallableBean call()  {
@@ -313,16 +311,16 @@ public class TBService implements ITPService {
                                     String gidAndRpId = TBXHotelUtil.rateUpdate(o, r, rate);
                                     Long gId = TBXHotelUtil.roomUpdate(o, xRoom);
                                     if (StringUtils.isEmpty(gidAndRpId) || gId==null){
-                                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"gidAndRpId is "+gidAndRpId+" gId is "+gId));
+                                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"gidAndRpId is "+gidAndRpId+" gId is "+gId, TimerRateType.NEW));
                                     }
                                     log.info("客栈id"+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" xRoom" + xRoom.getGid()+ " rate:" + rate.getGid());
                                 }else {
                                     log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());
-                                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom));
+                                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom, TimerRateType.NEW));
                                 }
                             }
                         }else {
-                            timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空"));
+                            timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空", TimerRateType.NOT_HOVE_ROUSE));
                         }
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
@@ -414,15 +412,20 @@ public class TBService implements ITPService {
         TBParam tbParam = null;
         for (TimerRatePrice ratePrice:timerRatePriceList){
             BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, ratePrice.getInnId());
-            OtaInnOtaDto otaInnOtaDto = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(ratePrice.getInnId(), companyId, o.getOtaInfoId());
-            if (bangInn!=null && otaInnOtaDto!=null){
-                tbParam = TomsUtil.toTbParam(bangInn, company, otaInnOtaDto);
-                try {
-                    updateOrAddHotel(tbParam, o);
-                    timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId,o.getOtaInfoId(),bangInn.getInnId()));
-                } catch (Exception e) {
-                   log.info("异常信息updateHotelFailTimer："+e.getMessage());
+            try {
+                if (TimerRateType.NOT_HOVE_ROUSE.equals(ratePrice.getRateType())){
+                    List<OtaInnRoomTypeGoodsDto> list = goodsDao.selectGoodsByInnIdAndCompany(ratePrice.getInnId(),companyId);
+                    TBXHotelUtil.roomRoomNumZeroUpdate(list,o);
+                }else {
+                    OtaInnOtaDto otaInnOtaDto = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(ratePrice.getInnId(), companyId, o.getOtaInfoId());
+                    if (bangInn != null && otaInnOtaDto != null) {
+                        tbParam = TomsUtil.toTbParam(bangInn, company, otaInnOtaDto);
+                        updateOrAddHotel(tbParam, o);
+                    }
                 }
+                timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId()));
+            } catch (Exception e) {
+                log.info("异常信息updateHotelFailTimer：" + e.getMessage());
             }
         }
 
@@ -430,7 +433,7 @@ public class TBService implements ITPService {
     }
 
     @Override
-    public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId,String companyId, String userId ,String json) throws Exception{
+    public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId, String companyId, String userId , String json) throws Exception{
         List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
         OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(),companyId,infoRefDto.getOtaInfoId());
@@ -453,7 +456,7 @@ public class TBService implements ITPService {
                     priceDto.setInnId(Integer.valueOf(innId));
                     priceDto.setModifierId(userId);
                     priceDto.setRoomTypeName(price.getRoomTypeName());
-                    if (bangInn!=null && bangInn.getSj()==Constants.FC_SJ){
+                    if (bangInn!=null && bangInn.getSj()== Constants.FC_SJ){
                         List<RoomDetail> roomDetailList  = otaRoomPriceService.obtRoomAvailTb(bangInn, price.getRoomTypeId());
                         boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b){

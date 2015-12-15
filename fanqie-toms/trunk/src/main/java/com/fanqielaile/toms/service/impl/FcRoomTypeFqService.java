@@ -198,29 +198,31 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
                 RoomType roomType=null;
                 FcRoomTypeFq fcRoomTypeFq = null;
                 for (MatchRoomType room:matchRoomType){
-                    fcRoomTypeFq = new FcRoomTypeFq();
-                    fcRoomTypeFq.setCompanyId(companyId);
-                    fcRoomTypeFq.setInnId(innId);
-                    fcRoomTypeFq.setFcHotelId(fcHotelId);
-                    fcRoomTypeFq.setFcRoomTypeId(room.getFcRoomTypeId());
-                    fcRoomTypeFq.setFcRoomTypeName(room.getFcRoomTypeName());
-                    fcRoomTypeFq.setFqRoomTypeName(room.getRoomTypeName());
-                    fcRoomTypeFq.setRoomArea(room.getRoomArea());
-                    fcRoomTypeFq.setOtaInfoId(dto.getOtaInfoId());
-                    fcRoomTypeFq.setOtaInnOtaId(innOtaDto.getId());
-                    fcRoomTypeFq.setFqRoomTypeId(room.getRoomTypeId());
-                    fcRoomTypeFq.setBedLen(room.getBedLen());
-                    fcRoomTypeFq.setBedNum(room.getBedNum());
-                    fcRoomTypeFq.setBedWid(room.getBedWid());
-                    if (!StringUtils.isEmpty(room.getFcRoomTypeId())){
-                        roomType = new RoomType();
-                        roomType.setFcRoomTypeId(Long.valueOf(room.getFcRoomTypeId()));
-                        roomType.setFcRoomTypeName(room.getFcRoomTypeName());
-                        roomType.setSpRoomTypeId(room.getRoomTypeId());
-                        roomType.setSpRoomTypeName(room.getRoomTypeName());
-                        list.add(roomType);
+                    if (!StringUtils.isEmpty(room.getFcRoomTypeId()) && !StringUtils.isEmpty(room.getRoomTypeId())){
+                        fcRoomTypeFq = new FcRoomTypeFq();
+                        fcRoomTypeFq.setCompanyId(companyId);
+                        fcRoomTypeFq.setInnId(innId);
+                        fcRoomTypeFq.setFcHotelId(fcHotelId);
+                        fcRoomTypeFq.setFcRoomTypeId(room.getFcRoomTypeId());
+                        fcRoomTypeFq.setFcRoomTypeName(room.getFcRoomTypeName());
+                        fcRoomTypeFq.setFqRoomTypeName(room.getRoomTypeName());
+                        fcRoomTypeFq.setRoomArea(room.getRoomArea());
+                        fcRoomTypeFq.setOtaInfoId(dto.getOtaInfoId());
+                        fcRoomTypeFq.setOtaInnOtaId(innOtaDto.getId());
+                        fcRoomTypeFq.setFqRoomTypeId(room.getRoomTypeId());
+                        fcRoomTypeFq.setBedLen(room.getBedLen());
+                        fcRoomTypeFq.setBedNum(room.getBedNum());
+                        fcRoomTypeFq.setBedWid(room.getBedWid());
+                        if (!StringUtils.isEmpty(room.getFcRoomTypeId())){
+                            roomType = new RoomType();
+                            roomType.setFcRoomTypeId(Long.valueOf(room.getFcRoomTypeId()));
+                            roomType.setFcRoomTypeName(room.getFcRoomTypeName());
+                            roomType.setSpRoomTypeId(room.getRoomTypeId());
+                            roomType.setSpRoomTypeName(room.getRoomTypeName());
+                            list.add(roomType);
+                        }
+                        fcRoomTypeFqs.add(fcRoomTypeFq);
                     }
-                    fcRoomTypeFqs.add(fcRoomTypeFq);
                 }
 
                 AddRoomTypeMappingRequest addRoomTypeMappingRequest = new AddRoomTypeMappingRequest();

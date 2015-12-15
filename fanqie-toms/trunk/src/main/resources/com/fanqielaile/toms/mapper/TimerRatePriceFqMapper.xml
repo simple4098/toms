@@ -8,21 +8,22 @@
         <result column="room_type_id" property="roomTypeId"/>
         <result column="ota_info_id" property="otaInfoId"/>
         <result column="account_id" property="accountId"/>
+        <result column="rate_type" property="rateType"/>
     </resultMap>
 
 
     <sql id="Base_Column_List">
-        id,company_id,inn_id,room_type_id,ota_info_id,account_id
+        id,company_id,inn_id,room_type_id,ota_info_id,account_id,rate_type
     </sql>
 
     <insert id="saveTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">
-        insert into timer_rate_price( id,company_id,inn_id,room_type_id,ota_info_id,account_id,deleted,error_content,created_date,updated_date)
-        values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId},0,#{errorContent},#{createdDate},#{updatedDate})
+        insert into timer_rate_price( id,company_id,inn_id,room_type_id,ota_info_id,account_id,deleted,error_content,created_date,updated_date,rate_type)
+        values(#{uuid},#{companyId},#{innId},#{roomTypeId},#{otaInfoId},#{accountId},0,#{errorContent},#{createdDate},#{updatedDate},#{rateType})
     </insert>
 
     <select id="selectTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice" resultMap="resultMapId">
-     SELECT o.company_id,o.inn_id from timer_rate_price o
-     where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id
+     SELECT o.company_id,o.inn_id,rate_type from timer_rate_price o
+     where o.deleted=0 and o.company_id='${companyId}' and o.ota_info_id='${otaInfoId}'  GROUP BY company_id,inn_id,rate_type
     </select>
 
     <delete id="deletedTimerRatePrice" parameterType="com.fanqielaile.toms.model.TimerRatePrice">

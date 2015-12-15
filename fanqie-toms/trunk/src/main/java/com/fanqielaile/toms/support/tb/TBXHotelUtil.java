@@ -730,5 +730,25 @@ public class TBXHotelUtil {
         }
     }
 
+    /**
+     * 把集合里的roomTypeId房量设置为零
+     * @param list 要更新房量为0的集合
+     * @refDto 渠道信息
+     */
+    public static void roomRoomNumZeroUpdate(List<OtaInnRoomTypeGoodsDto> list, OtaInfoRefDto refDto) throws ApiException {
 
+        if (!CollectionUtils.isEmpty(list)){
+            for (OtaInnRoomTypeGoodsDto dto:list){
+                XRoom xRoom = roomGet(dto.getRoomTypeId(), refDto);
+                String inventory = xRoom.getInventory();
+                List<Inventory> inventoryList = JacksonUtil.json2list(inventory, Inventory.class);
+                for (Inventory in:inventoryList){
+                    in.setQuota(0);
+                }
+                String json = JacksonUtil.obj2json(inventoryList);
+                xRoom.setInventory(json);
+                roomUpdate(refDto,xRoom);
+            }
+        }
+    }
 }

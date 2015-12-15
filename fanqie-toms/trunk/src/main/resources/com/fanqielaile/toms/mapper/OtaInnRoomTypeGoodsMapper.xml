@@ -38,13 +38,19 @@
               SELECT  o.* from ota_inn_roomtype_goods o where o.rid='${rid}' and deleted =0
        </select>
 
-    <select id="selectGoodsByRoomTypeIdAndCompany"  resultMap="BaseResultMap">
+      <select id="selectGoodsByRoomTypeIdAndCompany"  resultMap="BaseResultMap">
              SELECT good.* from bang_inn o
              INNER JOIN ota_inn_ota oia ON oia.bang_inn_id = o.id
              INNER JOIN ota_inn_roomtype_goods good ON good.ota_wg_id = oia.id
              where oia.sj=1 and o.company_id='${companyId}' and good.room_type_id='${roomTypeId}'
-       </select>
+      </select>
 
+      <select id="selectGoodsByInnIdAndCompany" resultMap="BaseResultMap">
+          SELECT good.* from bang_inn o
+             INNER JOIN ota_inn_ota oia ON oia.bang_inn_id = o.id
+             INNER JOIN ota_inn_roomtype_goods good ON good.ota_wg_id = oia.id
+             where oia.sj=1 and o.company_id='${companyId}' and good.inn_id='${innId}'
+      </select>
 
 
 </mapper>

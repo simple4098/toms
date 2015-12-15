@@ -2,7 +2,10 @@ package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
+import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.BangInn;
@@ -13,11 +16,12 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,22 +48,30 @@ public class FCXHotelUtil {
         List<SaleInfo> saleInfoList = new ArrayList<>();
         SaleInfo saleInfo = null;
         String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), roomTypeId, CommonApi.checkRoom);
+        log.info("===url:" + room_type);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString())) {
-            List<RoomDetail> roomDetail = JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
-            for (RoomDetail room : roomDetail) {
-                saleInfo = obtSaleInfoList(room, priceDto, commission);
-                saleInfoList.add(saleInfo);
+            Object o1 = jsonObject.get("data");
+            if(!JSONNull.getInstance().equals(o1)){
+                String data = jsonObject.getJSONArray("data").toString();
+                if (!StringUtils.isEmpty(data)){
+                    List<RoomDetail> roomDetail = JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
+                    for (RoomDetail room : roomDetail) {
+                        saleInfo = obtSaleInfoList(room, priceDto, commission);
+                        saleInfoList.add(saleInfo);
+                    }
+                    syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
+                    syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
+                    String xml = FcUtil.fcRequest(syncRateInfoRequest);
+                    log.info("房仓推送宝贝上架xml:" + xml);
+                    String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
+                    log.info("fc result :" + result);
+                    return XmlDeal.pareFcResult(result);
+                }
             }
-            syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
-            syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
         }
-        String xml = FcUtil.fcRequest(syncRateInfoRequest);
-        log.info("房仓推送宝贝上架xml:" + xml);
-        String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
-        log.info("fc result :" + result);
-        return XmlDeal.pareFcResult(result);
+        return null;
     }
 
 

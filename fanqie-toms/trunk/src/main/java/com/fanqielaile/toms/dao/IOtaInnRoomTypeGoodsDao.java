@@ -3,6 +3,8 @@ package com.fanqielaile.toms.dao;
 import com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * DESC :
  *
@@ -25,5 +27,12 @@ public interface IOtaInnRoomTypeGoodsDao {
     //删除客栈宝贝关系
     void deletedGoods(@Param("otaWgId")String otaWgId);
 
-    OtaInnRoomTypeGoodsDto selectGoodsByRoomTypeIdAndCompany(@Param("companyId")String companyId, @Param("roomTypeId")Integer roomTypeId);
+    OtaInnRoomTypeGoodsDto selectGoodsByRoomTypeIdAndCompany(@Param("companyId") String companyId, @Param("roomTypeId") Integer roomTypeId);
+
+    /**
+     * 查询公司客栈上架的房型
+     * @param innId 客栈id
+     * @param companyId 公司id
+     */
+    List<OtaInnRoomTypeGoodsDto> selectGoodsByInnIdAndCompany(@Param("innId") Integer innId, @Param("companyId") String companyId);
 }

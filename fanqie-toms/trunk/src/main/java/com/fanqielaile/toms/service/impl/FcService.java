@@ -9,6 +9,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
@@ -163,10 +164,14 @@ public class FcService implements ITPService {
                 Response response = null;
                 try {
                     response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto, commission);
-                    if (!Constants.FcResultNo.equals(response.getResultNo())) {
-                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg()));
+                    if (response!=null && !Constants.FcResultNo.equals(response.getResultNo())) {
+                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg(), TimerRateType.NEW));
+                    }
+                    if (response==null){
+                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()), "房仓获取不到oms房型数据",TimerRateType.NOT_HOVE_ROUSE));
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     log.error("同步房仓房型接口异常" + e);
                 }
 
@@ -251,8 +256,12 @@ public class FcService implements ITPService {
                     try {
                         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
                         Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto, commission);
-                        if (Constants.FcResultNo.equals(response.getResultNo())) {
+                        if (response!=null && Constants.FcResultNo.equals(response.getResultNo())) {
                             timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId())));
+                        }
+                        if (response==null){
+                            timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId())));
+                            fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fcRoomTypeFqDto.getId());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
