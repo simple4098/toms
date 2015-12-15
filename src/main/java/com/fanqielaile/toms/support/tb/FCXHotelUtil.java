@@ -48,7 +48,7 @@ public class FCXHotelUtil {
         List<SaleInfo> saleInfoList = new ArrayList<>();
         SaleInfo saleInfo = null;
         String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), roomTypeId, CommonApi.checkRoom);
-        log.info("===url:" + room_type);
+        log.info("fc oms url:" + room_type);
         String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString())) {
@@ -64,7 +64,7 @@ public class FCXHotelUtil {
                     syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
                     syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
                     String xml = FcUtil.fcRequest(syncRateInfoRequest);
-                    log.info("房仓推送宝贝上架xml:" + xml);
+                   /* log.info("房仓推送宝贝上架xml:" + xml);*/
                     String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
                     log.info("fc result :" + result);
                     return XmlDeal.pareFcResult(result);
