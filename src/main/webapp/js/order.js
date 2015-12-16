@@ -293,7 +293,7 @@ $('.btn-export-form').on('click', function () {
     } else {
         var beginDate = new Date(beginDateStr);
         var endDate = new Date(endDateStr);
-        if ((endDate - beginDate) / 86400000 > 31) {
+        if ((endDate - beginDate) / 86400000 > 30) {
             layer.alert("请检查输入的时间，开始时间和结束时间只差必须在31天之类", {icon: 5});
             return false;
         } else {
