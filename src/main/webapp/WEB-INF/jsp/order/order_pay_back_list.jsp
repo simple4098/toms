@@ -110,7 +110,14 @@
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
-                                        <td>${d.totalPrice}</td>
+                                        <td>
+                                            <c:if test="${d.channelSource =='HAND_ORDER'}">
+                                                ${d.prepayPrice}
+                                            </c:if>
+                                            <c:if test="${d.channelSource != 'HAND_ORDER'}">
+                                                ${d.totalPrice}
+                                            </c:if>
+                                        </td>
                                         <td>${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>

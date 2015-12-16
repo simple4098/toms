@@ -1,8 +1,13 @@
 package com.fanqielaile.toms.dto;
 
+import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2015/7/6.
@@ -114,7 +119,11 @@ public class OrderParamDto extends Order {
     }
 
     public String getInnName() {
-        return innName;
+        String result = getOrderInnName();
+        if (StringUtils.isEmpty(result)) {
+            result = "暂无";
+        }
+        return result;
     }
 
     public void setInnName(String innName) {
@@ -123,11 +132,48 @@ public class OrderParamDto extends Order {
 
     @Override
     public String getRoomTypeName() {
-        return roomTypeName;
+        String result = getOrderRoomTypeName();
+        if (StringUtils.isEmpty(result)) {
+            result = "暂无";
+        }
+        return result;
     }
 
     @Override
     public void setRoomTypeName(String roomTypeName) {
         this.roomTypeName = roomTypeName;
+    }
+
+    public OrderParamDto getOrderByDealTime(OrderParamDto orderParamDto) {
+        if (null != orderParamDto) {
+            if (StringUtils.isNotEmpty(orderParamDto.getBeginDate())) {
+                orderParamDto.setBeginDate(DateUtil.format(DateUtil.parse(orderParamDto.getBeginDate(), "yyyy-MM-dd"), "yyyy-MM-dd"));
+            }
+            if (StringUtils.isNotEmpty(orderParamDto.getEndDate())) {
+                orderParamDto.setEndDate(DateUtil.format(DateUtil.parse(orderParamDto.getEndDate(), "yyyy-MM-dd"), "yyyy-MM-dd"));
+            }
+        }
+        return orderParamDto;
+    }
+
+    public Map toMap() {
+        Map map = new HashMap();
+        map.put("channelSource", getChannelSource().getText());
+        map.put("channelOrderCode", getChannelOrderCode());
+        map.put("orderStatus", getOrderStatus().getText());
+        map.put("innName", getInnName());
+        map.put("guestName", getGuestName());
+        map.put("roomTypeName", getRoomTypeName());
+        map.put("homeAmount", getHomeAmount());
+        map.put("liveLeaveDate", DateUtil.format(getLiveTime(), "yyyy-MM-dd") + "/" + DateUtil.format(getLeaveTime(), "yyyy-MM-dd"));
+        if (ChannelSource.HAND_ORDER.equals(getChannelSource())) {
+            map.put("totalPrice", getPrepayPrice());
+        } else {
+            map.put("totalPrice", getTotalPrice());
+        }
+        map.put("prepayPrice", getPrepayPrice());
+        map.put("costPrice", getCostPrice());
+        map.put("orderTime", DateUtil.format(getOrderTime(), "yyyy-MM-dd HH:mm:ss"));
+        return map;
     }
 }

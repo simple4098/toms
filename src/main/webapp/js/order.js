@@ -56,7 +56,12 @@ $('.btn-order').on('click', function () {
                 $('.guest-name').html("客人姓名:" + data.order.guestName);
                 $('.guest-mobile').html("客人手机号码：" + data.order.guestMobile);
                 $('.room-type').html("预定房型：" + data.order.roomTypeName);
-                $('.order-total').html("订单总额:" + data.order.totalPrice);
+                if (data.order.channelSource == 'HAND_ORDER') {
+                    $('.order-total').html("订单总额:" + data.order.prepayPrice);
+                } else {
+                    $('.order-total').html("订单总额:" + data.order.totalPrice);
+                }
+
                 $('.order-pre').html("预付金额:" + data.order.prepayPrice);
                 var infoTime, priceInfo;
                 if (data.order.dailyInfoses != null) {
@@ -276,4 +281,34 @@ $(".btn-cancel-order").on('click', function () {
         //layer.msg('的确很重要', {icon: 1});
     }, function () {
     });
+});
+
+//导出订单
+$('.btn-export-form').on('click', function () {
+    var beginDateStr = $('.begin-date').val();
+    var endDateStr = $('.end-date').val();
+    if (null == beginDateStr || '' == beginDateStr || null == endDateStr || '' == endDateStr) {
+        layer.alert("导出订单时，必须写入时间段，开始时间和结束时间之差必须在31天之类", {icon: 5});
+        return false;
+    } else {
+        var beginDate = new Date(beginDateStr);
+        var endDate = new Date(endDateStr);
+        if ((endDate - beginDate) / 86400000 > 31) {
+            layer.alert("请检查输入的时间，开始时间和结束时间只差必须在31天之类", {icon: 5});
+            return false;
+        } else {
+            var searchType = $('.search-type').val();
+            var channelOrderCode = $('.keyword').val();
+            var channelSource = $('.channel-source').val();
+            var orderStatus = $('.order-status').val();
+            $('.search-type-form').val(searchType);
+            $('.channel-order-code-form').val(channelOrderCode);
+            $('.channel-source-form').val(channelSource);
+            $('.order-status-form').val(orderStatus);
+            $('.begin-date-form').val(beginDateStr);
+            $('.end-date-form').val(endDateStr);
+            var objForm = $('#export-order-form');
+            objForm.submit();
+        }
+    }
 });

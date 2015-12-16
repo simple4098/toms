@@ -11,6 +11,7 @@ import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.model.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -170,7 +171,7 @@ public class TomsUtil {
                 buffer.deleteCharAt(buffer.length()-1);
             }
         }
-       return buffer.toString();
+        return buffer.toString();
     }
 
     public static List<String> strToList(String dateJson) {
@@ -200,7 +201,7 @@ public class TomsUtil {
     }
 
 
-        //处理价格
+    //处理价格
     public static Double price(Double price,BigDecimal percentage){
         if (percentage!=null){
             BigDecimal bigDecimal = new BigDecimal(100);
@@ -267,6 +268,34 @@ public class TomsUtil {
                 list.add(p);
             }
             return list;
+        }
+        return null;
+    }
+
+    /**
+     * 获取每一天开始时间
+     *
+     * @param beginDate
+     * @return
+     */
+    public static String getDayBeafore(String beginDate) {
+        if (StringUtils.isNotEmpty(beginDate)) {
+            Date date = DateUtil.parse(beginDate + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+            return DateUtil.format(date, "yyyy-MM-dd HH:mm:ss");
+        }
+        return null;
+    }
+
+    /**
+     * 获取每一天结束时间
+     *
+     * @param endDate
+     * @return
+     */
+    public static String getDayEnd(String endDate) {
+        if (StringUtils.isNotEmpty(endDate)) {
+            Date date = DateUtil.parse(endDate + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
+            return DateUtil.format(date, "yyyy-MM-dd HH:mm:ss");
         }
         return null;
     }

@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -201,6 +202,22 @@ public class OrderService implements IOrderService {
             }
         }
 
+        //设置客栈名称和房型名称
+        BangInn bangInn = this.bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), order.getInnId());
+        if (null != bangInn) {
+            order.setOrderInnName(bangInn.getInnName());
+        }
+        if (ChannelSource.TAOBAO.equals(channelSource)) {
+            OtaBangInnRoomDto otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(order.getOTARoomTypeId());
+            if (null != otaBangInnRoomDto) {
+                order.setOrderRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
+            }
+        } else if (ChannelSource.FC.equals(channelSource)) {
+            FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(order.getRoomTypeId());
+            if (null != fcRoomTypeFqDto) {
+                order.setOrderRoomTypeName(fcRoomTypeFqDto.getFcRoomTypeName());
+            }
+        }
         //设置渠道来源
         order.setChannelSource(channelSource);
         order.setOrderTime(new Date());
@@ -724,6 +741,9 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderParamDto> findOrderByPage(String companyId, PageBounds pageBounds, OrderParamDto orderParamDto) {
+        //处理查询时间
+        orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
+        orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
         List<OrderParamDto> orderDtos = orderDao.selectOrderByPage(companyId, pageBounds, orderParamDto);
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
@@ -742,21 +762,6 @@ public class OrderService implements IOrderService {
                         }
                     }
                     orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
-                }
-                //淘宝
-                if (ChannelSource.TAOBAO.equals(orderDto.getChannelSource())) {
-                    otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderDto.getOTARoomTypeId());
-                } else {
-                    otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderDto.getInnId(), Integer.parseInt(orderDto.getRoomTypeId()), orderDto.getCompanyId());
-                }
-                //房仓
-                FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(orderDto.getRoomTypeId());
-                if (null == otaBangInnRoomDto && null == fcRoomTypeFqDto) {
-                    orderDto.setRoomTypeName("暂无");
-                } else if (null != otaBangInnRoomDto) {
-                    orderDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
-                } else if (null != fcRoomTypeFqDto) {
-                    orderDto.setRoomTypeName(fcRoomTypeFqDto.getFqRoomTypeName());
                 }
             }
         }
@@ -794,22 +799,6 @@ public class OrderService implements IOrderService {
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParamDto.getOTAHotelId());
         if (null != orderParamDto) {
 
-            OtaBangInnRoomDto otaBangInnRoomDto = new OtaBangInnRoomDto();
-            //淘宝
-            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
-                otaBangInnRoomDto = this.bangInnRoomDao.selectOtaBangInnRoomByRid(orderParamDto.getOTARoomTypeId());
-            } else {
-                otaBangInnRoomDto = this.bangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(orderParamDto.getInnId(), Integer.parseInt(orderParamDto.getRoomTypeId()), orderParamDto.getCompanyId());
-            }
-            //FC
-            FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(orderParamDto.getRoomTypeId());
-            if (null != otaBangInnRoomDto) {
-                orderParamDto.setRoomTypeName(otaBangInnRoomDto.getRoomTypeName());
-            } else if (null != fcRoomTypeFqDto && null == otaBangInnRoomDto) {
-                orderParamDto.setRoomTypeName(fcRoomTypeFqDto.getFqRoomTypeName());
-            } else {
-                orderParamDto.setRoomTypeName("暂无");
-            }
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
             //价格策略
             if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
@@ -947,6 +936,7 @@ public class OrderService implements IOrderService {
 
         //这里的accountId为绑定客栈的ID
         BangInnDto bangInn = bangInnDao.selectBangInnById(order.getBangInnId());
+        order.setOrderInnName(bangInn.getInnName());
         if (1 == order.getMaiAccount()) {
             //卖家
             order.setAccountId(bangInn.getAccountId());
@@ -1411,5 +1401,37 @@ public class OrderService implements IOrderService {
         } else {
             logger.info("异步下单oms回调，传入的参数，在toms中未找到该订单，oms回调传入参数：" + order.toString());
         }
+    }
+
+    @Override
+    public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception {
+        orderParamDto.setCompanyId(currentUser.getCompanyId());
+        //处理查询时间
+        orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
+        orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
+        List<OrderParamDto> orderDtos = this.orderDao.selectOrderByNoPage(orderParamDto);
+        //房型名称
+        if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
+            for (OrderParamDto orderDto : orderDtos) {
+                //设置总价和每日价格
+                if (null != orderDto.getAddPrice()) {
+                    List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
+                    BigDecimal addTatalPirce = BigDecimal.ZERO;
+                    if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                        for (DailyInfos dailyInfos : dailyInfoses) {
+                            if (1 == dailyInfos.getWeatherAdd()) {
+                                dailyInfos.setPrice(dailyInfos.getPrice().add(orderDto.getAddPrice()));
+                                addTatalPirce = addTatalPirce.add(orderDto.getAddPrice());
+                            }
+                        }
+                    }
+                    orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
+                }
+            }
+        }
+        StringBuilder builder = new StringBuilder("订单列表_");
+        builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
+        ExportExcelUtil.execlOrderExport(orderDtos, response, builder.toString());
+
     }
 }
