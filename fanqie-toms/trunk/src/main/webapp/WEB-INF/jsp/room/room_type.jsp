@@ -28,16 +28,16 @@
                 搜索
                 <i class="icon-search icon-on-right bigger-110"></i>
             </button>
-             <input type="radio" class="maiAccount" name="maiAccount" checked value="1"/>卖价
-             <input type="radio"  class="maiAccount"  name="maiAccount" value="0"/>底价
+            <input type="radio" class="maiAccount" name="maiAccount" checked value="1"/>卖价
+            <input type="radio" class="maiAccount" name="maiAccount" value="0"/>底价
         </form>
     </div>
     <div class="btn-box clearfix">
         <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled>手动下单</button>
     </div>
     <c:set value="${roomType.list}" var="list"/>
-        <div class="room-status-box" id="roomTypeContainerId">
-            <c:if test="${not empty list}">
+    <div class="room-status-box" id="roomTypeContainerId">
+        <c:if test="${not empty list}">
             <div class="table-left">
                 <table class="table table-bordered">
                     <tr class="success">
@@ -82,13 +82,13 @@
                     </tbody>
                 </table>
             </div>
-            </c:if>
-            <c:if test="${empty list}">
-                <div class="alert alert-danger center">
-                    没有数据,请选择分类/客栈查询房态房量
-                </div>
-            </c:if>
-        </div>
+        </c:if>
+        <c:if test="${empty list}">
+            <div class="alert alert-danger center">
+                没有数据,请选择分类/客栈查询房态房量
+            </div>
+        </c:if>
+    </div>
 </div>
 
 
@@ -108,6 +108,7 @@
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
                     <input type="hidden" class="mai-account" name="maiAccount"/>
+                    <input type="hidden" class="room_type_name" name="orderRoomTypeName">
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-11"> 渠道订单号

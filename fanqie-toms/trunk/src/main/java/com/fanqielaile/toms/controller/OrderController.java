@@ -26,8 +26,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,20 @@ public class OrderController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(SystemController.class);
     @Resource
     private IOrderService orderService;
+
+
+    /**
+     * 订单导出功能
+     */
+    @RequestMapping("order_export")
+    @ResponseBody
+    public void orderExport(OrderParamDto orderParamDto, HttpServletResponse response) {
+        try {
+            this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response);
+        } catch (Exception e) {
+            logger.info("导出订单列表出错" + e);
+        }
+    }
 
     /**
      * 订单列表页面
@@ -62,10 +78,10 @@ public class OrderController extends BaseController {
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             Pagination pagination = PaginationHelper.toPagination(paginator);
             FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
-            model.addAttribute("pagination",pagination);
-            model.addAttribute("pageDecorator",pageDecorator);
+            model.addAttribute("pagination", pagination);
+            model.addAttribute("pageDecorator", pageDecorator);
             //分转查询条件
-            model.addAttribute("order", orderParamDto);
+            model.addAttribute("order", orderParamDto.getOrderByDealTime(orderParamDto));
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);
             //渠道来源
@@ -137,6 +153,7 @@ public class OrderController extends BaseController {
         }
         return "/order/order_pay_back_list";
     }
+
     /**
      * 查询订单详细信息
      *
@@ -280,6 +297,7 @@ public class OrderController extends BaseController {
 
     /**
      * 取消手动下单
+     *
      * @param orderId
      */
     @RequestMapping("cancel_hand_order")

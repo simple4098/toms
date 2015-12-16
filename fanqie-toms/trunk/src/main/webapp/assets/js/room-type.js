@@ -187,6 +187,10 @@ $('.btn-homeAmount-add').on('click', function () {
 	}
 });
 
+$('.room-type').change(function () {
+	$('.room_type_name').val($(this).find("option:selected").text());
+})
+
 var $roomType = $('#roomType'),
 	$roomNum = $('#roomNum'),
 	$tel = $('#tel'),

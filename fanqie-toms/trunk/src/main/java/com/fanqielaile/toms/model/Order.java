@@ -141,6 +141,26 @@ public class Order extends Domain {
     private String partnerCode;
     //oms订单号
     private String omsOrderCode;
+    //客栈名称
+    private String orderInnName;
+    //房型名称
+    private String orderRoomTypeName;
+
+    public String getOrderInnName() {
+        return orderInnName;
+    }
+
+    public void setOrderInnName(String orderInnName) {
+        this.orderInnName = orderInnName;
+    }
+
+    public String getOrderRoomTypeName() {
+        return orderRoomTypeName;
+    }
+
+    public void setOrderRoomTypeName(String orderRoomTypeName) {
+        this.orderRoomTypeName = orderRoomTypeName;
+    }
 
     public String getOmsOrderCode() {
         return omsOrderCode;
@@ -713,6 +733,8 @@ public class Order extends Domain {
         handOrder.setCompanyId(order.getCompanyId());
         //设置房型名称
         handOrder.setRoomTypeName(order.getRoomTypeName());
+        handOrder.setOrderRoomTypeName(order.getRoomTypeName());
+        handOrder.setOrderInnName(order.getOrderInnName());
         //每日信息
         handOrder.setDailyInfoses(getDailyInfos(order, roomTypeInfoDto));
         //入住人信息

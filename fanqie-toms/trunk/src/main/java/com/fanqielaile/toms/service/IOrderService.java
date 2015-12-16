@@ -17,6 +17,7 @@ import com.taobao.api.ApiException;
 import net.sf.json.JSONObject;
 import org.dom4j.DocumentException;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -236,4 +237,6 @@ public interface IOrderService {
      * @param pushXml
      */
     void pushOrderStatusMethod(String pushXml) throws Exception;
+
+    void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception;
 }

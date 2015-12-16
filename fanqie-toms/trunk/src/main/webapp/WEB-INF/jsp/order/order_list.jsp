@@ -13,12 +13,19 @@
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
-<title>订单管理</title>
-<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
-<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
-<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/ace.min.css">
-<script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/layer/layer.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>订单管理</title>
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/ace.min.css">
+    <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
+    <script src="<%=basePath%>/assets/layer/layer.js"></script>
+</head>
+
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
     <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_orders"/>" method="post">
@@ -63,6 +70,7 @@
                           method="post">
                         <input type="hidden" name="channelSource" id="channelSource" value="${order.channelSource}"/>
                         <input type="hidden" name="orderStatus" id="orderStatus" value="${order.orderStatus}"/>
+
                         <div>
                             日期选择：
                             <select name="searchType" class="search-type">
@@ -82,12 +90,24 @@
                             <input class="begin-date" type="text" placeholder="开始时间" name="beginDate"
                                    value="${order.beginDate}"/>
                             至 <input class="end-date" type="text"
-                                                                        value="${order.endDate}" name="endDate"
-                                                                        placeholder="截止时间"/>
-                            关键字：<input type="text" value="${order.channelOrderCode}" name="channelOrderCode"
+                                     value="${order.endDate}" name="endDate"
+                                     placeholder="截止时间"/>
+                            关键字：<input type="text" value="${order.channelOrderCode}" class="keyword"
+                                       name="channelOrderCode"
                                        placeholder="渠道订单号"/>
                             <button type="submit" class="btn-info btn-search">查询</button>
+
+                            <button type="button" style="float: right" class="btn-success btn-export-form">导出订单</button>
                         </div>
+                    </form>
+                    <form id="export-order-form" action="<c:url value="/order/order_export"/>" target="_blank"
+                          method="post">
+                        <input type="hidden" name="searchType" class="search-type-form">
+                        <input type="hidden" name="channelOrderCode" class="channel-order-code-form">
+                        <input type="hidden" name="channelSource" class="channel-source-form">
+                        <input type="hidden" name="orderStatus" class="order-status-form">
+                        <input type="hidden" name="beginDate" class="begin-date-form">
+                        <input type="hidden" name="endDate" class="end-date-form">
                     </form>
                     <%-- <div class="table-header">
                          所有筛选条件下，共有 <span
@@ -182,7 +202,14 @@
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
-                                        <td>${d.totalPrice}</td>
+                                        <td>
+                                            <c:if test="${d.channelSource =='HAND_ORDER'}">
+                                                ${d.prepayPrice}
+                                            </c:if>
+                                            <c:if test="${d.channelSource != 'HAND_ORDER'}">
+                                                ${d.totalPrice}
+                                            </c:if>
+                                        </td>
                                         <td>${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
@@ -206,7 +233,7 @@
         </div>
         <c:if test="${not empty data && page.pageCount>1}">
             <!-- PAGE CONTENT ENDS -->
-            <toms:page linkUrl="/order/find_orders"  pagerDecorator="${pageDecorator}"/>
+            <toms:page linkUrl="/order/find_orders" pagerDecorator="${pageDecorator}"/>
         </c:if>
         <c:if test="${empty data}">
             <div class="alert alert-danger center">
@@ -230,6 +257,7 @@
             </div>
             <input type="hidden" class="cancel-hand_order-url" value="<c:url value="/order/cancel_hand_order.json"/>"/>
             <input type="hidden" class="cancel-order-id" name="orderId" value=""/>
+
             <div class="modal-body">
                 <div>
                     <label class="order-status"></label><br/>
@@ -257,11 +285,13 @@
         </div>
     </div>
 </div>
+</html>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/js/order.js"></script>
 
 
 <script>
+
     $.datepicker.regional['zh-CN'] = {
         closeText: '关闭',
         prevText: '<上月',
@@ -286,4 +316,6 @@
         showOtherMonths: true,
         selectOtherMonths: false,
     });
+
+
 </script>

@@ -92,4 +92,12 @@ public interface OrderDao {
      * @return
      */
     Order selectOrderByOmsOrderCodeAndChannelSourceCode(@Param("order") Order orderByOmsPush);
+
+    /**
+     * 不分页查询
+     *
+     * @param orderParamDto
+     * @return
+     */
+    List<OrderParamDto> selectOrderByNoPage(@Param("order") OrderParamDto orderParamDto);
 }
