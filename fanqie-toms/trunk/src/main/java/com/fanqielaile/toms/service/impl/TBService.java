@@ -2,9 +2,7 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
-import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
-import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
@@ -24,7 +22,6 @@ import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoom;
 import com.taobao.api.domain.XRoomType;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +58,6 @@ public class TBService implements ITPService {
     @Resource
     private IOtaInnRoomTypeGoodsDao goodsDao;
     @Resource
-    private IOtaRoomPriceService otaRoomPriceService;
-    @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
     @Resource
     private ITimerRatePriceDao timerRatePriceDao;
@@ -93,27 +88,61 @@ public class TBService implements ITPService {
         OtaPriceModelDto otaPriceModel = null;
         OtaInnOtaDto otaInnOta = null;
         OtaTaoBaoArea andArea = null;
-        //客栈
-        InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
-        if (omsInnDto!=null){
-            //InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
-            omsInnDto.setInnId(tbParam.getInnId());
-            if (!StringUtils.isEmpty(omsInnDto.getCity())) {
-                andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
-            }
-            if (!StringUtils.isEmpty(omsInnDto.getCounty()) && andArea!=null) {
-                OtaTaoBaoArea countyArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(),omsInnDto.getCounty());
-                if (countyArea!=null){
-                    andArea.setAreaCode(countyArea.getAreaCode());
+        if (!tbParam.isSj()){
+            List<OtaInnRoomTypeGoodsDto> list = goodsDao.selectGoodsByInnIdAndCompany(innId,company.getId());
+            TBXHotelUtil.roomRoomNumZeroUpdate(list,otaInfo);
+        }else {
+            //客栈
+            InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
+            if (omsInnDto != null) {
+                //InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+                omsInnDto.setInnId(tbParam.getInnId());
+                if (!StringUtils.isEmpty(omsInnDto.getCity())) {
+                    andArea = taoBaoAreaDao.findCityAndArea(omsInnDto.getCity());
                 }
-            }
-            //推客栈、如果存在再获取客栈
-            if (tbParam.getAccountId()!=null) {
-                log.info("========开始推客栈【"+omsInnDto.getBrandName()+"["+omsInnDto.getInnId()+"]"+"】==============");
-                xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
-                if (xHotel != null) {
+                if (!StringUtils.isEmpty(omsInnDto.getCounty()) && andArea != null) {
+                    OtaTaoBaoArea countyArea = taoBaoAreaDao.findCountyAndCity(andArea.getCityCode(), omsInnDto.getCounty());
+                    if (countyArea != null) {
+                        andArea.setAreaCode(countyArea.getAreaCode());
+                    }
+                }
+                //推客栈、如果存在再获取客栈
+                if (tbParam.getAccountId() != null) {
+                    log.info("========开始推客栈【" + omsInnDto.getBrandName() + "[" + omsInnDto.getInnId() + "]" + "】==============");
+                    xHotel = TBXHotelUtil.hotelAddOrUpdate(otaInfo, omsInnDto, andArea);
+                    if (xHotel != null) {
+                        //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+                        otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(), company.getId(), otaInfo.getOtaInfoId());
+                        //未绑定
+                        BangInnDto bangInnDto = null;
+                        if (bangInn == null) {
+                            bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
+                            bangInnDao.createBangInn(bangInnDto);
+                            //已绑定
+                        } else {
+                            BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+                            bangInnDao.updateBangInnTp(bangInn);
+                        }
+                        String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
+                        if (otaInnOta == null) {
+                            otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
+                            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                            otaInnOtaDao.saveOtaInnOta(otaInnOta);
+                            otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
+                            priceModelDao.savePriceModel(otaPriceModel);
+                        } else {
+                            otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
+                            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                            otaInnOtaDao.updateOtaInnOta(otaInnOta);
+                        }
+                        //添加更新宝贝
+                        updateOrAddRoom(tbParam, otaInfo, otaPriceModel, otaInnOta, andArea);
+                    } else {
+                        throw new Exception(" 推送淘宝客栈失败!");
+                    }
+                    //绑定底价的客栈
+                } else {
                     //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-                    otaInnOta = otaInnOtaDao.selectOtaInnOtaByHid(xHotel.getHid(), company.getId(), otaInfo.getOtaInfoId());
                     //未绑定
                     BangInnDto bangInnDto = null;
                     if (bangInn == null) {
@@ -121,47 +150,18 @@ public class TBService implements ITPService {
                         bangInnDao.createBangInn(bangInnDto);
                         //已绑定
                     } else {
-                        BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+                        BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
+                        if (!tbParam.isSj()) {
+                            bangInn.setAccountIdDi(null);
+                        } else {
+                            bangInn.setSj(1);
+                        }
                         bangInnDao.updateBangInnTp(bangInn);
                     }
-                    String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
-                    if (otaInnOta == null) {
-                        otaInnOta = OtaInnOtaDto.toDto(xHotel.getHid(), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
-                        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-                        otaInnOtaDao.saveOtaInnOta(otaInnOta);
-                        otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
-                        priceModelDao.savePriceModel(otaPriceModel);
-                    } else {
-                        otaPriceModel = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-                        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-                        otaInnOtaDao.updateOtaInnOta(otaInnOta);
-                    }
-                    //添加更新宝贝
-                    updateOrAddRoom(tbParam, otaInfo, otaPriceModel, otaInnOta, andArea);
-                } else {
-                   throw  new Exception(" 推送淘宝客栈失败!");
                 }
-            //绑定底价的客栈
-            }else {
-                //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-                //未绑定
-                BangInnDto bangInnDto = null;
-                if (bangInn == null) {
-                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
-                    bangInnDao.createBangInn(bangInnDto);
-                    //已绑定
-                } else {
-                    BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
-                    if (!tbParam.isSj()){
-                        bangInn.setAccountIdDi(null);
-                    }else {
-                        bangInn.setSj(1);
-                    }
-                    bangInnDao.updateBangInnTp(bangInn);
-                }
+            } else {
+                log.info("无客栈信息!");
             }
-        }else {
-            log.info("无客栈信息!");
         }
 
     }
