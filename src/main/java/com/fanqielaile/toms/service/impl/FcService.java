@@ -10,6 +10,7 @@ import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.TimerRateType;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
@@ -212,35 +213,7 @@ public class FcService implements ITPService {
 
     }
 
-    @Override
-    public void updateRoomTypePrice(OtaInfoRefDto o, OtaRoomPriceDto roomPriceDto) throws Exception {
-        Integer innId = roomPriceDto.getInnId();
-        String companyId = roomPriceDto.getCompanyId();
-        Company company = companyDao.selectCompanyById(companyId);
-        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, innId);
-        List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfoToFc(bangInn);
-        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), companyId, roomPriceDto.getOtaInfoId());
-        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), companyId, o.getUsedPriceModel().name()));
-        if (otaInnOta != null && otaInnOta.getSj() == 0) {
-            throw new TomsRuntimeException("FC 此客栈已经下架!");
-        }
-        //房型
-        if (!CollectionUtils.isEmpty(list)) {
-            for (RoomTypeInfo r : list) {
-                FcRoomTypeFqDto roomIdOtaInfo = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(bangInn.getInnId(), r.getRoomTypeId(), o.getOtaInfoId(), o.getCompanyId());
-                if (roomIdOtaInfo != null && !StringUtils.isEmpty(roomIdOtaInfo.getFcRoomTypeId()) && Constants.FC_SJ.equals(roomIdOtaInfo.getSj())) {
-                    List<RoomDetail> roomDetail = r.getRoomDetail();
-                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), roomPriceDto.getOtaInfoId()));
-                    FCXHotelUtil.syncRoomInfo(o, roomIdOtaInfo, roomDetail, priceDto, commission);
-                } else {
-                    log.info("FC 此房型还没有在上架 roomTypeId" + r.getRoomTypeId());
-                }
 
-            }
-        } else {
-            throw new TomsRuntimeException("FC 无房型信息!");
-        }
-    }
 
     @Override
     public void updateHotelFailTimer(OtaInfoRefDto o) {
@@ -295,7 +268,9 @@ public class FcService implements ITPService {
                     priceDto.setModifierId(userId);
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
-                        List<RoomDetail> roomDetailList = otaRoomPriceService.obtRoomAvailFc(bangInn, price.getRoomTypeId());
+                        String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),price.getRoomTypeId(), CommonApi.checkRoom);
+                        //List<RoomDetail> roomDetailList = otaRoomPriceService.obtRoomAvailFc(bangInn, price.getRoomTypeId());
+                        List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                         boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b) {
                             Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto, commission);

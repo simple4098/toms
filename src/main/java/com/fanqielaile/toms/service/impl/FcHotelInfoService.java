@@ -7,6 +7,7 @@ import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.*;
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.*;
@@ -186,11 +187,12 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                         fcInnImg.setInnId(bangInnDto.getInnId());
                         fcInnImgList.add(fcInnImg);
                     }*/
-                    List<RoomTypeInfo> roomTypeInfoList = otaRoomPriceService.obtOmsRoomInfoToFc(bangInnDto);
+                    String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.ROOM_TYPE);
+                    List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
+                    //List<RoomTypeInfo> roomTypeInfoList = otaRoomPriceService.obtOmsRoomInfoToFc(bangInnDto);
                     if (!CollectionUtils.isEmpty(roomTypeInfoList)){
                         List<FcRoomTypeDtoInfo> roomTypeInfoDtoList = new ArrayList<FcRoomTypeDtoInfo>();
                         for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-
                             List<OmsImg> list = roomTypeInfo.getImgList();
                             for (OmsImg omsImg:list){
                                 fcInnImg = new FcInnImg();

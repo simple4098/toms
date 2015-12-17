@@ -26,7 +26,7 @@ public class RoomTypeController extends BaseController {
     private IRoomTypeService roomTypeService;
 
     @RequestMapping("/obtRoomType")
-    public String roomType(Model model,ParamDto paramDto){
+    public String roomType(){
         return "/room/room_type";
     }
     @RequestMapping("/ajax/obtRoomType")

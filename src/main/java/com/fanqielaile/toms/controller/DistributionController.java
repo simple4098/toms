@@ -1,8 +1,11 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.Pagination;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.*;
@@ -221,7 +224,10 @@ public class DistributionController extends BaseController{
         UserInfo currentUser = getCurrentUser();
         BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(currentUser.getCompanyId(), Integer.valueOf(innId));
         try {
-            List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
+            Company company = companyService.findCompanyByid(currentUser.getCompanyId());
+            String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+            //List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
+            List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
             model.addAttribute("list",list);
             model.addAttribute("otaInfoId",otaInfoId);
             model.addAttribute("innId",innId);
