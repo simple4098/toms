@@ -719,7 +719,11 @@ public class Order extends Domain {
         handOrder.setTotalPrice(getTotalPrice(order, roomTypeInfoDto));
         handOrder.setBasicTotalPrice(handOrder.getTotalPrice());
         //设置成本价，总价*（1-比例）
-        handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
+        if (UsedPriceModel.MAI.equals(order.getUsedPriceModel())) {
+            handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
+        } else {
+            handOrder.setCostPrice(handOrder.getTotalPrice());
+        }
         //TODO 设置预付，成本
         handOrder.setPrepayPrice(order.getPayment());
         handOrder.setPayment(order.getPayment());
