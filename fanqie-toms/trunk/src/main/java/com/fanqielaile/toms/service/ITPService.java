@@ -47,7 +47,7 @@ public interface ITPService {
      * @param infoRefDto 渠道信息
      * @param roomPriceDto 房型价格对象
      */
-    void updateRoomTypePrice(OtaInfoRefDto infoRefDto, OtaRoomPriceDto roomPriceDto)throws Exception;
+    /*void updateRoomTypePrice(OtaInfoRefDto infoRefDto, OtaRoomPriceDto roomPriceDto)throws Exception;*/
 
     /**
      * 定时推送失败的 客栈数据

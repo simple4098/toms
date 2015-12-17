@@ -9,7 +9,7 @@
 
 </head>
 <div class="page-content">
-    <c:set value="${roomType.list}" var="list"/>
+    <c:set value="${roomType.roomStatus}" var="list"/>
     <div class="row" style=" height: 197px; ">
         <div class="col-xs-12">
             <h3 class="header smaller lighter blue">${bangInn.innName}</h3>

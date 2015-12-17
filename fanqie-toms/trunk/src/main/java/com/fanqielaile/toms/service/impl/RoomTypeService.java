@@ -6,6 +6,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.UsedPriceModel;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
@@ -13,6 +14,7 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -61,41 +63,34 @@ public class RoomTypeService implements IRoomTypeService {
             }
         }
         if (paramDto.getAccountId()!=null){
-            String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
-            log.info("==============roomTypeUrl:" + roomTypeUrl);
-            return  obtRoomTypeInfoDto(roomTypeUrl);
+            String roomStatusUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.roomStatus);
+            log.info("roomStatusUrl:" + roomStatusUrl);
+            return  obtRoomTypeInfoDto(roomStatusUrl);
         }
         return null;
 
     }
 
-    private RoomTypeInfoDto obtRoomTypeInfoDto(String url) throws IOException {
-        String httpGets = HttpClientUtil.httpGets(url, null);
+  /*  public List<RoomStatusDetail> getRoomStatus(String roomStatusUrl) throws IOException{
+        String httpGets = HttpClientUtil.httpGets(roomStatusUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
-        RoomTypeInfoDto roomTypeInfoDto = null;
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
-            roomTypeInfoDto = new RoomTypeInfoDto();
-            List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-            List<RoomDetail> roomDetail = list.get(0).getRoomDetail();
-            roomTypeInfoDto.setList(list);
-            roomDetail(roomDetail,roomTypeInfoDto);
-            roomTypeInfoDto.setList(list);
-            return roomTypeInfoDto;
+            return  JacksonUtil.json2list(jsonObject.get("list").toString(), RoomStatusDetail.class);
         }
-      return null;
+        return null;
+    }*/
+
+    private RoomTypeInfoDto obtRoomTypeInfoDto(String roomStatusUrl) throws IOException {
+       List<RoomStatusDetail> roomDetail = InnRoomHelper.getRoomStatus(roomStatusUrl);
+       return roomDetail(roomDetail);
     }
-    private RoomTypeInfoDto obtRoomTypeInfoDto(BangInn bangInn,String url,String otaInfoId,String companyId,OtaCommissionPercentDto commission) throws IOException {
-        String httpGets = HttpClientUtil.httpGets(url, null);
-        JSONObject jsonObject = JSONObject.fromObject(httpGets);
-        RoomTypeInfoDto roomTypeInfoDto = null;
+    private RoomTypeInfoDto obtRoomTypeInfoDto(BangInn bangInn,String roomStatus,String otaInfoId,String companyId,OtaCommissionPercentDto commission) throws IOException {
+        List<RoomStatusDetail> detailList = InnRoomHelper.getRoomStatus(roomStatus);
         OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(),companyId,otaInfoId);
         if (otaInnOta!=null){
             OtaPriceModelDto priceModelDto = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
-            if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
-                roomTypeInfoDto = new RoomTypeInfoDto();
-                List<RoomTypeInfo> list = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
-                List<RoomDetail> roomDetail = list.get(0).getRoomDetail();
-                for (RoomTypeInfo r:list){
+            if (detailList != null) {
+                for (RoomStatusDetail r:detailList){
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), otaInfoId));
                     Double value = null;
                     Date startDate = null;
@@ -107,10 +102,8 @@ public class RoomTypeService implements IRoomTypeService {
                     }
                     for (RoomDetail d:r.getRoomDetail()){
                         double price = new BigDecimal(d.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-
                         d.setCostPrice(TomsUtil.price(price, commission!=null?new BigDecimal(commission.getCommissionPercent()):null));
                         Date parseDate = DateUtil.parseDate(d.getRoomDate());
-
                         //售价只有MAI2DI才展示
                         if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
                             price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
@@ -123,10 +116,7 @@ public class RoomTypeService implements IRoomTypeService {
                         d.setRoomPrice(price);
                     }
                 }
-                roomTypeInfoDto.setList(list);
-                roomDetail(roomDetail,roomTypeInfoDto);
-                roomTypeInfoDto.setList(list);
-                return roomTypeInfoDto;
+                return  roomDetail(detailList);
             }
         }
 
@@ -146,12 +136,15 @@ public class RoomTypeService implements IRoomTypeService {
         }
         OtaInfoRefDto otaInfoRef = otaInfoDao.findOtaInfoByOtaIdAndCompanyId(new OtaInfoRefDto(otaInfoId, company.getId()));
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), otaInfoRef.getUsedPriceModel().name()));
-        String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
-        return  obtRoomTypeInfoDto(bangInn,roomTypeUrl,otaInfoId,company.getId(),commission);
+        //String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
+        String roomStatus = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.roomStatus);
+        return  obtRoomTypeInfoDto(bangInn,roomStatus,otaInfoId,company.getId(),commission);
     }
 
-    private void roomDetail( List<RoomDetail> roomDetail,RoomTypeInfoDto roomTypeInfoDto){
-        if (roomDetail != null) {
+    private RoomTypeInfoDto roomDetail(  List<RoomStatusDetail> roomStatusDetails){
+        if (roomStatusDetails != null) {
+            RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
+            List<RoomDetail> roomDetail = roomStatusDetails.get(0).getRoomDetail();
             List<String> dates = new ArrayList<String>();
             Date today = DateUtil.parseDate(DateUtil.formatDateToString(new Date(), "yyyy-MM-dd"));
             for (RoomDetail detail : roomDetail) {
@@ -167,6 +160,9 @@ public class RoomTypeService implements IRoomTypeService {
                 dates.add(v);
             }
             roomTypeInfoDto.setRoomDates(dates);
+            roomTypeInfoDto.setRoomStatus(roomStatusDetails);
+            return  roomTypeInfoDto;
         }
+        return  null;
     }
 }

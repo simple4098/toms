@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface IOtaRoomPriceService {
 
-    List<RoomTypeInfo> obtOmsRoomInfo( BangInn bangInn) throws Exception;
+    /*List<RoomTypeInfo> obtOmsRoomInfo( BangInn bangInn) throws Exception;
 
-    List<RoomTypeInfo> obtOmsRoomInfoToFc( BangInn bangInn) throws Exception;
+    List<RoomTypeInfo> obtOmsRoomInfoToFc( BangInn bangInn) throws Exception;*/
 
-    OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto);
+    /*OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto);*/
 
-    void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto,  BangInn bangInn)throws Exception;
+    /*void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto,  BangInn bangInn)throws Exception;*/
 
     //获取oms具体某一个房型数据
-    List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception;
-    List<RoomDetail> obtRoomAvailTb(BangInn bangInn,Integer roomTypeId)throws Exception;
+    /*List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception;
+    List<RoomDetail> obtRoomAvailTb(BangInn bangInn,Integer roomTypeId)throws Exception;*/
 }

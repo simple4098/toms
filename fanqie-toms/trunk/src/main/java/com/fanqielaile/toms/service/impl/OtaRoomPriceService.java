@@ -38,7 +38,7 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
     private IOtaRoomPriceDao otaRoomPriceDao;
 
 
-    @Override
+    /*@Override
     public List<RoomTypeInfo> obtOmsRoomInfo(BangInn bangInn) throws Exception {
         Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
@@ -60,14 +60,14 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
             return JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
         }
         return  null;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public OtaRoomPriceDto findRoomPrice(OtaRoomPriceDto roomPriceDto) {
        return otaRoomPriceDao.selectOtaRoomPriceDto(roomPriceDto);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void saveRoomPriceDto(OtaRoomPriceDto roomPriceDto , BangInn bangInn) throws Exception {
         Double value = roomPriceDto.getValue();
         if (value<0){
@@ -102,9 +102,9 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
             }
         }
         otaRoomPriceDao.saveOtaRoomPriceDto(roomPriceDto);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public List<RoomDetail> obtRoomAvailFc(BangInn bangInn,Integer roomTypeId)throws Exception {
         Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
         String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),roomTypeId, CommonApi.checkRoom);
@@ -126,7 +126,7 @@ public class OtaRoomPriceService implements IOtaRoomPriceService {
             return JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
         }
         return  null;
-    }
+    }*/
 
 
 }

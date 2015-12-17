@@ -5,8 +5,8 @@
   String path = request.getContextPath();
   String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
-<c:set value="${roomType.list}" var="list"/>
-<c:if test="${not empty roomType.list && not empty roomType.roomDates}">
+<c:set value="${roomType.roomStatus}" var="list"/>
+<c:if test="${not empty roomType.roomStatus && not empty roomType.roomDates}">
   <div class="table-left">
     <table class="table table-bordered">
       <input type="hidden" id="maiAccountId" value="${paramDto.maiAccount}"/>
@@ -21,7 +21,7 @@
         </td>
       </tr>
       <tr class="active"><td colspan="2">房型</td></tr>
-      <c:forEach items="${roomType.list}" var="v">
+      <c:forEach items="${roomType.roomStatus}" var="v">
         <tr class="active"><td colspan="2">${v.roomTypeName}</td></tr>
       </c:forEach>
     </table>
@@ -53,7 +53,7 @@
     </table>
   </div>
 </c:if>
-<c:if test="${empty roomType.list || empty roomType.roomDates}">
+<c:if test="${empty roomType.roomStatus || empty roomType.roomDates}">
   <div class="alert alert-danger center">
     没有房型数据,请选择分类/客栈查询房态房量
   </div>

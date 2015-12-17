@@ -13,10 +13,19 @@ import java.util.List;
 public class RoomTypeInfoDto {
 
     public List<RoomTypeInfo> list;
+    public List<RoomStatusDetail> roomStatus;
     public List<String> roomDates;
     public String roomTypeId;
     public String roomTypeName;
     public Integer maxRoomNum;
+
+    public List<RoomStatusDetail> getRoomStatus() {
+        return roomStatus;
+    }
+
+    public void setRoomStatus(List<RoomStatusDetail> roomStatus) {
+        this.roomStatus = roomStatus;
+    }
 
     public Integer getMaxRoomNum() {
         return maxRoomNum;

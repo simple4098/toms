@@ -1,13 +1,9 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * DESC : 第三方公司 查看房态房量

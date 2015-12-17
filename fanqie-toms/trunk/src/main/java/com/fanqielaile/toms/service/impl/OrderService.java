@@ -1029,16 +1029,17 @@ public class OrderService implements IOrderService {
         List<RoomTypeInfoDto> roomTypeInfoDtos = new ArrayList<>();
         //处理找出的房型信息，如果房量为空的提出数据
         if (null != roomType) {
-            if (ArrayUtils.isNotEmpty(roomType.getList().toArray())) {
+            List<RoomStatusDetail> roomStatus = roomType.getRoomStatus();
+            if (ArrayUtils.isNotEmpty(roomStatus.toArray())) {
                 outer:
-                for (RoomTypeInfo roomTypeInfo : roomType.getList()) {
-                    if (ArrayUtils.isNotEmpty(roomTypeInfo.getRoomDetail().toArray())) {
+                for (RoomStatusDetail roomStatusDetail : roomStatus) {
+                    if (ArrayUtils.isNotEmpty(roomStatusDetail.getRoomDetail().toArray())) {
                         RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
-                        for (RoomDetail roomDetail : roomTypeInfo.getRoomDetail()) {
+                        for (RoomDetail roomDetail : roomStatusDetail.getRoomDetail()) {
                             if (null != roomDetail.getRoomNum()) {
                                 if (0 != roomDetail.getRoomNum()) {
-                                    roomTypeInfoDto.setRoomTypeId(roomTypeInfo.getRoomTypeId() + "");
-                                    roomTypeInfoDto.setRoomTypeName(roomTypeInfo.getRoomTypeName());
+                                    roomTypeInfoDto.setRoomTypeId(roomStatusDetail.getRoomTypeId() + "");
+                                    roomTypeInfoDto.setRoomTypeName(roomStatusDetail.getRoomTypeName());
                                     roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
                                 }
                                 if (0 == roomDetail.getRoomNum() || StringUtils.isEmpty(roomDetail.getRoomNum() + "")) {

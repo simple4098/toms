@@ -8,6 +8,7 @@ import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.UsedPriceModel;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.*;
@@ -18,6 +19,7 @@ import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,34 +44,27 @@ public class FCXHotelUtil {
 
     public static Response syncRateInfo(Company company, OtaInfoRefDto o, FcRoomTypeFqDto fcRoomTypeFqDto,
                                         BangInn bangInn, Integer roomTypeId, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) throws Exception {
-
         SyncRateInfoRequest syncRateInfoRequest = syncRateInfoRequestMethod(o);
         SyncRateInfoDataRequest syncRateInfoDataRequest = syncRateInfoDataRequestMethod(fcRoomTypeFqDto);
         List<SaleInfo> saleInfoList = new ArrayList<>();
         SaleInfo saleInfo = null;
         String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), roomTypeId, CommonApi.checkRoom);
         log.info("fc oms url:" + room_type);
-        String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
-        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
-        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString())) {
-            Object o1 = jsonObject.get("data");
-            if(!JSONNull.getInstance().equals(o1)){
-                String data = jsonObject.getJSONArray("data").toString();
-                if (!StringUtils.isEmpty(data)){
-                    List<RoomDetail> roomDetail = JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
-                    for (RoomDetail room : roomDetail) {
-                        saleInfo = obtSaleInfoList(room, priceDto, commission);
-                        saleInfoList.add(saleInfo);
-                    }
-                    syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
-                    syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
-                    String xml = FcUtil.fcRequest(syncRateInfoRequest);
-                   /* log.info("房仓推送宝贝上架xml:" + xml);*/
-                    String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
-                    log.info("fc result :" + result);
-                    return XmlDeal.pareFcResult(result);
-                }
+        List<RoomDetail> roomDetail = InnRoomHelper.getRoomDetail(room_type);
+        /*String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);*/
+        if (!CollectionUtils.isEmpty(roomDetail)) {
+            for (RoomDetail room : roomDetail) {
+                saleInfo = obtSaleInfoList(room, priceDto, commission);
+                saleInfoList.add(saleInfo);
             }
+            syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
+            syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
+            String xml = FcUtil.fcRequest(syncRateInfoRequest);
+                   /* log.info("房仓推送宝贝上架xml:" + xml);*/
+            String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
+            log.info("fc result :" + result);
+            return XmlDeal.pareFcResult(result);
         }
         return null;
     }

@@ -111,8 +111,9 @@ $('.hand-btn').on('click', function () {
 				$('.tag-id').val(tagId);
 				$('.mai-account').val(maiAccount);
 				$('.room-type').append('<option value="">-请选择-</option>');
-				for (var i = 0; i < data.roomType.list.length; i++) {
-					$('.room-type').append('<option value="' + data.roomType.list[i].roomTypeId + '">' + data.roomType.list[i].roomTypeName + '</option>');
+				for (var i = 0; i < data.roomType.roomStatus.length; i++) {
+					var obj = data.roomType.roomStatus[i];
+					$('.room-type').append('<option value="' +obj.roomTypeId + '">' + obj.roomTypeName + '</option>');
 					$('.channel-order-code').val(null);
 					$('.guest-name').val(null);
 					$('.guest-mobile').val(null);

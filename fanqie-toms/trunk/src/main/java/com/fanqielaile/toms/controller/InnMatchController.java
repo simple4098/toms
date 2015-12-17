@@ -1,11 +1,14 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.Pagination;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.FcHotelInfo;
@@ -184,7 +187,10 @@ public class InnMatchController extends BaseController {
                 }
                 List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInn.getInnName());
                 model.addAttribute("hotel", hotel);
-                List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
+                Company company = companyService.findCompanyByid(companyId);
+                String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+                List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
+                //List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
                 model.addAttribute("omsRoomTypeList", list);
                 model.addAttribute("inn", bangInn);
                 model.addAttribute("omsInn", omsInn);

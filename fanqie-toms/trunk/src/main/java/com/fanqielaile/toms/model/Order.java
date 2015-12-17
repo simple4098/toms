@@ -9,6 +9,7 @@ import com.fanqie.core.dto.OrderParamDto;
 import com.fanqie.core.dto.RoomAvailParamDto;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.dto.RoomStatusDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.*;
@@ -750,11 +751,12 @@ public class Order extends Domain {
     private static BigDecimal getTotalPrice(Order order, RoomTypeInfoDto roomTypeInfoDto) {
         BigDecimal result = BigDecimal.ZERO;
         if (null != roomTypeInfoDto) {
-            if (ArrayUtils.isNotEmpty(roomTypeInfoDto.getList().toArray())) {
-                RoomTypeInfo roomTypeInfoResult = new RoomTypeInfo();
-                for (RoomTypeInfo roomTypeInfo : roomTypeInfoDto.getList()) {
-                    if (roomTypeInfo.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
-                        roomTypeInfoResult = roomTypeInfo;
+            List<RoomStatusDetail> roomStatus = roomTypeInfoDto.getRoomStatus();
+            if (ArrayUtils.isNotEmpty(roomStatus.toArray())) {
+                RoomStatusDetail roomTypeInfoResult = null;
+                for (RoomStatusDetail statusDetail : roomStatus) {
+                    if (statusDetail.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
+                        roomTypeInfoResult = statusDetail;
                     }
                 }
                 if (null != roomTypeInfoResult) {
@@ -779,11 +781,12 @@ public class Order extends Domain {
         List<DailyInfos> dailyInfoses = new ArrayList<>();
         if (null != order.getLiveTime() && null != order.getLeaveTime()) {
             //获取选中房型的房价信息
-            if (ArrayUtils.isNotEmpty(roomTypeInfoDto.getList().toArray())) {
-                RoomTypeInfo roomTypeInfoResult = new RoomTypeInfo();
-                for (RoomTypeInfo roomTypeInfo : roomTypeInfoDto.getList()) {
-                    if (roomTypeInfo.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
-                        roomTypeInfoResult = roomTypeInfo;
+            List<RoomStatusDetail> roomStatus = roomTypeInfoDto.getRoomStatus();
+            if (ArrayUtils.isNotEmpty(roomStatus.toArray())) {
+                RoomStatusDetail roomTypeInfoResult = new RoomStatusDetail();
+                for (RoomStatusDetail roomStatusDetail : roomStatus) {
+                    if (roomStatusDetail.getRoomTypeId().toString().equals(order.getRoomTypeId())) {
+                        roomTypeInfoResult = roomStatusDetail;
                     }
                 }
                 //创建订单中选中入住日期的每日房价

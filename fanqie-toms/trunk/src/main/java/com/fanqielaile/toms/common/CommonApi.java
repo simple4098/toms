@@ -28,6 +28,15 @@ public class CommonApi {
     public static   String FcDeleteRoomTypeUrl;
     public static   String FcDeleteHotelMappingUrl;
     public static   String checkRoom;
+    public static   String roomStatus;
+
+    public  String getRoomStatus() {
+        return roomStatus;
+    }
+
+    public  void setRoomStatus(String roomStatus) {
+        CommonApi.roomStatus = roomStatus;
+    }
 
     public  String getFcHotelInfo() {
         return fcHotelInfo;
