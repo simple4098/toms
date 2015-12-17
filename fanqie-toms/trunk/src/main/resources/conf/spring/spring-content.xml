@@ -172,7 +172,7 @@
                      <property name="roomType" value="http://openapi.test.fanqielaile.com/api/queryRoomType"></property>
                      <property name="checkRoom" value="http://openapi.test.fanqielaile.com/api/check_room_avail"></property>
                      <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/queryInn"></property>
-                  <property name="roomStatus" value="http:///openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
+                  <property name="roomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                     <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                     <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
