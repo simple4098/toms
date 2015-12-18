@@ -332,4 +332,9 @@
         where b.sj=1 and oio.sj=1 and oio.ota_info_id='${otaInfoId}'  and b.company_id ='${companyId}'
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
+
+    <update id="updateSjBangInn">
+        UPDATE bang_inn SET  <if test="!sj">sj=0</if><if test="sj">sj=1</if>
+        where inn_id=#{innId} and company_id='${companyId}'
+    </update>
 </mapper>
