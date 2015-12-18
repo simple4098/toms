@@ -202,4 +202,12 @@ public interface BangInnDao {
      * @param otaInfoId 渠道id
      */
     List<BangInnDto> selectBangInnByCompanyIdSj(@Param("companyId") String companyId, @Param("otaInfoId") String otaInfoId);
+
+    /**
+     *更新客栈关系上架状态
+     * @param innId 客栈id
+     * @param companyId 公司id
+     * @param sj 是否上架
+     */
+    void updateSjBangInn( @Param("innId") Integer innId, @Param("companyId") String companyId, @Param("sj")boolean sj);
 }

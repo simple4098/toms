@@ -747,6 +747,7 @@ public class TBXHotelUtil {
                 }
                 String json = JacksonUtil.obj2json(inventoryList);
                 xRoom.setInventory(json);
+                log.info("库存设置为0："+json);
                 roomUpdate(refDto,xRoom);
             }
         }

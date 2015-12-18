@@ -89,8 +89,12 @@ public class TBService implements ITPService {
         OtaInnOtaDto otaInnOta = null;
         OtaTaoBaoArea andArea = null;
         if (!tbParam.isSj()){
+            otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(innId,company.getId(),otaInfo.getOtaInfoId());
+            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
             List<OtaInnRoomTypeGoodsDto> list = goodsDao.selectGoodsByInnIdAndCompany(innId,company.getId());
             TBXHotelUtil.roomRoomNumZeroUpdate(list,otaInfo);
+            bangInnDao.updateSjBangInn(innId,company.getId(),tbParam.isSj());
+            otaInnOtaDao.updateOtaInnOta(otaInnOta);
         }else {
             //客栈
             InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
