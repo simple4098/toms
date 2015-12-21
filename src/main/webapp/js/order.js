@@ -288,13 +288,13 @@ $('.btn-export-form').on('click', function () {
     var beginDateStr = $('.begin-date').val();
     var endDateStr = $('.end-date').val();
     if (null == beginDateStr || '' == beginDateStr || null == endDateStr || '' == endDateStr) {
-        layer.alert("导出订单时，必须写入时间段，开始时间和结束时间之差必须在31天之类", {icon: 5});
+        layer.alert("导出订单时，必须写入时间段，开始时间和结束时间之差必须在31天之内", {icon: 5});
         return false;
     } else {
         var beginDate = new Date(beginDateStr);
         var endDate = new Date(endDateStr);
         if ((endDate - beginDate) / 86400000 > 30) {
-            layer.alert("请检查输入的时间，开始时间和结束时间只差必须在31天之类", {icon: 5});
+            layer.alert("请检查输入的时间，开始时间和结束时间只差必须在31天之内", {icon: 5});
             return false;
         } else {
             var searchType = $('.search-type').val();
