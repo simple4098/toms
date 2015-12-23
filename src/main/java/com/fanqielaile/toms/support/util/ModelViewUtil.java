@@ -37,15 +37,21 @@ public class ModelViewUtil {
      * @return
      */
     public static String otaListView(OtaInfoRefDto otaInfo){
-        if (otaInfo!=null && OtaType.FC.equals(otaInfo.getOtaType())){
-            return "/match/inn_fc_match_list";
-        }
-        if (otaInfo!=null && OtaType.TB.equals(otaInfo.getOtaType())){
-            if(TBType.DEFAULT==otaInfo.getTbType()){
-                return "/match/ota/tb_type";
+        if(otaInfo!=null ){
+            if ( OtaType.FC.equals(otaInfo.getOtaType())){
+                return "/match/inn_fc_match_list";
             }
-            return "/match/inn_tb_match_list";
+            if ( OtaType.TB.equals(otaInfo.getOtaType())){
+                if(TBType.DEFAULT==otaInfo.getTbType()){
+                    return "/match/ota/tb_type";
+                }
+                return "/match/inn_tb_match_list";
+            }
+            if(OtaType.XC.equals(otaInfo.getOtaType())){
+                return "/match/inn_xc_match_list";
+            }
         }
+
         return "/match/not_ota";
     }
 

@@ -64,6 +64,12 @@
             <version>2.0.0</version>
         </dependency>
 
+        <!--携程依赖-->
+        <dependency>
+            <groupId>com.fanqie.xc</groupId>
+            <artifactId>cx-1.2</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
         <!--淘宝依赖-->
         <dependency>
             <groupId>com.taobao.api</groupId>

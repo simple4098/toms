@@ -24,6 +24,16 @@ public class FcRatePlan extends Domain {
     private String  companyId;
     //价格计划Id
     private String ratePlanId;
+    //渠道id
+    private String otaInfoId;
+
+    public String getOtaInfoId() {
+        return otaInfoId;
+    }
+
+    public void setOtaInfoId(String otaInfoId) {
+        this.otaInfoId = otaInfoId;
+    }
 
     public String getRatePlanId() {
         return ratePlanId;

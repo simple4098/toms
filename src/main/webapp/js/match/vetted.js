@@ -7,6 +7,8 @@ $("#sub-id").on("click",function(){
     var appKey= $("#appKey").val();
     var appSecret= $("#appSecret").val();
     var sessionKey= $("#sessionKey").val();
+    var xcUserName= $("#xc_user_name").val();
+    var xcPassword= $("#xc_password").val();
     var usedPriceModel = $("#usedPriceModel option:selected").val();
     if(appKey && appKey.length==0){
         $("#error").html("appKey 不能为空")
@@ -31,7 +33,7 @@ $("#sub-id").on("click",function(){
         url:url,
         type:'post',
         dataType:'json',
-        data:{"appKey":appKey,"appSecret":appSecret,"sessionKey":sessionKey,"otaInfoId":otaInfoId,"otaType":otaType,"usedPriceModel":usedPriceModel},
+        data:{"appKey":appKey,"appSecret":appSecret,"sessionKey":sessionKey,"otaInfoId":otaInfoId,"otaType":otaType,"usedPriceModel":usedPriceModel,"xcUserName":xcUserName,"xcPassword":xcPassword},
         success:function(data){
             if(data.status=='200'){
                 layer.msg("保存成功!");
