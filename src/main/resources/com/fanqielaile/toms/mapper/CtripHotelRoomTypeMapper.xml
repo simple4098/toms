@@ -9,26 +9,44 @@
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
-        <result column="xc_prent_hotel_id" property="ctripParentHotelId"/>
+        <result column="ctrip_prent_hotel_id" property="ctripParentHotelId"/>
         <result column="room_type_name" property="roomTypeName"/>
         <result column="room_type_id" property="roomTypeId"/>
-        <result column="bed_type" property="roomTypeId"/>
+        <result column="bed_type" property="bedType"/>
+        <result column="currency" property="currency"/>
+        <result column="check_in_num" property="checkInNum"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-  			id,xc_prent_hotel_id,room_type_name,room_type_id,bed_type,created_date,updated_date,deleted 
+  			id,ctrip_prent_hotel_id,room_type_name,room_type_id,bed_type,created_date,updated_date,deleted
        </sql>
     
        
        
-    <select id="findByCtripParentHotelId" parameterType="string" resultMap="BaseResultMap">
+    <select id="findByCtripParentHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from  xc_parent_room   where  deleted = 0
+        from  ctrip_parent_room   where  deleted = 0
         <if test="ctripParentHotelId!=null and ctripParentHotelId!=''">
-            and  xc_prent_hotel_id = '${ctripParentHotelId}';
+            and  ctrip_prent_hotel_id = '${ctripParentHotelId}';
         </if>
     </select>
-    
+
+    <select id="findByCtripParentHotelIdAndRoomTypeId"  resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  ctrip_parent_room   where  deleted = 0
+        <if test="parentHotelId!=null and parentHotelId!=''">
+            and  ctrip_prent_hotel_id = '${parentHotelId}'
+        </if>
+        <if test="roomTypeId!=null and parentHotelId!=''">
+            and  room_type_id = '${roomTypeId}'
+        </if>
+    </select>
+
+    <insert id="saveCtripHotelRoomType" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType">
+          insert into ctrip_parent_room(id,ctrip_prent_hotel_id,room_type_name,room_type_id,currency,bed_type,created_date,updated_date,deleted)
+              values (#{uuid},#{ctripParentHotelId},#{roomTypeName},#{roomTypeId},#{currency},#{bedType},now(),now(),0)
+    </insert>
 
 </mapper>

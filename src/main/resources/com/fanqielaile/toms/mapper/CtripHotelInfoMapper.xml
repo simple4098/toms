@@ -17,23 +17,23 @@
        
        
     <insert id="insert" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
-              insert into xc_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted)
+              insert into ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted)
               values (#{hotelName},#{parentHotelId},#{createdDate},0)
        </insert>
        
     <select id="findByHotelName" parameterType="string" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from  xc_parent_hotel   where  deleted = 0
+        from  ctrip_parent_hotel   where  deleted = 0
         <if test="hotelName!=null and hotelName!=''">
             and  hotel_name like concat('%','${hotelName}','%')
         </if>
     </select>
     
-        <select id="findByParentHotelId" parameterType="string" resultMap="BaseResultMap">
+        <select id="findByParentHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from  xc_parent_hotel   where  deleted = 0
+        from  ctrip_parent_hotel   where  deleted = 0
         <if test="parentHotelId!=null and parentHotelId!=''">
             and  parent_hotel_id = '${parentHotelId}'
         </if>
@@ -45,14 +45,15 @@
         <select id="findHotelInfoByPage" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from xc_parent_hotel where deleted=0
+        from ctrip_parent_hotel where deleted=0
         <if test="hotelName!=null and hotelName!=''">
             and hotel_name like concat('%','${hotelName}','%')
         </if>
     </select>
-    
-    
-    
-    
+
+    <insert id="saveHotelInfo" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
+          insert into ctrip_parent_hotel(id,hotel_name,child_hotel_id,parent_hotel_id,created_date,updated_date,deleted)
+              values (#{uuid},#{hotelName},#{childHotelId},#{parentHotelId},now(),now(),0)
+    </insert>
 
 </mapper>
