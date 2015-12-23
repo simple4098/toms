@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.CtripHotelRoomTypeDao">
+
+
+
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="xc_prent_hotel_id" property="ctripParentHotelId"/>
+        <result column="room_type_name" property="roomTypeName"/>
+        <result column="room_type_id" property="roomTypeId"/>
+        <result column="bed_type" property="roomTypeId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+  			id,xc_prent_hotel_id,room_type_name,room_type_id,bed_type,created_date,updated_date,deleted 
+       </sql>
+    
+       
+       
+    <select id="findByCtripParentHotelId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  xc_parent_room   where  deleted = 0
+        <if test="ctripParentHotelId!=null and ctripParentHotelId!=''">
+            and  xc_prent_hotel_id = '${ctripParentHotelId}';
+        </if>
+    </select>
+    
+
+</mapper>
