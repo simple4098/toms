@@ -14,5 +14,5 @@ public interface CtripHotelRoomTypeService {
 	 
 	  void  updateRoomBypeRelation(String companyId, String json,String innId,String fcHotelId);
 		 
-	
+
 }

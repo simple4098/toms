@@ -1,12 +1,11 @@
 package com.fanqielaile.toms.dao;
 
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.fanqielaile.toms.dto.ctrip.CtripHotelInfo;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 
 public interface CtripHotelInfoDao {
@@ -19,5 +18,10 @@ public interface CtripHotelInfoDao {
     
     CtripHotelInfo findByParentHotelId(@Param("parentHotelId") String parentHotelId);
 
+    /**
+     * 保存携程酒店信息
+     * @param ctripHotelInfo 携程酒店对象
+     */
+    void saveHotelInfo(CtripHotelInfo ctripHotelInfo);
   
 }

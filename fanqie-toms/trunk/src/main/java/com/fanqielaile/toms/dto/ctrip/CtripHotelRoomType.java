@@ -15,6 +15,9 @@ public class CtripHotelRoomType extends Domain {
 	
 	private String  bedType ;
 
+	//入住人数
+	private Integer checkInNum;
+
 	public String getCtripParentHotelId() {
 		return ctripParentHotelId;
 	}
@@ -54,5 +57,12 @@ public class CtripHotelRoomType extends Domain {
 	public void setBedType(String bedType) {
 		this.bedType = bedType;
 	}
-	
+
+	public Integer getCheckInNum() {
+		return checkInNum;
+	}
+
+	public void setCheckInNum(Integer checkInNum) {
+		this.checkInNum = checkInNum;
+	}
 }

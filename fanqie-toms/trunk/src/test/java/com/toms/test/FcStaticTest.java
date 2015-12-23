@@ -6,6 +6,8 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
 import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.dto.ctrip.CtripHotelInfo;
+import com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType;
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OperateType;
@@ -68,6 +70,11 @@ public class FcStaticTest {
     private BangInnDao bangInnDao;
     @Resource
     private IOtaRoomPriceService otaRoomPriceService;
+
+    @Resource
+    private CtripHotelInfoDao ctripHotelInfoDao;
+    @Resource
+    private CtripHotelRoomTypeDao ctripHotelRoomTypeDao;
 
 
     @Test
@@ -315,30 +322,40 @@ public class FcStaticTest {
     }
 
     @Test
-    @Ignore
+
     public void  readFcRoomTypeInn() throws IOException {
-//        File file = new File("F:\\FC_ROOMTYPE.xls");
-//        String[][] result = ExcelUtil.getData(file, 1);
-//        int rowLength = result.length;
-//        FcRoomTypeInfo fcRoomTypeInfo = null;
-//        for(int i=0;i<rowLength;i++) {
-//            fcRoomTypeInfo = new FcRoomTypeInfo();
-//            fcRoomTypeInfo.setHotelId(result[i][1]);
-//            fcRoomTypeInfo.setRoomTypeId(result[i][3]);
-//            fcRoomTypeInfo.setRoomTypeName(result[i][4]);
-//            //fcRoomTypeInfo.setHotelName(result[i][2]);
-//            //System.out.print(result[i][1]+"\t\t"+result[i][3]+"\t\t"+result[i][4]);
-//            fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
-//            //System.out.println();
-//
-//        }
+        File file = new File("F:\\FC_ROOMTYPE.xls");
+        String[][] result = ExcelUtil.getData(file, 1);
+        int rowLength = result.length;
+        CtripHotelInfo ctripHotelInfo = null;
+        CtripHotelRoomType ctripHotelRoomType = null;
+        for(int i=0;i<rowLength;i++) {
+            ctripHotelInfo = new CtripHotelInfo();
+            ctripHotelRoomType = new CtripHotelRoomType();
+            ctripHotelInfo.setHotelName(result[i][0]);
+            ctripHotelInfo.setParentHotelId(result[i][1]);
+            ctripHotelRoomType.setCtripParentHotelId(result[i][1]);
+            ctripHotelRoomType.setRoomTypeId(result[i][2]);
+            ctripHotelRoomType.setRoomTypeName(result[i][3]);
+            ctripHotelRoomType.setCurrency(result[i][4]);
+            ctripHotelRoomType.setBedType(result[i][5]);
+            ctripHotelRoomType.setCheckInNum(result[i][6]!=null?Integer.valueOf(result[i][6]):0);
+            CtripHotelInfo hotelInfo = ctripHotelInfoDao.findByParentHotelId(result[i][1]);
+            if (hotelInfo==null){
+                ctripHotelInfoDao.saveHotelInfo(ctripHotelInfo);
+            }
+            CtripHotelRoomType ctripHotelRoomTypeOld =  ctripHotelRoomTypeDao.findByCtripParentHotelIdAndRoomTypeId(result[i][1], result[i][2]);
+            if (ctripHotelRoomTypeOld==null){
+                ctripHotelRoomTypeDao.saveCtripHotelRoomType(ctripHotelRoomType);
+            }
+        }
     }
 
-    @Test
+   /* @Test
     @Ignore
     public  void  checkRoom() throws Exception {
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId("60978e73-851b-429d-9cf4-415300a64739", 3698);
         List<RoomDetail> roomDetails = otaRoomPriceService.obtRoomAvailFc(bangInn, 99093);
-    }
+    }*/
 }
 
