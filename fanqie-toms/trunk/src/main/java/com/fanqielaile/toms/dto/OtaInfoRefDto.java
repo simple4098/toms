@@ -31,6 +31,26 @@ public class OtaInfoRefDto extends Domain {
     private UsedPriceModel usedPriceModel;
     private TBType tbType;
     private OtaCommissionPercentDto commissionPercentDto;
+    //携程用户名
+    private String xcUserName;
+    //携程用户名密码
+    private String xcPassword;
+
+    public String getXcUserName() {
+        return xcUserName;
+    }
+
+    public void setXcUserName(String xcUserName) {
+        this.xcUserName = xcUserName;
+    }
+
+    public String getXcPassword() {
+        return xcPassword;
+    }
+
+    public void setXcPassword(String xcPassword) {
+        this.xcPassword = xcPassword;
+    }
     public OtaCommissionPercentDto getCommissionPercentDto() {
         return commissionPercentDto;
     }

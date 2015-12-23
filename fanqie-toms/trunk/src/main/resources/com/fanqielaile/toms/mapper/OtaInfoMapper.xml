@@ -30,6 +30,9 @@
             <result column="used_price_model" property="usedPriceModel"/>
             <result column="tb_type" property="tbType"/>
             <result column="create_date" property="createdDate"/>
+            <result column="xc_user_name" property="xcUserName"/>
+            <result column="xc_password" property="xcPassword"/>
+            <result column="updated_date" property="updatedDate"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
@@ -73,8 +76,8 @@
        </select>
 
     <insert id="saveOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto">
-        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status,used_price_model,create_date,tb_type)
-              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1,#{usedPriceModel.name},now(),'DEFAULT')
+        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status,used_price_model,create_date,updated_date,tb_type,xc_user_name,xc_password)
+              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1,#{usedPriceModel.name},now(),now(),'DEFAULT',#{xcUserName},#{xcPassword})
     </insert>
 
     <select id="findOtaInfoByOtaIdAndCompanyId" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultMap="otaInfoRefId">

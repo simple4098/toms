@@ -32,7 +32,7 @@
 
   <div class="widget-box widget-custom">
     <div class="widget-header widget-header-flat">
-      <h4 class="smaller">去啊旅行</h4>
+      <h4 class="smaller">携程旅行</h4>
     </div>
 
     <div class="widget-body">
@@ -43,15 +43,27 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="form-group">
-                <label class="col-xs-3 control-label no-padding-right" for="appKey">商户编号</label>
+                <label class="col-xs-3 control-label no-padding-right" for="appKey">供应商编码</label>
                 <div class="col-xs-9">
-                  <input type="text" id="appKey" name="appKey" placeholder="商户编号" class="col-xs-12">
+                  <input type="text" id="appKey" name="appKey" placeholder="供应商编码" class="col-xs-12">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-xs-3 control-label no-padding-right" for="appSecret">房仓密钥</label>
+                <label class="col-xs-3 control-label no-padding-right" for="appSecret">品牌编码</label>
                 <div class="col-xs-9">
-                  <input type="text" id="appSecret" name="AppSecret" placeholder="房仓密钥" class="col-xs-12">
+                  <input type="text" id="appSecret" name="appSecret" placeholder="品牌编码" class="col-xs-12">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-xs-3 control-label no-padding-right" for="xc_user_name">用户名</label>
+                <div class="col-xs-9">
+                  <input type="text" id="xc_user_name" name="appSecret" placeholder="用户名" class="col-xs-12">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-xs-3 control-label no-padding-right" for="xc_password">密 码</label>
+                <div class="col-xs-9">
+                  <input type="text" id="xc_password" name="appSecret" placeholder="密 码" class="col-xs-12">
                 </div>
               </div>
               <div class="form-group">
@@ -65,7 +77,7 @@
             <div class="col-xs-8">
               <div class="well">
                 <h4 class="green smaller lighter">如何获取APP KEY</h4>
-                xc.....
+                联系携程获取对应的值
               </div>
             </div>
           </div>
