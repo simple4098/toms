@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.CtripHotelInfoDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
+        <id column="id" property="id"/>
+        <result column="hotel_name" property="hotelName"/>
+        <result column="parent_hotel_id" property="parentHotelId"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="child_hotel_id" property="childHotelId"/>
+        <result column="updated_date" property="updatedDate"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+       	id,hotel_name,parent_hotel_id,created_date,deleted,child_hotel_id,updated_date
+       </sql>
+       
+       
+    <insert id="insert" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
+              insert into xc_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted)
+              values (#{hotelName},#{parentHotelId},#{createdDate},0)
+       </insert>
+       
+    <select id="findByHotelName" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  xc_parent_hotel   where  deleted = 0
+        <if test="hotelName!=null and hotelName!=''">
+            and  hotel_name like concat('%','${hotelName}','%')
+        </if>
+    </select>
+    
+        <select id="findByParentHotelId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  xc_parent_hotel   where  deleted = 0
+        <if test="parentHotelId!=null and parentHotelId!=''">
+            and  parent_hotel_id = '${parentHotelId}'
+        </if>
+    </select>
+    
+    
+    
+    
+        <select id="findHotelInfoByPage" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from xc_parent_hotel where deleted=0
+        <if test="hotelName!=null and hotelName!=''">
+            and hotel_name like concat('%','${hotelName}','%')
+        </if>
+    </select>
+    
+    
+    
+    
+
+</mapper>
