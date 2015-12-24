@@ -35,6 +35,8 @@ public class OtaInfoRefDto extends Domain {
     private String xcUserName;
     //携程用户名密码
     private String xcPassword;
+    //合作方编码
+    private String userId;
 
     public String getXcUserName() {
         return xcUserName;
@@ -51,6 +53,15 @@ public class OtaInfoRefDto extends Domain {
     public void setXcPassword(String xcPassword) {
         this.xcPassword = xcPassword;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public OtaCommissionPercentDto getCommissionPercentDto() {
         return commissionPercentDto;
     }

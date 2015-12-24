@@ -76,8 +76,8 @@
        </select>
 
     <insert id="saveOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto">
-        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status,used_price_model,create_date,updated_date,tb_type,xc_user_name,xc_password)
-              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1,#{usedPriceModel.name},now(),now(),'DEFAULT',#{xcUserName},#{xcPassword})
+        insert into otainfo_company_ref(id,ota_info_id,company_id,appkey,appsecret,sessionkey,status,used_price_model,create_date,updated_date,tb_type,xc_user_name,xc_password,user_id)
+              values (#{uuid},#{otaId},#{companyId},#{appKey},#{appSecret},#{sessionKey},1,#{usedPriceModel.name},now(),now(),'DEFAULT',#{xcUserName},#{xcPassword},#{userId})
     </insert>
 
     <select id="findOtaInfoByOtaIdAndCompanyId" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultMap="otaInfoRefId">
