@@ -299,4 +299,36 @@ public class TomsUtil {
         }
         return null;
     }
+
+    /**
+     * 转换携程的日期
+     *
+     * @param arrival
+     * @return
+     */
+    public static String getDateString(String arrival) {
+        if (StringUtils.isNotEmpty(arrival)) {
+            String[] arry = arrival.split("T");
+            if (arry.length > 1) {
+                return arry[0] + " " + arry[1];
+            } else {
+                return arry[0];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 将日期装换为utc时间
+     *
+     * @param date
+     * @return
+     */
+    public static String getDateStringFormat(Date date) {
+        if (null != date) {
+            String format = DateUtil.format(date, "yyyy-MM-dd");
+            return format + "T00:00:00";
+        }
+        return null;
+    }
 }
