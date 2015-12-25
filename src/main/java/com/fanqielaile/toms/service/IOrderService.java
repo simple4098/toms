@@ -238,5 +238,51 @@ public interface IOrderService {
      */
     void pushOrderStatusMethod(String pushXml) throws Exception;
 
+    /**
+     * 订单导出
+     *
+     * @param currentUser
+     * @param orderParamDto
+     * @param response
+     * @throws Exception
+     */
     void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception;
+
+    /**
+     * 取消订单
+     *
+     * @param order
+     * @return
+     * @throws Exception
+     */
+    JsonModel cancelOrderMethod(Order order) throws Exception;
+
+    /**
+     * 获取订单状态
+     *
+     * @param order
+     * @return
+     * @throws Exception
+     */
+    String getOrderStatusMethod(Order order) throws Exception;
+
+    /**
+     * 创建toms本地订单
+     *
+     * @param channelSource
+     * @param order
+     * @throws IOException
+     */
+    void createOrderMethod(ChannelSource channelSource, Order order) throws IOException;
+
+    /**
+     * 订单付款
+     *
+     * @param order
+     * @param userInfo
+     * @param otaType
+     * @return
+     * @throws Exception
+     */
+    JsonModel payBackDealMethod(Order order, UserInfo userInfo, String otaType) throws Exception;
 }

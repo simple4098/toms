@@ -114,7 +114,7 @@ public class OrderTest {
                                 for (RoomTypeInfo roomTypeInfo : roomTypeInfos) {
                                     OtaBangInnRoomDto otaBangInnRoomDto = this.otaBangInnRoomDao.selectBangInnRoomByInnIdAndRoomTypeId(bangInn.getInnId(), roomTypeInfo.getRoomTypeId(), "d0392bc8-131c-8989-846e-c81c66011111");
                                     String roomImageUrl = "";
-                                    if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
+                                    if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray()) && null != otaBangInnRoomDto) {
                                         for (OmsImg omsImg : roomTypeInfo.getImgList()) {
                                             roomImageUrl += CommonApi.IMG_URL + omsImg.getImgUrl() + ",";
                                         }

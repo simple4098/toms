@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.fanqie.bean.response.CtripHotelRoomType;
 import org.springframework.stereotype.Service;
 
 import com.fanqielaile.toms.dao.BangInnDao;
@@ -11,7 +12,6 @@ import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dao.CtripHotelRoomTypeDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dao.IOtaInnOtaDao;
-import com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
 
 @Service

@@ -15,6 +15,26 @@ public class OrderGuests extends Domain {
     private String orderId;
     //国籍
     private String nationality;
+    //-入住人英文名
+    private String firstName;
+    //入住人英文名姓
+    private String lastName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     public String getNationality() {
         return nationality;

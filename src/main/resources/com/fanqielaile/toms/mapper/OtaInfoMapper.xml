@@ -103,4 +103,8 @@
         SELECT  o.* from otainfo_company_ref o where o.appkey='${appKey}'
         ORDER BY o.create_date ASC limit 1;
     </select>
+    <select id="selectOtaCompanyRefByOtaType" resultMap="otaInfoRefId">
+        SELECT o.* from otainfo_company_ref o LEFT join ota_info oi on o.ota_info_id = oi.id where
+        oi.ota_type=#{otaTypeName}
+    </select>
 </mapper>

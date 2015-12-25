@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fanqielaile.toms.dao.CtripHotelInfoDao">
-    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
+    <resultMap id="BaseResultMap" type="com.fanqie.bean.response.CtripHotelInfo">
         <id column="id" property="id"/>
         <result column="hotel_name" property="hotelName"/>
         <result column="parent_hotel_id" property="parentHotelId"/>
@@ -9,16 +9,21 @@
         <result column="deleted" property="deleted"/>
         <result column="child_hotel_id" property="childHotelId"/>
         <result column="updated_date" property="updatedDate"/>
+        <result column="country_name" property="countryName"/>
+        <result column="city_name" property="cityName"/>
+        <result column="address" property="address"/>
+        <result column="telephone" property="telephone"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-       	id,hotel_name,parent_hotel_id,created_date,deleted,child_hotel_id,updated_date
+        id,hotel_name,parent_hotel_id,created_date,deleted,child_hotel_id,updated_date,country_name,city_name,address,telephone
        </sql>
-       
-       
-    <insert id="insert" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
-              insert into ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted)
-              values (#{hotelName},#{parentHotelId},#{createdDate},0)
+
+
+    <insert id="insert" parameterType="com.fanqie.bean.response.CtripHotelInfo">
+        insert into
+        ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
+        values (#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
        </insert>
        
     <select id="findByHotelName" parameterType="string" resultMap="BaseResultMap">
@@ -51,9 +56,36 @@
         </if>
     </select>
 
-    <insert id="saveHotelInfo" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelInfo">
-          insert into ctrip_parent_hotel(id,hotel_name,child_hotel_id,parent_hotel_id,created_date,updated_date,deleted)
-              values (#{uuid},#{hotelName},#{childHotelId},#{parentHotelId},now(),now(),0)
+    <insert id="saveHotelInfo" parameterType="com.fanqie.bean.response.CtripHotelInfo">
+        insert into
+        ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
+        values (#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
     </insert>
+
+    <update id="updateHotelInfo" parameterType="com.fanqie.bean.response.CtripHotelInfo">
+        update ctrip_parent_hotel
+        <trim prefix="SET" suffixOverrides=",">
+            updated_date=now(),
+            <if test="hotelName != null and hotelName != ''">
+                hotel_name = #{hotelName},
+            </if>
+            <if test="countryName != null and countryName != ''">
+                country_name = #{countryName},
+            </if>
+            <if test="cityName != null and cityName != ''">
+                city_name = #{cityName},
+            </if>
+            <if test="address != null and address !=''">
+                address = #{address},
+            </if>
+            <if test="telephone != null and telephone != ''">
+                telephone = #{telephone},
+            </if>
+            <if test="childHotelId != null and childHotelId != ''">
+                child_hotel_id = #{childHotelId},
+            </if>
+        </trim>
+        where deleted = 0 and id = #{id}
+    </update>
 
 </mapper>

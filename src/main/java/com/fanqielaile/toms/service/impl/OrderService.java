@@ -155,7 +155,7 @@ public class OrderService implements IOrderService {
      * @param channelSource
      * @param order
      */
-    private void createOrderMethod(ChannelSource channelSource, Order order) throws IOException {
+    public void createOrderMethod(ChannelSource channelSource, Order order) throws IOException {
         //查询客栈关联信息
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
         //查询价格模式（toms的增减价）
@@ -277,7 +277,7 @@ public class OrderService implements IOrderService {
      * @return
      * @throws Exception
      */
-    private JsonModel cancelOrderMethod(Order order) throws Exception {
+    public JsonModel cancelOrderMethod(Order order) throws Exception {
         order.setOrderStatus(OrderStatus.CANCEL_ORDER);
         //判断订单是否需要同步OMS,条件根据订单是否付款
         if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY) || ChannelSource.FC.equals(order.getChannelSource())) {
@@ -356,7 +356,7 @@ public class OrderService implements IOrderService {
      * @return
      * @throws Exception
      */
-    private JsonModel payBackDealMethod(Order order, UserInfo currentUser, String otaType) throws Exception {
+    public JsonModel payBackDealMethod(Order order, UserInfo currentUser, String otaType) throws Exception {
         //组装order参数
         order = packageOrder(order);
         //判断订单是否同步OMS
@@ -429,7 +429,7 @@ public class OrderService implements IOrderService {
                         this.orderDao.updateOrderStatusAndFeeStatus(order);
                         return new JsonModel(true, "付款成功");
                     }
-                } else if (ChannelSource.FC.equals(order.getChannelSource())) {
+                } else if (ChannelSource.FC.equals(order.getChannelSource()) || ChannelSource.XC.equals(order.getChannelSource())) {
                     //天下房仓返回创建订单成功
                     order.setOrderStatus(OrderStatus.ACCEPT);
                     order.setFeeStatus(FeeStatus.PAID);
@@ -700,7 +700,7 @@ public class OrderService implements IOrderService {
      * @return
      * @throws Exception
      */
-    private String getOrderStatusMethod(Order order) throws Exception {
+    public String getOrderStatusMethod(Order order) throws Exception {
         //查询调用的url
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.ORDER_STATUS.name());
         //查询公司信息,根据订单
@@ -1120,7 +1120,7 @@ public class OrderService implements IOrderService {
         //天下房仓创建订单，同步oms
         //查询当前公司设置的下单是自动或者手动
         //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
-        OrderConfig orderConfig = new OrderConfig(otaInfo.getOtaInfoId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
+        OrderConfig orderConfig = new OrderConfig(otaInfo.getOtaInfoId(), otaInfo.getCompanyId(), Integer.valueOf(order.getInnId()));
         OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
         JsonModel jsonModel = null;
         if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
@@ -1208,16 +1208,16 @@ public class OrderService implements IOrderService {
         //解析xml
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
         Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
-        logger.info("天下房仓试订单接口传递参数=>" + order.toRoomAvail(dictionary, order).toString());
-        String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(dictionary, order));
+        //1.查询公司信息
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
+        //查询公司信息
+        Company company = this.companyDao.selectCompanyById(otaInfo.getCompanyId());
+        logger.info("天下房仓试订单接口传递参数=>" + order.toRoomAvail(company, order).toString());
+        String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(company, order));
         JSONObject jsonObject = JSONObject.fromObject(response);
         logger.info("天下房仓试订单接口返回值=>" + response.toString());
         if (jsonObject.get("status").equals(200)) {
             //查询当前的价格模式
-            //1.查询公司信息
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
-            //查询公司信息
-            Company company = this.companyDao.selectCompanyById(otaInfo.getCompanyId());
             BigDecimal percent = BigDecimal.ZERO;
             //2.判断当前公司使用什么价格模式
             if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {

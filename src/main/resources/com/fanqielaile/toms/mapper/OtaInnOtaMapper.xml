@@ -77,4 +77,7 @@
        <select id="selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId" resultMap="BaseResultMap">
               select * from ota_inn_ota WHERE company_id = #{companyId} and ota_info_id=#{otaInfoId} and inn_id = #{innId} limit 1;
        </select>
+       <select id="selectOtaInnOtaByHidAndOtaInfoId" resultMap="BaseResultMap">
+              SELECT * from ota_inn_ota where wg_hid='${hid}' and ota_info_id=#{otaInfoId} limit 1
+       </select>
 </mapper>
