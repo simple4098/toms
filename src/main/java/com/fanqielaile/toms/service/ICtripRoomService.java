@@ -16,7 +16,7 @@ import java.util.List;
 public interface ICtripRoomService {
 
     /**
-     * 更新房型的价格信息
+     * 更新房型的价格、房态 信息
      * @param company 公司对象
      * @param infoRefDto 渠道信息
      * @param roomTypeMappingList 房型mapping
