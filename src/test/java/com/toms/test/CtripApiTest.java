@@ -5,9 +5,16 @@ import com.fanqie.bean.request.room_info.RoomInfoItem;
 import com.fanqie.bean.request.room_info.RoomInfoRequest;
 import com.fanqie.bean.request.room_info.SetRoomInfoRequest;
 import com.fanqie.bean.request.room_price.*;
+import com.fanqie.bean.response.RequestResponse;
+import com.fanqie.support.CtripConstants;
 import com.fanqie.util.CtripHttpClient;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaInfo;
+import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.junit.Test;
@@ -15,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +37,28 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/conf/spring/spring-test-content.xml", "/conf/mybatis/sqlMapConfig.xml","/conf/spring/spring-security.xml"})
 public class CtripApiTest {
+    @Resource
+    private ICtripRoomService ctripRoomService;
 
+    @Test
+    public void roomTest(){
+        Company company = new Company();
+        company.setOtaId(777);
+        company.setUserAccount("FQFCDX");
+        company.setUserPassword("fqfcdx");
+        OtaInfoRefDto otaInfo = new OtaInfoRefDto();
+        otaInfo.setUserId("181");
+        otaInfo.setXcUserName("zhilianjishuzhuanshu");
+        otaInfo.setXcPassword("zhilianzhuanshu11!!");
+        List<CtripRoomTypeMapping> roomTypeMappingList = new ArrayList<CtripRoomTypeMapping>();
+        CtripRoomTypeMapping ctripRoomTypeMapping = new CtripRoomTypeMapping();
+        ctripRoomTypeMapping.setInnId("3698");
+        ctripRoomTypeMapping.setCtripChildHotelId("433939");
+        ctripRoomTypeMapping.setCtripChildRoomTypeId("3073488");
+        ctripRoomTypeMapping.setTomRoomTypeId("99095");
+        roomTypeMappingList.add(ctripRoomTypeMapping);
+        ctripRoomService.updateRoomPrice(company,otaInfo,roomTypeMappingList,true);
+    }
     @Test
     public void test() throws JAXBException {
 
@@ -86,13 +115,18 @@ public class CtripApiTest {
         HeaderInfo headerInfo = new  HeaderInfo("181","Ctrip.com",false,authentication,requestType);
 
         List<RoomInfoItem> roomInfoItems = new ArrayList<>();
-        RoomInfoItem roomInfoItem = new RoomInfoItem(DeductType.C,4,CheckType.C,2,1,"",AllNeedGuarantee.B,1,CtripRoomStatus.G,"9999",ChangeDefault.F,1);
+        RoomInfoItem roomInfoItem = new RoomInfoItem(DeductType.C, CtripConstants.reserveTime,
+                CheckType.C,CtripConstants.lateReserveTime,
+                CtripConstants.guaranteeLCT,"",AllNeedGuarantee.T,1,
+                CtripRoomStatus.G,CtripConstants.holdDeadline,
+                ChangeDefault.F,CtripConstants.userLimited,CtripConstants.prepayLCT);
         roomInfoItems.add(roomInfoItem);
         SetRoomInfoRequest setRoomInfoRequest = new SetRoomInfoRequest(roomInfoItems,3073497,TomsUtil.getDateStringFormat(new Date()),TomsUtil.getDateStringFormat(DateUtil.addDay(new Date(), 1)));
         RoomInfoRequest roomInfoRequest = new RoomInfoRequest(setRoomInfoRequest,headerInfo);
         String fcRequest = FcUtil.fcRequest(roomInfoRequest);
         System.out.println(fcRequest);
         String xml = CtripHttpClient.execute(fcRequest);
+        RequestResponse response= (RequestResponse) FcUtil.xMLStringToBean(xml);
         System.out.println(xml);
 
     }
