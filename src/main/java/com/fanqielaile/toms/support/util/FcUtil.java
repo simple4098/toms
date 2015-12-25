@@ -33,7 +33,6 @@ public class FcUtil<T extends OtaRequest> {
 
     /**
      * 响应xml转化成 RequestResponse
-     *
      * @param xml 响应xml
      */
     public static RequestResponse xMLStringToBean(String xml) throws JAXBException {
