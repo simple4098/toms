@@ -1,11 +1,14 @@
 package com.fanqielaile.toms.support.util;
 
 
+import com.fanqie.bean.response.RequestResponse;
 import com.fanqie.support.OtaRequest;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
@@ -24,5 +27,21 @@ public  class FcUtil<T extends OtaRequest> {
         StringWriter fw = new StringWriter();
         marshaller.marshal(t,fw);
         return  fw.toString();
+    }
+
+    /**
+     * 响应xml转化成 RequestResponse
+     * @param xml 响应xml
+     */
+    public static RequestResponse xMLStringToBean(String xml){
+        try {
+            JAXBContext context = JAXBContext.newInstance(RequestResponse.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            RequestResponse response = (RequestResponse)unmarshaller.unmarshal(new StringReader(xml));
+            return  response;
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
