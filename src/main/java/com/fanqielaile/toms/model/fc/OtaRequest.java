@@ -6,5 +6,7 @@ package com.fanqielaile.toms.model.fc;
  * @data : 2015/9/6
  * @version: v1.0.0
  */
-public class FcRequest {
+/*
+public class OtaRequest {
 }
+*/

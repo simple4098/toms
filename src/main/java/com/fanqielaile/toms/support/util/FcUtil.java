@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.support.util;
 
-import com.fanqielaile.toms.model.fc.FcRequest;
-import com.fanqielaile.toms.model.fc.GetHotelRequest;
+
+import com.fanqie.support.OtaRequest;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,11 +14,12 @@ import java.io.StringWriter;
  * @data : 2015/9/6
  * @version: v1.0.0
  */
-public  class FcUtil<T extends FcRequest> {
+public  class FcUtil<T extends OtaRequest> {
 
     public static   <T>  String  fcRequest(T t) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(t.getClass());
         Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);// 是否省略xm头声明信
 //        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
         StringWriter fw = new StringWriter();
         marshaller.marshal(t,fw);
