@@ -43,15 +43,21 @@
           <div class="row">
             <div class="col-xs-4">
               <div class="form-group">
-                <label class="col-xs-3 control-label no-padding-right" for="appKey">供应商编码</label>
+                <label class="col-xs-3 control-label no-padding-right" for="appKey">供应商编码(SupplierID)</label>
                 <div class="col-xs-9">
                   <input type="text" id="appKey" name="appKey" placeholder="供应商编码" class="col-xs-12">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-xs-3 control-label no-padding-right" for="appSecret">品牌编码</label>
+                <label class="col-xs-3 control-label no-padding-right" for="appSecret">品牌编码(Brand)</label>
                 <div class="col-xs-9">
                   <input type="text" id="appSecret" name="appSecret" placeholder="品牌编码" class="col-xs-12">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-xs-3 control-label no-padding-right" for="userId">合作方编码(UserId)</label>
+                <div class="col-xs-9">
+                  <input type="text" id="userId" name="userId" placeholder="UserId" class="col-xs-12">
                 </div>
               </div>
               <div class="form-group">

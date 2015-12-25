@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model.fc;
 
+import com.fanqie.support.OtaRequest;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -10,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version: v1.0.0
  */
 @XmlRootElement(name = "Request")
-public class AddRoomTypeRequest  extends FcRequest {
+public class AddRoomTypeRequest  extends OtaRequest {
     @XmlElement(name = "Header")
     public Header header;
    @XmlElement(name = "AddRoomTypeMappingRequest")

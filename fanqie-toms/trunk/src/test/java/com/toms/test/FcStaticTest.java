@@ -282,7 +282,7 @@ public class FcStaticTest {
     }
 
     @Test
-    @Ignore
+
     public void deleteHotelMapping() throws JAXBException, IOException {
         List<HotelInfo> list = new ArrayList<HotelInfo>();
         HotelInfo hotelInfo = new HotelInfo();

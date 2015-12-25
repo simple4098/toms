@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model.fc;
 
+import com.fanqie.support.OtaRequest;
+
 import javax.xml.bind.annotation.*;
 
 /**
@@ -10,7 +12,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement(name = "Request")
 @XmlType(propOrder = {"header","addHotelMappingRequest"})
-public class AddHotelRequest extends FcRequest {
+public class AddHotelRequest extends OtaRequest {
 
     private Header header;
 

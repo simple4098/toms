@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model.fc;
 
+import com.fanqie.support.OtaRequest;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -10,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "Request")
 @XmlType(propOrder = {"header", "syncRateInfoDataRequest"})
-public class SyncRateInfoRequest extends FcRequest {
+public class SyncRateInfoRequest extends OtaRequest {
     //头部
     private Header header;
     //同步价格数据信息
