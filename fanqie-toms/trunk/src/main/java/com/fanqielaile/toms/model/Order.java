@@ -146,6 +146,36 @@ public class Order extends Domain {
     private String orderInnName;
     //房型名称
     private String orderRoomTypeName;
+    //携程订单确认号
+    private String interFaceConfirmNO;
+    //携程订单接口发送号
+    private String interFaceSendID;
+    //携程订单入住人数
+    private Integer person;
+
+    public Integer getPerson() {
+        return person;
+    }
+
+    public void setPerson(Integer person) {
+        this.person = person;
+    }
+
+    public String getInterFaceSendID() {
+        return interFaceSendID;
+    }
+
+    public void setInterFaceSendID(String interFaceSendID) {
+        this.interFaceSendID = interFaceSendID;
+    }
+
+    public String getInterFaceConfirmNO() {
+        return interFaceConfirmNO;
+    }
+
+    public void setInterFaceConfirmNO(String interFaceConfirmNO) {
+        this.interFaceConfirmNO = interFaceConfirmNO;
+    }
 
     public String getOrderInnName() {
         return orderInnName;
@@ -819,18 +849,33 @@ public class Order extends Domain {
         return orderGuestses;
     }
 
-    public RoomAvailParamDto toRoomAvail(Dictionary dictionary, Order order) {
+    /**
+     * 转换为试订单参数
+     *
+     * @param company
+     * @param order
+     * @return
+     */
+    public RoomAvailParamDto toRoomAvail(Company company, Order order) {
         RoomAvailParamDto roomAvailParamDto = new RoomAvailParamDto();
         roomAvailParamDto.setFrom(DateUtil.format(order.getLiveTime()));
         roomAvailParamDto.setTo(DateUtil.format(order.getLeaveTime()));
         roomAvailParamDto.setInnId(order.getInnId());
         roomAvailParamDto.setRoomTypeId(Integer.parseInt(order.getRoomTypeId()));
-        roomAvailParamDto.setOtaId(Integer.parseInt(dictionary.getValue()));
-        roomAvailParamDto.setvName(dictionary.getvName());
-        roomAvailParamDto.setvPWD(dictionary.getvPWD());
+        roomAvailParamDto.setOtaId(company.getOtaId());
+        roomAvailParamDto.setvName(company.getUserAccount());
+        roomAvailParamDto.setvPWD(company.getUserPassword());
         return roomAvailParamDto;
     }
 
+    /**
+     * 转换为试订单参数
+     *
+     * @param company
+     * @param order
+     * @param dailyInfos
+     * @return
+     */
     public RoomAvailParamDto toRoomAvail(Company company, Order order, DailyInfos dailyInfos) {
         RoomAvailParamDto roomAvailParamDto = new RoomAvailParamDto();
         roomAvailParamDto.setFrom(DateUtil.format(dailyInfos.getDay()));
@@ -842,4 +887,6 @@ public class Order extends Domain {
         roomAvailParamDto.setvPWD(company.getUserPassword());
         return roomAvailParamDto;
     }
+
+
 }

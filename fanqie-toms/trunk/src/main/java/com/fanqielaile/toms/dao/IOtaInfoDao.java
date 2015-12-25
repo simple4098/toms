@@ -62,4 +62,6 @@ public interface IOtaInfoDao {
      * @return 拥有此appKey 时间最早的一条数据
      */
      OtaInfoRefDto selectOtaInfoByAppKey(OtaInfoRefDto otaInfo);
+
+    List<OtaInfoRefDto> selectOtaCompanyRefByOtaType(@Param("otaTypeName") String otaTypeName);
 }

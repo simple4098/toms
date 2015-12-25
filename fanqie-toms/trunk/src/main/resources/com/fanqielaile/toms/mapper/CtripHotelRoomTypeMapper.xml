@@ -3,8 +3,7 @@
 <mapper namespace="com.fanqielaile.toms.dao.CtripHotelRoomTypeDao">
 
 
-
-    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType">
+    <resultMap id="BaseResultMap" type="com.fanqie.bean.response.CtripHotelRoomType">
         <id column="id" property="id"/>
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
@@ -44,9 +43,17 @@
         </if>
     </select>
 
-    <insert id="saveCtripHotelRoomType" parameterType="com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType">
+    <insert id="saveCtripHotelRoomType" parameterType="com.fanqie.bean.response.CtripHotelRoomType">
           insert into ctrip_parent_room(id,ctrip_prent_hotel_id,room_type_name,room_type_id,currency,bed_type,created_date,updated_date,deleted)
               values (#{uuid},#{ctripParentHotelId},#{roomTypeName},#{roomTypeId},#{currency},#{bedType},now(),now(),0)
     </insert>
 
+    <insert id="insertCtripHotelRoomTypeByCtripHotel" parameterType="com.fanqie.bean.response.CtripHotelInfo">
+        insert into
+        ctrip_parent_room(id,ctrip_prent_hotel_id,room_type_name,room_type_id,currency,bed_type,created_date,updated_date,deleted)
+        values
+        <foreach collection="ctripHotelRoomTypeList" separator="," index="i">
+            (#{i.uuid},#{i.ctripParentHotelId},#{i.roomTypeName},#{i.roomTypeId},#{i.currency},#{i.bedType},now(),now(),0)
+        </foreach>
+    </insert>
 </mapper>

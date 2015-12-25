@@ -1,13 +1,13 @@
 
 package com.toms.test;
 
+import com.fanqie.bean.response.CtripHotelInfo;
+import com.fanqie.bean.response.CtripHotelRoomType;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
 import com.fanqielaile.toms.dto.RoomDetail;
-import com.fanqielaile.toms.dto.ctrip.CtripHotelInfo;
-import com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType;
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OperateType;

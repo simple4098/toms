@@ -46,4 +46,6 @@ public interface IOtaInnOtaDao {
     OtaInnOtaDto selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(@Param("innId") int innId, @Param("companyId") String companyId, @Param("otaInfoId") String otaInfoId);
 
     OtaInnOtaDto selectOtaInnOtaById(@Param("id")String id,@Param("companyId")String companyId);
+
+    OtaInnOtaDto selectOtaInnOtaByHidAndOtaInfoId(@Param("hid") Long hid, @Param("otaInfoId") String otaId);
 }

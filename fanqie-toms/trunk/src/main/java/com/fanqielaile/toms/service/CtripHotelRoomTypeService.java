@@ -1,9 +1,10 @@
 package com.fanqielaile.toms.service;
 
 
+import com.fanqie.bean.response.CtripHotelRoomType;
+
 import java.util.List;
 
-import com.fanqielaile.toms.dto.ctrip.CtripHotelRoomType;
 
 
 public interface CtripHotelRoomTypeService {

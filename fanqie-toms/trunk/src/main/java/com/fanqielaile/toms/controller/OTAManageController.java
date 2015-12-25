@@ -1,24 +1,25 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.bean.enums.CtripRequestType;
+import com.fanqie.bean.order.*;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.CreateHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
-import com.fanqielaile.toms.enums.BreakfastType;
 import com.fanqielaile.toms.enums.ChannelSource;
-import com.fanqielaile.toms.enums.CurrencyCode;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.model.fc.*;
+import com.fanqielaile.toms.model.fc.FCcheckRoomAvailResponseResult;
+import com.fanqielaile.toms.model.fc.FcCancelHotelOrderResponseResult;
+import com.fanqielaile.toms.model.fc.FcCreateHotelOrderResponseResult;
+import com.fanqielaile.toms.model.fc.FcGetOrderStatusResponseResult;
+import com.fanqielaile.toms.service.ICtripOrderService;
 import com.fanqielaile.toms.service.IOrderService;
-import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.FcUtil;
-import com.fanqielaile.toms.support.util.JsonModel;
-import com.fanqielaile.toms.support.util.XmlDeal;
+import com.fanqielaile.toms.support.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +41,8 @@ public class OTAManageController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(OTAManageController.class);
     @Resource
     private IOrderService orderService;
+    @Resource
+    private ICtripOrderService ctripOrderService;
     /*@Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();*/
@@ -339,5 +338,52 @@ public class OTAManageController extends BaseController {
         return result;
     }
 
+    /**
+     * 携程订单对接处理方法
+     *
+     * @return
+     */
+    @RequestMapping("ctripOrder")
+    @ResponseBody
+    public Object ctripOrder(String xml) {
+        CtripBaseResponse ctripBaseResponse = new CtripBaseResponse();
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                //1.判断接口调用者的用户信息是否正确
+                boolean ctripUserPassword = this.ctripOrderService.checkCtripUserPassword(xml);
+                if (ctripUserPassword) {
+                    //2.解析xml得到请求类型
+                    String requestType = XmlCtripUtil.getRequestType(xml);
+                    if (CtripRequestType.DomesticCheckRoomAvailRequest.name().equals(requestType)) {
+                        //3.试订单请求
+                        CtripCheckRoomAvailResponse ctripCheckRoomAvailResponse = this.ctripOrderService.dealCtripCheckRoomAvail(xml);
+                        return ctripCheckRoomAvailResponse;
+                    } else if (CtripRequestType.DomesticSubmitNewHotelOrderRequest.name().equals(requestType)) {
+                        //4.下单请求
+                        CtripNewHotelOrderResponse ctripNewHotelOrderResponse = this.ctripOrderService.addOrder(xml);
+                        return ctripNewHotelOrderResponse;
+                    } else if (CtripRequestType.DomesticCancelHotelOrderRequest.name().equals(requestType)) {
+                        //5.取消订单
+                        CtripCancelHotelOrderResponse ctripCancelHotelOrderResponse = this.ctripOrderService.cancelOrderMethod(xml);
+                        return ctripCancelHotelOrderResponse;
+                    } else if (CtripRequestType.DomesticPushOrderStatusRequest.name().equals(requestType)) {
+                        //6.获取订单状态
+                        CtripGetOrderStatusResponse orderStatus = this.ctripOrderService.getOrderStatus(xml);
+                        return orderStatus;
+
+                    } else {
+                        return ctripBaseResponse.getCtripBaseResponse("119", "请求类型requestType不存在");
+                    }
+                } else {
+                    return ctripBaseResponse.getCtripBaseResponse("118", "用户名或密码验证出错!");
+                }
+            } else {
+                return ctripBaseResponse.getCtripBaseResponse("119", "xml参数为空!");
+            }
+        } catch (Exception e) {
+            logger.info("处理携程下单流程出错" + e, e);
+            return ctripBaseResponse.getCtripBaseResponse("108", "处理携程对接异常");
+        }
+    }
 
 }
