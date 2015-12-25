@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.CtripRoomTypeMappingDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="inn_id" property="innId"/>
+        <result column="xc_child_hotel_id" property="ctripChildHotelId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="fq_roomtype_id" property="tomRoomTypeId"/>
+        <result column="xc_child_roomtype_id" property="ctripChildRoomTypeId"/>
+        <result column="room_area" property="roomArea"/>
+        <result column="fq_roomtype_name" property="tomRoomTypeName"/>
+        <result column="xc_roomtype_name" property="ctripRoomTypeName"/>
+        <result column="rate_plan_code" property="ratePlanCode"/>
+		<result column="sj" property="sj" />
+		<result column="bed_num" property="bedNum" />
+		<result column="bed_len" property="bedLen" />
+		<result column="bed_wid" property="bedWid" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+       id,created_date,deleted,updated_date,inn_id,xc_child_hotel_id,company_id,fq_roomtype_id,xc_child_roomtype_id,room_area,
+       fq_roomtype_name,xc_roomtype_name,rate_plan_code,sj,bed_num,bed_len,bed_wid
+    </sql>
+       
+      
+    <update id="updateRoomMappingDelete">
+    	update xc_roomtype_fq set deleted = 1 where inn_id = #{innId} and xc_child_hotel_id = #{ctripChildHotelId}
+    </update>
+       
+       
+    <insert id="saveRoomTypeMapping"  parameterType="com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping"  >
+    	INSERT INTO xc_roomtype_fq(
+            inn_id, xc_child_hotel_id, company_id, fq_roomtype_id, xc_child_roomtype_id, 
+            room_area, fq_roomtype_name, xc_roomtype_name, 
+             deleted, rate_plan_code, sj, bed_num, bed_len, bed_wid)
+    VALUES (#{innId}, #{ctripChildHotelId}, #{companyId}, #{tomRoomTypeId},
+     #{ctripChildRoomTypeId},#{roomArea},#{tomRoomTypeName},#{ctripRoomTypeName},#{deleted}, #{ratePlanCode}, #{sj}, #{bedNum}, #{bedLen}, #{bedWid}) ;
+    </insert>   
+    
+    
+    <select id="findRoomTypeMapping"  resultMap="BaseResultMap" >
+       SELECT
+        o.id,o.company_id,o.inn_id,o.xc_child_hotel_id,o.fq_roomtype_id
+        ,o.xc_child_hotel_id,o.room_area,o.fq_roomtype_name,o.xc_roomtype_name
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id,o.bed_num,o.bed_len,o.bed_wid,o.xc_child_roomtype_id
+        from  xc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON  fp.ota_info_id = '3' and   fp.id =o.rate_plan_code  and fp.deleted=0   
+    	where o.deleted=0 and  o.company_id ='${companyId}' and  o.xc_child_hotel_id ='${childHotelId}'   order by o.fq_roomtype_id desc
+    </select>
+    
+    
+       
+
+</mapper>
