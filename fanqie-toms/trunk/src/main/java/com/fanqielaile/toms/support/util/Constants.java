@@ -54,4 +54,7 @@ public class Constants {
     public static final int onlyBedWidBedBig = 150;
     public static final int MAI_VALUE = 2;
     public static final int DI_VALUE = 1;
+    
+    public static final String OTA_CTRIP = "3";
+    
 }
