@@ -37,10 +37,20 @@
     
         <select id="findByParentHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/> , has_bind_hotel(child_hotel_id) as  hasBind
         from  ctrip_parent_hotel   where  deleted = 0
         <if test="parentHotelId!=null and parentHotelId!=''">
             and  parent_hotel_id = '${parentHotelId}'
+        </if>
+    </select>
+    
+    
+            <select id="findByChildHotelId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/> 
+        from  ctrip_parent_hotel   where  deleted = 0
+        <if test="childHotelId!=null and childHotelId!=''">
+            and  child_hotel_id = '${childHotelId}'
         </if>
     </select>
     
@@ -55,6 +65,12 @@
             and hotel_name like concat('%','${hotelName}','%')
         </if>
     </select>
+  
+  
+  
+   <update id="updateChildHotelId">
+   	    update ctrip_parent_hotel set  child_hotel_id = #{childHotelId} where parent_hotel_id = #{parentHotelId};
+   </update>
 
     <insert id="saveHotelInfo" parameterType="com.fanqie.bean.response.CtripHotelInfo">
         insert into
