@@ -7,15 +7,19 @@ import com.fanqie.bean.request.room_info.SetRoomInfoRequest;
 import com.fanqie.bean.request.room_price.*;
 import com.fanqie.support.CtripConstants;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.xml.bind.JAXBException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +38,8 @@ public class CtripXHotelUtil {
      * @return
      */
 
-    public static String requestRoomPriceXml( OtaInfoRefDto infoRefDto,CtripRoomTypeMapping mapping,List<RoomDetail> roomDetailList,boolean isSj) throws JAXBException {
+    public static String requestRoomPriceXml( OtaInfoRefDto infoRefDto,CtripRoomTypeMapping mapping,List<RoomDetail> roomDetailList,
+                                              OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto,boolean isSj) throws JAXBException {
         if (!CollectionUtils.isEmpty(roomDetailList)){
 
             RoomPriceRequest roomPriceRequest = new RoomPriceRequest();
@@ -42,10 +47,14 @@ public class CtripXHotelUtil {
             List<SetRoomPriceItem> setRoomPriceItems = new ArrayList<>();
             List<PriceInfo> priceInfos = new ArrayList<>();
             List<Price> prices = null;
+            double priceV = 0;
             for (RoomDetail roomDetail:roomDetailList){
-                Double priceValue =isSj?roomDetail.getRoomPrice():-1;
-                priceValue = roomDetail.getRoomNum()==0?-1:roomDetail.getRoomPrice();
-                Price price = new Price(0d,0d,0d,priceValue,1);
+                priceV = roomDetail.getRoomPrice();
+                Date parseDate = DateUtil.parseDate(roomDetail.getRoomDate());
+                TomsUtil.price(priceV,parseDate,commission,priceDto);
+                priceV =isSj?priceV:-1;
+                priceV = roomDetail.getRoomNum()==0?-1:priceV;
+                Price price = new Price(0d,0d,0d,priceV,1);
                 prices = new ArrayList<>();
                 prices.add(price);
                 PriceInfo priceInfo = new PriceInfo(prices,1,CtripBalanceType.PP, CtripPriceType.Cost);
