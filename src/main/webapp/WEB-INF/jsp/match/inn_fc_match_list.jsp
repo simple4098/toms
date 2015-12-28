@@ -72,7 +72,7 @@
         <td>${o.innName}</td>
         <td>${o.mobile}</td>
         <td><c:if test="${empty o.otaInnOtaId}">未匹配</c:if><c:if test="${not empty o.otaInnOtaId}">匹配成功</c:if></td>
-        <td><a class="btn btn-primary btn-sm" href="<c:url value="/innMatch/matchDetail?innId=${o.innId}"/>">管理酒店</a></td>
+        <td><a class="btn btn-primary btn-sm" href="<c:url value="/innMatch/matchDetail?innId=${o.innId}&otaInfoId=${otaInfoId}"/>">管理酒店</a></td>
       </tr>
     </c:forEach>
 

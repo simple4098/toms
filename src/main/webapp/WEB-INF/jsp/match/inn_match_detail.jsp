@@ -306,7 +306,8 @@
 </div>
 <!-- 新增房价计划 -->
 <div class="modal fade" id="addPricePlan">
-  <input type="hidden" id="saveRatePlanUrlId" value="<c:url value="/innMatch/ajax/saveRatePlan"/> "/>
+  <input type="hidden" id="saveRatePlanUrlId" value="<c:url value="/innMatch/ajax/saveRatePlan"/>"/>
+  <input type="hidden" id="otaInfoId" value="${param.otaInfoId}"/>
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -375,7 +376,7 @@
   var innId = '${param.innId}';
   //加载价格计划列表
   $.ajax({
-    data:{'innId':innId},
+    data:{'innId':innId,'otaInfoId':'${param.otaInfoId}'},
     type:'post',
     dataType:'html',
     url:'<c:url value="/innMatch/ajax/ratePlanList"/> ',
@@ -389,7 +390,7 @@
   $.ajax({
     type:'post',
     dataType:'json',
-    url:'<c:url value="/innMatch/ajax/ratePlanJson.json"/>',
+    url:'<c:url value="/innMatch/ajax/ratePlanJson.json?otaInfoId=${param.otaInfoId}"/>',
     success:function(data){
       var select ="<select id='selectId'><option>--请选择--</option>"
       var $data = data.rateList;
@@ -418,7 +419,7 @@
     $.ajax({
       type:'post',
       dataType:'json',
-      url:'<c:url value="/innMatch/ajax/ratePlanJson.json"/>',
+      url:'<c:url value="/innMatch/ajax/ratePlanJson.json?otaInfoId=${param.otaInfoId}"/>',
       success:function(data){
         var select ="<select id='selectId'><option>--请选择--</option>"
         var $data = data.rateList;
