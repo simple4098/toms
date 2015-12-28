@@ -1,0 +1,22 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+ <%-- <label>
+    <input type="radio"  name="fcHotelId">
+    <div class="result-box">
+      <p>暂不匹配</p>
+    </div>
+  </label>--%>
+<input type="hidden" name="page" class="conment-page" value="${page}"/>
+<input type="hidden" name="maxPage" class="max-page" value="${maxPage}"/>
+  <c:forEach items="${hotel}" var="ho">
+
+  <label>
+      <input type="radio" name="fcHotelId" value="${ho.parentHotelId}"  >
+      <div class="result-box">
+        <p>名称11：<span>${ho.hotelName}</span></p>
+     <%--    <p>电话：<span>${ho.telephone}</span></p>
+        <p>地址：<span>${ho.hotelAddress}</span></p> --%>
+      </div>
+    </label>
+  </c:forEach>
+

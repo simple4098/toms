@@ -7,7 +7,14 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>客栈匹配列表</title>
+  <title>携程客栈匹配列表</title>
+<%--  <link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">--%>
+
   <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/userSet.css'/>">
   <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
   <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
@@ -25,7 +32,7 @@
     <c:set value="${pagination}" var="page"/>
   <div class="select-area">
     <form id="inn-search" action="<c:url value="/innMatch/match"/>"  method="POST">
-     <%-- <input type="text" id="fromData" name="fromData" value="">--%>
+      <input type="text" id="fromData" name="fromData" value="">
       <input type="hidden" id="pageId" name="page" value="${page.page}"/>
       <input type="hidden" id="otaInfoId" name="otaInfoId" value="${otaInfoId}"/>
       <select class="form-control" id="kz-tags" name="innLabelId" >
@@ -46,9 +53,9 @@
         搜索
         <i class="icon-search icon-on-right bigger-110"></i>
       </button>
-    <%--  <button type="button" id="exportButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
+      <button type="button" id="exportButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
         导出excel
-      </button>--%>
+      </button>
     </form>
   </div>
   <hr>
@@ -82,6 +89,13 @@
       var obj = $('#inn-search');
       obj.attr("action","<c:url value="/innMatch/match"/>");
       obj.attr("target","");
+      obj.submit();
+    })
+
+    $('#exportButton').on('click', function(){
+      var obj = $('#inn-search');
+      obj.attr("action","<c:url value="/innMatch/ajax/export"/>");
+      obj.attr("target","_blank");
       obj.submit();
     })
 
