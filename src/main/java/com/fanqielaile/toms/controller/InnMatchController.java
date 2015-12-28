@@ -276,26 +276,8 @@ public class InnMatchController extends BaseController {
                         Company company = companyService.findCompanyByid(companyId);
                         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
                         List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
-                        if(null!=list && !list.isEmpty()){
-                        	for (RoomTypeInfo roomTypeInfo : list) {
-                        		boolean hasContains = false;
-                        		for (CtripRoomTypeMapping ctripRoomTypeMapping : ctripRoomMappings) {
-                        			if(roomTypeInfo.getRoomTypeId()== Integer.parseInt( ctripRoomTypeMapping.getTomRoomTypeId())){
-                        				hasContains = true;
-                        				roomTypeInfo.setRatePlanCode(ctripRoomTypeMapping.getRatePlanCode());
-                        				roomTypeInfo.setRatePlanCodeName(ctripRoomTypeMapping.getRatePlanCodeName());
-                        				//roomTypeInfo.setRoomMappingId(ctripRoomTypeMapping.getId());
-                        				break;
-                        			}
-                        		}
-                        		if(!hasContains){
-                        			CtripRoomTypeMapping crtm = new CtripRoomTypeMapping();
-                        			crtm.setTomRoomTypeName(roomTypeInfo.getRoomTypeName());
-                        			crtm.setCtripRoomTypeName("");
-                        			tempAddRoomType.add(crtm);
-                        		}
-                        	}
-                        }
+                        assembleAllRoomTypeMapping(ctripRoomMappings,
+								tempAddRoomType, list);
                         ctripRoomMappings.addAll(tempAddRoomType);
                 		model.addAttribute("fcRoomTypeList", rooms);
                 		model.addAttribute("matchRoomTypeList", ctripRoomMappings);
@@ -327,6 +309,36 @@ public class InnMatchController extends BaseController {
             return "/error";
         }
     }
+
+    /**
+     *  组装所有的房型，同时把已经Mapping了建立关系
+     * @param ctripRoomMappings  已经匹配的Mapping
+     * @param tempAddRoomType 保存为建立Mapping关系的房型
+     * @param list   OMS 所有的房型
+     */
+	private void assembleAllRoomTypeMapping(
+			List<CtripRoomTypeMapping> ctripRoomMappings,
+			List<CtripRoomTypeMapping> tempAddRoomType, List<RoomTypeInfo> list) {
+		if(null!=list && !list.isEmpty()){
+			for (RoomTypeInfo roomTypeInfo : list) {
+				boolean hasContains = false;
+				for (CtripRoomTypeMapping ctripRoomTypeMapping : ctripRoomMappings) {
+					if(roomTypeInfo.getRoomTypeId()== Integer.parseInt( ctripRoomTypeMapping.getTomRoomTypeId())){
+						hasContains = true;
+						roomTypeInfo.setRatePlanCode(ctripRoomTypeMapping.getRatePlanCode());
+						roomTypeInfo.setRatePlanCodeName(ctripRoomTypeMapping.getRatePlanCodeName());
+						break;
+					}
+				}
+				if(!hasContains){
+					CtripRoomTypeMapping crtm = new CtripRoomTypeMapping();
+					crtm.setTomRoomTypeName(roomTypeInfo.getRoomTypeName());
+					crtm.setCtripRoomTypeName("");
+					tempAddRoomType.add(crtm);
+				}
+			}
+		}
+	}
     
     
 
