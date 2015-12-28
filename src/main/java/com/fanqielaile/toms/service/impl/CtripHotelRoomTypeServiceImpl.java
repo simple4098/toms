@@ -41,6 +41,7 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.CtripMappingBy;
 import com.fanqielaile.toms.support.util.FcUtil;
 
@@ -159,11 +160,11 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDto.setCompanyId(companyId);
 				otaInnOtaDto.setAliasInnName(bangInn.getInnName());
 				otaInnOtaDto.setOtaId(company.getOtaId().toString());
-				otaInnOtaDto.setPriceModel("MAI"); 
-				otaInnOtaDto.setsJiaModel("MAI") ;  
+				otaInnOtaDto.setPriceModel(Constants.MAI); 
+				otaInnOtaDto.setsJiaModel(Constants.MAI) ;  
 				otaInnOtaDto.setDeleted(0);
 				otaInnOtaDto.setBangInnId(bangInn.getId());
-				otaInnOtaDto.setOtaInfoId("3");  
+				otaInnOtaDto.setOtaInfoId(Constants.OTA_CTRIP);  
 				otaInnOtaDto.setInnId(Integer.parseInt(innId));
 				otaInnOtaDto.setSj(0);
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
