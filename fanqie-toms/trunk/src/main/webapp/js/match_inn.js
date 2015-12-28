@@ -152,10 +152,11 @@ $("#userPlusBtn").on("click",function(){
     var currency = $("#currencyId").val();
     var payMethod = $("#payMethodId").val();
     var bedType = $("#bedTypeId").val();
+    var otaInfoId = $("#otaInfoId").val();
     var url = $("#saveRatePlanUrlId").val();
     $.ajax({
         type:'post',
-        data:{'currency':currency,'payMethod':payMethod,'bedType':bedType},
+        data:{'currency':currency,'payMethod':payMethod,'bedType':bedType,'otaInfoId':otaInfoId},
         dataType:'json',
         url:url,
         success:function(data){

@@ -20,14 +20,14 @@
     </sql>
     <insert id="insertFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.OtaRatePlan">
         insert into
-        ota_rate_plan(id,rate_plan_name,currency,pay_method,bed_type,company_id,created_date,updated_date,deleted)
-        values (#{uuid},#{ratePlanName},#{currency},#{payMethod},#{bedType},#{companyId},now(),now(),0)
+        ota_rate_plan(id,rate_plan_name,currency,pay_method,bed_type,company_id,created_date,updated_date,deleted,ota_info_id)
+        values (#{uuid},#{ratePlanName},#{currency},#{payMethod},#{bedType},#{companyId},now(),now(),0,'${otaInfoId}')
     </insert>
 
     <select id="selectFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.OtaRatePlan" resultMap="resultMapId">
         SELECT
         <include refid="Base_Column_List"/>
-        from  ota_rate_plan   where deleted=0
+        from  ota_rate_plan   where deleted=0 and ota_info_id ='${otaInfoId}'
         <if test="companyId!=null and companyId!=''">
             and  company_id ='${companyId}'
         </if>
