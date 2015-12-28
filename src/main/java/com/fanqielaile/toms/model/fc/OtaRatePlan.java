@@ -11,7 +11,7 @@ import com.fanqielaile.toms.enums.PayMethod;
  * @data : 2015/9/21
  * @version: v1.0.0
  */
-public class FcRatePlan extends Domain {
+public class OtaRatePlan extends Domain {
 
     //房仓价格计划名称
     private String ratePlanName;

@@ -5,14 +5,14 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
+import com.fanqielaile.toms.dto.fc.OtaRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.FcHotelInfo;
-import com.fanqielaile.toms.model.fc.FcRatePlan;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.impl.InnLabelService;
@@ -242,10 +242,10 @@ public class InnMatchController extends BaseController {
 
     //房仓价格计划保存列表
     @RequestMapping("/ajax/ratePlanList")
-    public String ratePlanList(Model model,FcRatePlan fcRatePlan,String innId){
+    public String ratePlanList(Model model,OtaRatePlan otaRatePlan,String innId){
         String companyId = getCurrentUser().getCompanyId();
-        fcRatePlan.setCompanyId(companyId);
-        List<FcRatePlan> ratePlan = fcRatePlanService.findFcRatePlan(fcRatePlan);
+        otaRatePlan.setCompanyId(companyId);
+        List<OtaRatePlan> ratePlan = fcRatePlanService.findFcRatePlan(otaRatePlan);
         model.addAttribute("rateList",ratePlan);
         model.addAttribute("innId",innId);
         return  "/match/rate_list";
@@ -254,15 +254,15 @@ public class InnMatchController extends BaseController {
     //价格计划列表  ajax请求
     @RequestMapping("/ajax/ratePlanJson")
     @ResponseBody
-    public Object ratePlanList(FcRatePlan fcRatePlan){
+    public Object ratePlanList(OtaRatePlan otaRatePlan){
         Map map = new HashMap();
         String companyId = getCurrentUser().getCompanyId();
-        fcRatePlan.setCompanyId(companyId);
-        List<FcRatePlan> ratePlan = fcRatePlanService.findFcRatePlan(fcRatePlan);
-        List<FcRatePlanDto> list = new ArrayList<FcRatePlanDto>();
-        FcRatePlanDto fc = null;
-        for (FcRatePlan f:ratePlan){
-            fc = new FcRatePlanDto();
+        otaRatePlan.setCompanyId(companyId);
+        List<OtaRatePlan> ratePlan = fcRatePlanService.findFcRatePlan(otaRatePlan);
+        List<OtaRatePlanDto> list = new ArrayList<OtaRatePlanDto>();
+        OtaRatePlanDto fc = null;
+        for (OtaRatePlan f:ratePlan){
+            fc = new OtaRatePlanDto();
             BeanUtils.copyProperties(f,fc);
             fc.setBedTypeValue(f.getBedType().getDesc());
             fc.setCurrencyValue(f.getCurrency().getValue());
@@ -298,11 +298,11 @@ public class InnMatchController extends BaseController {
     //房仓价格计划保存
     @RequestMapping("/ajax/saveRatePlan")
     @ResponseBody
-    public Object saveRatePlanService(FcRatePlan fcRatePlan){
+    public Object saveRatePlanService(OtaRatePlan otaRatePlan){
         String companyId = getCurrentUser().getCompanyId();
-        fcRatePlan.setCompanyId(companyId);
+        otaRatePlan.setCompanyId(companyId);
         Result result = new Result();
-        fcRatePlanService.saveFcRatePlan(fcRatePlan);
+        fcRatePlanService.saveFcRatePlan(otaRatePlan);
         return  result;
     }
 

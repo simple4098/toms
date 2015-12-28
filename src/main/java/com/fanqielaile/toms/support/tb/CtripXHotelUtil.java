@@ -45,7 +45,7 @@ public class CtripXHotelUtil {
             for (RoomDetail roomDetail:roomDetailList){
                 Double priceValue =isSj?roomDetail.getRoomPrice():-1;
                 priceValue = roomDetail.getRoomNum()==0?-1:roomDetail.getRoomPrice();
-                Price price = new Price(priceValue,priceValue,priceValue,priceValue,1);
+                Price price = new Price(0d,0d,0d,priceValue,1);
                 prices = new ArrayList<>();
                 prices.add(price);
                 PriceInfo priceInfo = new PriceInfo(prices,1,CtripBalanceType.PP, CtripPriceType.Cost);

@@ -54,7 +54,7 @@
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id,o.bed_num,o.bed_len,o.bed_wid
-        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        from  fc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
         where o.deleted=0 and  o.company_id ='${companyId}' and  o.inn_id =#{innId}  and  o.ota_info_id =#{otaInfoId} order by o.fq_roomtype_id desc
 
@@ -65,7 +65,7 @@
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
-        from fc_roomtype_fq o LEFT JOIN fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        from fc_roomtype_fq o LEFT JOIN ota_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
 
         where o.deleted=0
         <if test="sj!=null and sj!=''">
@@ -85,7 +85,7 @@
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
-        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        from  fc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
         where o.deleted=0 and o.id ='${id}'
     </select>
     <select id="selectFcRoomTypeFqByRatePlanId" resultMap="resultDtoMapId">
@@ -93,7 +93,7 @@
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
-        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        from  fc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
         where o.deleted=0 and o.rate_plan_id ='${ratePlanId}'
     </select>
     <update id="updateRoomTypeFqRatePlan">
@@ -118,7 +118,7 @@
         o.id,o.company_id,o.inn_id,o.fc_hotel_id,o.ota_inn_ota_id,o.ota_info_id,o.fq_roomtype_id
         ,o.fc_roomtype_id,o.room_area,o.fq_roomtype_name,o.fc_roomtype_name
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id
-        from  fc_roomtype_fq o LEFT JOIN  fc_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
+        from  fc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON fp.id =o.rate_plan_id and fp.deleted=0
         where o.deleted=0 and o.inn_id ='${innId}' and o.ota_info_id = '${otaInfoId}' and o.company_id = '${companyId}' and o.fq_roomtype_id='${roomTypeId}'
     </select>
 
