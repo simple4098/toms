@@ -66,9 +66,8 @@ public class CtripXHotelUtil {
             setRoomPriceItem.setPriceInfo(priceInfos);
             setRoomPriceItems.add(setRoomPriceItem);
             setAdaperRoomPriceRequest.setSetRoomPriceItems(setRoomPriceItems);
-            Authentication authentication = new Authentication(infoRefDto.getXcUserName(),infoRefDto.getXcPassword());
-            RequestType requestType = new RequestType(CtripRequestType.SetRoomInfo, CtripVersion.V12);
-            HeaderInfo headerInfo = new  HeaderInfo(infoRefDto.getUserId(), CtripConstants.requestorId,false,authentication,requestType);
+            HeaderInfo headerInfo = new  HeaderInfo(infoRefDto.getUserId(), CtripConstants.requestorId,false);
+            headerInfo.build(infoRefDto.getXcUserName(),infoRefDto.getXcPassword(),CtripRequestType.SetRoomInfo, CtripVersion.V12);
             roomPriceRequest.setSetAdaperRoomPriceRequest(setAdaperRoomPriceRequest);
             roomPriceRequest.setHeaderInfo(headerInfo);
             return FcUtil.fcRequest(roomPriceRequest);
@@ -83,9 +82,8 @@ public class CtripXHotelUtil {
 
     public static String requestSetRoomInfoXml( OtaInfoRefDto infoRefDto,CtripRoomTypeMapping mapping,List<RoomDetail> roomDetailList) throws JAXBException {
         if (!CollectionUtils.isEmpty(roomDetailList)){
-            Authentication authentication = new Authentication(infoRefDto.getXcUserName(),infoRefDto.getXcPassword());
-            RequestType requestType = new RequestType(CtripRequestType.SetRoomInfo, CtripVersion.V12);
-            HeaderInfo headerInfo = new  HeaderInfo(infoRefDto.getUserId(),CtripConstants.requestorId,false,authentication,requestType);
+            HeaderInfo headerInfo = new  HeaderInfo(infoRefDto.getUserId(),CtripConstants.requestorId,false);
+            headerInfo.build(infoRefDto.getXcUserName(),infoRefDto.getXcPassword(),CtripRequestType.SetRoomInfo, CtripVersion.V12);
             List<RoomInfoItem> roomInfoItems = new ArrayList<>();
             for (RoomDetail roomDetail:roomDetailList){
                 CtripRoomStatus ctripRoomStatus = roomDetail.getRoomNum()>0?CtripRoomStatus.G:CtripRoomStatus.N;
