@@ -1,7 +1,6 @@
 package com.fanqielaile.toms.dao;
 
-import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
-import com.fanqielaile.toms.model.fc.FcRatePlan;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -14,11 +13,11 @@ import java.util.List;
  */
 public interface IFcRatePlanDao {
 
-    void insertFcRatePlan(FcRatePlan  fcRatePlan);
+    void insertFcRatePlan(OtaRatePlan otaRatePlan);
 
-    List<FcRatePlan> selectFcRatePlan(FcRatePlan fcRatePlan);
+    List<OtaRatePlan> selectFcRatePlan(OtaRatePlan otaRatePlan);
 
     void deletedRatePlan(@Param("ratePlanId")String ratePlanId);
 
-    FcRatePlan selectFcRatePlanById(@Param("ratePlanId")String ratePlanId);
+    OtaRatePlan selectFcRatePlanById(@Param("ratePlanId")String ratePlanId);
 }

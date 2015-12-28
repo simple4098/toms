@@ -8,7 +8,7 @@ import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
-import com.fanqielaile.toms.dto.fc.FcRatePlanDto;
+import com.fanqielaile.toms.dto.fc.OtaRatePlanDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OperateType;
@@ -75,7 +75,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         Assert.hasText(ratePlanId);
         FcRoomTypeFqDto fcRoomTypeFq = fcRoomTypeFqDao.selectFcRoomTypeFqById(fcRoomTypeFqId);
         OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(fcRoomTypeFq.getCompanyId(), OtaType.FC.name());
-        FcRatePlan fcRatePlan =  fcRatePlanDao.selectFcRatePlanById(ratePlanId);
+        OtaRatePlan otaRatePlan =  fcRatePlanDao.selectFcRatePlanById(ratePlanId);
         String innId = fcRoomTypeFq.getInnId();
         String roomTypeId =fcRoomTypeFq.getFqRoomTypeId();
 
@@ -88,11 +88,11 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         syncRatePlanRequestInfo.setOperateType(OperateType.NEW);
         List<RatePlan> ratePlanList = new ArrayList<>();
         RatePlan ratePlan = new RatePlan();
-        ratePlan.setBedType(fcRatePlan.getBedType().getValue());
-        ratePlan.setCurrency(fcRatePlan.getCurrency());
-        ratePlan.setPayMethod(fcRatePlan.getPayMethod().getValue());
-        ratePlan.setSpRatePlanId(fcRatePlan.getRatePlanId());
-        ratePlan.setSpRatePlanName(fcRatePlan.getRatePlanName());
+        ratePlan.setBedType(otaRatePlan.getBedType().getValue());
+        ratePlan.setCurrency(otaRatePlan.getCurrency());
+        ratePlan.setPayMethod(otaRatePlan.getPayMethod().getValue());
+        ratePlan.setSpRatePlanId(otaRatePlan.getRatePlanId());
+        ratePlan.setSpRatePlanName(otaRatePlan.getRatePlanName());
         ratePlanList.add(ratePlan);
         syncRatePlanRequestInfo.setRatePlanList(ratePlanList);
         syncRatePlanRequest.setSyncRatePlanRequest(syncRatePlanRequestInfo);
@@ -104,7 +104,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         if (Constants.FcResultNo.equals(response.getResultNo())){
             fcRoomTypeFqDao.updateRoomTypeFqRatePlan(fcRoomTypeFqId,ratePlanId);
             if (fcRoomTypeFq!=null){
-                FcRatePlanDto ratePlanDto = fcRoomTypeFq.getFcRatePlanDto();
+                OtaRatePlanDto ratePlanDto = fcRoomTypeFq.getFcRatePlanDto();
                 if (ratePlanDto!=null && !ratePlanDto.getRatePlanId().equals(ratePlanId) && fcRoomTypeFq.getSj()==Constants.FC_SJ){
                     updateSjMatchRoomType(fcRoomTypeFq.getCompanyId(), fcRoomTypeFq.getId());
                 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fanqielaile.toms.dao.IFcRatePlanDao">
-    <resultMap id="resultMapId" type="com.fanqielaile.toms.model.fc.FcRatePlan">
+    <resultMap id="resultMapId" type="com.fanqielaile.toms.model.fc.OtaRatePlan">
         <id column="id" property="id"/>
         <result column="rate_plan_name" property="ratePlanName"/>
         <result column="currency" property="currency"/>
@@ -12,21 +12,22 @@
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
         <result column="rate_plan_id" property="ratePlanId"/>
+        <result column="ota_info_id" property="otaInfoId"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,rate_plan_name,currency,pay_method,bed_type,company_id,rate_plan_id,created_date,updated_date,deleted
     </sql>
-    <insert id="insertFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.FcRatePlan">
+    <insert id="insertFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.OtaRatePlan">
         insert into
-        fc_rate_plan(id,rate_plan_name,currency,pay_method,bed_type,company_id,created_date,updated_date,deleted)
+        ota_rate_plan(id,rate_plan_name,currency,pay_method,bed_type,company_id,created_date,updated_date,deleted)
         values (#{uuid},#{ratePlanName},#{currency},#{payMethod},#{bedType},#{companyId},now(),now(),0)
     </insert>
 
-    <select id="selectFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.FcRatePlan" resultMap="resultMapId">
+    <select id="selectFcRatePlan" parameterType="com.fanqielaile.toms.model.fc.OtaRatePlan" resultMap="resultMapId">
         SELECT
         <include refid="Base_Column_List"/>
-        from  fc_rate_plan   where deleted=0
+        from  ota_rate_plan   where deleted=0
         <if test="companyId!=null and companyId!=''">
             and  company_id ='${companyId}'
         </if>
@@ -43,12 +44,12 @@
     <select id="selectFcRatePlanById"  resultMap="resultMapId">
         SELECT
         <include refid="Base_Column_List"/>
-        from  fc_rate_plan   where deleted=0 and id='${ratePlanId}'
+        from  ota_rate_plan   where deleted=0 and id='${ratePlanId}'
 
     </select>
 
     <delete id="deletedRatePlan" parameterType="java.lang.String">
-        delete from fc_rate_plan where id='${ratePlanId}'
+        delete from ota_rate_plan where id='${ratePlanId}'
     </delete>
 
 </mapper>

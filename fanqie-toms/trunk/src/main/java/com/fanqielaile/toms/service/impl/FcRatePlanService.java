@@ -1,27 +1,17 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqie.util.HttpClientUtil;
-import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.IFcRatePlanDao;
 import com.fanqielaile.toms.dao.IFcRoomTypeFqDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
-import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
-import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.model.fc.*;
 import com.fanqielaile.toms.service.IFcRatePlanService;
-import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.FcUtil;
-import com.fanqielaile.toms.support.util.XmlDeal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.xml.bind.JAXBException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,17 +32,17 @@ public class FcRatePlanService implements IFcRatePlanService {
     private IOtaInfoDao otaInfoDao;
 
     @Override
-    public void saveFcRatePlan(FcRatePlan fcRatePlan) {
-        List<FcRatePlan> ratePlans = fcRatePlanDao.selectFcRatePlan(fcRatePlan);
+    public void saveFcRatePlan(OtaRatePlan otaRatePlan) {
+        List<OtaRatePlan> ratePlans = fcRatePlanDao.selectFcRatePlan(otaRatePlan);
         if (CollectionUtils.isEmpty(ratePlans)){
-            fcRatePlanDao.insertFcRatePlan(fcRatePlan);
+            fcRatePlanDao.insertFcRatePlan(otaRatePlan);
         }
 
     }
 
     @Override
-    public List<FcRatePlan> findFcRatePlan(FcRatePlan fcRatePlan) {
-        return fcRatePlanDao.selectFcRatePlan(fcRatePlan);
+    public List<OtaRatePlan> findFcRatePlan(OtaRatePlan otaRatePlan) {
+        return fcRatePlanDao.selectFcRatePlan(otaRatePlan);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.fanqielaile.toms.dto.fc;
 
-import com.fanqielaile.toms.model.fc.FcRatePlan;
 import com.fanqielaile.toms.model.fc.FcRoomTypeFq;
 
 import java.util.List;
@@ -14,14 +13,14 @@ import java.util.List;
 public class FcRoomTypeFqDto extends FcRoomTypeFq {
 
     private  List<FcRoomTypeFq> fcRoomTypeFqs;
-    private FcRatePlanDto fcRatePlanDto;
+    private OtaRatePlanDto fcRatePlanDto;
 
 
-    public FcRatePlanDto getFcRatePlanDto() {
+    public OtaRatePlanDto getFcRatePlanDto() {
         return fcRatePlanDto;
     }
 
-    public void setFcRatePlanDto(FcRatePlanDto fcRatePlanDto) {
+    public void setFcRatePlanDto(OtaRatePlanDto fcRatePlanDto) {
         this.fcRatePlanDto = fcRatePlanDto;
     }
 

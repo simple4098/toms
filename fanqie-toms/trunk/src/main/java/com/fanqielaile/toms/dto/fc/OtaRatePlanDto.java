@@ -1,9 +1,6 @@
 package com.fanqielaile.toms.dto.fc;
 
-import com.fanqielaile.toms.enums.BedType;
-import com.fanqielaile.toms.enums.CurrencyCode;
-import com.fanqielaile.toms.enums.PayMethod;
-import com.fanqielaile.toms.model.fc.FcRatePlan;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 
 /**
  * DESC :
@@ -12,7 +9,7 @@ import com.fanqielaile.toms.model.fc.FcRatePlan;
  * @data : 2015/9/23
  * @version: v1.0.0
  */
-public class FcRatePlanDto extends FcRatePlan {
+public class OtaRatePlanDto extends OtaRatePlan {
 
     private String currencyValue;
     //支付类型

@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.service;
 
-import com.fanqielaile.toms.model.fc.FcRatePlan;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface IFcRatePlanService {
 
-    void saveFcRatePlan(FcRatePlan fcRatePlan);
+    void saveFcRatePlan(OtaRatePlan otaRatePlan);
 
-    List<FcRatePlan> findFcRatePlan(FcRatePlan fcRatePlan);
+    List<OtaRatePlan> findFcRatePlan(OtaRatePlan otaRatePlan);
 
     void deletedRatePlan(String companyId,String ratePlanId)throws Exception;
 }
