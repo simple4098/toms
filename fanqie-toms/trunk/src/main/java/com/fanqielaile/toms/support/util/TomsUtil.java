@@ -331,4 +331,25 @@ public class TomsUtil {
         }
         return null;
     }
+
+    /**
+     * 处理价格
+     * @param roomPrice 房型原价
+     * @param parseDate 房型价格日期
+     * @param commission 佣金比例
+     * @param priceDto 增减价
+     */
+    public static  void price(Double roomPrice ,Date parseDate,OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto){
+        if (commission != null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())) {
+            roomPrice = TomsUtil.price(roomPrice, new BigDecimal(commission.getCommissionPercent()));
+        }
+        if (priceDto!=null){
+            double value = priceDto.getValue();
+            Date startDate1 = priceDto.getStartDate();
+            Date endDate1 = priceDto.getEndDate();
+            if (parseDate.getTime() >= startDate1.getTime() && endDate1.getTime() >= parseDate.getTime()) {
+                roomPrice = roomPrice + value;
+            }
+        }
+    }
 }

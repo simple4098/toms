@@ -12,6 +12,7 @@ import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaInfo;
 import com.fanqielaile.toms.service.ICtripRoomService;
@@ -46,8 +47,10 @@ public class CtripApiTest {
         company.setOtaId(777);
         company.setUserAccount("FQFCDX");
         company.setUserPassword("fqfcdx");
+        company.setId("60978e73-851b-429d-9cf4-415300a64739");
         OtaInfoRefDto otaInfo = new OtaInfoRefDto();
         otaInfo.setUserId("181");
+        otaInfo.setUsedPriceModel(UsedPriceModel.MAI2DI);
         otaInfo.setXcUserName("zhilianjishuzhuanshu");
         otaInfo.setXcPassword("zhilianzhuanshu11!!");
         List<CtripRoomTypeMapping> roomTypeMappingList = new ArrayList<CtripRoomTypeMapping>();
