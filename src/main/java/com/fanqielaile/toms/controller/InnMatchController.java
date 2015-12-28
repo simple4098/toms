@@ -1,28 +1,15 @@
 package com.fanqielaile.toms.controller;
 
-import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.DcUtil;
-import com.fanqie.util.Pagination;
-import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.dto.fc.OtaRatePlanDto;
-import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
-import com.fanqielaile.toms.enums.OtaType;
-import com.fanqielaile.toms.helper.InnRoomHelper;
-import com.fanqielaile.toms.helper.PaginationHelper;
-import com.fanqielaile.toms.model.*;
-import com.fanqielaile.toms.model.fc.FcHotelInfo;
-import com.fanqielaile.toms.model.fc.OtaRatePlan;
-import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
-import com.fanqielaile.toms.service.*;
-import com.fanqielaile.toms.service.impl.InnLabelService;
-import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
-import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.ModelViewUtil;
-import com.fanqielaile.toms.support.util.TomsUtil;
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
-import com.github.miemiedev.mybatis.paginator.domain.PageList;
-import com.github.miemiedev.mybatis.paginator.domain.Paginator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,12 +20,55 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.fanqie.bean.response.CtripHotelInfo;
+import com.fanqie.bean.response.CtripHotelRoomType;
+import com.fanqie.core.dto.TBParam;
+import com.fanqie.util.DcUtil;
+import com.fanqie.util.Pagination;
+import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.dto.fc.OtaRatePlanDto;
+import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.exception.CtripDataException;
+import com.fanqielaile.toms.exception.RequestCtripException;
+import com.fanqielaile.toms.helper.InnRoomHelper;
+import com.fanqielaile.toms.helper.PaginationHelper;
+import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.InnLabel;
+import com.fanqielaile.toms.model.Result;
+import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.model.fc.FcHotelInfo;
+import com.fanqielaile.toms.model.fc.FcRoomTypeInfo;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
+import com.fanqielaile.toms.service.CtripHotelInfoService;
+import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
+import com.fanqielaile.toms.service.CtripRoomTypeMappingService;
+import com.fanqielaile.toms.service.IBangInnService;
+import com.fanqielaile.toms.service.ICompanyService;
+import com.fanqielaile.toms.service.IFcHotelInfoService;
+import com.fanqielaile.toms.service.IFcRatePlanService;
+import com.fanqielaile.toms.service.IFcRoomTypeFqService;
+import com.fanqielaile.toms.service.IInnMatchService;
+import com.fanqielaile.toms.service.IOtaInfoService;
+import com.fanqielaile.toms.service.IOtaInnOtaService;
+import com.fanqielaile.toms.service.IOtaRoomPriceService;
+import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.service.impl.InnLabelService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
+import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.ModelViewUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 
 /**
  * DESC : 不同渠道下的客栈匹配
@@ -70,6 +100,12 @@ public class InnMatchController extends BaseController {
     private IFcRoomTypeFqService fcRoomTypeFqService;
     @Resource
     private ICompanyService companyService;
+    @Resource
+    private CtripHotelInfoService ctripHotelInfoService;
+    @Resource
+    private CtripHotelRoomTypeService  ctripHotelRoomTypeService;
+    @Resource
+    private CtripRoomTypeMappingService ctripRoomTypeMappingService;
 
     /**
      * 匹配列表
@@ -190,11 +226,12 @@ public class InnMatchController extends BaseController {
                 Company company = companyService.findCompanyByid(companyId);
                 String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
                 List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
-                //List<RoomTypeInfo> list = otaRoomPriceService.obtOmsRoomInfo(bangInn);
                 model.addAttribute("omsRoomTypeList", list);
                 model.addAttribute("inn", bangInn);
                 model.addAttribute("omsInn", omsInn);
                 model.addAttribute("otaInnOtaDto", otaInnOtaDto);
+                
+                
             } catch (Exception e) {
                 log.error("获取oms房型信息异常:" + e);
             }
@@ -204,6 +241,94 @@ public class InnMatchController extends BaseController {
             return "/error";
         }
     }
+    
+    
+    
+    /**
+     *  
+     * @param model
+     * @param bangInnDto
+     * @param ctripId  用于页面操作是否提交酒店绑定关系。
+     * @return
+     */
+    @RequestMapping("/ctrip/matchDetail")
+    public String matchCtripList(Model model,BangInnDto bangInnDto,String ctripId){
+        UserInfo userInfo = getCurrentUser();
+        String companyId = userInfo.getCompanyId();
+        Integer innId =  bangInnDto.getInnId();
+        if(innId!=null) {
+            BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(companyId, innId);
+            try {
+                InnDto omsInn = innMatchService.obtOmsInn(bangInn);
+                //  渠道信息
+                OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(userInfo.getCompanyId(), OtaType.XC);
+                //  查询，h-h的绑定关系
+                OtaInnOtaDto otaInnOtaDto = otaInnOtaService.findOtaInnOtaByOtaId(bangInn.getId(), infoRefDto.getOtaInfoId(), companyId);
+                if(StringUtils.isEmpty(ctripId)){ //  如果，没有新的绑定关系
+                	if (otaInnOtaDto != null) { //  已经关联了酒店，根据子ID查询
+                		CtripHotelInfo ctripHotelInfo = ctripHotelInfoService.findCtripHotelInfoByChildHotelId(otaInnOtaDto.getWgHid());
+                		//房仓酒店房型信息
+                		List<CtripHotelRoomType> rooms = ctripHotelRoomTypeService.findByCtripParentHotelId(ctripHotelInfo.getParentHotelId());
+                		//房型匹配信息
+                		List<CtripRoomTypeMapping> ctripRoomMappings =	ctripRoomTypeMappingService.findRoomTypeMapping(companyId, otaInnOtaDto.getWgHid());
+                		List<CtripRoomTypeMapping> tempAddRoomType = new ArrayList<CtripRoomTypeMapping>();
+                		model.addAttribute("fcHotel", ctripHotelInfo);
+                        Company company = companyService.findCompanyByid(companyId);
+                        String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+                        List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
+                        if(null!=list && !list.isEmpty()){
+                        	for (RoomTypeInfo roomTypeInfo : list) {
+                        		boolean hasContains = false;
+                        		for (CtripRoomTypeMapping ctripRoomTypeMapping : ctripRoomMappings) {
+                        			if(roomTypeInfo.getRoomTypeId()== Integer.parseInt( ctripRoomTypeMapping.getTomRoomTypeId())){
+                        				hasContains = true;
+                        				roomTypeInfo.setRatePlanCode(ctripRoomTypeMapping.getRatePlanCode());
+                        				roomTypeInfo.setRatePlanCodeName(ctripRoomTypeMapping.getRatePlanCodeName());
+                        				//roomTypeInfo.setRoomMappingId(ctripRoomTypeMapping.getId());
+                        				break;
+                        			}
+                        		}
+                        		if(!hasContains){
+                        			CtripRoomTypeMapping crtm = new CtripRoomTypeMapping();
+                        			crtm.setTomRoomTypeName(roomTypeInfo.getRoomTypeName());
+                        			crtm.setCtripRoomTypeName("");
+                        			tempAddRoomType.add(crtm);
+                        		}
+                        	}
+                        }
+                        ctripRoomMappings.addAll(tempAddRoomType);
+                		model.addAttribute("fcRoomTypeList", rooms);
+                		model.addAttribute("matchRoomTypeList", ctripRoomMappings);
+                	}
+                }else{
+                	//  酒店信息
+                	CtripHotelInfo  ctripHotelInfo = ctripHotelInfoService.findCtripHotelInfoByParentHotelId(ctripId);
+                	model.addAttribute("fcHotel", ctripHotelInfo);
+                	//  所有的母房型
+                	List<CtripHotelRoomType> rooms = ctripHotelRoomTypeService.findByCtripParentHotelId(ctripId);
+                	model.addAttribute("fcRoomTypeList", rooms);
+                }
+                List<CtripHotelInfo> hotel =  ctripHotelInfoService.findCtripHotelByName(bangInn.getInnName());
+                model.addAttribute("hotel", hotel);
+                Company company = companyService.findCompanyByid(companyId);
+                String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
+                List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
+                model.addAttribute("omsRoomTypeList", list);
+                model.addAttribute("inn", bangInn);
+                model.addAttribute("omsInn", omsInn);
+                model.addAttribute("otaInnOtaDto", otaInnOtaDto);
+            } catch (Exception e) {
+            	e.printStackTrace();
+                log.error("获取oms房型信息异常:" + e);
+            }
+            return "/match/ctrip/inn_match_detail";
+        }else {
+            model.addAttribute("msg","url 异常!客栈id不能为空!");
+            return "/error";
+        }
+    }
+    
+    
 
     //房仓客栈搜索
     @RequestMapping("/ajax/searchInn")
@@ -223,6 +348,35 @@ public class InnMatchController extends BaseController {
         model.addAttribute("maxPage", pagination.getPageCount());
         return "/match/ajax_fc_hotel";
     }
+    
+    
+    /**
+     * 
+     * @param model
+     * @param bangInnDto
+     * @param page
+     * @return
+     */
+    @RequestMapping(value="/ajax/searchCtripHotel")
+    public String searchCtripHotel(Model model, BangInnDto bangInnDto, @RequestParam(defaultValue = "1", required = false) int page) {
+//      List<FcHotelInfoDto> hotel = fcHotelInfoService.findFcHotel(bangInnDto.getInnName());
+    //  List<FcHotelInfo> hotel = fcHotelInfoService.findFcHotelByPage(bangInnDto.getInnName(), new PageBounds(page, 3));
+    	List<CtripHotelInfo> hotel  =  ctripHotelInfoService.findCtripHotelByPage(bangInnDto.getInnName(),  new PageBounds(page, 3));
+    	model.addAttribute("hotel",hotel);
+      //封装分页信息
+      Paginator paginator = ((PageList) hotel).getPaginator();
+      Pagination pagination = PaginationHelper.toPagination(paginator);
+      FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+      model.addAttribute("pagination", pagination);
+      model.addAttribute("pageDecorator", pageDecorator);
+      model.addAttribute("keyword", bangInnDto.getInnName());
+      //当前页
+      model.addAttribute("page", page);
+      model.addAttribute("maxPage", pagination.getPageCount());
+      return "/match/ctrip/ajax_ctrip_hotel";
+  }
+    
+    
 
     //客栈与房仓酒店匹配
     @RequestMapping("/ajax/match")
@@ -240,6 +394,46 @@ public class InnMatchController extends BaseController {
         return  result;
     }
 
+    
+    //客栈与房仓酒店匹配
+    @RequestMapping("/ajax/ctrip/match")
+    @ResponseBody
+    public Object matchCtripHotel(String innId,String ctripHotelId){
+    	Result result = new Result();
+    	result.setStatus(Constants.SUCCESS200);
+    	result.setMessage(ctripHotelId);
+    	CtripHotelInfo hotel =  ctripHotelInfoService.findCtripHotelInfoByParentHotelId(ctripHotelId);
+    	if(Boolean.valueOf(hotel.getHasBind())){
+    		if(Integer.parseInt(hotel.getId())!=Integer.parseInt(innId)){
+    			result.setStatus(Constants.ERROR400);
+    			result.setMessage("当前母酒店已经被绑定");
+    			return result;
+    		}
+    	}
+    	return  result;
+    }
+    
+    
+    //客栈与房仓酒店匹配
+    @RequestMapping("/ajax/ctrip/cannelMapping")
+    @ResponseBody
+    public Object cannelMapping(String innId,String ctripHotelId){
+    	Result result = new Result();
+    	  UserInfo userInfo = getCurrentUser();
+          String companyId = userInfo.getCompanyId();
+    	result.setStatus(Constants.SUCCESS200);
+    	try {
+    		ctripHotelRoomTypeService.cannelMappingAll(companyId, innId, ctripHotelId);
+    	} catch (RequestCtripException | JAXBException e) {
+    		log.error(e.getMessage());
+    		result.setStatus(Constants.ERROR400);
+    		result.setMessage(e.getMessage());
+    	}
+		return result;
+    }
+    
+    
+    
     //房仓价格计划保存列表
     @RequestMapping("/ajax/ratePlanList")
     public String ratePlanList(Model model,OtaRatePlan otaRatePlan,String innId){
@@ -250,6 +444,43 @@ public class InnMatchController extends BaseController {
         model.addAttribute("innId",innId);
         return  "/match/rate_list";
     }
+    
+    //携程价格计划
+    @RequestMapping("/ajax/ctrip/ratePlanList")
+    public String rateCtripPlanList(Model model,String innId){
+        List<OtaRatePlan> ratePlan = fcRatePlanService.selectCtripRatePlan();
+        model.addAttribute("rateList",ratePlan);
+        model.addAttribute("innId",innId);
+        return  "/match/ctrip/rate_list";
+    }
+    
+    
+    //携程价格计划
+    @RequestMapping("/ajax/ctrip/ratePlanListData")
+    @ResponseBody
+    public  List<OtaRatePlan> rateCtripPlanListData(){
+        return fcRatePlanService.selectCtripRatePlan();
+        
+    }
+    
+    
+    //更新携程Mapping对应的房价计划
+    @RequestMapping("/ajax/ctrip/mapping/update")
+    @ResponseBody
+    public Result MappingUpdate(String newPlanCode,String newPlanCodeName, String mappingId){
+    	Result result = new Result();
+    	   String companyId = getCurrentUser().getCompanyId();
+    	try {
+			ctripRoomTypeMappingService.updateMappingPlanCode(companyId,newPlanCode,newPlanCodeName, mappingId);
+			result.setStatus(Constants.SUCCESS200);
+		} catch (JAXBException e) {
+			log.error(e.getMessage());
+    		result.setStatus(Constants.ERROR400);
+    		result.setMessage(e.getMessage());
+		}
+    	return result;
+    }
+    
 
     //价格计划列表  ajax请求
     @RequestMapping("/ajax/ratePlanJson")
@@ -324,6 +555,9 @@ public class InnMatchController extends BaseController {
         return result;
         //return  "redirect:/innMatch/matchDetail?innId="+innId;
     }
+    
+    
+    
     //房仓房型与番茄房型匹配
     @RequestMapping("/ajax/matchRoomType")
     @ResponseBody
@@ -336,6 +570,31 @@ public class InnMatchController extends BaseController {
         } catch (Exception e) {
             result.setMessage(e.getMessage());
             result.setStatus(Constants.ERROR400);
+        }
+        return  result;
+    }
+    
+    
+    //携程房型与番茄房型匹配
+    @RequestMapping("/ajax/ctrip/matchRoomType")
+    @ResponseBody
+    public Object matchCtripRoomType(String json,String innId,String fcHotelId){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try {
+        	ctripHotelRoomTypeService.updateRoomBypeRelation(companyId,json,innId,fcHotelId);
+        } catch (CtripDataException e) {
+        	log.error(e.getMessage());
+        	result.setStatus(Constants.ERROR400);
+        	result.setMessage(e.getMessage());
+        } catch (RequestCtripException e) {
+        	log.error("请求携程出错:"+e.getMessage());
+        	result.setStatus(Constants.ERROR400);
+        	result.setMessage(e.getMessage());
+        } catch (JAXBException e) {
+        	log.error("数据转换出错:"+e.getMessage());
+        	result.setStatus(Constants.ERROR400);
+        	result.setMessage(e.getMessage());
         }
         return  result;
     }

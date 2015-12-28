@@ -16,13 +16,33 @@ public interface CtripHotelInfoDao {
     
     List<CtripHotelInfo> findHotelInfoByPage(@Param("hotelName") String hotelName, PageBounds pageBounds);
     
+    /**
+     * 通过母酒店ID 查询酒店信息
+     * @param parentHotelId
+     * @return
+     */
     CtripHotelInfo findByParentHotelId(@Param("parentHotelId") String parentHotelId);
-
+    
+    /**
+     *  通过子酒店ID 查询酒店信息
+     * @param parentHotelId 
+     * @return
+     */
+    CtripHotelInfo findByChildHotelId(@Param("childHotelId") String childHotelId);
+    
     /**
      * 保存携程酒店信息
      * @param ctripHotelInfo 携程酒店对象
      */
     void saveHotelInfo(CtripHotelInfo ctripHotelInfo);
+    
+    /**
+     *  修改子酒店ID
+     * @param childHotelId 子酒店ID
+     * @param parentHotelId 母酒店ID
+     */
+    void updateChildHotelId(@Param("childHotelId")String childHotelId,@Param("parentHotelId")String parentHotelId);
+    
 
     /**
      * 更新携程酒店信息

@@ -19,8 +19,20 @@ public interface CtripHotelInfoService {
 	 
 	 List<CtripHotelInfo> findCtripHotelByPage(String name, PageBounds pageBounds);
 	 
+	 /**
+	  *  通过携程母酒店ID查询
+	  * @param parentHotelId 母酒店ID
+	  * @return
+	  */
 	 CtripHotelInfo findCtripHotelInfoByParentHotelId(String parentHotelId);
+	
 
 
 	Map<String, Object> getHotelInfo() throws Exception;
+	/**
+	 *  通过子ID查询携程酒店 
+	 * @param childHotelId
+	 * @return
+	 */
+	 CtripHotelInfo findCtripHotelInfoByChildHotelId(String childHotelId);
 }

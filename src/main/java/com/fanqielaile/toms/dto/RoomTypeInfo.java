@@ -56,6 +56,11 @@ public class RoomTypeInfo implements Serializable
 
     //oms 床型
     private String bedType;
+    
+    private transient String ratePlanCode; // 价格计划code
+    
+    private transient String ratePlanCodeName; // 价格计划code名称
+    
 
     public String getBedType() {
         return bedType;
@@ -249,5 +254,21 @@ public class RoomTypeInfo implements Serializable
         this.innId = innId;
     }
 
+	public String getRatePlanCode() {
+		return ratePlanCode;
+	}
 
+	public void setRatePlanCode(String ratePlanCode) {
+		this.ratePlanCode = ratePlanCode;
+	}
+
+	public String getRatePlanCodeName() {
+		return ratePlanCodeName;
+	}
+
+	public void setRatePlanCodeName(String ratePlanCodeName) {
+		this.ratePlanCodeName = ratePlanCodeName;
+	}
+
+	
 }

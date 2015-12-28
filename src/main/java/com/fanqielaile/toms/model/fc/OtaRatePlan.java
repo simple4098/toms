@@ -26,6 +26,15 @@ public class OtaRatePlan extends Domain {
     private String ratePlanId;
     //渠道id
     private String otaInfoId;
+    
+    // 是否默认值
+    private Boolean rateCodeDefault;
+    
+    // 携程价格计划code
+    private Integer ratePlanCode;
+    
+    // 携程价格计划名称
+    private String  ctripRatePlanName;
 
     public String getOtaInfoId() {
         return otaInfoId;
@@ -86,4 +95,28 @@ public class OtaRatePlan extends Domain {
     public void setBedType(BedType bedType) {
         this.bedType = bedType;
     }
+
+	public Boolean getRateCodeDefault() {
+		return rateCodeDefault;
+	}
+
+	public void setRateCodeDefault(Boolean rateCodeDefault) {
+		this.rateCodeDefault = rateCodeDefault;
+	}
+
+	public Integer getRatePlanCode() {
+		return ratePlanCode;
+	}
+
+	public void setRatePlanCode(Integer ratePlanCode) {
+		this.ratePlanCode = ratePlanCode;
+	}
+
+	public String getCtripRatePlanName() {
+		return ctripRatePlanName;
+	}
+
+	public void setCtripRatePlanName(String ctripRatePlanName) {
+		this.ctripRatePlanName = ctripRatePlanName;
+	}
 }

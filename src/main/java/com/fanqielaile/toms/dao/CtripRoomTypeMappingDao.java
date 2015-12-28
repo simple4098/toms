@@ -33,5 +33,21 @@ public interface CtripRoomTypeMappingDao {
      */
     List<CtripRoomTypeMapping> findRoomTypeMapping(@Param("companyId")String companyId,@Param("childHotelId") String childHotelId);
     
+    /**
+     *  通过主键查询记录
+     * @param id
+     * @return
+     */
+    CtripRoomTypeMapping findById(@Param("id")Integer id);
+    
+    /**
+     *  修改Mapping的房价计划
+     * @param id 主键ID
+     * @param code 新的计划编号
+     * @param codeName 新的计划名称
+     */
+    void  updateMappingRatePlanCode(@Param("id")String id,@Param("code")String code,@Param("codeName")String codeName);
+    
+    
   
 }

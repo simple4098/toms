@@ -1,18 +1,20 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqielaile.toms.dao.IFcRatePlanDao;
-import com.fanqielaile.toms.dao.IFcRoomTypeFqDao;
-import com.fanqielaile.toms.dao.IOtaInfoDao;
-import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
-import com.fanqielaile.toms.model.fc.*;
-import com.fanqielaile.toms.service.IFcRatePlanService;
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.fanqielaile.toms.dao.IFcRatePlanDao;
+import com.fanqielaile.toms.dao.IFcRoomTypeFqDao;
+import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
+import com.fanqielaile.toms.service.IFcRatePlanService;
 
 /**
  * DESC :
@@ -90,4 +92,14 @@ public class FcRatePlanService implements IFcRatePlanService {
         }
 
     }
+
+	@Override
+	public List<OtaRatePlan> selectCtripRatePlan() {
+		return fcRatePlanDao.selectCtripRatePlan();
+	}
+
+	@Override
+	public OtaRatePlan selectDefaultCtripRatePlan() {
+		return fcRatePlanDao.selectDefaultCtripRatePlan();
+	}
 }
