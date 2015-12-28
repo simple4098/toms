@@ -8,7 +8,7 @@ public class CtripRoomTypeMapping extends  Domain{
      private String   ctripChildHotelId ; // 房仓酒店id
 	 private String   companyId ; // 公司id
 	 private String   tomRoomTypeId ; // 番茄房型id
-	 private String   ctripChildRoomTypeId ; // 房仓房型id
+	 private String   ctripChildRoomTypeId ; // 携程房型id
 	 private Double   roomArea ;
 	 private String   tomRoomTypeName ; // 番茄房型名称
 	 private String   ctripRoomTypeName ; // 房仓房型名称
@@ -17,6 +17,9 @@ public class CtripRoomTypeMapping extends  Domain{
 	 private String   bedNum ;
 	 private String   bedLen ;
 	 private String   bedWid ;
+	 private String	  ratePlanCodeName;
+	 
+	 
 	public String getInnId() {
 		return innId;
 	}
@@ -94,6 +97,12 @@ public class CtripRoomTypeMapping extends  Domain{
 	}
 	public void setBedWid(String bedWid) {
 		this.bedWid = bedWid;
+	}
+	public String getRatePlanCodeName() {
+		return ratePlanCodeName;
+	}
+	public void setRatePlanCodeName(String ratePlanCodeName) {
+		this.ratePlanCodeName = ratePlanCodeName;
 	}
 
 }

@@ -4,6 +4,8 @@ import com.fanqielaile.toms.model.fc.FcRoomTypeFq;
 
 import java.util.List;
 
+import com.fanqielaile.toms.model.fc.FcRoomTypeFq;
+
 /**
  * DESC :
  * @author : 番茄木-ZLin

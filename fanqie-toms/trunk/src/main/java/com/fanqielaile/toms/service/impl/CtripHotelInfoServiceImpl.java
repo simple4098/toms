@@ -67,6 +67,11 @@ public class CtripHotelInfoServiceImpl implements CtripHotelInfoService{
 	}
 
 	@Override
+	public CtripHotelInfo findCtripHotelInfoByChildHotelId(String childHotelId) {
+		return ctripHotelInfoDao.findByChildHotelId(childHotelId);
+	}
+
+	@Override
 	public Map<String, Object> getHotelInfo() throws Exception {
 		//查询携程所有对接的公司信息，得到appkey=供应商编码
 		List<OtaInfoRefDto> otaInfoRefDtos = this.otaInfoDao.selectOtaCompanyRefByOtaType(OtaType.XC.name());

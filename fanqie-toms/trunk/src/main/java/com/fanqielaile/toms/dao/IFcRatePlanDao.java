@@ -20,4 +20,18 @@ public interface IFcRatePlanDao {
     void deletedRatePlan(@Param("ratePlanId")String ratePlanId);
 
     OtaRatePlan selectFcRatePlanById(@Param("ratePlanId")String ratePlanId);
+    
+    /**
+     *  搜索携程酒店计划计划
+     * @param fcRatePlan
+     * @return
+     */
+    List<OtaRatePlan> selectCtripRatePlan();
+    
+    /**
+     * 查询携程默认的价格计划
+     * @return
+     */
+    OtaRatePlan  selectDefaultCtripRatePlan();
+    
 }

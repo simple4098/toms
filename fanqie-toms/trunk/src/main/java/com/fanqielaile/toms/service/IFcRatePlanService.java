@@ -17,4 +17,17 @@ public interface IFcRatePlanService {
     List<OtaRatePlan> findFcRatePlan(OtaRatePlan otaRatePlan);
 
     void deletedRatePlan(String companyId,String ratePlanId)throws Exception;
+    
+    /**
+     *  搜索携程酒店计划计划
+     * @return
+     */
+    List<OtaRatePlan> selectCtripRatePlan();
+    
+    /**
+     *  搜索 默认的携程价格计划代码
+     * @return
+     */
+    OtaRatePlan selectDefaultCtripRatePlan();
+    
 }
