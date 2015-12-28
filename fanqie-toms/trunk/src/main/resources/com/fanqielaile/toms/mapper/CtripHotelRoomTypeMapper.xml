@@ -8,7 +8,7 @@
         <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>
         <result column="deleted" property="deleted"/>
-        <result column="ctrip_prent_hotel_id" property="ctripParentHotelId"/>
+        <result column="ctrip_prent_hotel_id" property="ctripPrentHotelId"/>
         <result column="room_type_name" property="roomTypeName"/>
         <result column="room_type_id" property="roomTypeId"/>
         <result column="bed_type" property="bedType"/>

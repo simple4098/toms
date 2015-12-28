@@ -19,11 +19,12 @@
 		<result column="bed_num" property="bedNum" />
 		<result column="bed_len" property="bedLen" />
 		<result column="bed_wid" property="bedWid" />
+		<result column="rate_plan_code_name" property="ratePlanCodeName" />
     </resultMap>
 
     <sql id="Base_Column_List">
        id,created_date,deleted,updated_date,inn_id,xc_child_hotel_id,company_id,fq_roomtype_id,xc_child_roomtype_id,room_area,
-       fq_roomtype_name,xc_roomtype_name,rate_plan_code,sj,bed_num,bed_len,bed_wid
+       fq_roomtype_name,xc_roomtype_name,rate_plan_code,sj,bed_num,bed_len,bed_wid,rate_plan_code_name
     </sql>
        
       
@@ -36,9 +37,9 @@
     	INSERT INTO xc_roomtype_fq(
             inn_id, xc_child_hotel_id, company_id, fq_roomtype_id, xc_child_roomtype_id, 
             room_area, fq_roomtype_name, xc_roomtype_name, 
-             deleted, rate_plan_code, sj, bed_num, bed_len, bed_wid)
+             deleted, rate_plan_code, sj, bed_num, bed_len, bed_wid,rate_plan_code_name )
     VALUES (#{innId}, #{ctripChildHotelId}, #{companyId}, #{tomRoomTypeId},
-     #{ctripChildRoomTypeId},#{roomArea},#{tomRoomTypeName},#{ctripRoomTypeName},#{deleted}, #{ratePlanCode}, #{sj}, #{bedNum}, #{bedLen}, #{bedWid}) ;
+     #{ctripChildRoomTypeId},#{roomArea},#{tomRoomTypeName},#{ctripRoomTypeName},#{deleted}, #{ratePlanCode}, #{sj}, #{bedNum}, #{bedLen}, #{bedWid} , #{ratePlanCodeName} ) ;
     </insert>   
     
     
@@ -46,12 +47,23 @@
        SELECT
         o.id,o.company_id,o.inn_id,o.xc_child_hotel_id,o.fq_roomtype_id
         ,o.xc_child_hotel_id,o.room_area,o.fq_roomtype_name,o.xc_roomtype_name
-        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,fp.rate_plan_id,o.bed_num,o.bed_len,o.bed_wid,o.xc_child_roomtype_id
-        from  xc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON  fp.ota_info_id = '3' and   fp.id =o.rate_plan_code  and fp.deleted=0
+        ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,o.bed_num,o.bed_len,o.bed_wid,o.xc_child_roomtype_id
+        ,o.rate_plan_code,o.rate_plan_code_name
+        from  xc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON  fp.ota_info_id = '3' and   fp.rate_plan_code =o.rate_plan_code  and fp.deleted=0
     	where o.deleted=0 and  o.company_id ='${companyId}' and  o.xc_child_hotel_id ='${childHotelId}'   order by o.fq_roomtype_id desc
     </select>
     
     
-       
+    <select id="findById" resultMap="BaseResultMap" >
+    select 
+   		   <include refid="Base_Column_List"    />
+   		   from  xc_roomtype_fq  where id = ${id}
+    </select>	
+    
+    <update id="updateMappingRatePlanCode">
+    		update xc_roomtype_fq set rate_plan_code = '${code}' , rate_plan_code_name = '${codeName}' where id = ${id}
+    </update>
+    
+    
 
 </mapper>
