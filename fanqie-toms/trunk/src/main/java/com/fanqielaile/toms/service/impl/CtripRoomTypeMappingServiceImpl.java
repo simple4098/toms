@@ -16,14 +16,17 @@ import com.fanqie.bean.request.mapping.SetMappingInfoRequestParams;
 import com.fanqie.bean.request.room_price.Authentication;
 import com.fanqie.bean.request.room_price.HeaderInfo;
 import com.fanqie.bean.request.room_price.RequestType;
+import com.fanqie.support.CtripConstants;
 import com.fanqie.util.CtripHttpClient;
 import com.fanqielaile.toms.dao.CtripRoomTypeMappingDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.exception.RequestCtripException;
 import com.fanqielaile.toms.service.CtripRoomTypeMappingService;
 import com.fanqielaile.toms.support.util.FcUtil;
+import com.fanqielaile.toms.support.util.HandlerResult;
 
 @Service
 public class CtripRoomTypeMappingServiceImpl implements  CtripRoomTypeMappingService{
@@ -42,27 +45,12 @@ public class CtripRoomTypeMappingServiceImpl implements  CtripRoomTypeMappingSer
 	}
 
 	@Override
-	public void updateMappingPlanCode(String companyId,String ratePlanCode,String planCodeName, String mappingId) throws JAXBException {
+	public void updateMappingPlanCode(String companyId,String ratePlanCode,String planCodeName, String mappingId) throws JAXBException, RequestCtripException {
 		CtripRoomTypeMapping  mapping =  ctripRoomTypeMappingDao.findById(Integer.parseInt(mappingId));
-		
 		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
 		SetMappingInfoRequest st = new SetMappingInfoRequest();
-		HeaderInfo headerInfo = new HeaderInfo();
-		Authentication authentication = new Authentication();
-		RequestType requestType = new RequestType();
-		
-		//组装请求类型
-		requestType.setName(CtripRequestType.SetMappingInfo.name());
-		requestType.setVersion(CtripVersion.V12.getValue());
-		headerInfo.setRequestType(requestType);
-		
-		//组装用户信息
-		authentication.setUserName(dto.getXcUserName());
-		authentication.setPassword(dto.getXcPassword());
-		headerInfo.setAuthentication(authentication);
-		headerInfo.setAsyncRequest(false);
-		headerInfo.setRequestorId("Ctrip.com");
-		headerInfo.setUserID("181");
+		HeaderInfo headerInfo = new  HeaderInfo(dto.getUserId(), CtripConstants.requestorId,false);
+        headerInfo.build(dto.getXcUserName(),dto.getXcPassword(),CtripRequestType.SetMappingInfo, CtripVersion.V12);
 		st.setHeaderInfo(headerInfo);
 		SetMappingInfoRequestParams sip = new SetMappingInfoRequestParams(SetMappingInfoRequestParams.TYPE_UPDATE_ROOM_RALATION);
 		sip.setHotelGroupHotelCode(mapping.getInnId());
@@ -70,14 +58,15 @@ public class CtripRoomTypeMappingServiceImpl implements  CtripRoomTypeMappingSer
 		sip.setHotelGroupHotelCode(mapping.getInnId());
 		sip.setHotelGroupRoomTypeCode(mapping.getTomRoomTypeId());
 		sip.setHotelGroupRoomName(mapping.getTomRoomTypeName());
-		sip.setSupplierID("18");
+		sip.setSupplierID(dto.getAppKey());
 		st.setInfoRequestParams(sip);
 		sip.setRatePlanCode(ratePlanCode);
-		String xml2 = FcUtil.fcRequest(st);
-		LOGGER.info("修改酒店PlanCode"+mappingId+"的-->request:"+xml2);
-		String mappingResponse = CtripHttpClient.execute(xml2);
-		LOGGER.info("修改酒店PlanCode"+mappingId+"的-->response:"+mappingResponse);
+		String mappingRequest = FcUtil.fcRequest(st);
+		LOGGER.info("修改酒店PlanCode ,(mappingId):"+mappingId+"的-->request:"+mappingRequest);
+		String mappingResponse = CtripHttpClient.execute(mappingRequest);
+		LOGGER.info("修改酒店PlanCode(mappingId):"+mappingId+"的-->response:"+mappingResponse);
 		ctripRoomTypeMappingDao.updateMappingRatePlanCode(mappingId, ratePlanCode, planCodeName);
+		HandlerResult.handerResultCode(mappingResponse);
 		LOGGER.info("修改完成");
 	}
 

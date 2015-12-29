@@ -489,6 +489,10 @@ public class InnMatchController extends BaseController {
 			log.error(e.getMessage());
     		result.setStatus(Constants.ERROR400);
     		result.setMessage(e.getMessage());
+		} catch (RequestCtripException e) {
+			log.error(e.getMessage());
+			result.setStatus(Constants.ERROR400);
+    		result.setMessage(e.getMessage());
 		}
     	return result;
     }
