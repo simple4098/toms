@@ -254,10 +254,33 @@ public class XmlCtripUtil {
         order.setHomeAmount(Integer.parseInt(param.elementText("Quantity")));
         order.setOrderGuestses(getOrderGuests(param.element("Guests").elements("GuestEntity"), order.getId()));
         order.setDailyInfoses(getOrderDailyInfos(param.element("RoomPrices").elements("RoomPrice"), order));
+        //设置联系人
+        order.setGuestName(getGuestName(order));
         //设置预付金额
         order.setPrepayPrice(order.getTotalPrice());
         order.setPayment(order.getTotalPrice());
         return order;
+    }
+
+    /**
+     * 设置联系人姓名
+     *
+     * @param order
+     * @return
+     */
+    private static String getGuestName(Order order) {
+        String name = "";
+        if (null != order) {
+            if (ArrayUtils.isNotEmpty(order.getOrderGuestses().toArray())) {
+                OrderGuests orderGuests = order.getOrderGuestses().get(0);
+                if (StringUtils.isNotEmpty(orderGuests.getName())) {
+                    name = orderGuests.getName();
+                } else {
+                    name = orderGuests.getFirstName() + orderGuests.getLastName();
+                }
+            }
+        }
+        return name;
     }
 
     /**
