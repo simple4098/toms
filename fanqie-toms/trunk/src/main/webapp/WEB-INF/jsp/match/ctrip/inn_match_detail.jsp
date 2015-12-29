@@ -373,13 +373,12 @@
 		      data:{"newPlanCode":newRatePlan,"newPlanCodeName":newRatePlanName,"mappingId":mappingId},
 		    url:'<c:url value="/innMatch/ajax/ctrip/mapping/update"/>',
 		    success:function(data){
-		    	 layer.close(0);
 		    	  if(data.status==400){
 		                layer.msg("匹配失败:"+data.message);
 		            }else{
 		            	layer.msg("匹配成功");
-		                window.location.href = window.location.href;
 		            }
+		                window.location.href = window.location.href;
 		    }
 		});
   });
