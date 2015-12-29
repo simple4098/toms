@@ -124,7 +124,7 @@ $(".btn-primary-cx").on("click",function(){
         var url = $(this).attr("data-url");
         var fcHotelId = $("input[name='fcHotelId']:checked").val();
         var innId = $("#innId").val();
-        var oldFcHotelId = $("#matchSuccessId").find("input[type='radio']").val()
+        var oldFcHotelId = $("#matchSuccessId").find("input[type='radio']").val();
         if(fcHotelId==undefined || fcHotelId.length==0){
             layer.msg("请选择房仓酒店id");
             return false;
@@ -159,18 +159,33 @@ $(".btn-primary-cx").on("click",function(){
         console.log(fcHotelId+"-"+innId);
     }
 
-})
+});
+
+function getWebRootPath() {
+    var webroot=document.location.href;
+    webroot=webroot.substring(webroot.indexOf('//')+2,webroot.length);
+    webroot=webroot.substring(webroot.indexOf('/')+1,webroot.length);
+    webroot=webroot.substring(0,webroot.indexOf('/'));
+    var rootpath="/"+webroot;
+    return rootpath;
+}
+
 //重新匹配
 $("#cxInMatchId").on("click",function(){
     layer.confirm('重新匹配将删除之前酒店（酒店房型）的绑定关系,你确认继续操作吗？', function(index){
     	var innId = $("#innId").val();
     	layer.close(index);
+        var root =  getWebRootPath();
+        var url = "/innMatch/ajax/ctrip/cannelMapping";
+        if(root!='/innMatch'){
+        	url = root + url;
+        }
         layer.load(0);
         $.ajax({
         	type:'post',
         	data:{'innId':innId},
         	dataType:'json',
-        	url:'/innMatch/ajax/ctrip/cannelMapping',
+        	url:url,
         	success:function(data){
         		if(data.status=='200'){
         			layer.msg("操作成功");
@@ -185,10 +200,8 @@ $("#cxInMatchId").on("click",function(){
         	},error:function(data){
         		layer.msg(data.message);
         	}
-        })
+        });
     });
-	
-   
 })
 //保存价格计划
 $("#userPlusBtn").on("click",function(){
