@@ -33,7 +33,6 @@ import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
-import com.fanqielaile.toms.dto.fc.OtaRatePlanDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.exception.CtripDataException;
 import com.fanqielaile.toms.exception.RequestCtripException;
@@ -41,9 +40,11 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
+import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.CtripMappingBy;
 import com.fanqielaile.toms.support.util.FcUtil;
+import com.fanqielaile.toms.support.util.HandlerResult;
 
 @Service
 public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
@@ -74,6 +75,9 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
     
     @Resource
     private IFcRatePlanDao  fcRatePlanDao;
+    
+    @Resource
+    private ICtripRoomService  iCtripRoomService;
     
 
 	@Override
@@ -116,6 +120,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		LOGGER.info("删除酒店"+childHotelId+"的绑定关系--request:"+xml2);
 		String response = CtripHttpClient.execute(xml2);
 		LOGGER.info("删除酒店"+childHotelId+"的绑定关系--response:"+response);
+		HandlerResult.handerResultCode(response);
 	}
 
 	
@@ -168,6 +173,9 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDto.setInnId(Integer.parseInt(innId));
 				otaInnOtaDto.setSj(0);
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
+				LOGGER.info("请求接口，同步房价数据");
+				//  请求接口，同步数据
+				iCtripRoomService.updateRoomPrice(company, dto, crms, true);
 			}
 			LOGGER.info("绑定结束");
 			
@@ -182,6 +190,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 			ctripHotelInfoDao.updateChildHotelId(ctripRoomTypeMapping.getCtripChildHotelId(), ctripMasterHotelId);
 			hotelId = ctripRoomTypeMapping.getCtripChildHotelId();
 		}
+		
 		return hotelId;
 	}
 	
@@ -225,6 +234,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->request:"+mappingXml);
 		String mappingResponse = CtripHttpClient.execute(mappingXml);
 		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->response:"+mappingResponse);
+		HandlerResult.handerResultCode(mappingResponse);
 	}
 
 
