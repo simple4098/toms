@@ -71,14 +71,8 @@
     		update xc_roomtype_fq set rate_plan_code = '${code}' , rate_plan_code_name = '${codeName}' where id = '${id}'
     </update>
 
-    <update id="updateMappingSj">
-    		update xc_roomtype_fq set sj= #{sj}
-        <where>
-            id in
-            <foreach collection="mappingList" index="index" item="item" open="(" close=")" separator=",">
-               '${item.id}'
-            </foreach>
-        </where>
+    <update id="updateMappingSj" parameterType="com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping">
+    		update xc_roomtype_fq set sj= #{sj} where id = '${id}'
     </update>
     
     
