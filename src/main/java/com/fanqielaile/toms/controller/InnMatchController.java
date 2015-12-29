@@ -302,6 +302,7 @@ public class InnMatchController extends BaseController {
             } catch (Exception e) {
             	e.printStackTrace();
                 log.error("获取oms房型信息异常:" + e);
+                model.addAttribute("msg", e.getMessage());
             }
             return "/match/ctrip/inn_match_detail";
         }else {
