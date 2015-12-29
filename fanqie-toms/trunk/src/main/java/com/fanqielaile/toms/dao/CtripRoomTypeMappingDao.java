@@ -47,7 +47,10 @@ public interface CtripRoomTypeMappingDao {
      * @param codeName 新的计划名称
      */
     void  updateMappingRatePlanCode(@Param("id")String id,@Param("code")String code,@Param("codeName")String codeName);
-    
-    
-  
+
+    /**
+     * 更新携程渠道 上下状态。
+     * @param mappingList 要更新的集合
+     */
+    void updateMappingSj(@Param("mappingList") List<CtripRoomTypeMapping>  mappingList, @Param("sj")Integer sj);
 }

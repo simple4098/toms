@@ -334,7 +334,7 @@ public class FcStaticTest {
             ctripHotelRoomType = new CtripHotelRoomType();
             ctripHotelInfo.setHotelName(result[i][0]);
             ctripHotelInfo.setParentHotelId(result[i][1]);
-            ctripHotelRoomType.setCtripParentHotelId(result[i][1]);
+            //ctripHotelRoomType.setCtripParentHotelId(result[i][1]);
             ctripHotelRoomType.setRoomTypeId(result[i][2]);
             ctripHotelRoomType.setRoomTypeName(result[i][3]);
             ctripHotelRoomType.setCurrency(result[i][4]);

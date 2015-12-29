@@ -13,7 +13,7 @@ public class CtripRoomTypeMapping extends  Domain{
 	 private String   tomRoomTypeName ; // 番茄房型名称
 	 private String   ctripRoomTypeName ; // 房仓房型名称
 	 private String    ratePlanCode; // 价格计划id
-	 private  Short   sj ; // 1 上架 0 下架 -1 没有上架
+	 private  Integer   sj ; // 1 上架 0 下架 -1 没有上架
 	 private String   bedNum ;
 	 private String   bedLen ;
 	 private String   bedWid ;
@@ -74,12 +74,15 @@ public class CtripRoomTypeMapping extends  Domain{
 	public void setRatePlanCode(String ratePlanCode) {
 		this.ratePlanCode = ratePlanCode;
 	}
-	public Short getSj() {
+
+	public Integer getSj() {
 		return sj;
 	}
-	public void setSj(Short sj) {
+
+	public void setSj(Integer sj) {
 		this.sj = sj;
 	}
+
 	public String getBedNum() {
 		return bedNum;
 	}
