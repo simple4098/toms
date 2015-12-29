@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.exception.RequestCtripException;
 
 
 
@@ -27,8 +28,9 @@ public interface CtripRoomTypeMappingService {
 	 * @param ratePlanCode 新的房价代码
 	 * @param mappingId 以前的mappingId
 	 * @throws JAXBException 
+	 * @throws RequestCtripException 
 	 */
-	void  updateMappingPlanCode(String companyId, String ratePlanCode,String planCodeName, String mappingId) throws JAXBException;
+	void  updateMappingPlanCode(String companyId, String ratePlanCode,String planCodeName, String mappingId) throws JAXBException, RequestCtripException;
 	
 	
 	
