@@ -256,6 +256,7 @@ public class XmlCtripUtil {
         order.setDailyInfoses(getOrderDailyInfos(param.element("RoomPrices").elements("RoomPrice"), order));
         //设置预付金额
         order.setPrepayPrice(order.getTotalPrice());
+        order.setPayment(order.getTotalPrice());
         return order;
     }
 

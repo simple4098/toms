@@ -26,6 +26,13 @@
        id,created_date,deleted,updated_date,inn_id,xc_child_hotel_id,company_id,fq_roomtype_id,xc_child_roomtype_id,room_area,
        fq_roomtype_name,xc_roomtype_name,rate_plan_code,sj,bed_num,bed_len,bed_wid,rate_plan_code_name
     </sql>
+
+    <select id="selectRoomTypeByHotelIdAndRoomTypeId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM xc_roomtype_fq where deleted = 0 and xc_child_hotel_id = #{hotelId} and xc_child_roomtype_id =
+        #{roomTypeId}
+    </select>
        
       
     <update id="updateRoomMappingDelete">

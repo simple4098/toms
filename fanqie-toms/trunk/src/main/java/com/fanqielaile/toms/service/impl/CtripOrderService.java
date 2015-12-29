@@ -4,6 +4,7 @@ import com.fanqie.bean.order.*;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
@@ -17,6 +18,7 @@ import com.fanqielaile.toms.support.util.XmlCtripUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -65,6 +67,8 @@ public class CtripOrderService implements ICtripOrderService {
     private IOtaCommissionPercentDao otaCommissionPercentDao;
     @Resource
     private IOrderService orderService;
+    @Resource
+    private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
 
     @Override
     public boolean checkCtripUserPassword(String xml) throws Exception {
@@ -94,10 +98,10 @@ public class CtripOrderService implements ICtripOrderService {
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByHidAndOtaInfoId(Long.valueOf(ctripCheckAvailRequest.getHotel()), otaInfoRefDto.getId());
             //查询公司信息
             Company company = this.companyDao.selectCompanyById(otaInnOtaDto.getCompanyId());
-            //TODO 为了方便测试，将innid通过参数传入 设置oms的innId
-            ctripCheckAvailRequest.setInnId(Integer.valueOf(ctripCheckAvailRequest.getHotel()));
-            //TODO 设置绑定房型信息
-            ctripCheckAvailRequest.setRoomTypeId(Integer.valueOf(ctripCheckAvailRequest.getRoom()));
+            ctripCheckAvailRequest.setInnId(Integer.valueOf(otaInnOtaDto.getInnId()));
+            //封装oms房型id
+            CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(ctripCheckAvailRequest.getHotel(), ctripCheckAvailRequest.getRoom());
+            ctripCheckAvailRequest.setRoomTypeId(Integer.valueOf(ctripRoomTypeMapping.getTomRoomTypeId()));
             Order order = XmlCtripUtil.getCheckAvailOrder(ctripCheckAvailRequest);
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
             logger.info("携程试订单oms接口传递参数=>" + order.toRoomAvail(company, order).toString());
@@ -136,15 +140,14 @@ public class CtripOrderService implements ICtripOrderService {
                         ctripAvailRequestRoomPrice.setBreakFast(0);
                         //设置日期
                         ctripAvailRequestRoomPrice.setEffectDate(TomsUtil.getDateStringFormat(dailyInfo.getDay()));
-                        //设置试订单总价
-                        checkAvailTotalPrice = checkAvailTotalPrice.add(dailyInfo.getPrice());
+
                         OtaRoomPriceDto otaRoomPriceDto = this.otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(order.getRoomTypeId()), otaInfo.getOtaInfoId()));
                         //判断当前公司是什么价格模式，组装返回的价格 判断是否执行加减价
                         //将所有小数全部五入
                         dailyInfo.setPrice(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(dailyInfo.getPrice().doubleValue())));
                         if (UsedPriceModel.MAI.equals(otaInfo.getUsedPriceModel())) {
-                            ctripAvailRequestRoomPrice.setPrice(dailyInfo.getPrice());
-                            ctripAvailRequestRoomPrice.setcNYCost(ctripAvailRequestRoomPrice.getPrice());
+                            ctripAvailRequestRoomPrice.setPrice(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(dailyInfo.getPrice().doubleValue())));
+                            ctripAvailRequestRoomPrice.setcNYCost(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(ctripAvailRequestRoomPrice.getPrice().doubleValue())));
                             ctripAvailRequestRoomPrice.setCost(BigDecimal.ZERO);
                             ctripAvailRequestRoomPrice.setcNYCost(BigDecimal.ZERO);
                             //设置加减价
@@ -152,28 +155,34 @@ public class CtripOrderService implements ICtripOrderService {
                                 ctripAvailRequestRoomPrice.setPrice(ctripAvailRequestRoomPrice.getPrice().add(BigDecimal.valueOf(otaRoomPriceDto.getValue())));
                                 ctripAvailRequestRoomPrice.setcNYPrice(ctripAvailRequestRoomPrice.getPrice());
                             }
+                            //设置试订单总价
+                            checkAvailTotalPrice = checkAvailTotalPrice.add(ctripAvailRequestRoomPrice.getPrice());
 
                         } else if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
                             ctripAvailRequestRoomPrice.setPrice(BigDecimal.ZERO);
                             ctripAvailRequestRoomPrice.setcNYPrice(BigDecimal.ZERO);
-                            ctripAvailRequestRoomPrice.setCost(dailyInfo.getPrice().multiply((new BigDecimal(1).subtract(percent))));
+                            ctripAvailRequestRoomPrice.setCost(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(dailyInfo.getPrice().multiply((new BigDecimal(1).subtract(percent))).doubleValue())));
                             ctripAvailRequestRoomPrice.setcNYCost(ctripAvailRequestRoomPrice.getCost());
                             //设置加减价
                             if (null != otaRoomPriceDto && dailyInfo.getDay().getTime() >= otaRoomPriceDto.getStartDate().getTime() && dailyInfo.getDay().getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
                                 ctripAvailRequestRoomPrice.setCost(ctripAvailRequestRoomPrice.getCost().add(BigDecimal.valueOf(otaRoomPriceDto.getValue())));
                                 ctripAvailRequestRoomPrice.setcNYCost(ctripAvailRequestRoomPrice.getCost());
                             }
+                            //设置试订单总价
+                            checkAvailTotalPrice = checkAvailTotalPrice.add(ctripAvailRequestRoomPrice.getCost());
 
                         } else {
                             ctripAvailRequestRoomPrice.setPrice(BigDecimal.ZERO);
                             ctripAvailRequestRoomPrice.setcNYPrice(BigDecimal.ZERO);
-                            ctripAvailRequestRoomPrice.setCost(dailyInfo.getPrice());
+                            ctripAvailRequestRoomPrice.setCost(BigDecimal.valueOf(TomsUtil.getPriceRoundUp(dailyInfo.getPrice().doubleValue())));
                             ctripAvailRequestRoomPrice.setcNYCost(ctripAvailRequestRoomPrice.getCost());
                             //设置加减价
                             if (null != otaRoomPriceDto && dailyInfo.getDay().getTime() >= otaRoomPriceDto.getStartDate().getTime() && dailyInfo.getDay().getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
                                 ctripAvailRequestRoomPrice.setCost(ctripAvailRequestRoomPrice.getCost().add(BigDecimal.valueOf(otaRoomPriceDto.getValue())));
                                 ctripAvailRequestRoomPrice.setcNYCost(ctripAvailRequestRoomPrice.getCost());
                             }
+                            //设置试订单总价
+                            checkAvailTotalPrice = checkAvailTotalPrice.add(ctripAvailRequestRoomPrice.getCost());
                         }
 
 
@@ -193,11 +202,11 @@ public class CtripOrderService implements ICtripOrderService {
                 domesticCheckRoomAvailResponse.setAvailRoomQuantities(availRoomQuantityList);
                 //每日价格
                 domesticCheckRoomAvailResponse.setCtripAvailRequestRoomPrices(ctripAvailRequestRoomPriceList);
-                //TODO 设置房型id，需要转成携程的房型
-                domesticCheckRoomAvailResponse.setRoom("");
+                domesticCheckRoomAvailResponse.setRoom(ctripRoomTypeMapping.getCtripChildRoomTypeId());
                 CtripCheckRoomAvailResponseResult ctripCheckRoomAvailResponseResult = new CtripCheckRoomAvailResponseResult();
                 ctripCheckRoomAvailResponseResult.setMessage("获取试订单信息成功");
                 ctripCheckRoomAvailResponseResult.setResultCode("0");
+                ctripCheckRoomAvailResponseResult.setDomesticCheckRoomAvailResponse(domesticCheckRoomAvailResponse);
                 ctripCheckRoomAvailResponse = new CtripCheckRoomAvailResponse();
                 ctripCheckRoomAvailResponse.setCtripCheckRoomAvailResponseResult(ctripCheckRoomAvailResponseResult);
 
@@ -314,9 +323,9 @@ public class CtripOrderService implements ICtripOrderService {
         //解析xml成order对象
         Order order = XmlCtripUtil.getNewOrder(xml);
         logger.info("携程下单的订单号=>" + order.getChannelOrderCode());
-        //TODO 设置客栈，客栈房型的id
-        order.setInnId(Integer.parseInt(order.getOTAHotelId()));
-        order.setRoomTypeId(order.getOTARoomTypeId());
+        CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
+        order.setInnId(Integer.parseInt(ctripRoomTypeMapping.getInnId()));
+        order.setRoomTypeId(ctripRoomTypeMapping.getTomRoomTypeId());
         //1.创建toms本地订单
         this.orderService.createOrderMethod(order.getChannelSource(), order);
 
@@ -332,7 +341,7 @@ public class CtripOrderService implements ICtripOrderService {
             //自动下单
             //设置订单状态为：接受
             order.setOrderStatus(OrderStatus.ACCEPT);
-            jsonModel = this.orderService.payBackDealMethod(order, new UserInfo(), OtaType.FC.name());
+            jsonModel = this.orderService.payBackDealMethod(order, new UserInfo(), OtaType.XC.name());
         } else {
             //手动下单,手动下单修改订单状态为待处理
             order.setOrderStatus(OrderStatus.NOT_DEAL);

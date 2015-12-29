@@ -9,6 +9,7 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
@@ -99,6 +100,8 @@ public class OrderService implements IOrderService {
     private IFcRoomTypeFqDao fcRoomTypeFqDao;
     @Resource
     private IOtaCommissionPercentDao otaCommissionPercentDao;
+    @Resource
+    private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
 
 
     @Override
@@ -175,6 +178,10 @@ public class OrderService implements IOrderService {
             OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.FC.name());
             usedPriceModel = otaInfoRefDto.getUsedPriceModel();
             percent = getOtaPercent(company, usedPriceModel);
+        } else if (ChannelSource.XC.equals(channelSource)) {
+            OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.XC.name());
+            usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            percent = getOtaPercent(company, usedPriceModel);
         }
 
         //设置每日价格
@@ -216,6 +223,11 @@ public class OrderService implements IOrderService {
             FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(order.getRoomTypeId());
             if (null != fcRoomTypeFqDto) {
                 order.setOrderRoomTypeName(fcRoomTypeFqDto.getFcRoomTypeName());
+            }
+        } else if (ChannelSource.XC.equals(channelSource)) {
+            CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
+            if (null != ctripRoomTypeMapping) {
+                order.setOrderRoomTypeName(ctripRoomTypeMapping.getTomRoomTypeName());
             }
         }
         //设置渠道来源
