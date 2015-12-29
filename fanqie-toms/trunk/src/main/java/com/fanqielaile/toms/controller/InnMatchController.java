@@ -611,6 +611,10 @@ public class InnMatchController extends BaseController {
         	log.error("数据转换出错:"+e.getMessage());
         	result.setStatus(Constants.ERROR400);
         	result.setMessage(e.getMessage());
+        } catch (Exception e) {
+        	log.error(e.getMessage());
+        	result.setStatus(Constants.ERROR400);
+        	result.setMessage(e.getMessage());
         }
         return  result;
     }
