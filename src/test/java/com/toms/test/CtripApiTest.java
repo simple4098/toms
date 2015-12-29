@@ -55,10 +55,11 @@ public class CtripApiTest {
         otaInfo.setXcPassword("zhilianzhuanshu11!!");
         List<CtripRoomTypeMapping> roomTypeMappingList = new ArrayList<CtripRoomTypeMapping>();
         CtripRoomTypeMapping ctripRoomTypeMapping = new CtripRoomTypeMapping();
-        ctripRoomTypeMapping.setInnId("3698");
-        ctripRoomTypeMapping.setCtripChildHotelId("433939");
-        ctripRoomTypeMapping.setCtripChildRoomTypeId("3073488");
-        ctripRoomTypeMapping.setTomRoomTypeId("99095");
+        ctripRoomTypeMapping.setId("142");
+        ctripRoomTypeMapping.setInnId("4065");
+        ctripRoomTypeMapping.setCtripChildHotelId("451026");
+        ctripRoomTypeMapping.setCtripChildRoomTypeId("3087443");
+        ctripRoomTypeMapping.setTomRoomTypeId("87337");
         roomTypeMappingList.add(ctripRoomTypeMapping);
         ctripRoomService.updateRoomPrice(company,otaInfo,roomTypeMappingList,true);
     }

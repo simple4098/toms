@@ -5,6 +5,7 @@ import com.fanqie.support.CtripConstants;
 import com.fanqie.util.CtripHttpClient;
 import com.fanqie.util.DcUtil;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dao.CtripRoomTypeMappingDao;
 import com.fanqielaile.toms.dao.IOtaCommissionPercentDao;
 import com.fanqielaile.toms.dao.IOtaRoomPriceDao;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
@@ -40,6 +41,8 @@ public class CtripRoomService implements ICtripRoomService {
     private IOtaCommissionPercentDao commissionPercentDao;
     @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
+    @Resource
+    private CtripRoomTypeMappingDao  ctripRoomTypeMappingDao;
 
     private static final Logger log = LoggerFactory.getLogger(CtripRoomService.class);
 
@@ -54,11 +57,9 @@ public class CtripRoomService implements ICtripRoomService {
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(),
                         Integer.valueOf(mapping.getTomRoomTypeId()),
                         infoRefDto.getOtaInfoId()));
-               /* String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(),
-                        Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()), CommonApi.checkRoom);*/
-
                 String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(),
                         Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()), CommonApi.checkRoom,60);
+                Integer sj=0;
                 try {
                     List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                     String requestRoomPriceXml = CtripXHotelUtil.requestRoomPriceXml(infoRefDto, mapping, roomDetailList,commission,priceDto, isSj);
@@ -73,9 +74,11 @@ public class CtripRoomService implements ICtripRoomService {
                         log.info(" 价格同步成功:" + response.getRequestResult().getMessage() +
                                 " 房态成功:" + roomInfoResponse.getRequestResult().getMessage() +
                                 " 携程房型id" + mapping.getCtripChildRoomTypeId());
+                        sj = isSj?1:0;
                     }else {
-                        log.info("房态和房价成功:" + mapping.getCtripChildRoomTypeId());
+                        log.info("房态和房价失败:" + mapping.getCtripChildRoomTypeId());
                     }
+                    ctripRoomTypeMappingDao.updateMappingSj(roomTypeMappingList,sj);
                 } catch (Exception e) {
                     log.error("异常:"+e);
                 }
