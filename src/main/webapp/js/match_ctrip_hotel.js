@@ -165,7 +165,7 @@ $("#cxInMatchId").on("click",function(){
     layer.confirm('重新匹配将删除之前酒店（酒店房型）的绑定关系,你确认继续操作吗？', function(index){
     	var innId = $("#innId").val();
     	layer.close(index);
-        layer.load(0, {time: 5*1000});
+        layer.load(0);
         $.ajax({
         	type:'post',
         	data:{'innId':innId},
@@ -173,14 +173,15 @@ $("#cxInMatchId").on("click",function(){
         	url:'/innMatch/ajax/ctrip/cannelMapping',
         	success:function(data){
         		if(data.status=='200'){
-        	    	var _this = $(this);
-        	    	$("#matchSuccessId").css("display","none");
-        	    	$("#not-match-id").css("display","block");
-        	    	_this.addClass("push");
-        	    	_this.text("提交匹配");
+        			layer.msg("操作成功");
         		}else{
         			layer.msg(data.message);
         		}
+        		var url = window.location.href;
+        	 	if(url.indexOf("&") != -1){
+            		url = url.substring(0,url.indexOf("&"));
+            	}
+        		window.location.href =  url;
         	},error:function(data){
         		layer.msg(data.message);
         	}
@@ -238,8 +239,8 @@ $('#sortable').sortable({
 }).disableSelection()
 
 
-$('#roomTypeBtn').click(function(){
-    layer.load(0);
+$('#roomTypeBtn').click(function(index){
+    layer.load(index);
     var _this = $(this);
     var url = _this.attr("data-url");
     var fcHotelId = $("input[name='fcHotelId']:checked").val();
@@ -300,15 +301,14 @@ $('#roomTypeBtn').click(function(){
         success:function(data){
             if(data.status==400){
                 layer.msg("匹配失败:"+data.message);
-                layer.close(0);
             }else{
-            	var url = window.location.href;
-            	if(url.indexOf("ctripId") != -1){
-            		url = url.substring(0,url.indexOf("ctripId"));
-            	}
             	layer.msg("匹配成功");
-                window.location.href = url;
             }
+        	var url = window.location.href;
+        	if(url.indexOf("ctripId") != -1){
+        		url = url.substring(0,url.indexOf("ctripId"));
+        	}
+            window.location.href = url;
         },error:function(data){
             layer.msg("匹配失败:"+data.message);
         }
