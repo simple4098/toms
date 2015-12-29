@@ -318,6 +318,17 @@
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
 <script src="<c:url value='/js/match_ctrip_hotel.js'/>"></script>
 <script type="text/javascript">
+
+var msg = '${msg}';
+
+if(msg){
+	layer.confirm('出错了:'+msg, {
+	    btn: ['确定'] 
+	}, function(){
+		history.go(-1);
+	});
+};
+
   var innId = '${param.innId}';
   //加载价格计划列表
   $.ajax({
@@ -382,6 +393,7 @@
 		    }
 		});
   });
+  
   
 </script>
 </body>
