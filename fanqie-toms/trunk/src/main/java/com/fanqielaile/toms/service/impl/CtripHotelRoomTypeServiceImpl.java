@@ -221,9 +221,9 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		sip.setSupplierID("18");
 		st.setInfoRequestParams(sip);
 		sip.setRatePlanCode(ratePlan.getRatePlanCode().toString());
-		String xml2 = FcUtil.fcRequest(st);
-		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->request:"+xml2);
-		String mappingResponse = CtripHttpClient.execute(xml2);
+		String mappingXml = FcUtil.fcRequest(st);
+		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->request:"+mappingXml);
+		String mappingResponse = CtripHttpClient.execute(mappingXml);
 		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->response:"+mappingResponse);
 	}
 
