@@ -59,7 +59,7 @@ public interface CtripRoomTypeMappingDao {
 
     /**
      * 更新携程渠道 上下状态。
-     * @param mappingList 要更新的集合
+     * @param mapping 更新的房型映射
      */
-    void updateMappingSj(@Param("mappingList") List<CtripRoomTypeMapping>  mappingList, @Param("sj")Integer sj);
+    void updateMappingSj(CtripRoomTypeMapping mapping);
 }

@@ -78,7 +78,8 @@ public class CtripRoomService implements ICtripRoomService {
                     }else {
                         log.info("房态和房价失败:" + mapping.getCtripChildRoomTypeId());
                     }
-                    ctripRoomTypeMappingDao.updateMappingSj(roomTypeMappingList,sj);
+                    mapping.setSj(sj);
+                    ctripRoomTypeMappingDao.updateMappingSj(mapping);
                 } catch (Exception e) {
                     log.error("异常:"+e);
                 }
