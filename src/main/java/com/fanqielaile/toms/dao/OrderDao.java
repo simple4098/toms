@@ -83,7 +83,7 @@ public interface OrderDao {
      * @param order
      * @return
      */
-    Order selectOrderByChannelOrderCodeAndSource(@Param("order") Order order);
+    Order selectOrderByChannelOrderCodeAndSource(Order order);
 
     /**
      * 根据oms订单号和渠道订单号查询订单

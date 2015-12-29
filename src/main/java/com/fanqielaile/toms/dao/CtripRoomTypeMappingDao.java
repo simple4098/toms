@@ -49,6 +49,15 @@ public interface CtripRoomTypeMappingDao {
     void  updateMappingRatePlanCode(@Param("id")String id,@Param("code")String code,@Param("codeName")String codeName);
 
     /**
+     * 根据携程酒店id，房型id查询
+     * @param hotelId
+     * @param roomTypeId
+     * @return
+     */
+    CtripRoomTypeMapping selectRoomTypeByHotelIdAndRoomTypeId(@Param("hotelId") String hotelId, @Param("roomTypeId") String roomTypeId);
+
+
+    /**
      * 更新携程渠道 上下状态。
      * @param mappingList 要更新的集合
      */

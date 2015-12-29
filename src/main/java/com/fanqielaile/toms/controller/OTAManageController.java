@@ -366,7 +366,7 @@ public class OTAManageController extends BaseController {
                         //5.取消订单
                         CtripCancelHotelOrderResponse ctripCancelHotelOrderResponse = this.ctripOrderService.cancelOrderMethod(xml);
                         return ctripCancelHotelOrderResponse;
-                    } else if (CtripRequestType.DomesticPushOrderStatusRequest.name().equals(requestType)) {
+                    } else if (CtripRequestType.DomesticGetOrderStatusRequest.name().equals(requestType)) {
                         //6.获取订单状态
                         CtripGetOrderStatusResponse orderStatus = this.ctripOrderService.getOrderStatus(xml);
                         return orderStatus;
