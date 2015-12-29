@@ -57,11 +57,11 @@
     <select id="findById" resultMap="BaseResultMap" >
     select 
    		   <include refid="Base_Column_List"    />
-   		   from  xc_roomtype_fq  where id = ${id}
+   		   from  xc_roomtype_fq  where id = '${id}'
     </select>	
     
     <update id="updateMappingRatePlanCode">
-    		update xc_roomtype_fq set rate_plan_code = '${code}' , rate_plan_code_name = '${codeName}' where id = ${id}
+    		update xc_roomtype_fq set rate_plan_code = '${code}' , rate_plan_code_name = '${codeName}' where id = '${id}'
     </update>
 
     <update id="updateMappingSj">
