@@ -33,6 +33,7 @@
             <result column="xc_user_name" property="xcUserName"/>
             <result column="xc_password" property="xcPassword"/>
             <result column="updated_date" property="updatedDate"/>
+             <result column="user_id" property="userId"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
