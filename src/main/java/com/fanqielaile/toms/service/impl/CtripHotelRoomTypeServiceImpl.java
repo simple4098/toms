@@ -18,6 +18,7 @@ import com.fanqie.bean.request.mapping.SetMappingInfoRequestParams;
 import com.fanqie.bean.request.room_price.Authentication;
 import com.fanqie.bean.request.room_price.HeaderInfo;
 import com.fanqie.bean.request.room_price.RequestType;
+import com.fanqie.bean.response.CtripHotelInfo;
 import com.fanqie.bean.response.CtripHotelRoomType;
 import com.fanqie.support.CtripConstants;
 import com.fanqie.util.CtripHttpClient;
@@ -30,8 +31,10 @@ import com.fanqielaile.toms.dao.CtripRoomTypeMappingDao;
 import com.fanqielaile.toms.dao.IFcRatePlanDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dao.IOtaInnOtaDao;
+import com.fanqielaile.toms.dao.IOtaPriceModelDao;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.OtaPriceModelDto;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.enums.OtaType;
@@ -39,6 +42,7 @@ import com.fanqielaile.toms.exception.CtripDataException;
 import com.fanqielaile.toms.exception.RequestCtripException;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaPriceModel;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
 import com.fanqielaile.toms.service.ICtripRoomService;
@@ -78,7 +82,8 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
     private IFcRatePlanDao  fcRatePlanDao;
     
     @Resource
-    private ICtripRoomService  iCtripRoomService;
+    private IOtaPriceModelDao  iOtaPriceModelDao;
+    
     
 
 	@Override
@@ -121,16 +126,22 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 			BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
 			OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
 			OtaInnOtaDto innOtaDto = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), companyId, dto.getOtaInfoId()); 
-			if(null!=innOtaDto){
+			if(null!=innOtaDto){// 以前绑定的关系
 				String childId =  innOtaDto.getWgHid();
 				deletePreviousRoomMapping(childId, innId,companyId);
 				otaInnOtaDao.deletedOtaInnOtaById(innOtaDto.getId());
+			}
+			if(StringUtils.isNotBlank(masterHotelId)){
+				CtripHotelInfo newHotel = ctripHotelInfoDao.findByParentHotelId(masterHotelId);
+				if( StringUtils.isNotBlank( newHotel.getChildHotelId())){
+					deleteCtripRoomMapping(newHotel.getChildHotelId(), companyId);
+				}
 			}
 	}
 	
 	
 	@Override
-	public void updateRoomBypeRelation(String companyId,String json,String innId,String ctripMasterHotelId)  throws RequestCtripException, JAXBException, CtripDataException{
+	public List<CtripRoomTypeMapping> updateRoomBypeRelation(String companyId,String json,String innId,String ctripMasterHotelId)  throws RequestCtripException, JAXBException, CtripDataException{
 		List<MatchRoomType> matchRoomTypes = JacksonUtil.json2list(json, MatchRoomType.class);   // 新的关系
 		Company company = companyDao.selectCompanyById(companyId);
 		BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
@@ -163,13 +174,14 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDto.setInnId(Integer.parseInt(innId));
 				otaInnOtaDto.setSj(0);
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
+				OtaPriceModelDto opm = OtaPriceModelDto.toDto(otaInnOtaDto.getUuid());
+				iOtaPriceModelDao.savePriceModel(opm);
 				LOGGER.info("请求接口，同步房价数据");
-				//  请求接口，同步数据
-				iCtripRoomService.updateRoomPrice(company, dto, crms, true);
 			}
 			LOGGER.info("绑定结束");
 			
 		}
+		return crms;
 	}
 	
 	@Override
