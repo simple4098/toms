@@ -355,7 +355,7 @@ public class XmlCtripUtil {
      */
     public static String getResultCode(String execute) throws Exception {
         Element element = dealXmlStr(execute);
-        Element response = element.element("Response");
+        Element response = element.element("RequestResult").element("Response");
         String resultCode = response.element("HeaderInfo").attributeValue("ResultCode");
         return resultCode;
     }
@@ -369,7 +369,7 @@ public class XmlCtripUtil {
     public static CtripHotelInfo getCtripHotelInfo(String execute) throws Exception {
         CtripHotelInfo result = new CtripHotelInfo();
         Element element = dealXmlStr(execute);
-        Element response = element.element("Response").element("GetHotelInfoResponse");
+        Element response = element.element("RequestResult").element("Response").element("GetHotelInfoResponse");
         ResponsePage responsePage = new ResponsePage();
         //当前页
         responsePage.setCurrentPage(Integer.valueOf(response.elementText("CurrentPage")));
@@ -406,7 +406,7 @@ public class XmlCtripUtil {
      */
     public static CtripHotelInfo getCtripHotelInfoAndRoomTypeInfo(String execute, CtripHotelInfo ctripHotelInfo) throws Exception {
         Element element = dealXmlStr(execute);
-        Element response = element.element("Response").element("GetMappingInfoResponseList");
+        Element response = element.element("RequestResult").element("Response").element("GetMappingInfoResponseList");
         Element masterHorel = response.element("HotelResponseItem").element("MasterHotel");
         //得到姆酒店id
         ctripHotelInfo.setParentHotelId(masterHorel.elementText("Hotel"));

@@ -22,8 +22,9 @@
 
     <insert id="insert" parameterType="com.fanqie.bean.response.CtripHotelInfo">
         insert into
-        ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
-        values (#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
+        ctrip_parent_hotel(id,hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
+        values
+        (#{uuid},#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
        </insert>
        
     <select id="findByHotelName" parameterType="string" resultMap="BaseResultMap">
@@ -74,8 +75,9 @@
 
     <insert id="saveHotelInfo" parameterType="com.fanqie.bean.response.CtripHotelInfo">
         insert into
-        ctrip_parent_hotel(hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
-        values (#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
+        ctrip_parent_hotel(id,hotel_name,parent_hotel_id,created_date,deleted,country_name,city_name,address,telephone)
+        values
+        (#{uuid},#{hotelName},#{parentHotelId},#{createdDate},0,#{countryName},#{cityName},#{address},#{telephone})
     </insert>
 
     <update id="updateHotelInfo" parameterType="com.fanqie.bean.response.CtripHotelInfo">
