@@ -94,6 +94,12 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xercesImpl</artifactId>
+                    <groupId>xerces</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--xml-->
         <dependency>
