@@ -23,7 +23,7 @@ public interface CtripRoomTypeMappingDao {
      *  添加新的记录
      * @param ctripRoomTypeMapping
      */
-    void  saveRoomTypeMapping(CtripRoomTypeMapping ctripRoomTypeMapping);
+    void saveRoomTypeMapping(CtripRoomTypeMapping ctripRoomTypeMapping);
     
     /**
      *  查询房型的绑定信息
