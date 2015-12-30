@@ -60,7 +60,7 @@ public class CtripXHotelUtil {
                 Date parseDate = DateUtil.parseDate(roomDetail.getRoomDate());
                 priceV = TomsUtil.price(priceV,parseDate,commission,priceDto);
                 priceV =isSj?priceV:-1;
-                priceV = roomDetail.getRoomNum()==0?-1:priceV;
+                priceV = roomDetail.getOtaRoomNum()==0?-1:priceV;
                 Price price = new Price(0d,0d,0d,priceV,1);
                 prices = new ArrayList<>();
                 prices.add(price);
@@ -93,10 +93,10 @@ public class CtripXHotelUtil {
             headerInfo.build(infoRefDto.getXcUserName(),infoRefDto.getXcPassword(),CtripRequestType.SetRoomInfo, CtripVersion.V12);
             List<RoomInfoItem> roomInfoItems = new ArrayList<>();
             for (RoomDetail roomDetail:roomDetailList){
-                CtripRoomStatus ctripRoomStatus = roomDetail.getRoomNum()>0?CtripRoomStatus.G:CtripRoomStatus.N;
+                CtripRoomStatus ctripRoomStatus = roomDetail.getOtaRoomNum()>0?CtripRoomStatus.G:CtripRoomStatus.N;
                 RoomInfoItem roomInfoItem = new RoomInfoItem(DeductType.C,CtripConstants.reserveTime,
                         CheckType.C,CtripConstants.lateReserveTime,
-                        CtripConstants.guaranteeLCT,"",AllNeedGuarantee.F,roomDetail.getRoomNum(),
+                        CtripConstants.guaranteeLCT,"",AllNeedGuarantee.F,roomDetail.getOtaRoomNum(),
                         ctripRoomStatus,CtripConstants.holdDeadline,
                         ChangeDefault.F,CtripConstants.userLimited,CtripConstants.prepayLCT);
                 roomInfoItems.add(roomInfoItem);

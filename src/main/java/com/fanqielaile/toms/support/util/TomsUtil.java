@@ -50,7 +50,7 @@ public class TomsUtil {
         for (RoomDetail roomDetail:roomTypeInfo.getRoomDetail()){
             inventory = new Inventory();
             inventory.setDate(roomDetail.getRoomDate());
-            inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
+            inventory.setQuota(roomDetail.getOtaRoomNum() == null ? 0 : roomDetail.getOtaRoomNum());
             inventoryList.add(inventory);
         }
         return JacksonUtil.obj2json(inventoryList);
@@ -63,7 +63,7 @@ public class TomsUtil {
             for (RoomDetail roomDetail:roomDetailList){
                 inventory = new Inventory();
                 inventory.setDate(roomDetail.getRoomDate());
-                inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
+                inventory.setQuota(roomDetail.getOtaRoomNum() == null ? 0 : roomDetail.getOtaRoomNum());
                 inventoryList.add(inventory);
             }
             return JacksonUtil.obj2json(inventoryList);

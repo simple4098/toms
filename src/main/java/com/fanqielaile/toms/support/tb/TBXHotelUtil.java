@@ -247,7 +247,7 @@ public class TBXHotelUtil {
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
                 inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
                 inventory.setRoomSwitchCalStatus(status);
                 list.add(inventory);
                 roomSwitchCals.add(roomSwitchCal);
@@ -326,7 +326,7 @@ public class TBXHotelUtil {
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
                 inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
                 inventory.setRoomSwitchCalStatus(status);
                 list.add(inventory);
                 roomSwitchCals.add(roomSwitchCal);
@@ -394,7 +394,7 @@ public class TBXHotelUtil {
                     roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                     roomSwitchCal.setRoomSwitchCalStatus(status);
                     inventory.setDate(r.getRoomDate());
-                    inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
+                    inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
                     inventory.setRoomSwitchCalStatus(status);
                     list.add(inventory);
                     roomSwitchCals.add(roomSwitchCal);
@@ -659,7 +659,7 @@ public class TBXHotelUtil {
             }
             for (RoomDetail roomDetail:roomDetails){
                 String roomDate = roomDetail.getRoomDate();
-                Integer roomNum = roomDetail.getRoomNum();
+                Integer roomNum = roomDetail.getOtaRoomNum();
                 Double  roomPrice = roomDetail.getRoomPrice();
                 for (InventoryRate ratePrice:inventoryRateList){
                     if (ratePrice.getDate().equals(roomDate)){
