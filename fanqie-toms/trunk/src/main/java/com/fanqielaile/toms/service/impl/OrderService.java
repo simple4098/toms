@@ -505,13 +505,13 @@ public class OrderService implements IOrderService {
                 }
                 //设置订单总价
                 //oms总价格需要*房间数量
-                order.setTotalPrice(order.getTotalPrice().multiply(BigDecimal.valueOf(order.getHomeAmount())));
+                omsTotalPrice = omsTotalPrice.multiply(BigDecimal.valueOf(order.getHomeAmount()));
                 //1.验证订单总价是否一致
                 logger.info("订单总价为：" + order.getTotalPrice() + "   oms总价为：" + omsTotalPrice);
                 logger.info("oms总价价格比例过后价格=>" + omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))));
                 logger.info("总价只差为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs());
-                logger.info("总价差的绝对值比较值为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())));
-                if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size())) == -1) {
+                logger.info("总价差的绝对值比较值为：" + order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size() * order.getHomeAmount())));
+                if (order.getTotalPrice().subtract(omsTotalPrice.multiply((new BigDecimal(1).subtract(percent)))).abs().compareTo(BigDecimal.valueOf(order.getDailyInfoses().size() * order.getHomeAmount())) == -1) {
                     order.setTotalPrice(omsTotalPrice);
                 } else {
                     flag = false;
