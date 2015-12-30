@@ -102,7 +102,6 @@ $("#btn-primary-id").on("click",function(){
             if(data.status=="200"){
                 layer.msg("绑定成功");
                 var url = window.location.href;
-                alert(url);
                 url = url.replace("#","");
                 if(url.indexOf("ctripId") != -1){
                 	url =  url.substring(0,url.lastIndexOf("=")+1);
