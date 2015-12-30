@@ -99,11 +99,10 @@ $("#btn-primary-id").on("click",function(){
         dataType:'json',
         url:url,
         success:function(data){
-            if(data.status!="200"){
-                layer.msg(data.message);
-            }else{
+            if(data.status=="200"){
                 layer.msg("绑定成功");
                 var url = window.location.href;
+                alert(url);
                 url = url.replace("#","");
                 if(url.indexOf("ctripId") != -1){
                 	url =  url.substring(0,url.lastIndexOf("=")+1);
@@ -112,6 +111,13 @@ $("#btn-primary-id").on("click",function(){
                 }else{
                 	window.location.href=window.location.href+"&ctripId="+data.message;
                 }
+            }else{
+            	  var url = window.location.href;
+            	 layer.msg(data.message);
+            	  if(url.indexOf("ctripId") != -1){
+                  	url =  url.substring(0,url.lastIndexOf("ctripId")-1);
+                  	window.location.href = url;
+                  }
             }
         },error:function(data){
             layer.msg(data.message);
