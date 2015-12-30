@@ -48,25 +48,32 @@ public class FcUtil<T extends OtaRequest> {
                     Element element = XmlDeal.dealXmlStr(xml);
                     String message = element.element("RequestResult").element("Message").getText();
                     String resultCode = element.element("RequestResult").element("ResultCode").getText();
-                    List<Element> elements = element.element("RequestResult").element("Response")
-                            .element("HotelGroupInterfaceRoomTypeListResponse")
-                            .element("HotelGroupInterfaceRoomTypeList").elements("HotelGroupInterfaceRoomTypeEntity");
+                    Element responseElement1 = element.element("RequestResult").element("Response");
                     Response response = new Response();
-                    if (elements!=null){
-                        HotelGroupInterfaceRoomTypeListResponse roomTypeListResponse = new HotelGroupInterfaceRoomTypeListResponse();
-                        HotelGroupInterfaceRoomTypeEntity entity = null;
-                        List<HotelGroupInterfaceRoomTypeEntity> HotelGroupInterfaceRoomTypeList = new ArrayList<>();
-                        for (Element e:elements){
-                            entity = new HotelGroupInterfaceRoomTypeEntity();
-                            entity.setHotelGroupRoomTypeCode(e.element("HotelGroupRoomTypeCode").getText());;
-                            entity.setHotel(e.element("Hotel").getText());
-                            entity.setRoom(e.element("Room").getText());
-                            HotelGroupInterfaceRoomTypeList.add(entity);
+                    if (responseElement1!=null){
+                        Element interfaceRoomTypeListResponse = responseElement1.element("HotelGroupInterfaceRoomTypeListResponse");
+                        if (interfaceRoomTypeListResponse!=null){
+                            List<Element> elements = interfaceRoomTypeListResponse.element("HotelGroupInterfaceRoomTypeList").elements("HotelGroupInterfaceRoomTypeEntity");
+                            if (elements!=null){
+                                HotelGroupInterfaceRoomTypeListResponse roomTypeListResponse = new HotelGroupInterfaceRoomTypeListResponse();
+                                HotelGroupInterfaceRoomTypeEntity entity = null;
+                                List<HotelGroupInterfaceRoomTypeEntity> HotelGroupInterfaceRoomTypeList = new ArrayList<>();
+                                for (Element e:elements){
+                                    entity = new HotelGroupInterfaceRoomTypeEntity();
+                                    entity.setHotelGroupRoomTypeCode(e.element("HotelGroupRoomTypeCode").getText());;
+                                    entity.setHotel(e.element("Hotel").getText());
+                                    entity.setRoom(e.element("Room").getText());
+                                    HotelGroupInterfaceRoomTypeList.add(entity);
+                                }
+                                roomTypeListResponse.setHotelGroupInterfaceRoomTypeList(HotelGroupInterfaceRoomTypeList);
+                                response.setHotelGroupInterfaceRoomTypeListResponse(roomTypeListResponse);
+
+                            }else {
+                                log.info("xml 异常");
+                            }
+                        }else {
+                            log.info("HotelGroupInterfaceRoomTypeListResponse 为空");
                         }
-                        roomTypeListResponse.setHotelGroupInterfaceRoomTypeList(HotelGroupInterfaceRoomTypeList);
-                        response.setHotelGroupInterfaceRoomTypeListResponse(roomTypeListResponse);
-                    }else {
-                        log.info("xml 异常");
                     }
                     RequestResult requestResult = new RequestResult();
                     requestResult.setMessage(message);
