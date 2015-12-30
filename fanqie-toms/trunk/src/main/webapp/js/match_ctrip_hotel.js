@@ -108,7 +108,7 @@ $("#btn-primary-id").on("click",function(){
                 	url+=data.message;
                 	window.location.href = url;
                 }else{
-                	window.location.href=window.location.href+"&ctripId="+data.message;
+                	window.location.href=url+"&ctripId="+data.message;
                 }
             }else{
             	  var url = window.location.href;
