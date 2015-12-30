@@ -213,7 +213,7 @@ public class OrderMethodHelper {
                 DailyInfos dailyInfos = new DailyInfos();
                 dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
                 dailyInfos.setPrice(BigDecimal.valueOf(roomDetail.getRoomPrice()));
-                dailyInfos.setRoomNum(roomDetail.getRoomNum());
+                dailyInfos.setRoomNum(roomDetail.getOtaRoomNum());
                 result.add(dailyInfos);
             }
         }
