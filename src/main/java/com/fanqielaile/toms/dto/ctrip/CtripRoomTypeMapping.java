@@ -19,6 +19,9 @@ public class CtripRoomTypeMapping extends  Domain{
 	 private String   bedWid ;
 	 private String	  ratePlanCodeName;
 	 
+	public void setId(Long id) {
+		super.setId(id.toString());
+	}
 	 
 	public String getInnId() {
 		return innId;
