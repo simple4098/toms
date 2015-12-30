@@ -33,7 +33,13 @@
         FROM xc_roomtype_fq where deleted = 0 and xc_child_hotel_id = #{hotelId} and xc_child_roomtype_id =
         #{roomTypeId}
     </select>
-       
+
+    <select id="selectMappingInnIdAndRoomTypeId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        FROM xc_roomtype_fq where deleted = 0 and fq_roomtype_id = '${roomTypeId}' and inn_id ='${innId}'
+    </select>
+
       
     <update id="updateRoomMappingDelete">
     	update xc_roomtype_fq set deleted = 1 where inn_id = #{innId} and xc_child_hotel_id = #{ctripChildHotelId}

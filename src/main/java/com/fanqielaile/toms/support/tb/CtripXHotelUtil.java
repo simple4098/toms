@@ -5,13 +5,17 @@ import com.fanqie.bean.request.room_info.RoomInfoItem;
 import com.fanqie.bean.request.room_info.RoomInfoRequest;
 import com.fanqie.bean.request.room_info.SetRoomInfoRequest;
 import com.fanqie.bean.request.room_price.*;
+import com.fanqie.bean.response.RequestResponse;
+import com.fanqie.bean.response.RequestResult;
 import com.fanqie.support.CtripConstants;
+import com.fanqie.util.CtripHttpClient;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.FcUtil;
@@ -99,5 +103,37 @@ public class CtripXHotelUtil {
             return FcUtil.fcRequest(roomInfoRequest);
         }
         return null;
+    }
+
+    /**
+     * 更新房价 房态
+     * @param infoRefDto 渠道信息
+     * @param mapping 房型映射信息
+     * @param roomDetailList 房型的房态集合
+     * @param priceDto 增减价
+     * @param commission 佣金对象
+     * @throws Exception
+     */
+    public static RequestResponse syncRoomInfo(OtaInfoRefDto infoRefDto, CtripRoomTypeMapping mapping,
+                                               List<RoomDetail> roomDetailList, OtaRoomPriceDto priceDto,
+                                               OtaCommissionPercentDto commission) throws Exception {
+        String requestRoomPriceXml = requestRoomPriceXml(infoRefDto, mapping, roomDetailList, commission, priceDto, true);
+        String requestSetRoomInfoXml = requestSetRoomInfoXml(infoRefDto, mapping, roomDetailList);
+        String execute = CtripHttpClient.execute(requestRoomPriceXml);
+        String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
+
+        RequestResponse response = FcUtil.xMLStringToBean(execute);
+        RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
+        Integer resultCode = response.getRequestResult().getResultCode();
+        Integer roomInfoCode = roomStatus.getRequestResult().getResultCode();
+        RequestResult requestResult = new RequestResult();
+        if (CtripConstants.resultCode.equals(resultCode) && CtripConstants.resultCode.equals(roomInfoCode)){
+            requestResult.setResultCode(0);
+        }else {
+            requestResult.setResultCode(-1);
+        }
+        response.setRequestResult(requestResult);
+
+        return response;
     }
 }
