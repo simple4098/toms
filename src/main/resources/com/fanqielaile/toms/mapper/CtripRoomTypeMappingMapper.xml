@@ -46,7 +46,10 @@
     </update>
        
        
-    <insert id="saveRoomTypeMapping"  parameterType="com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping"  >
+    <insert id="saveRoomTypeMapping"   parameterType="com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping"  >
+    <selectKey resultType="String"  order="AFTER" keyProperty="id" >
+            SELECT currval('xc_roomtype_fq_id_seq'::regclass)
+        </selectKey>
     	INSERT INTO xc_roomtype_fq(
             inn_id, xc_child_hotel_id, company_id, fq_roomtype_id, xc_child_roomtype_id, 
             room_area, fq_roomtype_name, xc_roomtype_name, 
