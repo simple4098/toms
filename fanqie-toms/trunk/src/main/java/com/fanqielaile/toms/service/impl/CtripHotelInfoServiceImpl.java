@@ -134,6 +134,7 @@ public class CtripHotelInfoServiceImpl implements CtripHotelInfoService{
 				//调用携程mapping1.2接口获取母酒店和母房型信息
 				List<CtripHotelInfo> ctripHotelInfosAndRoomTypeInfoList = getCtripHotelInfoAndRoomTypeInfo(ctripHotelInfos, otaInfoRefDto);
 				//更新本地数据库
+				logger.info("开始更新本地数据库====>");
 				updateCtripHotelInfoMethod(ctripHotelInfosAndRoomTypeInfoList);
 			} else {
 				//响应失败
@@ -285,6 +286,7 @@ public class CtripHotelInfoServiceImpl implements CtripHotelInfoService{
 				CtripHotelInfo hotelInfo = this.ctripHotelInfoDao.findByParentHotelId(ctripHotelInfo.getParentHotelId());
 				if (null != hotelInfo) {
 					//存在更新数据库
+					ctripHotelInfo.setId(hotelInfo.getId());
 					this.ctripHotelInfoDao.updateHotelInfo(ctripHotelInfo);
 				} else {
 					//1.不存在新增携程酒店信息
