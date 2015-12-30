@@ -438,7 +438,8 @@ public class InnMatchController extends BaseController {
     	try {
     		ctripHotelRoomTypeService.cannelMappingAll(companyId, innId, ctripHotelId);
     	} catch (RequestCtripException | JAXBException e) {
-    		log.error(e.getMessage());
+            e.printStackTrace();
+    		log.info("异常:",e);
     		result.setStatus(Constants.ERROR400);
     		result.setMessage(e.getMessage());
     	}
