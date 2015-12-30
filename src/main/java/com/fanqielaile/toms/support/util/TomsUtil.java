@@ -339,7 +339,7 @@ public class TomsUtil {
      * @param commission 佣金比例
      * @param priceDto 增减价
      */
-    public static  void price(Double roomPrice ,Date parseDate,OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto){
+    public static  Double price(Double roomPrice ,Date parseDate,OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto){
         if (commission != null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())) {
             roomPrice = TomsUtil.price(roomPrice, new BigDecimal(commission.getCommissionPercent()));
         }
@@ -351,5 +351,6 @@ public class TomsUtil {
                 roomPrice = roomPrice + value;
             }
         }
+        return  roomPrice;
     }
 }

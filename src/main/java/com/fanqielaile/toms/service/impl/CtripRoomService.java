@@ -17,6 +17,7 @@ import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.service.ICtripRoomService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.CtripXHotelUtil;
 import com.fanqielaile.toms.support.util.FcUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,14 +63,21 @@ public class CtripRoomService implements ICtripRoomService {
                 Integer sj=0;
                 try {
                     List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
+                    if (CollectionUtils.isEmpty(roomDetailList)){
+                        throw new TomsRuntimeException("房态列表为空: url:"+room_type);
+                    }
                     String requestRoomPriceXml = CtripXHotelUtil.requestRoomPriceXml(infoRefDto, mapping, roomDetailList,commission,priceDto, isSj);
                     String requestSetRoomInfoXml = CtripXHotelUtil.requestSetRoomInfoXml(infoRefDto, mapping, roomDetailList);
+                    log.info("房价xml:"+requestRoomPriceXml);
+                    log.info("房态xml:"+requestSetRoomInfoXml);
                     String execute = CtripHttpClient.execute(requestRoomPriceXml);
                     String roomInfoExecute = CtripHttpClient.execute(requestSetRoomInfoXml);
                     RequestResponse response = FcUtil.xMLStringToBean(execute);
                     RequestResponse roomInfoResponse = FcUtil.xMLStringToBean(roomInfoExecute);
                     Integer resultCode = response.getRequestResult().getResultCode();
                     Integer roomInfoCode = roomInfoResponse.getRequestResult().getResultCode();
+                    log.info("result 房价xml:"+execute);
+                    log.info("result 房态xml:"+roomInfoExecute);
                     if (CtripConstants.resultCode.equals(resultCode) && CtripConstants.resultCode.equals(roomInfoCode)){
                         log.info(" 价格同步成功:" + response.getRequestResult().getMessage() +
                                 " 房态成功:" + roomInfoResponse.getRequestResult().getMessage() +

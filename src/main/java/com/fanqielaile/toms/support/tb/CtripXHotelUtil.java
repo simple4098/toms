@@ -21,6 +21,8 @@ import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.math.BigDecimal;
@@ -35,6 +37,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 public class CtripXHotelUtil {
+    private static final Logger log = LoggerFactory.getLogger(CtripXHotelUtil.class);
 
     /**
      * 根据房型组装房价xml
@@ -55,7 +58,7 @@ public class CtripXHotelUtil {
             for (RoomDetail roomDetail:roomDetailList){
                 priceV = roomDetail.getRoomPrice();
                 Date parseDate = DateUtil.parseDate(roomDetail.getRoomDate());
-                TomsUtil.price(priceV,parseDate,commission,priceDto);
+                priceV = TomsUtil.price(priceV,parseDate,commission,priceDto);
                 priceV =isSj?priceV:-1;
                 priceV = roomDetail.getRoomNum()==0?-1:priceV;
                 Price price = new Price(0d,0d,0d,priceV,1);
@@ -121,7 +124,8 @@ public class CtripXHotelUtil {
         String requestSetRoomInfoXml = requestSetRoomInfoXml(infoRefDto, mapping, roomDetailList);
         String execute = CtripHttpClient.execute(requestRoomPriceXml);
         String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
-
+        log.info("价格增减xml："+requestRoomPriceXml);
+        log.info("房态xml："+requestSetRoomInfoXml);
         RequestResponse response = FcUtil.xMLStringToBean(execute);
         RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
         Integer resultCode = response.getRequestResult().getResultCode();
