@@ -104,9 +104,11 @@ $("#btn-primary-id").on("click",function(){
             }else{
                 layer.msg("绑定成功");
                 var url = window.location.href;
+                url = url.replace("#","");
                 if(url.indexOf("ctripId") != -1){
                 	url =  url.substring(0,url.lastIndexOf("=")+1);
                 	url+=data.message;
+                	window.location.href = url;
                 }else{
                 	window.location.href=window.location.href+"&ctripId="+data.message;
                 }
