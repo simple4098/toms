@@ -504,6 +504,8 @@ public class OrderService implements IOrderService {
 
                 }
                 //设置订单总价
+                //oms总价格需要*房间数量
+                order.setTotalPrice(order.getTotalPrice().multiply(BigDecimal.valueOf(order.getHomeAmount())));
                 //1.验证订单总价是否一致
                 logger.info("订单总价为：" + order.getTotalPrice() + "   oms总价为：" + omsTotalPrice);
                 logger.info("oms总价价格比例过后价格=>" + omsTotalPrice.multiply((new BigDecimal(1).subtract(percent))));
