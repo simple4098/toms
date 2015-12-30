@@ -112,18 +112,27 @@ $("#btn-primary-id").on("click",function(){
                 }
             }else{
             	  var url = window.location.href;
-            	  layer.msg(data.message);
             	  if(url.indexOf("ctripId") != -1){
                   	url =  url.substring(0,url.lastIndexOf("ctripId")-1);
-                  }
-            	  window.location.href = url;
+                  };
+            	  layer.msg(data.message, {
+            		    time: 0 //不自动关闭
+            		    ,btn: ['确定']
+            	  		,offset : ['50%' , '50%']
+            		    ,yes: function(index){
+            		        layer.close(index);
+            		        window.location.href = url;
+            		    }
+            		});	
             }
         },error:function(data){
             layer.msg(data.message);
         }
     })
     console.log(fcHotelId+"-"+innId);
-})
+});
+
+
 //重新绑定 酒店
 $(".btn-primary-cx").on("click",function(){
     var _this = $(this);
@@ -179,7 +188,9 @@ function getWebRootPath() {
 
 //重新匹配
 $("#cxInMatchId").on("click",function(){
-    layer.confirm('重新匹配将删除之前酒店（酒店房型）的绑定关系,你确认继续操作吗？', function(index){
+    layer.confirm('重新匹配将删除之前酒店（酒店房型）的绑定关系,你确认继续操作吗？',{
+    	offset : ['50%' , '50%']
+    }, function(index){
     	var innId = $("#innId").val();
     	layer.close(index);
         var root =  getWebRootPath();
