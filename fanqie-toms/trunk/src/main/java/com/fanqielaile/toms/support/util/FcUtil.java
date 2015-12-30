@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
@@ -40,23 +42,10 @@ public class FcUtil<T extends OtaRequest> {
      */
     public static RequestResponse xMLStringToBean(String xml) throws JAXBException {
         if (!StringUtils.isEmpty(xml)) {
-            try {
-                RequestResponse response1 = new RequestResponse();
-                Element element = XmlDeal.dealXmlStr(xml);
-                String message = element.element("RequestResult").element("Message").getText();
-                String resultCode = element.element("RequestResult").element("ResultCode").getText();
-                RequestResult requestResult = new RequestResult();
-                requestResult.setMessage(message);
-                requestResult.setResultCode(resultCode!=null?Integer.valueOf(resultCode):-1);
-                response1.setRequestResult(requestResult);
-                return response1;
-            } catch (Exception e) {
-                log.error("解析xml异常:",e);
-            }
-            /*JAXBContext context = JAXBContext.newInstance(RequestResponse.class);
+            JAXBContext context = JAXBContext.newInstance(RequestResponse.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             RequestResponse response = (RequestResponse) unmarshaller.unmarshal(new StringReader(xml));
-            return response;*/
+            return response;
         }
         return null;
     }
