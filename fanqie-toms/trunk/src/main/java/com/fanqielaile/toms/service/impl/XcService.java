@@ -1,11 +1,15 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.bean.response.RequestResponse;
+import com.fanqie.bean.response.RequestResult;
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.support.CtripConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.BangInn;
@@ -19,6 +23,7 @@ import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.exception.VettedOTAException;
 import com.fanqielaile.toms.support.holder.TPHolder;
+import com.fanqielaile.toms.support.tb.CtripXHotelUtil;
 import com.fanqielaile.toms.support.tb.FCXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +66,8 @@ public class XcService implements ITPService {
     private IOtaInfoDao otaInfoDao;
     @Resource
     private TPHolder tpHolder;
+    @Resource
+    private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
@@ -89,16 +96,17 @@ public class XcService implements ITPService {
 
     @Override
     public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId, String companyId, String userId, String json) throws Exception {
+        log.info("===================携程修改价格=======================");
         Company company = companyDao.selectCompanyById(companyId);
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
         List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
-        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+        //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
         if (!CollectionUtils.isEmpty(prices)) {
-            FcRoomTypeFqDto fcRoomTypeFqDto = null;
+            //FcRoomTypeFqDto fcRoomTypeFqDto = null;
             OtaRoomPriceDto priceDto = null;
             for (AddFangPrice price : prices) {
                 if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
-                    fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(Integer.valueOf(innId), price.getRoomTypeId(), infoRefDto.getOtaInfoId(), companyId);
+                    CtripRoomTypeMapping ctripRoomTypeMapping = ctripRoomTypeMappingDao.selectMappingInnIdAndRoomTypeId(innId,String.valueOf(price.getRoomTypeId()));
                     priceDto = new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId());
                     priceDto.setStartDateStr(price.getStartDateStr());
                     priceDto.setEndDateStr(price.getEndDateStr());
@@ -106,18 +114,19 @@ public class XcService implements ITPService {
                     priceDto.setInnId(Integer.valueOf(innId));
                     priceDto.setModifierId(userId);
                     priceDto.setRoomTypeName(price.getRoomTypeName());
-                    if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
-                        String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), price.getRoomTypeId(), CommonApi.checkRoom);
-                        //List<RoomDetail> roomDetailList = otaRoomPriceService.obtRoomAvailFc(bangInn, price.getRoomTypeId());
+                    if (ctripRoomTypeMapping != null && !StringUtils.isEmpty(ctripRoomTypeMapping.getTomRoomTypeId())
+                            && ctripRoomTypeMapping.getSj() == Constants.FC_SJ) {
+                        String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), Integer.valueOf(innId), price.getRoomTypeId(), CommonApi.checkRoom,60);
                         List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                         boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b) {
-                            Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto, commission);
-                            if (Constants.FcResultNo.equals(response.getResultNo())) {
+                            RequestResponse response = CtripXHotelUtil.syncRoomInfo(infoRefDto, ctripRoomTypeMapping, roomDetailList, priceDto, commission);
+                            RequestResult requestResult = response.getRequestResult();
+                            if (requestResult!=null && CtripConstants.resultCode.equals(requestResult.getResultCode())) {
                                 otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
                             } else {
-                                log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + response.getResultMsg());
-                                throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + response.getResultMsg());
+                                log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + requestResult.getMessage());
+                                throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + requestResult.getMessage());
                             }
                         } else {
                             log.info("房型Id" + price.getRoomTypeId() + " 减小的价格不能低于1元");

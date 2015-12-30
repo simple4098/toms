@@ -62,4 +62,11 @@ public interface CtripRoomTypeMappingDao {
      * @param mapping 更新的房型映射
      */
     void updateMappingSj(CtripRoomTypeMapping mapping);
+
+    /**
+     * 根据番茄 客栈id和房型id 查询映射关系
+     * @param innId 客栈id
+     * @param roomTypeId 房型id
+     */
+    CtripRoomTypeMapping selectMappingInnIdAndRoomTypeId(String innId, String roomTypeId);
 }
