@@ -113,11 +113,11 @@ $("#btn-primary-id").on("click",function(){
                 }
             }else{
             	  var url = window.location.href;
-            	 layer.msg(data.message);
+            	  layer.msg(data.message);
             	  if(url.indexOf("ctripId") != -1){
                   	url =  url.substring(0,url.lastIndexOf("ctripId")-1);
-                  	window.location.href = url;
                   }
+            	  window.location.href = url;
             }
         },error:function(data){
             layer.msg(data.message);
