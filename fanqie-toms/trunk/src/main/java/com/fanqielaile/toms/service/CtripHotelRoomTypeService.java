@@ -29,7 +29,7 @@ public interface CtripHotelRoomTypeService {
 	  * @param innId 客栈ID
 	  * @param ctripMasterHotelId 携程酒店Id
 	  */
-	  void  updateRoomBypeRelation(String companyId, String json,String innId,String ctripMasterHotelId)  throws RequestCtripException, JAXBException ,CtripDataException ;
+	  List<CtripRoomTypeMapping>  updateRoomBypeRelation(String companyId, String json,String innId,String ctripMasterHotelId)  throws RequestCtripException, JAXBException ,CtripDataException ;
 	  
 	  /**
 	   *  删除之前的绑定的关系，并且删除携程关系
