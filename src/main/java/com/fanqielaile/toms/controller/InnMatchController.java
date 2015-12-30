@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fanqie.bean.response.CtripHotelInfo;
 import com.fanqie.bean.response.CtripHotelRoomType;
+import com.fanqie.bean.response.RequestResponse;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.Pagination;
@@ -53,6 +54,7 @@ import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
 import com.fanqielaile.toms.service.CtripRoomTypeMappingService;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.ICompanyService;
+import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.service.IFcHotelInfoService;
 import com.fanqielaile.toms.service.IFcRatePlanService;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
@@ -106,6 +108,9 @@ public class InnMatchController extends BaseController {
     private CtripHotelRoomTypeService  ctripHotelRoomTypeService;
     @Resource
     private CtripRoomTypeMappingService ctripRoomTypeMappingService;
+    
+    @Resource
+    private ICtripRoomService  iCtripRoomService;
 
     /**
      * 匹配列表
@@ -430,13 +435,13 @@ public class InnMatchController extends BaseController {
     //客栈与房仓酒店匹配
     @RequestMapping("/ajax/ctrip/cannelMapping")
     @ResponseBody
-    public Object cannelMapping(String innId,String ctripHotelId){
+    public Object cannelMapping(String innId){
     	Result result = new Result();
     	  UserInfo userInfo = getCurrentUser();
           String companyId = userInfo.getCompanyId();
     	result.setStatus(Constants.SUCCESS200);
     	try {
-    		ctripHotelRoomTypeService.cannelMappingAll(companyId, innId, ctripHotelId);
+    		ctripHotelRoomTypeService.cannelMappingAll(companyId, innId, null);
     	} catch (RequestCtripException | JAXBException e) {
             e.printStackTrace();
     		log.info("异常:",e);
@@ -604,7 +609,14 @@ public class InnMatchController extends BaseController {
         String companyId = getCurrentUser().getCompanyId();
         Result result = new Result();
         try {
-        	ctripHotelRoomTypeService.updateRoomBypeRelation(companyId,json,innId,fcHotelId);
+        	List<CtripRoomTypeMapping> crms = ctripHotelRoomTypeService.updateRoomBypeRelation(companyId,json,innId,fcHotelId);
+        	if(null!=crms && !crms.isEmpty()){
+        		log.info("同步OMS数据，上传最新客栈房型绑定关系");
+        		Company company = companyService.findCompanyByid(companyId);
+        		OtaInfoRefDto dto =  otaInfoService.findAllOtaByCompanyAndType(companyId, OtaType.XC);
+        		iCtripRoomService.updateRoomPrice(company, dto, crms, true);
+        		log.info("同步OMS数据完成");
+        	}
         } catch (CtripDataException e) {
         	log.error(e.getMessage());
         	result.setStatus(Constants.ERROR400);
@@ -621,6 +633,7 @@ public class InnMatchController extends BaseController {
         	log.error(e.getMessage());
         	result.setStatus(Constants.ERROR400);
         	result.setMessage(e.getMessage());
+        	e.printStackTrace();
         }
         return  result;
     }
