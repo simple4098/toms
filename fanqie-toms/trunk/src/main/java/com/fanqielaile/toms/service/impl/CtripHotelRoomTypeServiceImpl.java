@@ -43,6 +43,7 @@ import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.CtripDataHandlerUtils;
 import com.fanqielaile.toms.support.util.CtripMappingBy;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.HandlerResult;
@@ -157,6 +158,8 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 			}
 			String wgId = saveMapping(crms,ctripMasterHotelId);
 			if(StringUtils.isNotBlank(wgId)){
+				CtripHotelInfo hotelInfo = ctripHotelInfoDao.findByChildHotelId(wgId);
+				CtripDataHandlerUtils.checkChildHotelId(hotelInfo,crms,ctripMasterHotelId);
 				OtaInnOtaDto otaInnOtaDto = new OtaInnOtaDto();
 				otaInnOtaDto.setWgHid(wgId);
 				otaInnOtaDto.setCommissionPercent(new BigDecimal(1.1));
