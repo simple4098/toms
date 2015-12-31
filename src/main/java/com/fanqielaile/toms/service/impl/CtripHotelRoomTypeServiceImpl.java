@@ -15,9 +15,7 @@ import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.enums.CtripVersion;
 import com.fanqie.bean.request.mapping.SetMappingInfoRequest;
 import com.fanqie.bean.request.mapping.SetMappingInfoRequestParams;
-import com.fanqie.bean.request.room_price.Authentication;
 import com.fanqie.bean.request.room_price.HeaderInfo;
-import com.fanqie.bean.request.room_price.RequestType;
 import com.fanqie.bean.response.CtripHotelInfo;
 import com.fanqie.bean.response.CtripHotelRoomType;
 import com.fanqie.support.CtripConstants;
@@ -42,10 +40,8 @@ import com.fanqielaile.toms.exception.CtripDataException;
 import com.fanqielaile.toms.exception.RequestCtripException;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.OtaPriceModel;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.CtripHotelRoomTypeService;
-import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.CtripMappingBy;
 import com.fanqielaile.toms.support.util.FcUtil;
@@ -176,6 +172,8 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
 				OtaPriceModelDto opm = OtaPriceModelDto.toDto(otaInnOtaDto.getUuid());
 				iOtaPriceModelDao.savePriceModel(opm);
+				LOGGER.info("修改母房型:"+ctripMasterHotelId+"子房型-->"+wgId);
+				ctripHotelInfoDao.updateChildHotelId(wgId, ctripMasterHotelId);
 				LOGGER.info("请求接口，同步房价数据");
 			}
 			LOGGER.info("绑定结束");
@@ -189,7 +187,6 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		String hotelId = null;
 		for (CtripRoomTypeMapping ctripRoomTypeMapping : crms) {
 			ctripRoomTypeMappingDao.saveRoomTypeMapping(ctripRoomTypeMapping);
-			ctripHotelInfoDao.updateChildHotelId(ctripRoomTypeMapping.getCtripChildHotelId(), ctripMasterHotelId);
 			hotelId = ctripRoomTypeMapping.getCtripChildHotelId();
 		}
 		
