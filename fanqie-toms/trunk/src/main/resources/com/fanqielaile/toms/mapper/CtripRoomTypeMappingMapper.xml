@@ -85,5 +85,10 @@
     </update>
     
     
+    <delete id="deleteById">
+    		delete from xc_roomtype_fq where id = '${id}';
+    </delete>
+    
+    
 
 </mapper>
