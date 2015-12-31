@@ -130,6 +130,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 			if(StringUtils.isNotBlank(masterHotelId)){
 				CtripHotelInfo newHotel = ctripHotelInfoDao.findByParentHotelId(masterHotelId);
 				if( StringUtils.isNotBlank( newHotel.getChildHotelId())){
+					LOGGER.info("删除新绑定的携程母酒店Mapping,母id:"+masterHotelId+",子id:"+newHotel.getChildHotelId());
 					deleteCtripRoomMapping(newHotel.getChildHotelId(), companyId);
 				}
 			}
@@ -172,7 +173,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
 				OtaPriceModelDto opm = OtaPriceModelDto.toDto(otaInnOtaDto.getUuid());
 				iOtaPriceModelDao.savePriceModel(opm);
-				LOGGER.info("修改母房型:"+ctripMasterHotelId+"子房型-->"+wgId);
+				LOGGER.info("修改母房型:"+ctripMasterHotelId+"的子房型ID为-->"+wgId);
 				ctripHotelInfoDao.updateChildHotelId(wgId, ctripMasterHotelId);
 				LOGGER.info("请求接口，同步房价数据");
 			}
