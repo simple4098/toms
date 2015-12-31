@@ -330,16 +330,25 @@ $('#roomTypeBtn').click(function(index){
         type:'post',
         url:url,
         success:function(data){
-            if(data.status==400){
-                layer.msg("匹配失败:"+data.message);
-            }else{
-            	layer.msg("匹配成功");
-            }
         	var url = window.location.href;
         	if(url.indexOf("ctripId") != -1){
         		url = url.substring(0,url.indexOf("ctripId"));
         	}
-            window.location.href = url;
+            if(data.status==400){
+            	  layer.msg("匹配失败:"+data.message, {
+            		    time: 0 //不自动关闭
+            		    ,btn: ['确定']
+            	  		,offset : ['50%' , '50%']
+            		    ,yes: function(index){
+            		        layer.close(index);
+            		        window.location.href = url;
+            		    }
+            		});	
+            }else{
+            	layer.msg("匹配成功");
+            	window.location.href = url;
+            }
+            
         },error:function(data){
             layer.msg("匹配失败:"+data.message);
         }
