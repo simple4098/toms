@@ -69,4 +69,10 @@ public interface CtripRoomTypeMappingDao {
      * @param roomTypeId 房型id
      */
     CtripRoomTypeMapping selectMappingInnIdAndRoomTypeId(@Param("innId")String innId, @Param("roomTypeId")String roomTypeId);
+    
+    /**
+     *  根据ID删除记录
+     * @param id
+     */
+    void  deleteById(@Param("id")String id);
 }
