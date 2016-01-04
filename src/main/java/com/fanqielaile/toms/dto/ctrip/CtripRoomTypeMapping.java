@@ -2,6 +2,8 @@ package com.fanqielaile.toms.dto.ctrip;
 
 import com.fanqie.core.Domain;
 
+import java.util.Date;
+
 public class CtripRoomTypeMapping extends  Domain{
 	
 	 private String   innId ; // 客栈id
@@ -22,7 +24,15 @@ public class CtripRoomTypeMapping extends  Domain{
 	public void setId(Long id) {
 		super.setId(id.toString());
 	}
-	 
+
+	public CtripRoomTypeMapping(Integer sj, String innId, String companyId) {
+		this.sj = sj;
+		this.innId = innId;
+		this.companyId = companyId;
+	}
+	public CtripRoomTypeMapping() {
+	}
+
 	public String getInnId() {
 		return innId;
 	}

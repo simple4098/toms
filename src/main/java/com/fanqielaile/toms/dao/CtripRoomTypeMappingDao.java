@@ -69,6 +69,12 @@ public interface CtripRoomTypeMappingDao {
      * @param roomTypeId 房型id
      */
     CtripRoomTypeMapping selectMappingInnIdAndRoomTypeId(@Param("innId")String innId, @Param("roomTypeId")String roomTypeId);
+
+    /**
+     *  查询公司上架携程渠道的
+     * @param ctripRoomTypeMapping 查询对象
+     */
+    List<CtripRoomTypeMapping> selectMapping(CtripRoomTypeMapping ctripRoomTypeMapping );
     
     /**
      *  根据ID删除记录
