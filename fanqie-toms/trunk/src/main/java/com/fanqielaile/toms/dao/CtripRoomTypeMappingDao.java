@@ -75,4 +75,12 @@ public interface CtripRoomTypeMappingDao {
      * @param id
      */
     void  deleteById(@Param("id")String id);
+    
+    /**
+     *  根据携程子酒店ID  和  子房型ID查询
+     * @param childHotelId
+     * @param ctripRoomId
+     * @return
+     */
+    CtripRoomTypeMapping  selectByCtripHotelIdAndRoomId(@Param("childHotelId")String childHotelId, @Param("ctripRoomId")String ctripRoomId,@Param("companyId")String companyId);
 }
