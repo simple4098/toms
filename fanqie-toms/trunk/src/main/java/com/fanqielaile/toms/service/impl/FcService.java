@@ -127,17 +127,6 @@ public class FcService implements ITPService {
         log.info("====Fc 同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ, null, company.getId(), o.getOtaInfoId()));
-        /*if (!CollectionUtils.isEmpty(roomTypeFqDtoList)){
-            for (FcRoomTypeFqDto fcRoomTypeFqDto:roomTypeFqDtoList){
-                BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
-                OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
-                OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
-                Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto,commission);
-                if (!Constants.FcResultNo.equals(response.getResultNo())){
-                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()),Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg()));
-                }
-            }
-        }*/
         //todo 房仓定时获取房型修改成多线程
         if (!CollectionUtils.isEmpty(roomTypeFqDtoList)) {
             int size = roomTypeFqDtoList.size();

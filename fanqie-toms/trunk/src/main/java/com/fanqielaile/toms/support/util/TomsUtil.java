@@ -353,4 +353,22 @@ public class TomsUtil {
         }
         return  roomPrice;
     }
+
+    /**
+     * 房仓 携程 组装数据
+     * @param tbParam
+     * @param bangInn
+     * @param omsInnDto
+     */
+    public static void sjModel(TBParam tbParam,BangInn bangInn,InnDto omsInnDto){
+        if (Constants.DI.equals(tbParam.getsJiaModel()) && tbParam.getAccountId() == null) {
+            if (!tbParam.isSj()) {
+                bangInn.setAccountIdDi(null);
+            } else {
+                bangInn.setSj(1);
+            }
+        } else {
+            BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+        }
+    }
 }

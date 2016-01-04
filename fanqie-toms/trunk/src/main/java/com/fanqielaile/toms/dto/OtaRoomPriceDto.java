@@ -44,4 +44,13 @@ public class OtaRoomPriceDto extends OtaRoomPrice {
         setEndDate(DateUtil.parseDate(endDateStr));
         this.endDateStr = endDateStr;
     }
+
+    public void  build( AddFangPrice price,String innId,String userId){
+        this.setStartDateStr(price.getStartDateStr());
+        this.setEndDateStr(price.getEndDateStr());
+        this.setValue(price.getPriceChange());
+        this.setInnId(Integer.valueOf(innId));
+        this.setModifierId(userId);
+        this.setRoomTypeName(price.getRoomTypeName());
+    }
 }

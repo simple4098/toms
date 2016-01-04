@@ -10,6 +10,8 @@ import com.fanqie.bean.response.RequestResult;
 import com.fanqie.support.CtripConstants;
 import com.fanqie.util.CtripHttpClient;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
@@ -17,6 +19,7 @@ import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.UsedPriceModel;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
@@ -112,32 +115,36 @@ public class CtripXHotelUtil {
      * 更新房价 房态
      * @param infoRefDto 渠道信息
      * @param mapping 房型映射信息
-     * @param roomDetailList 房型的房态集合
      * @param priceDto 增减价
      * @param commission 佣金对象
-     * @throws Exception
      */
-    public static RequestResponse syncRoomInfo(OtaInfoRefDto infoRefDto, CtripRoomTypeMapping mapping,
-                                               List<RoomDetail> roomDetailList, OtaRoomPriceDto priceDto,
+    public static RequestResponse syncRoomInfo(Company company, OtaInfoRefDto infoRefDto, CtripRoomTypeMapping mapping, OtaRoomPriceDto priceDto,
                                                OtaCommissionPercentDto commission) throws Exception {
-        String requestRoomPriceXml = requestRoomPriceXml(infoRefDto, mapping, roomDetailList, commission, priceDto, true);
-        String requestSetRoomInfoXml = requestSetRoomInfoXml(infoRefDto, mapping, roomDetailList);
-        String execute = CtripHttpClient.execute(requestRoomPriceXml);
-        String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
-        log.info("价格增减xml："+requestRoomPriceXml);
-        log.info("房态xml："+requestSetRoomInfoXml);
-        RequestResponse response = FcUtil.xMLStringToBean(execute);
-        RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
-        Integer resultCode = response.getRequestResult().getResultCode();
-        Integer roomInfoCode = roomStatus.getRequestResult().getResultCode();
-        RequestResult requestResult = new RequestResult();
-        if (CtripConstants.resultCode.equals(resultCode) && CtripConstants.resultCode.equals(roomInfoCode)){
-            requestResult.setResultCode(0);
-        }else {
-            requestResult.setResultCode(-1);
-        }
-        response.setRequestResult(requestResult);
 
-        return response;
+        String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(),
+                company.getUserPassword(), company.getOtaId(), Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()), CommonApi.checkRoom, 60);
+        log.info("xc url :"+room_type);
+        List<RoomDetail> roomDetail = InnRoomHelper.getRoomDetail(room_type);
+        if (!CollectionUtils.isEmpty(roomDetail)){
+            String requestRoomPriceXml = requestRoomPriceXml(infoRefDto, mapping, roomDetail, commission, priceDto, true);
+            String requestSetRoomInfoXml = requestSetRoomInfoXml(infoRefDto, mapping, roomDetail);
+            String execute = CtripHttpClient.execute(requestRoomPriceXml);
+            String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
+            log.info("价格增减xml："+requestRoomPriceXml);
+            log.info("房态xml："+requestSetRoomInfoXml);
+            RequestResponse response = FcUtil.xMLStringToBean(execute);
+            RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
+            Integer resultCode = response.getRequestResult().getResultCode();
+            Integer roomInfoCode = roomStatus.getRequestResult().getResultCode();
+            RequestResult requestResult = new RequestResult();
+            if (CtripConstants.resultCode.equals(resultCode) && CtripConstants.resultCode.equals(roomInfoCode)){
+                requestResult.setResultCode(0);
+            }else {
+                requestResult.setResultCode(-1);
+            }
+            response.setRequestResult(requestResult);
+            return  response;
+        }
+        return null;
     }
 }

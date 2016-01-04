@@ -53,6 +53,7 @@ public class CtripRoomService implements ICtripRoomService {
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(
                 new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
         if (!CollectionUtils.isEmpty(roomTypeMappingList)){
+            Integer sj=0;
             for (CtripRoomTypeMapping mapping:roomTypeMappingList){
                 //价格增加价
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(),
@@ -60,7 +61,6 @@ public class CtripRoomService implements ICtripRoomService {
                         infoRefDto.getOtaInfoId()));
                 String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(),
                         Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()), CommonApi.checkRoom,60);
-                Integer sj=0;
                 try {
                     List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                     if (CollectionUtils.isEmpty(roomDetailList)){
