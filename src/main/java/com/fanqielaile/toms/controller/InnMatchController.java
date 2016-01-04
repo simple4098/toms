@@ -272,7 +272,7 @@ public class InnMatchController extends BaseController {
                 if(StringUtils.isEmpty(ctripId)){ //  如果，没有新的绑定关系
                 	if (otaInnOtaDto != null) { //  已经关联了酒店，根据子ID查询
                 		CtripHotelInfo ctripHotelInfo = ctripHotelInfoService.findCtripHotelInfoByChildHotelId(otaInnOtaDto.getWgHid());
-                		//房仓酒店房型信息
+                		//携程酒店房型信息
                 		List<CtripHotelRoomType> rooms = ctripHotelRoomTypeService.findByCtripParentHotelId(ctripHotelInfo.getParentHotelId());
                 		//房型匹配信息
                 		List<CtripRoomTypeMapping> ctripRoomMappings =	ctripRoomTypeMappingService.findRoomTypeMapping(companyId, otaInnOtaDto.getWgHid());
