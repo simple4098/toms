@@ -89,6 +89,13 @@
     		delete from xc_roomtype_fq where id = '${id}';
     </delete>
     
+    <select id="selectByCtripHotelIdAndRoomId"  resultMap="BaseResultMap" >
+        select 
+   		   <include refid="Base_Column_List"    />
+   		   from  xc_roomtype_fq  where     deleted = 0
+   		   and xc_child_hotel_id  = '${childHotelId}' and  xc_child_roomtype_id = '${ctripRoomId}' and company_id = '${companyId}'
+    </select>
+    
     
 
 </mapper>
