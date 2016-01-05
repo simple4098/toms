@@ -31,7 +31,7 @@ public interface CtripRoomTypeMappingDao {
      * @param innId 携程的子酒店ID
      * @return
      */
-    List<CtripRoomTypeMapping> findRoomTypeMapping(@Param("companyId")String companyId,@Param("childHotelId") String childHotelId);
+    List<CtripRoomTypeMapping> findRoomTypeMapping(@Param("companyId")String companyId,@Param("childHotelId") String childHotelId,@Param("innId") String innId);
     
     /**
      *  通过主键查询记录
