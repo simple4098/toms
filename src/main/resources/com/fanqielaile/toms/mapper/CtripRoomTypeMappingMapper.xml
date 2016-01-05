@@ -78,7 +78,7 @@
         ,o.created_date,o.updated_date,o.deleted,o.sj,fp.currency,fp.pay_method,fp.bed_type,o.bed_num,o.bed_len,o.bed_wid,o.xc_child_roomtype_id
         ,o.rate_plan_code,o.rate_plan_code_name
         from  xc_roomtype_fq o LEFT JOIN  ota_rate_plan fp ON  fp.ota_info_id = '3' and   fp.rate_plan_code =o.rate_plan_code  and fp.deleted=0
-    	where o.deleted=0 and  o.company_id ='${companyId}' and  o.xc_child_hotel_id ='${childHotelId}'   order by o.fq_roomtype_id desc
+    	where o.deleted=0 and  o.company_id ='${companyId}' and  o.xc_child_hotel_id ='${childHotelId}'  and  o.inn_id ='${innId}'        order by o.fq_roomtype_id desc
     </select>
     
     
