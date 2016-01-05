@@ -275,12 +275,12 @@ public class InnMatchController extends BaseController {
                 		//携程酒店房型信息
                 		List<CtripHotelRoomType> rooms = ctripHotelRoomTypeService.findByCtripParentHotelId(ctripHotelInfo.getParentHotelId());
                 		//房型匹配信息
-                		List<CtripRoomTypeMapping> ctripRoomMappings =	ctripRoomTypeMappingService.findRoomTypeMapping(companyId, otaInnOtaDto.getWgHid());
+                		List<CtripRoomTypeMapping> ctripRoomMappings =	ctripRoomTypeMappingService.findRoomTypeMapping(companyId, otaInnOtaDto.getWgHid(),innId.toString());
                 		List<CtripRoomTypeMapping> tempAddRoomType = new ArrayList<CtripRoomTypeMapping>();
                 		model.addAttribute("fcHotel", ctripHotelInfo);
                         Company company = companyService.findCompanyByid(companyId);
                         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
-                        List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
+                        List<RoomTypeInfo> list = new ArrayList<RoomTypeInfo>();
                         assembleAllRoomTypeMapping(ctripRoomMappings,
 								tempAddRoomType, list);
                         ctripRoomMappings.addAll(tempAddRoomType);
