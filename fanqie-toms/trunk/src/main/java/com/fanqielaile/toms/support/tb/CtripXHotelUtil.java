@@ -71,7 +71,7 @@ public class CtripXHotelUtil {
                 priceInfos.add(priceInfo);
             }
             String startDate = TomsUtil.getDateStringFormat(new Date());
-            String endDate = TomsUtil.getDateStringFormat(DateUtil.addDay(new Date(), 29));
+            String endDate = TomsUtil.getDateStringFormat(DateUtil.addDay(new Date(), 60));
             SetRoomPriceItem setRoomPriceItem = new SetRoomPriceItem(priceInfos,Integer.valueOf(mapping.getCtripChildRoomTypeId()),startDate,endDate);
             setRoomPriceItem.setPriceInfo(priceInfos);
             setRoomPriceItems.add(setRoomPriceItem);
