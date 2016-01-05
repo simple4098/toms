@@ -40,8 +40,8 @@ public class CtripRoomTypeMappingServiceImpl implements  CtripRoomTypeMappingSer
 	
 	@Override
 	public List<CtripRoomTypeMapping> findRoomTypeMapping(String companyId,
-			String childHotelId) {
-		return ctripRoomTypeMappingDao.findRoomTypeMapping(companyId, childHotelId);
+			String childHotelId,String innId) {
+		return ctripRoomTypeMappingDao.findRoomTypeMapping(companyId, childHotelId,innId);
 	}
 
 	@Override
