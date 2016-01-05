@@ -20,7 +20,7 @@ public interface CtripRoomTypeMappingService {
 	 * @param childHotelId 携程 子酒店ID
 	 * @return
 	 */
-	List<CtripRoomTypeMapping> findRoomTypeMapping(String companyId,String childHotelId);
+	List<CtripRoomTypeMapping> findRoomTypeMapping(String companyId,String childHotelId,String innId);
 	
 	
 	/**
