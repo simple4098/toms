@@ -558,6 +558,14 @@ public class OrderService implements IOrderService {
             } else {
                 order.setRoomTypeName(roomTypeFqInnIdRoomIdOtaInfoId.getFqRoomTypeName());
             }
+        } else if (ChannelSource.XC.equals(order.getChannelSource())) {
+            CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
+            if (null == ctripRoomTypeMapping) {
+                logger.info("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+                throw new TomsRuntimeException("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
+            } else {
+                order.setOrderRoomTypeName(ctripRoomTypeMapping.getTomRoomTypeName());
+            }
         }
         return order;
     }
