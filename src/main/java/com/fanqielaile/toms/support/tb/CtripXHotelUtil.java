@@ -136,6 +136,8 @@ public class CtripXHotelUtil {
             String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
             log.info("价格增减xml："+requestRoomPriceXml);
             log.info("房态xml："+requestSetRoomInfoXml);
+            log.info("房价 result xml："+execute);
+            log.info("房态 result xml："+executeRoomStatus);
             response = FcUtil.xMLStringToBean(execute);
             RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
             Integer resultCode = response.getRequestResult().getResultCode();
