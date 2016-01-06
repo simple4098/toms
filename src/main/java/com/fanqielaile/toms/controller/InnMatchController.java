@@ -280,7 +280,7 @@ public class InnMatchController extends BaseController {
                 		model.addAttribute("fcHotel", ctripHotelInfo);
                         Company company = companyService.findCompanyByid(companyId);
                         String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.ROOM_TYPE);
-                        List<RoomTypeInfo> list = new ArrayList<RoomTypeInfo>();
+                        List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
                         assembleAllRoomTypeMapping(ctripRoomMappings,
 								tempAddRoomType, list);
                         ctripRoomMappings.addAll(tempAddRoomType);
