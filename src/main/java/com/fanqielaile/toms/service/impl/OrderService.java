@@ -746,8 +746,10 @@ public class OrderService implements IOrderService {
             this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.PAY_BACK, "申请退款", ChannelSource.TAOBAO.name()));
         } else {
             //直接修改订单状态为已取消
-            order.setOrderStatus(OrderStatus.CANCEL_ORDER);
-            order.setReason("买家申请退款");
+            if (!OrderStatus.PAY_BACK.equals(order.getOrderStatus())) {
+                order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                order.setReason("买家申请退款");
+            }
         }
         this.orderDao.updateOrderStatusAndReason(order);
         result.put("status", "0");
