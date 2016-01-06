@@ -354,19 +354,19 @@ public class OTAManageController extends BaseController {
                 if (ctripUserPassword) {
                     //2.解析xml得到请求类型
                     String requestType = XmlCtripUtil.getRequestType(xml);
-                    if (CtripRequestType.DomesticCheckRoomAvailRequest.name().equals(requestType)) {
+                    if (CtripRequestType.DomesticCheckRoomAvail.name().equals(requestType)) {
                         //3.试订单请求
                         CtripCheckRoomAvailResponse ctripCheckRoomAvailResponse = this.ctripOrderService.dealCtripCheckRoomAvail(xml);
                         return ctripCheckRoomAvailResponse;
-                    } else if (CtripRequestType.DomesticSubmitNewHotelOrderRequest.name().equals(requestType)) {
+                    } else if (CtripRequestType.DomesticSubmitNewHotelOrder.name().equals(requestType)) {
                         //4.下单请求
                         CtripNewHotelOrderResponse ctripNewHotelOrderResponse = this.ctripOrderService.addOrder(xml);
                         return ctripNewHotelOrderResponse;
-                    } else if (CtripRequestType.DomesticCancelHotelOrderRequest.name().equals(requestType)) {
+                    } else if (CtripRequestType.DomesticCancelHotelOrder.name().equals(requestType)) {
                         //5.取消订单
                         CtripCancelHotelOrderResponse ctripCancelHotelOrderResponse = this.ctripOrderService.cancelOrderMethod(xml);
                         return ctripCancelHotelOrderResponse;
-                    } else if (CtripRequestType.DomesticGetOrderStatusRequest.name().equals(requestType)) {
+                    } else if (CtripRequestType.DomesticGetOrderStatus.name().equals(requestType)) {
                         //6.获取订单状态
                         CtripGetOrderStatusResponse orderStatus = this.ctripOrderService.getOrderStatus(xml);
                         return orderStatus;

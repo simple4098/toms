@@ -633,6 +633,8 @@ public class OrderService implements IOrderService {
         } else if (ChannelSource.FC.equals(order.getChannelSource())) {
             //如果付款失败，天下房仓返回创建订单失败
             return new JsonModel(false, "OMS系统异常，创建订单失败");
+        } else if (ChannelSource.XC.equals(order.getChannelSource())) {
+            return new JsonModel(false, "创建订单失败");
         }
         return null;
     }
