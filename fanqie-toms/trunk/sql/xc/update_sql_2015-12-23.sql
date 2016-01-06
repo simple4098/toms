@@ -20,6 +20,7 @@ ALTER TABLE fc_rate_plan RENAME TO ota_rate_plan;
 
 ALTER TABLE "public"."ota_rate_plan" ADD COLUMN "rate_code_default" bool;
 ALTER TABLE "public"."ota_rate_plan" ADD COLUMN "rate_plan_code" varchar(50);
+ALTER TABLE "public"."ota_rate_plan" ADD COLUMN "ota_info_id" varchar(50);
 
 
 ALTER TABLE "public"."otainfo_company_ref" ADD COLUMN "xc_user_name" varchar(50);
