@@ -2,9 +2,9 @@
 -- ----------------------------
 -- Table structure for ctrip_hotel_info
 -- ----------------------------
-create SEQUENCE xc_parent_hotel_room2_id_seq start 100;
+create SEQUENCE ctrip_parent_hotel_id_seq start 100;
 CREATE TABLE "public"."ctrip_parent_hotel" (
-"id" varchar(64) COLLATE "default" DEFAULT nextval('xc_parent_hotel_room2_id_seq'::regclass) NOT NULL,
+"id" varchar(64) COLLATE "default" DEFAULT nextval('ctrip_parent_hotel_id_seq'::regclass) NOT NULL,
 "hotel_name" varchar(30) COLLATE "default",
 "child_hotel_id" varchar(40) COLLATE "default",
 "parent_hotel_id" varchar(40) COLLATE "default",
@@ -27,9 +27,9 @@ CREATE INDEX "xc_parent_hotel_hotel_name_child_hotel_id_parent_hotel_id_idx" ON 
 ALTER TABLE "public"."ctrip_parent_hotel" ADD PRIMARY KEY ("id");
 
 
-create SEQUENCE xc_parent_hotel_room2_id_seq start 100;
+create SEQUENCE xc_parent_hotel_id_seq start 100;
 CREATE TABLE "public"."ctrip_parent_room" (
-"id" varchar(64) COLLATE "default" DEFAULT nextval('xc_parent_hotel_room2_id_seq'::regclass) NOT NULL,
+"id" varchar(64) COLLATE "default" DEFAULT nextval('xc_parent_hotel_id_seq'::regclass) NOT NULL,
 "ctrip_prent_hotel_id" varchar(60) COLLATE "default",
 "room_type_name" varchar(30) COLLATE "default",
 "room_type_id" varchar(20) COLLATE "default",
