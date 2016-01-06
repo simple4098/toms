@@ -77,7 +77,7 @@ public class CtripXHotelUtil {
             setRoomPriceItems.add(setRoomPriceItem);
             setAdaperRoomPriceRequest.setSetRoomPriceItems(setRoomPriceItems);
             HeaderInfo headerInfo = new  HeaderInfo(infoRefDto.getUserId(), CtripConstants.requestorId,false);
-            headerInfo.build(infoRefDto.getXcUserName(),infoRefDto.getXcPassword(),CtripRequestType.SetRoomInfo, CtripVersion.V12);
+            headerInfo.build(infoRefDto.getXcUserName(),infoRefDto.getXcPassword(),CtripRequestType.SetRoomPrice, CtripVersion.V12);
             roomPriceRequest.setSetAdaperRoomPriceRequest(setAdaperRoomPriceRequest);
             roomPriceRequest.setHeaderInfo(headerInfo);
             return FcUtil.fcRequest(roomPriceRequest);
@@ -97,11 +97,13 @@ public class CtripXHotelUtil {
             List<RoomInfoItem> roomInfoItems = new ArrayList<>();
             for (RoomDetail roomDetail:roomDetailList){
                 CtripRoomStatus ctripRoomStatus = roomDetail.getOtaRoomNum()>0?CtripRoomStatus.G:CtripRoomStatus.N;
+                Recommend recommend = roomDetail.getOtaRoomNum()>0?Recommend.R2:Recommend.R0;
                 RoomInfoItem roomInfoItem = new RoomInfoItem(DeductType.C,CtripConstants.reserveTime,
                         CheckType.C,CtripConstants.lateReserveTime,
                         CtripConstants.guaranteeLCT,"",AllNeedGuarantee.F,roomDetail.getOtaRoomNum(),
                         ctripRoomStatus,CtripConstants.holdDeadline,
                         ChangeDefault.F,CtripConstants.userLimited,CtripConstants.prepayLCT);
+                roomInfoItem.setRecommendValue(recommend);
                 roomInfoItems.add(roomInfoItem);
             }
             SetRoomInfoRequest setRoomInfoRequest = new SetRoomInfoRequest(roomInfoItems,Integer.valueOf(mapping.getCtripChildRoomTypeId()),TomsUtil.getDateStringFormat(new Date()),TomsUtil.getDateStringFormat(DateUtil.addDay(new Date(), 1)));
