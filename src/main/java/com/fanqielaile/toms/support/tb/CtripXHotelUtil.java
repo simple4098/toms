@@ -127,6 +127,8 @@ public class CtripXHotelUtil {
                 company.getUserPassword(), company.getOtaId(), Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()), CommonApi.checkRoom, 60);
         log.info("xc url :"+room_type);
         List<RoomDetail> roomDetail = InnRoomHelper.getRoomDetail(room_type);
+        RequestResponse response = null;
+        RequestResult requestResult = new RequestResult();
         if (!CollectionUtils.isEmpty(roomDetail)){
             String requestRoomPriceXml = requestRoomPriceXml(infoRefDto, mapping, roomDetail, commission, priceDto, true);
             String requestSetRoomInfoXml = requestSetRoomInfoXml(infoRefDto, mapping, roomDetail);
@@ -134,19 +136,22 @@ public class CtripXHotelUtil {
             String executeRoomStatus = CtripHttpClient.execute(requestSetRoomInfoXml);
             log.info("价格增减xml："+requestRoomPriceXml);
             log.info("房态xml："+requestSetRoomInfoXml);
-            RequestResponse response = FcUtil.xMLStringToBean(execute);
+            response = FcUtil.xMLStringToBean(execute);
             RequestResponse roomStatus = FcUtil.xMLStringToBean(executeRoomStatus);
             Integer resultCode = response.getRequestResult().getResultCode();
             Integer roomInfoCode = roomStatus.getRequestResult().getResultCode();
-            RequestResult requestResult = new RequestResult();
+
             if (CtripConstants.resultCode.equals(resultCode) && CtripConstants.resultCode.equals(roomInfoCode)){
                 requestResult.setResultCode(0);
             }else {
                 requestResult.setResultCode(-1);
             }
             response.setRequestResult(requestResult);
-            return  response;
+
+        }else {
+            requestResult.setResultCode(-1);
+            requestResult.setMessage("获取oms房态数据为空!");
         }
-        return null;
+        return  response;
     }
 }

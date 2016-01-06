@@ -142,7 +142,7 @@ public class XcService implements ITPService {
                     }
                     if (!CtripConstants.resultCode.equals(requestResult.getResultCode())){
                         timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(mapping.getTomRoomTypeId()),
-                                Integer.valueOf(mapping.getInnId()), "房仓获取不到oms房型数据",TimerRateType.NOT_HOVE_ROUSE));
+                                Integer.valueOf(mapping.getInnId()), requestResult.getMessage(),TimerRateType.NOT_HOVE_ROUSE));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -197,17 +197,13 @@ public class XcService implements ITPService {
                     try {
                         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
                         RequestResponse syncRoomInfo = CtripXHotelUtil.syncRoomInfo(company,o, mapping, priceDto, commission);
-
-                        if (syncRoomInfo!=null){
-                            RequestResult requestResult = syncRoomInfo.getRequestResult();
-                            if (requestResult!=null && Constants.FcResultNo.equals(requestResult.getResultCode())) {
-                                timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), ratePrice.getInnId(),
-                                        Integer.valueOf(mapping.getTomRoomTypeId())));
-                            }
+                        RequestResult requestResult = syncRoomInfo.getRequestResult();
+                        if (requestResult!=null && CtripConstants.resultCode.equals(requestResult.getResultCode())) {
+                            timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), ratePrice.getInnId(),
+                                       Integer.valueOf(mapping.getTomRoomTypeId())));
                         }else {
                             timerRatePriceDao.deletedFcTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(),ratePrice.getInnId(), Integer.valueOf(mapping.getTomRoomTypeId())));
                             list.add(mapping);
-
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
