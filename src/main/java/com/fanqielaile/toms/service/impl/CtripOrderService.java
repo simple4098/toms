@@ -225,7 +225,7 @@ public class CtripOrderService implements ICtripOrderService {
         logger.info("携程取消订单号为：" + cancelOrder.getChannelOrderCode());
         //2.判断订单是否在toms存在
         CtripCancelHotelOrderResponse ctripCancelHotelOrderResponse = new CtripCancelHotelOrderResponse();
-        CtripCancelHotelOrderResponseReslt ctripCancelHotelOrderResponseReslt = new CtripCancelHotelOrderResponseReslt();
+        CtripCancelHotelOrderResponseResult ctripCancelHotelOrderResponseResult = new CtripCancelHotelOrderResponseResult();
         DomesticCancelHotelOrderResponse domesticCancelHotelOrderResponse = new DomesticCancelHotelOrderResponse();
         if (null != cancelOrder) {
             Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(cancelOrder);
@@ -245,10 +245,10 @@ public class CtripOrderService implements ICtripOrderService {
                 }
             }
         }
-        ctripCancelHotelOrderResponseReslt.setResultCode(String.valueOf(0));
-        ctripCancelHotelOrderResponseReslt.setMessage("取消订单响应成功");
-        ctripCancelHotelOrderResponseReslt.setDomesticCancelHotelOrderResponse(domesticCancelHotelOrderResponse);
-        ctripCancelHotelOrderResponse.setCtripCancelHotelOrderResponseReslt(ctripCancelHotelOrderResponseReslt);
+        ctripCancelHotelOrderResponseResult.setResultCode(String.valueOf(0));
+        ctripCancelHotelOrderResponseResult.setMessage("取消订单响应成功");
+        ctripCancelHotelOrderResponseResult.setDomesticCancelHotelOrderResponse(domesticCancelHotelOrderResponse);
+        ctripCancelHotelOrderResponse.setCtripCancelHotelOrderResponseResult(ctripCancelHotelOrderResponseResult);
         logger.info("携程取消订单返回值:" + ctripCancelHotelOrderResponse.toString());
         return ctripCancelHotelOrderResponse;
     }
