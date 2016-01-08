@@ -137,10 +137,10 @@ public class FCXHotelUtil {
         saleInfo.setBreakfastNum(0);
         saleInfo.setFreeSale(1);
         //1有房  2 待查  3满房
-        saleInfo.setRoomState((room.getOtaRoomNum() != null || room.getOtaRoomNum() != 0) ? Constants.FC_HAVE_ROOM : Constants.FC_NOT_HAVE_ROOM);
+        saleInfo.setRoomState((room.getRoomNum() != null || room.getRoomNum() != 0) ? Constants.FC_HAVE_ROOM : Constants.FC_NOT_HAVE_ROOM);
         saleInfo.setOverdraft("");
         saleInfo.setOverDraftNum("");
-        saleInfo.setQuotaNum((room.getOtaRoomNum()!=null ||room.getOtaRoomNum()!=0)?room.getOtaRoomNum():0);
+        saleInfo.setQuotaNum((room.getRoomNum()!=null ||room.getRoomNum()!=0)?room.getRoomNum():0);
         saleInfo.setMinAdvHours("");
         saleInfo.setMinDays("");
         saleInfo.setMaxDays("");
