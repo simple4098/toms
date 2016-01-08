@@ -119,6 +119,23 @@ public class TBXHotelUtil {
         }
         return null;
     }
+    /**
+     * 获取酒店
+     * @param company 公司信息
+     */
+    public static XHotel hotelGetHid(OtaInfoRefDto company,String hid) {
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelGetRequest req=new XhotelGetRequest();
+        req.setHid(Long.valueOf(hid));
+        try {
+            XhotelGetResponse response = client.execute(req , company.getSessionKey());
+            log.info("hotelGet:" +  response.getXhotel());
+            return  response.getXhotel();
+        } catch (ApiException e) {
+            log.error(e.getErrMsg());
+        }
+        return null;
+    }
 
     /**
      *添加房型
@@ -247,7 +264,7 @@ public class TBXHotelUtil {
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
                 inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
+                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
                 inventory.setRoomSwitchCalStatus(status);
                 list.add(inventory);
                 roomSwitchCals.add(roomSwitchCal);
@@ -326,7 +343,7 @@ public class TBXHotelUtil {
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
                 inventory.setDate(r.getRoomDate());
-                inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
+                inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
                 inventory.setRoomSwitchCalStatus(status);
                 list.add(inventory);
                 roomSwitchCals.add(roomSwitchCal);
@@ -394,7 +411,7 @@ public class TBXHotelUtil {
                     roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                     roomSwitchCal.setRoomSwitchCalStatus(status);
                     inventory.setDate(r.getRoomDate());
-                    inventory.setQuota(r.getOtaRoomNum() == null ? 0 : r.getOtaRoomNum());
+                    inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
                     inventory.setRoomSwitchCalStatus(status);
                     list.add(inventory);
                     roomSwitchCals.add(roomSwitchCal);
@@ -659,7 +676,7 @@ public class TBXHotelUtil {
             }
             for (RoomDetail roomDetail:roomDetails){
                 String roomDate = roomDetail.getRoomDate();
-                Integer roomNum = roomDetail.getOtaRoomNum();
+                Integer roomNum = roomDetail.getRoomNum();
                 Double  roomPrice = roomDetail.getRoomPrice();
                 for (InventoryRate ratePrice:inventoryRateList){
                     if (ratePrice.getDate().equals(roomDate)){
