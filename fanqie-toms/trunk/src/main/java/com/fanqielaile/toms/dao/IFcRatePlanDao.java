@@ -33,5 +33,14 @@ public interface IFcRatePlanDao {
      * @return
      */
     OtaRatePlan  selectDefaultCtripRatePlan();
-    
+
+    /**
+     * 通过公司id，otaid和价格计划code查询价格计划详细信息
+     *
+     * @param companyId
+     * @param otaId
+     * @param ratePlanCode
+     * @return
+     */
+    OtaRatePlan selectRatePlanByCompanyIdAndOtaIdAndRateCode(@Param("companyId") String companyId, @Param("otaId") String otaId, @Param("ratePlanCode") String ratePlanCode);
 }
