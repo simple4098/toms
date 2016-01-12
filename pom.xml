@@ -98,6 +98,12 @@
             <artifactId>cx-1.2</artifactId>
             <version>1.9-SNAPSHOT</version>
         </dependency>
+        <!--众荟依赖-->
+        <dependency>
+            <groupId>com.fanqie</groupId>
+            <artifactId>JointWisdom</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--淘宝依赖-->
         <dependency>
             <groupId>com.taobao.api</groupId>
