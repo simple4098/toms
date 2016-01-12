@@ -135,7 +135,7 @@ public class FCXHotelUtil {
         //早餐类型
         saleInfo.setBreakfastType(1);
         saleInfo.setBreakfastNum(0);
-        saleInfo.setFreeSale(1);
+        saleInfo.setFreeSale(0);
         //1有房  2 待查  3满房
         saleInfo.setRoomState((room.getRoomNum() != null || room.getRoomNum() != 0) ? Constants.FC_HAVE_ROOM : Constants.FC_NOT_HAVE_ROOM);
         saleInfo.setOverdraft("");
