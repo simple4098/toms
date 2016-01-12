@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IJointWisdomInnRoomDao" >
+       <resultMap id="BaseResultMap" type="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto">
+              <id column="id" property="id" />
+              <result column="inn_id" property="innId"/>
+              <result column="room_type_id" property="roomTypeId"/>
+              <result column="room_type_name" property="roomTypeName"/>
+              <result column="company_id" property="companyId"/>
+              <result column="inn_code" property="innCode"/>
+              <result column="room_type_id_code" property="roomTypeIdCode"/>
+              <result column="rate_plan_code" property="ratePlanCode"/>
+              <result column="currency_code" property="currencyCode"/>
+              <result column="create_date" property="createdDate"/>
+              <result column="update_date" property="updatedDate"/>
+              <result column="deleted" property="deleted"/>
+              <result column="sj" property="sj"/>
+       </resultMap>
+
+
+
+       <select id="selectJsRoomMapping" resultMap="BaseResultMap">
+              SELECT  * from jw_inn_room_mapping
+       </select>
+
+
+
+</mapper>
