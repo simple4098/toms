@@ -4,6 +4,7 @@ import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.service.impl.FcService;
 import com.fanqielaile.toms.service.impl.TBService;
 import com.fanqielaile.toms.service.impl.XcService;
+import com.fanqielaile.toms.service.impl.ZhService;
 import com.fanqielaile.toms.support.SpringContextUtil;
 
 /**
@@ -27,6 +28,11 @@ public enum OtaType {
         @Override
         public ITPService create() {
             return (XcService)SpringContextUtil.getBean("xcService");
+        }
+    },ZH{
+        @Override
+        public ITPService create() {
+            return (ZhService)SpringContextUtil.getBean("zhService");
         }
     };
     public abstract ITPService create();
