@@ -74,6 +74,13 @@
         from ota_rate_plan where deleted=0
         and ota_info_id = #{otaId} and company_id = #{companyId} and rate_plan_code = #{ratePlanCode}
     </select>
+
+    <select id="selectRatePlanByCompanyIdOtaIdDefault" resultMap="resultMapId">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from ota_rate_plan where deleted=0
+        and ota_info_id = #{otaId} and company_id = #{companyId}  and rate_code_default = true  limit 1
+    </select>
     
 
     
