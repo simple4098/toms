@@ -31,7 +31,7 @@ public class OtaRatePlan extends Domain {
     private Boolean rateCodeDefault;
     
     // 携程价格计划code
-    private Integer ratePlanCode;
+    private String ratePlanCode;
     
     // 携程价格计划名称
     private String  ctripRatePlanName;
@@ -104,11 +104,11 @@ public class OtaRatePlan extends Domain {
 		this.rateCodeDefault = rateCodeDefault;
 	}
 
-	public Integer getRatePlanCode() {
+	public String getRatePlanCode() {
 		return ratePlanCode;
 	}
 
-	public void setRatePlanCode(Integer ratePlanCode) {
+	public void setRatePlanCode(String ratePlanCode) {
 		this.ratePlanCode = ratePlanCode;
 	}
 
