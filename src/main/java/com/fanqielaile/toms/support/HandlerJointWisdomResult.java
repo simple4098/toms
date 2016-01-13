@@ -30,6 +30,7 @@ public class HandlerJointWisdomResult {
                     String errorMsg = "出错了:" + errorType.getValue();
                     LOGGER.error(errorMsg);
                     throw new RuntimeException(errorMsg);
+                    
                 }
             }else if(object  instanceof WarningsType){
                 WarningsType et = (WarningsType)object;

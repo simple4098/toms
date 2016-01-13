@@ -4,8 +4,7 @@ import com.fanqie.jw.dto.Inventory;
 import com.fanqie.jw.dto.InventoryRelation;
 import com.fanqie.jw.dto.RoomPrice;
 import com.fanqie.jw.dto.RoomPriceRelation;
-import com.fanqielaile.toms.service.JointWisdomARIService;
-import com.fanqielaile.toms.service.impl.JointWisdomARIServiceImpl;
+import com.fanqielaile.toms.support.JointWisdomARIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +23,11 @@ public class TestJointWisdom {
 
     public static void main(String[] args) {
 
-       // pushRoomPrice();
-        pushInventory();
+        pushRoomPrice();
+       // pushInventory();
     }
 
     private static void pushRoomPrice() {
-        JointWisdomARIService service = new JointWisdomARIServiceImpl();
         RoomPrice roomPriceRelation = new RoomPrice();
         roomPriceRelation.setStart("2016-01-12");
         roomPriceRelation.setEnd("2016-01-15");
@@ -46,6 +44,7 @@ public class TestJointWisdom {
         relation1.setEnd("2016-01-13");
         relation1.setAmountAfterTax("400");
         relation1.setAmountBeforeTax("400");
+        relation1.setUsed(true);
         relations.add(relation1);
         roomPriceRelation.setRelations(relations);
         RoomPriceRelation relation2 = new RoomPriceRelation();
@@ -53,10 +52,11 @@ public class TestJointWisdom {
         relation2.setEnd("2016-01-15");
         relation2.setAmountAfterTax("50");
         relation2.setAmountBeforeTax("50");
+        relation2.setUsed(false);
         relations.add(relation2);
         try {
             // 请求成功
-            service.pushRoomPrice(roomPriceRelation);
+            JointWisdomARIUtils.pushRoomPrice(roomPriceRelation);
         } catch (Exception e) {
             // 请求失败
             e.printStackTrace();
@@ -66,7 +66,6 @@ public class TestJointWisdom {
 
     private static  void  pushInventory(){
 
-        JointWisdomARIService service = new JointWisdomARIServiceImpl();
 
         Inventory inventory = new Inventory();
         inventory.setInnId(innId);
@@ -78,10 +77,11 @@ public class TestJointWisdom {
         relation.setStart("2016-01-13");
         relation.setEnd("2016-01-15");
         relation.setInventoryCount(200);
+        relation.setUsed(false);
         inventory.setRelations(relations);
         try {
             // 请求成功
-            service.pushRoomInventory(inventory);
+            JointWisdomARIUtils.pushRoomInventory(inventory);
         } catch (Exception e) {
             // 请求失败
             e.printStackTrace();
