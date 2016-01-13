@@ -4,6 +4,7 @@ import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.model.Result;
 
 /**
  * DESC : 众荟推送房价 房态， 逻辑处理
@@ -21,5 +22,5 @@ public interface IJointWisdomARI {
      * @param priceDto 价格
      * @param commission 佣金比
      */
-    public void updateJsPriceInventory(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws Exception;
+    public Result updateJsPriceInventory(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws Exception;
 }
