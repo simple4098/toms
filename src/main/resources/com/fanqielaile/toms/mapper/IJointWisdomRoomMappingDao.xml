@@ -24,7 +24,22 @@
               SELECT  * from jw_inn_room_mapping
        </select>
 
-
+       <select id="selectRoomMappingByInnIdAndRoomTypeId" parameterType="com.fanqielaile.toms.model.Order"
+               resultMap="BaseResultMap">
+              select * from jw_inn_room_mapping where 1=1
+              <if test="roomTypeCode != null and roomTypeCode != ''">
+                     and room_type_id_code = #{roomTypeCode}
+              </if>
+              <if test="innCode != null and innCode != ''">
+                     and inn_code = #{innCode}
+              </if>
+              <if test="innId != null and innId != ''">
+                     and inn_id = #{innId}
+              </if>
+              <if test="roomTypeId != null and roomTypeId != ''">
+                     and room_type_id = #{roomTypeId}
+              </if>
+       </select>
        <insert id="insertJsRoomInnRooType" parameterType="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto">
               insert into
               jw_inn_room_mapping(id,inn_id,room_type_id,room_type_name,company_id,inn_code,room_type_id_code,currency_code,create_date,update_date,deleted,sj,ota_info_id)

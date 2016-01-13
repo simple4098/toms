@@ -686,6 +686,7 @@ public class OrderService implements IOrderService {
             result.put("message", "订单不存在");
             return result;
         }
+
         String respose = getOrderStatusMethod(order);
 
         //解析返回值
@@ -1304,6 +1305,14 @@ public class OrderService implements IOrderService {
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
+                for (DailyInfos dailyInfos1 : dailyInfos) {
+                    if (dailyInfos1.getRoomNum() < order.getHomeAmount()) {
+                        canBook = false;
+                        break;
+                    } else {
+                        canBook = true;
+                    }
+                }
                 if (canBook) {
                     result.setCanBook("1");
                 } else {

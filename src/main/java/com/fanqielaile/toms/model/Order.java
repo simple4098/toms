@@ -152,6 +152,26 @@ public class Order extends Domain {
     private String interFaceSendID;
     //携程订单入住人数
     private Integer person;
+    //房型code
+    private String roomTypeCode;
+    //酒店code
+    private String innCode;
+
+    public String getRoomTypeCode() {
+        return roomTypeCode;
+    }
+
+    public void setRoomTypeCode(String roomTypeCode) {
+        this.roomTypeCode = roomTypeCode;
+    }
+
+    public String getInnCode() {
+        return innCode;
+    }
+
+    public void setInnCode(String innCode) {
+        this.innCode = innCode;
+    }
 
     public Integer getPerson() {
         return person;

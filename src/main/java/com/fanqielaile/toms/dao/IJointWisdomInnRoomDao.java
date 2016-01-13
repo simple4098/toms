@@ -1,7 +1,10 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.Order;
 import org.apache.ibatis.annotations.Param;
+
 
 import java.util.List;
 
@@ -15,6 +18,13 @@ public interface IJointWisdomInnRoomDao {
 
     List<JointWisdomInnRoomMappingDto> selectJsRoomMapping();
 
+    /**
+     * 通过客栈id和房型id 查询公司信息
+     *
+     * @param availOrder
+     * @return
+     */
+    JointWisdomInnRoomMappingDto selectRoomMappingByInnIdAndRoomTypeId(@Param("order") Order availOrder);
     /**
      * 查询众荟的客栈房型关联关系
      * @param innId 客栈id
