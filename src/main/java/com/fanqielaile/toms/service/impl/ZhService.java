@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.bean.response.RequestResponse;
 import com.fanqie.bean.response.RequestResult;
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.support.CtripConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
@@ -10,9 +11,11 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
@@ -62,12 +65,19 @@ public class ZhService implements ITPService {
     private ICtripRoomService ctripRoomService;
     @Resource
     private IJointWisdomInnRoomDao jointWisdomInnRoomDao;
+    @Resource
+    private IOtaPriceModelDao priceModelDao;
+    @Resource
+    private IOtaInnOtaDao otaInnOtaDao;
+    @Resource
+    private IFcRatePlanDao ratePlanDao;
 
     @Override
     public void updateOrAddHotel(TBParam tbParam, OtaInfoRefDto otaInfo) throws Exception {
         String innId = tbParam.getInnId();
+        String otaInfoId = otaInfo.getOtaInfoId();
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
-        tpHolder.validate(company, innId, otaInfo.getOtaInfoId());
+        tpHolder.validate(company, innId, otaInfoId);
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
         InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
@@ -78,16 +88,51 @@ public class ZhService implements ITPService {
             if (bangInn == null) {
                 bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
                 bangInnDao.createBangInn(bangInnDto);
-                log.info("xc 客栈" + tbParam.getInnId() + " 绑定");
             } else {
                 log.info("xc 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
+                OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(bangInn.getInnId(), company.getId(), otaInfoId);
                 TomsUtil.sjModel(tbParam,bangInn,omsInnDto);
                 bangInnDao.updateBangInnTp(bangInn);
-                //下架状态的时候 要把房仓的宝贝下架掉
-                List<CtripRoomTypeMapping> list = ctripRoomTypeMappingDao.selectMapping(new CtripRoomTypeMapping(Constants.FC_SJ,innId,company.getId()));
-                if (!CollectionUtils.isEmpty(list)) {
-                    ctripRoomService.updateRoomPrice(company,otaInfo,list, tbParam.isSj());
+                String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
+                if (otaInnOta == null) {
+                    otaInnOta = OtaInnOtaDto.toDto(Long.valueOf(bangInn.getInnId()), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfoId);
+                    otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                    otaInnOtaDao.saveOtaInnOta(otaInnOta);
+                    OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
+                    priceModelDao.savePriceModel(otaPriceModel);
+                } else {
+                    otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                    otaInnOtaDao.updateOtaInnOta(otaInnOta);
                 }
+
+                String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus);
+                List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
+                List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
+                InnRoomHelper.updateRoomTypeInfo(roomTypeInfoList,statusDetails);
+                if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                    OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
+                    JointWisdomInnRoomMappingDto jointWisdomInnRoom = null;
+                    List<JointWisdomInnRoomMappingDto> allList = new ArrayList<>();
+                    for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
+                        JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsRoomInnRooType(Integer.valueOf(innId),roomTypeInfo.getRoomTypeId());
+                        jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
+                        jointWisdomInnRoom.setCompanyId(company.getId());
+                        jointWisdomInnRoom.setInnId(Integer.valueOf(innId));
+                        jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
+                        jointWisdomInnRoom.setRoomTypeIdCode(otaInfoId + "_" + roomTypeInfo.getRoomTypeId());
+                        jointWisdomInnRoom.setInnCode(otaInfoId + "_" + roomTypeInfo.getRoomTypeId());
+                        jointWisdomInnRoom.setRatePlanCode(otaRatePlan.getRatePlanCode());
+                        jointWisdomInnRoom.setSj(bangInn.getSj());
+                        allList.add(jointWisdomInnRoom);
+                        if (jw==null){
+                            jointWisdomInnRoomDao.insertJsRoomInnRooType(jointWisdomInnRoom);
+                        }
+
+                    }
+                }
+
+
             }
         }
     }

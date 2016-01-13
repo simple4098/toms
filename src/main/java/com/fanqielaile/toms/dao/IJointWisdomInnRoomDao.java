@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,4 +15,13 @@ public interface IJointWisdomInnRoomDao {
 
     List<JointWisdomInnRoomMappingDto> selectJsRoomMapping();
 
+    /**
+     * 查询众荟的客栈房型关联关系
+     * @param innId 客栈id
+     * @param roomTypeId 房型id
+     * @return
+     */
+    JointWisdomInnRoomMappingDto selectJsRoomInnRooType(@Param("innId")Integer innId, @Param("roomTypeId")Integer roomTypeId);
+
+    void  insertJsRoomInnRooType(JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto);
 }
