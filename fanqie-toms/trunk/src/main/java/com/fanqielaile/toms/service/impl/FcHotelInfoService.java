@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
@@ -76,6 +77,47 @@ public class FcHotelInfoService implements IFcHotelInfoService {
     @Override
     public List<FcHotelInfo> findFcHotelByPage(String innName, PageBounds pageBounds) {
         return this.fcHotelInfoDao.selectFcHotelInfoByPage(innName, pageBounds);
+    }
+
+    @Override
+    public void zhExcel(String companyId, List<BangInnDto> bangInns, HttpServletResponse response)throws Exception {
+
+        Company company = companyDao.selectCompanyById(companyId);
+        if (!CollectionUtils.isEmpty(bangInns)) {
+            List<JointWisdomInnRoomMappingDto> allList = new ArrayList<>();
+            JointWisdomInnRoomMappingDto jointWisdomInnRoom = null;
+            for (BangInnDto bangInnDto : bangInns) {
+                String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.INN_INFO);
+                InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
+                //客栈
+                if (omsInnDto != null) {
+                    String room_type = DcUtil.omsFcRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.ROOM_TYPE);
+                    List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
+                    if (!CollectionUtils.isEmpty(roomTypeInfoList)) {
+                        for (RoomTypeInfo roomTypeInfo : roomTypeInfoList) {
+                            jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
+                            jointWisdomInnRoom.setInnName(omsInnDto.getBrandName());
+                            jointWisdomInnRoom.setCompanyId(companyId);
+                            jointWisdomInnRoom.setInnId(bangInnDto.getInnId());
+                            jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
+                            jointWisdomInnRoom.setInnCode(company.getOtaId() + "_" + bangInnDto.getInnId());
+                            jointWisdomInnRoom.setRoomTypeIdCode(company.getOtaId()+"_"+roomTypeInfo.getRoomTypeId());
+                            jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
+                            jointWisdomInnRoom.setTelPhone(omsInnDto.getFrontPhone());
+                            jointWisdomInnRoom.setProvince(omsInnDto.getProvince());
+                            jointWisdomInnRoom.setCity(omsInnDto.getCity());
+                            jointWisdomInnRoom.setAddress(omsInnDto.getAddr());
+                            allList.add(jointWisdomInnRoom);
+                        }
+                    }
+
+                }
+            }
+            log.info("===============众荟导出excel数据组装结束================");
+            StringBuilder builder = new StringBuilder("未匹配列表_");
+            builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
+            ExportExcelUtil.zhExeclExport(allList, response, builder.toString());
+        }
     }
 
     @Override

@@ -26,6 +26,8 @@ public class ModelViewUtil {
                 return "/match/ota/tb";
             }else if (OtaType.XC.equals(infoRefDto.getOtaType())){
                 return "/match/ota/xc";
+            }else if (OtaType.ZH.equals(infoRefDto.getOtaType())){
+                return "/match/ota/zh";
             }
         }
         return "/match/not_ota";
@@ -49,6 +51,8 @@ public class ModelViewUtil {
             }
             if(OtaType.XC.equals(otaInfo.getOtaType())){
                 return "/match/inn_xc_match_list";
+            }if(OtaType.ZH.equals(otaInfo.getOtaType())){
+                return "/match/inn_zh_match_list";
             }
         }
 

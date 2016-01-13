@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.fc.FcInnImg;
 import com.fanqielaile.toms.dto.fc.FcInnInfoDto;
@@ -214,5 +215,45 @@ public class ExportExcelUtil {
                 response.getOutputStream().close();
             }
         }
+    }
+
+    public static void zhExeclExport(List<JointWisdomInnRoomMappingDto> allList, HttpServletResponse response, String s)throws Exception {
+
+        String[] innHeader = { "酒店名称", "酒店地址", "省份", "城市", "房型名称", "酒店代码", "房型代码", "房价代码"};
+        String[] innDataMeta = {"innName", "address", "province", "city", "roomTypeName", "innCode", "roomTypeIdCode", "ratePlanCode"};
+        setResposeHeader(response, s);
+        HSSFWorkbook workbook = new HSSFWorkbook();//建立工作空间
+        HSSFSheet sheet = null;//建立sheet
+        int innIndex = 1;
+        if (!CollectionUtils.isEmpty(allList)) {
+            for (JointWisdomInnRoomMappingDto jointWisdom : allList) {
+                Map innMap = jointWisdom.toMap();
+                HSSFRow row1 = null;
+                if (workbook.getSheet("众荟客栈匹配") == null) {
+                    sheet = workbook.createSheet("众荟客栈匹配");// 动态创建sheet
+                    row1 = sheet.createRow(0);// 设置excel第一行
+                    for (int k = 0; k < innHeader.length; k++) {
+                        row1.createCell(k).setCellValue(innHeader[k]);// 设置单元格中表头
+                    }
+                }
+                row1 = sheet.createRow(innIndex);// 设置下一行数据
+                for (int j = 0; j < innDataMeta.length; j++) {
+                    row1.createCell(j).setCellValue(innMap.get(innDataMeta[j]) + "");// 设置每一个单元格的信息
+                }
+                innIndex++;
+            }
+            try {
+                log.info("--------------开始写excel数据-----------------");
+                workbook.write(response.getOutputStream());
+                log.info("--------------结束写excel数据-----------------");
+            } catch (IOException e) {
+                log.info("--------------excel异常-----------------");
+                throw new Exception(e.getMessage());
+            } finally {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            }
+        }
+
     }
 }
