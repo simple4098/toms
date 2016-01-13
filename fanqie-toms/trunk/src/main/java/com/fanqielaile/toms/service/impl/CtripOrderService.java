@@ -195,6 +195,14 @@ public class CtripOrderService implements ICtripOrderService {
                 //组装试订单DomesticCheckRoomAvailResponse返回对象
                 DomesticCheckRoomAvailResponse domesticCheckRoomAvailResponse = new DomesticCheckRoomAvailResponse();
                 //是否可预订
+                for (DailyInfos dailyInfos1 : dailyInfos) {
+                    if (dailyInfos1.getRoomNum() < order.getHomeAmount()) {
+                        isBook = false;
+                        break;
+                    } else {
+                        isBook = true;
+                    }
+                }
                 domesticCheckRoomAvailResponse.setIsBookable(isBook ? 1 : 0);
                 //试订单总价
                 domesticCheckRoomAvailResponse.setInterFaceAmount(checkAvailTotalPrice);

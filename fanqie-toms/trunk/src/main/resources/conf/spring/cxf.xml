@@ -16,6 +16,12 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         </jaxws:serviceBean>
     </jaxws:server>
 
-
+    <bean id="jointWisdomService" class="com.fanqielaile.toms.service.impl.JoinWisdomCxfServiceImpl"/>
+    <jaxws:server id="jointCxfService" serviceClass="com.fanqielaile.toms.service.IJointWisdomCxfService"
+                  address="/jointWisdomOrder">
+        <jaxws:serviceBean>
+            <ref bean="jointWisdomService"/>
+        </jaxws:serviceBean>
+    </jaxws:server>
     <!--  <jaxws:endpoint id="ctripCxfOrderService" implementor="com.fanqielaile.toms.service.impl.CtripOrderCxfServiceImpl" address="/ctripOrder"/>-->
 </beans>

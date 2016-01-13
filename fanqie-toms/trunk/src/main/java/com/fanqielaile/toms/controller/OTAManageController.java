@@ -2,6 +2,8 @@ package com.fanqielaile.toms.controller;
 
 import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.order.*;
+import com.fanqie.jw.enums.OrderRequestType;
+import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderErrorResponse;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
@@ -18,6 +20,7 @@ import com.fanqielaile.toms.model.fc.FcCancelHotelOrderResponseResult;
 import com.fanqielaile.toms.model.fc.FcCreateHotelOrderResponseResult;
 import com.fanqielaile.toms.model.fc.FcGetOrderStatusResponseResult;
 import com.fanqielaile.toms.service.ICtripOrderService;
+import com.fanqielaile.toms.service.IJointWisdomOrderService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
 import java.util.Map;
 
 /**
@@ -43,6 +47,8 @@ public class OTAManageController extends BaseController {
     private IOrderService orderService;
     @Resource
     private ICtripOrderService ctripOrderService;
+    @Resource
+    private IJointWisdomOrderService jointWisdomOrderService;
     /*@Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();*/
@@ -384,6 +390,58 @@ public class OTAManageController extends BaseController {
             logger.info("处理携程下单流程出错" + e, e);
             return ctripBaseResponse.getCtripBaseResponse("108", "处理携程对接异常");
         }
+    }
+
+    /**
+     * 众荟试订单处理
+     *
+     * @return
+     */
+    @RequestMapping(value = "/jointWisdomAvailCheckOrder")
+    @ResponseBody
+    public Object jointWisdomOrder(String xml) throws JAXBException {
+        logger.info("众荟对接传入xml=" + xml);
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                //解析xml获取请求
+                String checkOrder = jointWisdomOrderService.dealAvailCheckOrder(xml);
+            } else {
+                logger.info("众荟传入xml为空");
+                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+            }
+        } catch (Exception e) {
+            logger.info("处理众荟下单流程异常" + e);
+            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
+        }
+        return null;
+    }
+
+    @RequestMapping(value = "/jointWisdowOrder")
+    @ResponseBody
+    public Object jointWisdowMakeOrder(String xml) throws JAXBException {
+        logger.info("众荟对接传入xml=" + xml);
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                //解析xml获取请求类型
+                OrderRequestType orderRequestType = XmlJointWisdomUtil.getOrderRequestType(xml);
+                //下单
+                if (OrderRequestType.Commit.equals(orderRequestType)) {
+                    String result = this.jointWisdomOrderService.dealAddOrder(xml);
+                } else if (OrderRequestType.Cancel.equals(orderRequestType)) {
+                    //取消订单
+                    String cancelResult = this.jointWisdomOrderService.dealCancelOrder(xml);
+                } else {
+                    return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "订单流程中请求类型不存在", "订单流程中请求类型不存在"));
+                }
+            } else {
+                logger.info("众荟传入xml为空");
+                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+            }
+        } catch (Exception e) {
+            logger.info("处理众荟下单流程异常" + e);
+            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
+        }
+        return null;
     }
 
 }
