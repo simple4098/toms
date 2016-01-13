@@ -28,11 +28,15 @@
        <insert id="insertJsRoomInnRooType" parameterType="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto">
               insert into
               jw_inn_room_mapping(id,inn_id,room_type_id,room_type_name,company_id,inn_code,room_type_id_code,currency_code,create_date,update_date,deleted,sj,ota_info_id)
-              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyid},#{inncode},#{roomTypeIdCode},#{currencyCode},now(),now(),0,#{sj},'${otaInfoId}')
+              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{innCode},#{roomTypeIdCode},#{currencyCode},now(),now(),0,#{sj},'${otaInfoId}')
        </insert>
 
-       <select id="selectJsRoomInnRooType" resultMap="BaseResultMap">
-              SELECT  * from jw_inn_room_mapping where company_id='${companyId}' and inn_id=#{innId} and room_type_id=#{roomTypeId}
+       <select id="selectJsInnRooType" resultMap="BaseResultMap">
+              SELECT  * from jw_inn_room_mapping where deleted=0 and company_id='${companyId}' and inn_id=#{innId} and room_type_id=#{roomTypeId}
+       </select>
+
+       <select id="selectJsRoomInnSj" resultMap="BaseResultMap">
+              SELECT  * from jw_inn_room_mapping where deleted=0 and company_id='${companyId}' and ota_info_id='${otaInfoId}' and sj=1
        </select>
 
 

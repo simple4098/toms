@@ -64,6 +64,7 @@ public class CtripRoomService implements ICtripRoomService {
                 try {
                     List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                     if (CollectionUtils.isEmpty(roomDetailList)){
+
                         throw new TomsRuntimeException("房态列表为空: url:"+room_type);
                     }
                     String requestRoomPriceXml = CtripXHotelUtil.requestRoomPriceXml(infoRefDto, mapping, roomDetailList,commission,priceDto, isSj);

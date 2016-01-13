@@ -46,6 +46,10 @@ public interface IFcHotelInfoService {
     //excel 导出
     void excel(String companyId,List<BangInnDto> bangInns,HttpServletResponse response)throws Exception;
 
+
+    //众荟excel导出
+    void zhExcel(String companyId, List<BangInnDto> bangInns, HttpServletResponse response)throws Exception;
+
     /**
      * 分页查询房仓客栈信息
      *

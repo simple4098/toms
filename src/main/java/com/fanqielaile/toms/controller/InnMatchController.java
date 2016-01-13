@@ -685,4 +685,21 @@ public class InnMatchController extends BaseController {
 
     }
 
+    //众荟导出
+    @RequestMapping("/ajax/zhExport")
+    public void zhExcel(BangInnDto bangInnDto,HttpServletResponse response,String fromData){
+        UserInfo currentUser = getCurrentUser();
+        String companyId = getCurrentUser().getCompanyId();
+        bangInnDto.setCompanyId(companyId);
+        OtaInfoRefDto infoRefDto = otaInfoService.findAllOtaByCompanyAndType(companyId, OtaType.ZH);
+        bangInnDto.setOtaInfoId(infoRefDto.getOtaInfoId());
+        List<BangInnDto> bangInns = this.bangInnService.findBangInnListByUserInfo(currentUser, new PageBounds(Integer.valueOf(fromData), 100));
+        try {
+            fcHotelInfoService.zhExcel(companyId,bangInns,response);
+        } catch (Exception e) {
+            log.error("导出excel异常:"+e);
+        }
+
+    }
+
 }

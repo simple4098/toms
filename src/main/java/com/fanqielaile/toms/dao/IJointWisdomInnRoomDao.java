@@ -21,7 +21,17 @@ public interface IJointWisdomInnRoomDao {
      * @param roomTypeId 房型id
      * @return
      */
-    JointWisdomInnRoomMappingDto selectJsRoomInnRooType(@Param("innId")Integer innId, @Param("roomTypeId")Integer roomTypeId);
+    JointWisdomInnRoomMappingDto selectJsInnRooType(@Param("companyId") String companyId,@Param("innId") Integer innId, @Param("roomTypeId") Integer roomTypeId);
 
+    /**
+     * 查询上架成功的客栈
+     * @param companyId 公司id
+     * @param otaInfoId 渠道id
+     */
+    List<JointWisdomInnRoomMappingDto> selectJsRoomInnSj(@Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
+    /**
+     *  保存关系
+     * @param jointWisdomInnRoomMappingDto
+     */
     void  insertJsRoomInnRooType(JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto);
 }
