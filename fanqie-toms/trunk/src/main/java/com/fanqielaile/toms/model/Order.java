@@ -156,6 +156,16 @@ public class Order extends Domain {
     private String roomTypeCode;
     //酒店code
     private String innCode;
+    //酒店房型id——int
+    private int roomTypeIdInt;
+
+    public int getRoomTypeIdInt() {
+        return roomTypeIdInt;
+    }
+
+    public void setRoomTypeIdInt(int roomTypeIdInt) {
+        this.roomTypeIdInt = roomTypeIdInt;
+    }
 
     public String getRoomTypeCode() {
         return roomTypeCode;

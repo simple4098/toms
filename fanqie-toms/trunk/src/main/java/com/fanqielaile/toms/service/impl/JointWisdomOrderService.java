@@ -89,7 +89,8 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
     private IFcRatePlanDao ratePlanDao;
 
     @Override
-    public String dealAvailCheckOrder(String xml) throws Exception {
+    public Map<String, Object> dealAvailCheckOrder(String xml) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         try {
             //解析xml得到order的查询对象
             Order availOrder = XmlJointWisdomUtil.getJointWisdomAvailOrder(xml);
@@ -105,7 +106,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             //2.判断当前公司使用什么价格模式
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(company.getId(), otaInfoRefDto.getId());
             //判断是否有房型
-            if (null != availOrder.getRoomTypeId()) {
+            if (null != availOrder.getRoomTypeCode()) {
                 //查询价格计划
                 OtaRatePlan otaRatePlan = this.ratePlanDao.selectRatePlanByCompanyIdAndOtaIdAndRateCode(company.getId(), otaInfoRefDto.getId(), jointWisdomInnRoomMappingDto.getRatePlanCode());
                 //设置roomTypeId
@@ -117,7 +118,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 JSONObject jsonObject = JSONObject.fromObject(response);
                 logger.info("众荟试订单oms接口返回值=>" + response.toString());
                 //解析返回数据
-                if (jsonObject.get("status").equals(200)) {
+                if ("200".equals(jsonObject.get("status").toString())) {
                     //查询当前的价格模式
                     BigDecimal percent = BigDecimal.ZERO;
 
@@ -134,9 +135,9 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     //组装返回参数
                     //1.组装房型
                     RoomType roomType = new RoomType();
-                    roomType.setRoomTypeCode(availOrder.getRoomTypeId());
+                    roomType.setRoomTypeCode(availOrder.getRoomTypeCode());
                     boolean canBook = false;
-                    //判断是否可㐉
+                    //判断是否可预定
                     for (DailyInfos dailyInfos1 : dailyInfos) {
                         if (dailyInfos1.getRoomNum() < availOrder.getHomeAmount()) {
                             canBook = false;
@@ -146,9 +147,9 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                         }
                     }
                     if (canBook) {
-                        roomType.setNumberOfUnits("true");
+                        roomType.setNumberOfUnits("True");
                     } else {
-                        roomType.setNumberOfUnits("false");
+                        roomType.setNumberOfUnits("False");
                     }
                     RoomDescription roomDescription = new RoomDescription();
                     roomDescription.setName(jointWisdomInnRoomMappingDto.getRoomTypeName());
@@ -203,7 +204,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     }
                     roomRate.setRates(rateList);
                     Total total = new Total();
-                    total.setCurrencyCode("RMB");
+                    total.setCurrencyCode("CNY");
                     total.setAmountBeforeTax(String.valueOf(totalPrice));
                     total.setAmountAfterTax(String.valueOf(totalPrice));
                     roomRate.setTotal(total);
@@ -239,8 +240,13 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     TimeSpan timeSpan = new TimeSpan();
                     timeSpan.setStart(DateUtil.format(availOrder.getLiveTime(), "yyyy-MM-dd"));
                     timeSpan.setEnd(DateUtil.format(availOrder.getLeaveTime(), "yyyy-MM-dd"));
+                    List<RoomStay> roomStayList = new ArrayList<>();
+                    roomStayList.add(roomStay);
+                    responseResult.setRoomStays(roomStayList);
                     responseResult.setTimeSpan(timeSpan);
-                    return FcUtil.fcRequest(responseResult);
+                    map.put("status", true);
+                    map.put("data", responseResult);
+                    return map;
                 }
             } else {
                 if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel()) || UsedPriceModel.MAI.equals(otaInfo.getUsedPriceModel())) {
@@ -254,6 +260,21 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
                 List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
                 InnRoomHelper.updateRoomTypeInfo(list, statusDetails);
+                //刷选数据
+                if (ArrayUtils.isNotEmpty(list.toArray())) {
+                    for (RoomTypeInfo roomTypeInfo : list) {
+                        List<RoomDetail> roomDetailList = new ArrayList<>();
+                        if (ArrayUtils.isNotEmpty(roomTypeInfo.getRoomDetail().toArray())) {
+                            for (RoomDetail roomDetail : roomTypeInfo.getRoomDetail()) {
+                                Date parse = DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd");
+                                if (parse.getTime() >= availOrder.getLiveTime().getTime() && parse.getTime() < availOrder.getLeaveTime().getTime()) {
+                                    roomDetailList.add(roomDetail);
+                                }
+                            }
+                        }
+                        roomTypeInfo.setRoomDetail(roomDetailList);
+                    }
+                }
                 //组装返回参数
                 RoomStay roomStay = new RoomStay();
                 //房型与价格计划对应关系
@@ -263,43 +284,39 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 //价格计划
                 List<RatePlan> ratePlanList = new ArrayList<>();
                 if (ArrayUtils.isNotEmpty(list.toArray())) {
+                    OtaRatePlan otaRatePlan = new OtaRatePlan();
                     for (RoomTypeInfo roomTypeInfo : list) {
+                        //查询房型信息toms
+                        availOrder.setRoomTypeId(String.valueOf(roomTypeInfo.getRoomTypeId()));
+                        availOrder.setRoomTypeIdInt(roomTypeInfo.getRoomTypeId());
+                        JointWisdomInnRoomMappingDto wisdomInnRoomMappingDto = this.jointWisdomInnRoomDao.selectRoomMappingByInnIdAndRoomTypeId(availOrder);
+                        //查询价格计划
+                        otaRatePlan = this.ratePlanDao.selectRatePlanByCompanyIdAndOtaIdAndRateCode(company.getId(), otaInfoRefDto.getId(), jointWisdomInnRoomMappingDto.getRatePlanCode());
+                        //房型
+                        RoomType roomType = new RoomType();
+                        roomType.setRoomTypeCode(wisdomInnRoomMappingDto.getRoomTypeIdCode());
+                        RoomDescription roomDescription = new RoomDescription();
+                        roomDescription.setName(roomTypeInfo.getRoomTypeName());
+                        Text text = new Text();
+                        text.setValue(roomTypeInfo.getRoomTypeName());
+                        text.setLanguage("en-US");
+                        roomDescription.setText(text);
+                        roomType.setDescription(roomDescription);
+                        boolean isCanbook = true;
                         if (ArrayUtils.isNotEmpty(roomTypeInfo.getRoomDetail().toArray())) {
                             for (RoomDetail detail : roomTypeInfo.getRoomDetail()) {
-                                //查询房型信息toms
-                                availOrder.setRoomTypeId(String.valueOf(roomTypeInfo.getRoomTypeId()));
-                                JointWisdomInnRoomMappingDto wisdomInnRoomMappingDto = this.jointWisdomInnRoomDao.selectRoomMappingByInnIdAndRoomTypeId(availOrder);
-                                //查询价格计划
-                                OtaRatePlan otaRatePlan = this.ratePlanDao.selectRatePlanByCompanyIdAndOtaIdAndRateCode(company.getId(), otaInfoRefDto.getId(), jointWisdomInnRoomMappingDto.getRatePlanCode());
-                                //房型
-                                RoomType roomType = new RoomType();
-                                roomType.setNumberOfUnits(String.valueOf(detail.getRoomNum()));
-                                roomType.setRoomTypeCode(wisdomInnRoomMappingDto.getRoomTypeIdCode());
-                                roomType.setNumberOfUnits(String.valueOf(detail.getRoomNum()));
-                                RoomDescription roomDescription = new RoomDescription();
-                                roomDescription.setName(detail.getRoomTypeName());
-                                Text text = new Text();
-                                text.setValue(detail.getRoomTypeName());
-                                text.setLanguage("en-US");
-                                roomDescription.setText(text);
-                                roomType.setDescription(roomDescription);
-                                roomTypeList.add(roomType);
-                                //价格计划
-                                RatePlan ratePlan = new RatePlan();
-                                ratePlan.setRatePlanCategory(ratePlan.getRatePlanCategory());
-                                ratePlan.setRatePlanCode(wisdomInnRoomMappingDto.getRatePlanCode());
-                                RatePlanDescription ratePlanDescription = new RatePlanDescription();
-                                ratePlanDescription.setName(otaRatePlan.getRatePlanName());
-                                Text rateText = new Text();
-                                rateText.setLanguage("en-US");
-                                rateText.setValue(otaRatePlan.getRatePlanName());
-                                ratePlanDescription.setText(rateText);
-                                ratePlan.setRatePlanDescription(ratePlanDescription);
-                                ratePlanList.add(ratePlan);
+                                //是否可预定
+                                if (isCanbook) {
+                                    if (detail.getRoomNum() >= availOrder.getHomeAmount()) {
+                                        isCanbook = true;
+                                    } else {
+                                        isCanbook = false;
+                                    }
+                                }
                                 //价格计划与房型对应
                                 RoomRate roomRate = new RoomRate();
                                 roomRate.setRoomTypeCode(wisdomInnRoomMappingDto.getRoomTypeIdCode());
-                                roomRate.setRatePlanCode(ratePlan.getRatePlanCode());
+                                roomRate.setRatePlanCode(wisdomInnRoomMappingDto.getRatePlanCode());
                                 List<Rate> rateList = new ArrayList<>();
                                 //得到试订单的日期，每天的日期
                                 List<Date> dateList = DateUtil.getDateEntrysByDifferenceDate(availOrder.getLiveTime(), availOrder.getLeaveTime());
@@ -314,11 +331,10 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                 //查询加减价
                                 OtaRoomPriceDto otaRoomPriceDto = this.otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(jointWisdomInnRoomMappingDto.getRoomTypeId()), otaInfo.getOtaInfoId()));
                                 BigDecimal totalPrice = BigDecimal.ZERO;
-                                if (ArrayUtils.isNotEmpty(dateList.toArray())) {
-                                    for (int i = 0; i < dateList.size(); i++) {
+
                                         Rate rate = new Rate();
-                                        rate.setEffectiveDate(DateUtil.format(dateList.get(i), "yyyy-MM-dd"));
-                                        rate.setExpireDate(DateUtil.format(DateUtil.addDay(dateList.get(i), 1), "yyyy-MM-dd"));
+                                rate.setEffectiveDate(DateUtil.format(DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd"), "yyyy-MM-dd"));
+                                rate.setExpireDate(DateUtil.format(DateUtil.addDay(DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd"), 1), "yyyy-MM-dd"));
                                         Base base = new Base();
                                         base.setCurrencyCode(base.getCurrencyCode());
                                         //判断当前客栈的价格模式
@@ -329,7 +345,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                         }
                                         //设置加减价
                                         //设置加减价
-                                        if (null != otaRoomPriceDto && dateList.get(i).getTime() >= otaRoomPriceDto.getStartDate().getTime() && dateList.get(i).getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
+                                if (null != otaRoomPriceDto && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() >= otaRoomPriceDto.getStartDate().getTime() && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
                                             base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountBeforeTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
                                         }
                                         base.setAmountBeforeTax(base.getAmountAfterTax());
@@ -340,18 +356,31 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                         rate.setBase(base);
                                         rateList.add(rate);
                                         totalPrice = totalPrice.add(BigDecimal.valueOf(Double.valueOf(base.getAmountAfterTax())));
-                                    }
-                                }
                                 roomRate.setRates(rateList);
                                 Total total = new Total();
                                 total.setAmountAfterTax(String.valueOf(totalPrice));
                                 total.setAmountBeforeTax(total.getAmountAfterTax());
-                                total.setCurrencyCode("RMB");
+                                total.setCurrencyCode("CNY");
                                 roomRate.setTotal(total);
                                 roomRateList.add(roomRate);
                             }
                         }
+                        //加载房型
+                        roomType.setNumberOfUnits(isCanbook ? "True" : "False");
+                        roomTypeList.add(roomType);
                     }
+                    //价格计划
+                    RatePlan ratePlan = new RatePlan();
+                    ratePlan.setRatePlanCategory(ratePlan.getRatePlanCategory());
+                    ratePlan.setRatePlanCode(otaRatePlan.getRatePlanCode());
+                    RatePlanDescription ratePlanDescription = new RatePlanDescription();
+                    ratePlanDescription.setName(otaRatePlan.getRatePlanName());
+                    Text rateText = new Text();
+                    rateText.setLanguage("en-US");
+                    rateText.setValue(otaRatePlan.getRatePlanName());
+                    ratePlanDescription.setText(rateText);
+                    ratePlan.setRatePlanDescription(ratePlanDescription);
+                    ratePlanList.add(ratePlan);
                 }
                 roomStay.setRoomTypes(roomTypeList);
                 roomStay.setRoomRates(roomRateList);
@@ -379,18 +408,25 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 timeSpan.setStart(DateUtil.format(availOrder.getLiveTime(), "yyyy-MM-dd"));
                 timeSpan.setEnd(DateUtil.format(availOrder.getLeaveTime(), "yyyy-MM-dd"));
                 responseResult.setTimeSpan(timeSpan);
-                return FcUtil.fcRequest(responseResult);
+                map.put("status", true);
+                map.put("data", responseResult);
+                return map;
             }
         } catch (Exception e) {
             JointWisdomAvailCheckOrderErrorResponse errorResult = new JointWisdomAvailCheckOrderErrorResponse();
-            return FcUtil.fcRequest(errorResult.getBasicError("500", "error", "处理众荟试订单异常", "处理众荟试订单异常"));
+            JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("500", "error", "处理众荟试订单异常", "处理众荟试订单异常");
+            logger.info("对接众荟试订单出错,返回值=>" + basicError.toString() + e);
+            map.put("status", false);
+            map.put("data", basicError);
+            return map;
         }
         return null;
     }
 
 
     @Override
-    public String dealAddOrder(String xml) throws Exception {
+    public Map<String, Object> dealAddOrder(String xml) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         //解析xml得到订单对象
         Order order = XmlJointWisdomUtil.getAddOrder(xml);
         logger.info("众荟下单单号为：" + order.getChannelOrderCode());
@@ -402,6 +438,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         order.setCompanyId(company.getId());
         //设置toms的房型与客栈id
         order.setRoomTypeId(String.valueOf(jointWisdomInnRoomMappingDto.getRoomTypeId()));
+        order.setRoomTypeIdInt(jointWisdomInnRoomMappingDto.getRoomTypeId());
         order.setInnId(jointWisdomInnRoomMappingDto.getInnId());
         //1.创建toms本地订单
         this.orderService.createOrderMethod(order.getChannelSource(), order);
@@ -433,23 +470,28 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             result.setVersion(Version.v1003.getText());
             result.setResponseType(OrderResponseType.Commited.name());
             result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
-            return FcUtil.fcRequest(result);
+            map.put("status", true);
+            map.put("data", result);
+            return map;
         } else {
             //预定失败
-            return FcUtil.fcRequest(new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Commited.name(), Version.v1003.getText(), "302", "error", jsonModel.getMessage(), "预定失败"));
+            map.put("status", false);
+            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Commited.name(), Version.v1003.getText(), "302", "error", jsonModel.getMessage(), "预定失败"));
+            return map;
 
         }
     }
 
     @Override
-    public String dealCancelOrder(String xml) throws Exception {
+    public Map<String, Object> dealCancelOrder(String xml) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         //解析xml
         Order order = XmlJointWisdomUtil.getCancelOrder(xml);
         logger.info("众荟取消订单号为：" + order.getChannelOrderCode());
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
         if (null != orderParamDto) {
             //取消订单，同步
-            JsonModel jsonModel = this.orderService.cancelOrderMethod(order);
+            JsonModel jsonModel = this.orderService.cancelOrderMethod(orderParamDto);
             if (jsonModel.isSuccess()) {
                 //预定成功
                 JointWisdomAddOrderSuccessResponse result = new JointWisdomAddOrderSuccessResponse();
@@ -457,12 +499,18 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 result.setVersion(Version.v1003.getText());
                 result.setResponseType(OrderResponseType.Cancelled.name());
                 result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
-                return FcUtil.fcRequest(result);
+                map.put("status", true);
+                map.put("data", result);
+                return map;
             } else {
-                return FcUtil.fcRequest(new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "302", "error", "取消订单失败", "酒店拒绝取消订单"));
+                map.put("status", false);
+                map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "302", "error", "取消订单失败", "酒店拒绝取消订单"));
+                return map;
             }
         } else {
-            return FcUtil.fcRequest(new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "400", "error", "订单不存在", "订单不存在"));
+            map.put("status", false);
+            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "400", "error", "订单不存在", "订单不存在"));
+            return map;
         }
     }
 }

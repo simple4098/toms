@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -102,6 +103,8 @@ public class OrderService implements IOrderService {
     private IOtaCommissionPercentDao otaCommissionPercentDao;
     @Resource
     private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
+    @Resource
+    private IJointWisdomInnRoomDao jointWisdomInnRoomDao;
 
 
     @Override
@@ -182,6 +185,10 @@ public class OrderService implements IOrderService {
             OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.XC.name());
             usedPriceModel = otaInfoRefDto.getUsedPriceModel();
             percent = getOtaPercent(company, usedPriceModel);
+        } else if (ChannelSource.ZH.equals(channelSource)) {
+            OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.ZH.name());
+            usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+            percent = getOtaPercent(company, usedPriceModel);
         }
 
         //设置每日价格
@@ -228,6 +235,11 @@ public class OrderService implements IOrderService {
             CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
             if (null != ctripRoomTypeMapping) {
                 order.setOrderRoomTypeName(ctripRoomTypeMapping.getTomRoomTypeName());
+            }
+        } else if (ChannelSource.ZH.equals(channelSource)) {
+            JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto = this.jointWisdomInnRoomDao.selectRoomMappingByInnIdAndRoomTypeId(order);
+            if (null != jointWisdomInnRoomMappingDto) {
+                order.setOrderRoomTypeName(jointWisdomInnRoomMappingDto.getRoomTypeName());
             }
         }
         //设置渠道来源
@@ -391,10 +403,10 @@ public class OrderService implements IOrderService {
             Company company = this.companyDao.selectCompanyById(order.getCompanyId());
             //查询当前酒店以什么模式发布
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
-            if (otaInnOtaDto.getsJiaModel().equals("MAI")) {
-                order.setAccountId(bangInn.getAccountId());
-            } else {
+            if (otaInnOtaDto.getsJiaModel().equals("DI")) {
                 order.setAccountId(bangInn.getAccountIdDi());
+            } else {
+                order.setAccountId(bangInn.getAccountId());
             }
             //封装订单房型名称信息
             order = packageOrderRoomTypeName(order);
@@ -441,7 +453,7 @@ public class OrderService implements IOrderService {
                         this.orderDao.updateOrderStatusAndFeeStatus(order);
                         return new JsonModel(true, "付款成功");
                     }
-                } else if (ChannelSource.FC.equals(order.getChannelSource()) || ChannelSource.XC.equals(order.getChannelSource())) {
+                } else if (ChannelSource.FC.equals(order.getChannelSource()) || ChannelSource.XC.equals(order.getChannelSource()) || ChannelSource.ZH.equals(order.getChannelSource())) {
                     //天下房仓返回创建订单成功
                     order.setOrderStatus(OrderStatus.ACCEPT);
                     order.setFeeStatus(FeeStatus.PAID);
@@ -643,6 +655,8 @@ public class OrderService implements IOrderService {
             return new JsonModel(false, "OMS系统异常，创建订单失败");
         } else if (ChannelSource.XC.equals(order.getChannelSource())) {
             return new JsonModel(false, "创建订单失败");
+        } else if (ChannelSource.ZH.equals(order.getChannelSource())) {
+            return new JsonModel(false, "OMS系统异常，创建订单失败");
         }
         return null;
     }

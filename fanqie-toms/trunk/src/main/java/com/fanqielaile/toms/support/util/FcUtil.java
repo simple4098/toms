@@ -30,7 +30,7 @@ public class FcUtil<T extends OtaRequest> {
     public static <T> String fcRequest(T t) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(t.getClass());
         Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);// 是否省略xm头声明信
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信
 //        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,Boolean.TRUE);
         StringWriter fw = new StringWriter();
         marshaller.marshal(t, fw);
