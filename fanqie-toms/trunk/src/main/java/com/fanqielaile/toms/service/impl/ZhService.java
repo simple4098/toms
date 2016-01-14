@@ -108,7 +108,7 @@ public class ZhService implements ITPService {
                     otaInnOtaDao.updateOtaInnOta(otaInnOta);
                 }
                 String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus);
+                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus,10);
                 List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
                 List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
                 InnRoomHelper.updateRoomTypeInfo(roomTypeInfoList,statusDetails);
@@ -116,15 +116,12 @@ public class ZhService implements ITPService {
                     OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
                     JointWisdomInnRoomMappingDto jointWisdomInnRoom = null;
                     List<JointWisdomInnRoomMappingDto> allList = new ArrayList<>();
-                    OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),
-                            otaInfo.getUsedPriceModel().name()));
+                    OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
                     OtaRoomPriceDto priceDto = null;
                     for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-                        priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(
-                                new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfo.getOtaInfoId()));
+                        priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfo.getOtaInfoId()));
                         JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
-                        jointWisdomInnRoom = JwXHotelUtil.buildMapping(roomTypeInfo, company.getId(), Integer.valueOf(innId),
-                                String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), bangInn.getSj());
+                        jointWisdomInnRoom = JwXHotelUtil.buildMapping(roomTypeInfo, company.getId(), Integer.valueOf(innId),String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), bangInn.getSj());
                         allList.add(jointWisdomInnRoom);
                         Result result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
                         jointWisdomInnRoom.build(result.getStatus());
