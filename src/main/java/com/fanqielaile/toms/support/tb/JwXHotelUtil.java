@@ -45,7 +45,7 @@ public class JwXHotelUtil {
                 roomPriceRelation.setAmountAfterTax(price.toString());
                 roomPriceRelation.setAmountBeforeTax(price.toString());
                 roomPriceRelation.setStart(detail.getRoomDate());
-                roomPriceRelation.setEnd(DateUtil.fromDate(1, detail.getRoomDate()));
+                roomPriceRelation.setEnd(detail.getRoomDate());
                 roomPriceRelation.setUsed(mappingDto.getSj()==1);
                 relations.add(roomPriceRelation);
             }
@@ -58,8 +58,6 @@ public class JwXHotelUtil {
     public static Inventory inventory(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo){
         if (mappingDto!=null && roomTypeInfo!=null){
             List<RoomDetail> roomDetail = roomTypeInfo.getRoomDetail();
-            RoomDetail statDetail = roomDetail.get(0);
-            RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
             List<InventoryRelation> relations = new ArrayList<>();
             InventoryRelation inventoryRelation = null;
             Inventory  inventory = new Inventory(mappingDto.getInnCode(),mappingDto.getRoomTypeIdCode());
@@ -67,7 +65,7 @@ public class JwXHotelUtil {
                 inventoryRelation = new InventoryRelation();
                 inventoryRelation.setInventoryCount(detail.getRoomNum());
                 inventoryRelation.setStart(detail.getRoomDate());
-                inventoryRelation.setEnd(DateUtil.fromDate(1, detail.getRoomDate()));
+                inventoryRelation.setEnd(detail.getRoomDate());
                 inventoryRelation.setUsed(mappingDto.getSj()==1);
                 relations.add(inventoryRelation);
             }
@@ -78,15 +76,17 @@ public class JwXHotelUtil {
     }
 
     public static JointWisdomInnRoomMappingDto buildMapping(RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,int sj){
+        //todo 代码写死了~~~ 一定要改
         JointWisdomInnRoomMappingDto jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
         jointWisdomInnRoom.setCompanyId(companyId);
         jointWisdomInnRoom.setInnId(innId);
         jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
-        jointWisdomInnRoom.setRoomTypeIdCode(otaId + "_" + roomTypeInfo.getRoomTypeId());
-        jointWisdomInnRoom.setInnCode(otaId + "_" + roomTypeInfo.getRoomTypeId());
+        jointWisdomInnRoom.setRoomTypeIdCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        jointWisdomInnRoom.setInnCode("919" + "_" +innId);
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
         jointWisdomInnRoom.setSj(sj);
+        jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
         return jointWisdomInnRoom;
     }
 }

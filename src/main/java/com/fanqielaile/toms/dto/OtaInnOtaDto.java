@@ -28,7 +28,7 @@ public class OtaInnOtaDto extends OtaInnOta {
 
 
 
-    public static OtaInnOtaDto  toDto(Long hid,String innName,String companyId,TBParam tbParam,String bangInnId,String otaInfoId){
+    public static OtaInnOtaDto  toDto(String hid,String innName,String companyId,TBParam tbParam,String bangInnId,String otaInfoId){
         OtaInnOtaDto otaInnOta = new OtaInnOtaDto();
         otaInnOta.setAliasInnName(innName);
         otaInnOta.setCompanyId(companyId);

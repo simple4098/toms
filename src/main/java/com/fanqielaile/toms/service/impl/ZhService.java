@@ -98,7 +98,7 @@ public class ZhService implements ITPService {
                 bangInnDao.updateBangInnTp(bangInn);
                 String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
                 if (otaInnOta == null) {
-                    otaInnOta = OtaInnOtaDto.toDto(Long.valueOf(bangInn.getInnId()), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfoId);
+                    otaInnOta = OtaInnOtaDto.toDto(company.getOtaId()+"_"+bangInn.getInnId(), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfoId);
                     otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
                     otaInnOtaDao.saveOtaInnOta(otaInnOta);
                     OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
@@ -127,8 +127,12 @@ public class ZhService implements ITPService {
                                 String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), bangInn.getSj());
                         allList.add(jointWisdomInnRoom);
                         Result result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
-                        if (jw==null && Constants.SUCCESS200.equals(result.getStatus())){
+                        jointWisdomInnRoom.build(result.getStatus());
+                        if (jw==null ){
                             jointWisdomInnRoomDao.insertJsRoomInnRooType(jointWisdomInnRoom);
+                        }else {
+                            jointWisdomInnRoom.setId(jw.getId());
+                            jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
                         }
                     }
                 }
