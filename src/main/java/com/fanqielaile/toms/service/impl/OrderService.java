@@ -1260,7 +1260,7 @@ public class OrderService implements IOrderService {
             List<DailyInfos> dailyInfos = OrderMethodHelper.toDailyInfos(roomDetails);
             if (null != dailyInfos && ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
                 List<SaleItem> saleItemList = new ArrayList<>();
-                boolean canBook = false;
+                boolean canBook = true;
                 for (DailyInfos dailyInfos1 : dailyInfos) {
                     SaleItem saleItem = new SaleItem();
                     //无早
@@ -1276,12 +1276,16 @@ public class OrderService implements IOrderService {
                         //dayCanBook:1可预订，roomstatus：1有房
                         saleItem.setDayCanBook(1);
                         saleItem.setRoomStatus(1);
-                        canBook = true;
+                        if (canBook) {
+                            canBook = true;
+                        }
                     } else {
                         //dayCanBook:0不可预订，roomstatus：2满房
                         saleItem.setDayCanBook(0);
                         saleItem.setRoomStatus(2);
-                        canBook = false;
+                        if (canBook) {
+                            canBook = false;
+                        }
                     }
                     //是否可超，0否，1是
                     saleItem.setOverDraft(0);
@@ -1305,14 +1309,6 @@ public class OrderService implements IOrderService {
                     saleItemList.add(saleItem);
                 }
                 //设置是否可预定
-                for (DailyInfos dailyInfos1 : dailyInfos) {
-                    if (dailyInfos1.getRoomNum() < order.getHomeAmount()) {
-                        canBook = false;
-                        break;
-                    } else {
-                        canBook = true;
-                    }
-                }
                 if (canBook) {
                     result.setCanBook("1");
                 } else {

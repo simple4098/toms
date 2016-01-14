@@ -136,8 +136,9 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     RoomType roomType = new RoomType();
                     roomType.setRoomTypeCode(availOrder.getRoomTypeId());
                     boolean canBook = false;
+                    //判断是否可㐉
                     for (DailyInfos dailyInfos1 : dailyInfos) {
-                        if (dailyInfos1.getRoomNum() <= availOrder.getHomeAmount()) {
+                        if (dailyInfos1.getRoomNum() < availOrder.getHomeAmount()) {
                             canBook = false;
                             break;
                         } else {

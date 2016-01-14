@@ -125,7 +125,7 @@ public class CtripOrderService implements ICtripOrderService {
                 List<CtripAvailRequestRoomPrice> ctripAvailRequestRoomPriceList = new ArrayList<>();
                 List<AvailRoomQuantity> availRoomQuantityList = new ArrayList<>();
                 //判断是否可预订
-                boolean isBook = false;
+                boolean isBook = true;
                 BigDecimal checkAvailTotalPrice = BigDecimal.ZERO;
                 if (ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
                     for (DailyInfos dailyInfo : dailyInfos) {
@@ -186,8 +186,14 @@ public class CtripOrderService implements ICtripOrderService {
                         }
 
 
-                        if (dailyInfo.getRoomNum() > 0) {
-                            isBook = true;
+                        if (dailyInfo.getRoomNum() > order.getHomeAmount()) {
+                            if (isBook) {
+                                isBook = true;
+                            }
+                        } else {
+                            if (isBook) {
+                                isBook = false;
+                            }
                         }
                         ctripAvailRequestRoomPriceList.add(ctripAvailRequestRoomPrice);
                     }
