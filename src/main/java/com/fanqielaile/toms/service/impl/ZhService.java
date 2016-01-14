@@ -105,7 +105,12 @@ public class ZhService implements ITPService {
                     priceModelDao.savePriceModel(otaPriceModel);
                 } else {
                     otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-                    otaInnOtaDao.updateOtaInnOta(otaInnOta);
+                    //下架状态的 删除关联关系
+                    if (!tbParam.isSj()){
+                        otaInnOtaDao.deletedOtaInnOtaById(otaInnOta.getId());
+                    }else {
+                        otaInnOtaDao.updateOtaInnOta(otaInnOta);
+                    }
                 }
                 String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
                 String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus,10);
@@ -121,7 +126,7 @@ public class ZhService implements ITPService {
                     for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
                         priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfo.getOtaInfoId()));
                         JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
-                        jointWisdomInnRoom = JwXHotelUtil.buildMapping(roomTypeInfo, company.getId(), Integer.valueOf(innId),String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), bangInn.getSj());
+                        jointWisdomInnRoom = JwXHotelUtil.buildMapping(roomTypeInfo, company.getId(), Integer.valueOf(innId),String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(),tbParam.isSj());
                         allList.add(jointWisdomInnRoom);
                         Result result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
                         jointWisdomInnRoom.build(result.getStatus());
