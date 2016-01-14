@@ -67,7 +67,6 @@ public class JointWisdomARIUtils{
         LOGGER.info("请求众荟推送库存->request：" + JSON.toJSON(invCountNotifRQ));
         OTAHotelInvCountNotifRS resp = JointWiddomRequest.getDefaultInstance().otaHotelInvCountNotifRQ(invCountNotifRQ);
         LOGGER.info("请求众荟推送库存->response：" + JSON.toJSON(resp));
-        LOGGER.info("请求推送库存成功，客栈ID：" + inventory.getInnId() + "房型ID:" + inventory.getRoomTypeId());
         return  resp;
     }
     /**
