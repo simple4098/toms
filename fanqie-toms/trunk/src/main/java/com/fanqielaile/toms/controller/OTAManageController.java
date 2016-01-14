@@ -405,6 +405,7 @@ public class OTAManageController extends BaseController {
             if (StringUtils.isNotEmpty(xml)) {
                 //解析xml获取请求
                 String checkOrder = jointWisdomOrderService.dealAvailCheckOrder(xml);
+                return checkOrder;
             } else {
                 logger.info("众荟传入xml为空");
                 return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
@@ -413,7 +414,6 @@ public class OTAManageController extends BaseController {
             logger.info("处理众荟下单流程异常" + e);
             return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
         }
-        return null;
     }
 
     @RequestMapping(value = "/jointWisdowOrder")
@@ -427,9 +427,11 @@ public class OTAManageController extends BaseController {
                 //下单
                 if (OrderRequestType.Commit.equals(orderRequestType)) {
                     String result = this.jointWisdomOrderService.dealAddOrder(xml);
+                    return result;
                 } else if (OrderRequestType.Cancel.equals(orderRequestType)) {
                     //取消订单
                     String cancelResult = this.jointWisdomOrderService.dealCancelOrder(xml);
+                    return cancelResult;
                 } else {
                     return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "订单流程中请求类型不存在", "订单流程中请求类型不存在"));
                 }
@@ -441,7 +443,6 @@ public class OTAManageController extends BaseController {
             logger.info("处理众荟下单流程异常" + e);
             return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
         }
-        return null;
     }
 
 }
