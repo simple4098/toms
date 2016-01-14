@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 
 /**
  *  众荟ARI相关
@@ -41,9 +40,10 @@ public class JointWisdomARIUtils{
      *             所有异常父类。其中包括参数异常，携程请求异常等
      */
     public static OTAHotelInvCountNotifRS pushRoomInventory(Inventory inventory) {
-        LOGGER.info("接受的参数：" + JSON.toJSON(inventory));
+        LOGGER.info("推送库存接受的参数：" + JSON.toJSON(inventory));
         Assert.isTrue(StringUtils.isNotEmpty(inventory.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(inventory.getRoomTypeId()));
+        inventory.setRelations(JoinRateUtils.joinInventory(inventory.getRelations()));
         OTAHotelInvCountNotifRQ invCountNotifRQ = new OTAHotelInvCountNotifRQ();
         InvCountType invCountType = new InvCountType();
         invCountNotifRQ.setInventories(invCountType);
@@ -67,14 +67,6 @@ public class JointWisdomARIUtils{
         LOGGER.info("请求众荟推送库存->request：" + JSON.toJSON(invCountNotifRQ));
         OTAHotelInvCountNotifRS resp = JointWiddomRequest.getDefaultInstance().otaHotelInvCountNotifRQ(invCountNotifRQ);
         LOGGER.info("请求众荟推送库存->response：" + JSON.toJSON(resp));
-/*        List<Object> listResults = resp.getErrorsOrSuccessOrWarnings();
-        try {
-            HandlerJointWisdomResult.handler(listResults);
-        } catch (Exception e) {
-            LOGGER.error("处理异常众荟出错:" + e.getMessage());
-            return resp;
-        }*/
-
         LOGGER.info("请求推送库存成功，客栈ID：" + inventory.getInnId() + "房型ID:" + inventory.getRoomTypeId());
         return  resp;
     }
@@ -86,13 +78,14 @@ public class JointWisdomARIUtils{
      *             所有异常父类。其中包括参数异常，携程请求异常等
      */
     public static OTAHotelRatePlanNotifRS pushRoomPrice(RoomPrice roomPrice) throws Exception{
-        LOGGER.info("接受的参数："+JSON.toJSON(roomPrice));
+        LOGGER.info("推送房价接受的参数："+JSON.toJSON(roomPrice));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getRatePlanCode()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getRoomTypeId()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getStart()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getEnd()));
         Assert.isTrue(null!=roomPrice.getRelations());
+        roomPrice.setRelations(JoinRateUtils.joinRoomPriceRate(roomPrice.getRelations()));
         OTAHotelRatePlanNotifRQ otaHotel = new OTAHotelRatePlanNotifRQ();
         OTAHotelRatePlanNotifRQ.RatePlans ratePlans = new OTAHotelRatePlanNotifRQ.RatePlans();
         otaHotel.setRatePlans(ratePlans);
@@ -129,13 +122,6 @@ public class JointWisdomARIUtils{
         LOGGER.info("请求众荟推送房价 request->："+JSON.toJSON(otaHotel));
         OTAHotelRatePlanNotifRS resp =  JointWiddomRequest.getDefaultInstance().otaHotelRatePlanNotifRQ(otaHotel);
         LOGGER.info("请求众荟推送房价：response->"+JSON.toJSON(resp));
-      /*  List<Object> result =  resp.getErrorsOrRatePlanCrossRefsOrSuccess();
-        try {
-            HandlerJointWisdomResult.handler(result);
-        }catch (Exception e){
-            LOGGER.error("处理异常众荟出错:"+e.getMessage());
-            return resp;
-        }*/
         return  resp;
     }
 }
