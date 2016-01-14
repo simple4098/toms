@@ -75,7 +75,7 @@ public class JwXHotelUtil {
         return null;
     }
 
-    public static JointWisdomInnRoomMappingDto buildMapping(RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,int sj){
+    public static JointWisdomInnRoomMappingDto buildMapping(RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,boolean isSj){
         //todo 代码写死了~~~ 一定要改
         JointWisdomInnRoomMappingDto jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
         jointWisdomInnRoom.setCompanyId(companyId);
@@ -85,7 +85,7 @@ public class JwXHotelUtil {
         jointWisdomInnRoom.setInnCode("919" + "_" +innId);
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
-        jointWisdomInnRoom.setSj(sj);
+        jointWisdomInnRoom.setSj(isSj?1:0);
         jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
         return jointWisdomInnRoom;
     }
