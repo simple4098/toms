@@ -71,6 +71,7 @@ public class XmlJointWisdomUtil {
         order.setLeaveTime(DateUtil.parse(param.element("StayDateRange").attributeValue("End"), "yyyy-MM-dd"));
         order.setRoomTypeCode(param.element("RoomStayCandidates").element("RoomStayCandidate").attributeValue("RoomTypeCode"));
         order.setHomeAmount(Integer.parseInt(param.element("RoomStayCandidates").element("RoomStayCandidate").attributeValue("Quantity")));
+        order.setChannelSource(ChannelSource.ZH);
         return order;
     }
 
@@ -138,7 +139,7 @@ public class XmlJointWisdomUtil {
         order.setDailyInfoses(getOrderDailyInfos(roomRate.element("Rates").elements("Rate"), order));
         order.setPerson(Integer.valueOf(roomTypeParam.element("GuestCounts").element("GuestCount").attributeValue("Count")));
         order.setLiveTime(DateUtil.parse(roomTypeParam.element("TimeSpan").attributeValue("Start"), "yyyy-MM-dd"));
-        order.setLeaveTime(DateUtil.parse(roomTypeParam.element("TimeSpan").attributeValue("End"), "yyyy_mm-dd"));
+        order.setLeaveTime(DateUtil.parse(roomTypeParam.element("TimeSpan").attributeValue("End"), "yyyy-MM-dd"));
         order.setTotalPrice(BigDecimal.valueOf(Double.valueOf(roomTypeParam.element("Total").attributeValue("AmountBeforeTax"))));
         order.setBasicTotalPrice(order.getTotalPrice());
         order.setCurrency(CurrencyCode.CNY);

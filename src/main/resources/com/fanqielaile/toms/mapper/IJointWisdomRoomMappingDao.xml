@@ -37,17 +37,20 @@
                      and inn_id = #{innId}
               </if>
               <if test="roomTypeId != null and roomTypeId != ''">
-                     and room_type_id = #{roomTypeId}
+                     and room_type_id = #{roomTypeIdInt}
               </if>
+              limit 1
        </select>
        <insert id="insertJsRoomInnRooType" parameterType="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto">
               insert into
               jw_inn_room_mapping(id,inn_id,room_type_id,room_type_name,company_id,inn_code,room_type_id_code,currency_code,rate_plan_code,create_date,update_date,deleted,sj,ota_info_id)
-              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{innCode},#{roomTypeIdCode},#{currencyCode},'${ratePlanCode}',now(),now(),0,#{sj},'${otaInfoId}')
+              values
+              (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{innCode},#{roomTypeIdCode},#{currencyCode},'${ratePlanCode}',now(),now(),0,#{sj},'${otaInfoId}')
        </insert>
 
        <update id="updateJsRoomInnRooType" parameterType="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto">
-              UPDATE jw_inn_room_mapping SET sj=#{sj},room_type_name='${roomTypeName}',update_date=now() where id='${id}'
+              UPDATE jw_inn_room_mapping SET sj=#{sj},room_type_name='${roomTypeName}',update_date=now() where
+              id='${id}'
        </update>
 
        <select id="selectJsInnRooType" resultMap="BaseResultMap">

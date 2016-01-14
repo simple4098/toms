@@ -14,7 +14,7 @@ public interface IJointWisdomOrderService {
      * @return
      * @throws Exception
      */
-    String dealAvailCheckOrder(String xml) throws Exception;
+    Map<String, Object> dealAvailCheckOrder(String xml) throws Exception;
 
     /**
      * 众荟新增订单
@@ -22,7 +22,7 @@ public interface IJointWisdomOrderService {
      * @param xml
      * @return
      */
-    String dealAddOrder(String xml) throws Exception;
+    Map<String, Object> dealAddOrder(String xml) throws Exception;
 
     /**
      * 众荟取消订单
@@ -30,5 +30,5 @@ public interface IJointWisdomOrderService {
      * @param xml
      * @return
      */
-    String dealCancelOrder(String xml) throws Exception;
+    Map<String, Object> dealCancelOrder(String xml) throws Exception;
 }

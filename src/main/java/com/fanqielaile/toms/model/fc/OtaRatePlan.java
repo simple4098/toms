@@ -64,7 +64,7 @@ public class OtaRatePlan extends Domain {
         StringBuffer sb = new StringBuffer();
         sb.append(bedType==null?"":bedType.getDesc());
         sb.append(payMethod == null ?"": payMethod.getDesc());
-        setRatePlanName(sb.toString());
+        setRatePlanName(this.ratePlanName + sb.toString());
         return ratePlanName;
     }
 

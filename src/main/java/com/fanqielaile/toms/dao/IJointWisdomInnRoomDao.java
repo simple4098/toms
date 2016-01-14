@@ -24,7 +24,7 @@ public interface IJointWisdomInnRoomDao {
      * @param availOrder
      * @return
      */
-    JointWisdomInnRoomMappingDto selectRoomMappingByInnIdAndRoomTypeId(@Param("order") Order availOrder);
+    JointWisdomInnRoomMappingDto selectRoomMappingByInnIdAndRoomTypeId(Order availOrder);
     /**
      * 查询众荟的客栈房型关联关系
      * @param innId 客栈id

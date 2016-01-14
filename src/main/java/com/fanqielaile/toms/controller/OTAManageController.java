@@ -404,15 +404,15 @@ public class OTAManageController extends BaseController {
         try {
             if (StringUtils.isNotEmpty(xml)) {
                 //解析xml获取请求
-                String checkOrder = jointWisdomOrderService.dealAvailCheckOrder(xml);
-                return checkOrder;
+                Map<String, Object> map = jointWisdomOrderService.dealAvailCheckOrder(xml);
+                return map.get("data");
             } else {
                 logger.info("众荟传入xml为空");
-                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "xml is null", "param xml is null");
             }
         } catch (Exception e) {
             logger.info("处理众荟下单流程异常" + e);
-            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
+            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "joint winsdom exception", "exception" + e);
         }
     }
 
@@ -426,22 +426,22 @@ public class OTAManageController extends BaseController {
                 OrderRequestType orderRequestType = XmlJointWisdomUtil.getOrderRequestType(xml);
                 //下单
                 if (OrderRequestType.Commit.equals(orderRequestType)) {
-                    String result = this.jointWisdomOrderService.dealAddOrder(xml);
-                    return result;
+                    Map<String, Object> map = this.jointWisdomOrderService.dealAddOrder(xml);
+                    return map.get("data");
                 } else if (OrderRequestType.Cancel.equals(orderRequestType)) {
                     //取消订单
-                    String cancelResult = this.jointWisdomOrderService.dealCancelOrder(xml);
-                    return cancelResult;
+                    Map<String, Object> map = this.jointWisdomOrderService.dealCancelOrder(xml);
+                    return map.get("data");
                 } else {
-                    return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "订单流程中请求类型不存在", "订单流程中请求类型不存在"));
+                    return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "order request type is not exit", "order request type is not exit");
                 }
             } else {
                 logger.info("众荟传入xml为空");
-                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "xml is null", "param xml is null ");
             }
         } catch (Exception e) {
             logger.info("处理众荟下单流程异常" + e);
-            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "众荟对接异常", "众荟对接异常" + e));
+            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "joint winsdom exception", "joint winsdom exception" + e);
         }
     }
 
