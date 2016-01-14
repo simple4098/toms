@@ -95,7 +95,7 @@ public class JoinRateUtils {
      */
     public static  List<InventoryRelation> joinInventory(List<InventoryRelation> relations){
         Collections.sort(relations, new InventoryOrder());
-        int lastCount = 0;
+        int lastCount = -1;
         InventoryRelation ir = null;
         List<InventoryRelation> newInventoryRelations = new ArrayList<InventoryRelation>();
         for (InventoryRelation relation : relations) {
