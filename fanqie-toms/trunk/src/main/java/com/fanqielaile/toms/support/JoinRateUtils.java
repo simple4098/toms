@@ -29,6 +29,7 @@ public class JoinRateUtils {
      * @param str
      *        日期字符串
      * @return
+     *        日期对象
      */
     private  static Date strToDate(String str){
         try {
@@ -123,8 +124,7 @@ public class JoinRateUtils {
      *         新的关系
      */
     private static InventoryRelation copyInventoryData(InventoryRelation relation) {
-        InventoryRelation ir;
-        ir = new InventoryRelation();
+        InventoryRelation ir = new InventoryRelation();
         ir.setStart(relation.getStart());
         ir.setEnd(relation.getEnd());
         ir.setUsed(relation.getUsed());
