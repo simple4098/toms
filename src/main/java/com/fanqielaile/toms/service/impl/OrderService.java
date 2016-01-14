@@ -1272,7 +1272,7 @@ public class OrderService implements IOrderService {
                     //货币类型
                     saleItem.setCurrencyType(CurrencyCode.CNY);
                     //根据房间数量判断房间状态和是否可预订
-                    if (dailyInfos1.getRoomNum() > 0) {
+                    if (dailyInfos1.getRoomNum() > order.getHomeAmount()) {
                         //dayCanBook:1可预订，roomstatus：1有房
                         saleItem.setDayCanBook(1);
                         saleItem.setRoomStatus(1);
