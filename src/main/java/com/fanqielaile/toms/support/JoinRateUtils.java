@@ -106,18 +106,30 @@ public class JoinRateUtils {
                     ir.setEnd(dealEndDate(ir.getEnd()));
                     newInventoryRelations.add(ir);
                 }
-
-                ir = new InventoryRelation();
-                ir.setStart(relation.getStart());
-                ir.setEnd(relation.getEnd());
-                ir.setUsed(relation.getUsed());
-                ir.setInventoryCount(relation.getInventoryCount());
+                ir = copyInventoryData(relation);
                 lastCount = ir.getInventoryCount();
             }
         }
         ir.setEnd(dealEndDate(ir.getEnd()));
         newInventoryRelations.add(ir);
         return newInventoryRelations;
+    }
+
+    /**
+     *       把老的库存关系数据复制到新的对象中
+     * @param relation
+     *         老的关系
+     * @return
+     *         新的关系
+     */
+    private static InventoryRelation copyInventoryData(InventoryRelation relation) {
+        InventoryRelation ir;
+        ir = new InventoryRelation();
+        ir.setStart(relation.getStart());
+        ir.setEnd(relation.getEnd());
+        ir.setUsed(relation.getUsed());
+        ir.setInventoryCount(relation.getInventoryCount());
+        return ir;
     }
 
     /**
