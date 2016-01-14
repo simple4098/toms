@@ -148,8 +148,7 @@ public class JoinRateUtils {
      *        新的对象
      */
     private static RoomPriceRelation copyRateData(RoomPriceRelation relation) {
-        RoomPriceRelation rr;
-        rr = new RoomPriceRelation();
+        RoomPriceRelation rr = new RoomPriceRelation();
         rr.setUsed(relation.getUsed());
         rr.setStart(relation.getStart());
         rr.setAmountAfterTax(relation.getAmountAfterTax());
