@@ -43,5 +43,11 @@ public interface IJointWisdomInnRoomDao {
      *  保存关系
      * @param jointWisdomInnRoomMappingDto
      */
-    void  insertJsRoomInnRooType(JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto);
+    void insertJsRoomInnRooType(JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto);
+
+    /**
+     * 更新众荟关联对象
+     * @param jointWisdomInnRoomMappingDto
+     */
+    void updateJsRoomInnRooType(JointWisdomInnRoomMappingDto jointWisdomInnRoomMappingDto);
 }
