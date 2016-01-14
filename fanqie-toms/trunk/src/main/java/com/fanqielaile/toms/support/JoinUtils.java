@@ -16,12 +16,12 @@ import java.util.*;
  *
  *
  */
-public class JoinRateUtils {
+public class JoinUtils {
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JoinRateUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoinUtils.class);
 
-    private static  final String format = "yyyy-MM-dd";
+    private static  final String FORMAT = "yyyy-MM-dd";
 
 
     /**
@@ -33,7 +33,7 @@ public class JoinRateUtils {
      */
     private  static Date strToDate(String str){
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
             return  sdf.parse(str);
         } catch (ParseException e) {
             LOGGER.error("合并rate节点出错:",e);
@@ -53,7 +53,7 @@ public class JoinRateUtils {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         c.add(Calendar.DAY_OF_MONTH,days);
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
         return  sdf.format(new Date(c.getTimeInMillis()));
     }
 

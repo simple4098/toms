@@ -43,7 +43,7 @@ public class JointWisdomARIUtils{
         LOGGER.info("推送库存接受的参数：" + JSON.toJSON(inventory));
         Assert.isTrue(StringUtils.isNotEmpty(inventory.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(inventory.getRoomTypeId()));
-        inventory.setRelations(JoinRateUtils.joinInventory(inventory.getRelations()));
+        inventory.setRelations(JoinUtils.joinInventory(inventory.getRelations()));
         OTAHotelInvCountNotifRQ invCountNotifRQ = new OTAHotelInvCountNotifRQ();
         InvCountType invCountType = new InvCountType();
         invCountNotifRQ.setInventories(invCountType);
@@ -85,7 +85,7 @@ public class JointWisdomARIUtils{
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getStart()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getEnd()));
         Assert.isTrue(null!=roomPrice.getRelations());
-        roomPrice.setRelations(JoinRateUtils.joinRoomPriceRate(roomPrice.getRelations()));
+        roomPrice.setRelations(JoinUtils.joinRoomPriceRate(roomPrice.getRelations()));
         OTAHotelRatePlanNotifRQ otaHotel = new OTAHotelRatePlanNotifRQ();
         OTAHotelRatePlanNotifRQ.RatePlans ratePlans = new OTAHotelRatePlanNotifRQ.RatePlans();
         otaHotel.setRatePlans(ratePlans);
