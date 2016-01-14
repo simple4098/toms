@@ -1266,7 +1266,7 @@ public class OrderService implements IOrderService {
                     //无早
                     saleItem.setBreakfastType("");
                     //配额数量
-                    saleItem.setAvailableQuotaNum(0);
+                    saleItem.setAvailableQuotaNum(dailyInfos1.getRoomNum());
                     //早餐数量
                     saleItem.setBreakfastNum(0);
                     //货币类型
