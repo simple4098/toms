@@ -803,6 +803,7 @@ public class OrderService implements IOrderService {
                         }
                     }
                     orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
+                    orderDto.setTotalPrice(orderDto.getBasicTotalPrice());
                 }
             }
         }
@@ -882,6 +883,7 @@ public class OrderService implements IOrderService {
             }
             orderParamDto.setTotalPrice(orderParamDto.getTotalPrice().add(addTatalPirce));
         }
+        orderParamDto.setTotalPrice(orderParamDto.getBasicTotalPrice());
         return orderParamDto;
     }
 
