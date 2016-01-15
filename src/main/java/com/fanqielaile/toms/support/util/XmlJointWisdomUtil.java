@@ -37,7 +37,8 @@ public class XmlJointWisdomUtil {
         Document document = DocumentHelper.parseText(xmlStr);
         //得到跟节点信息
         Element element = document.getRootElement();
-        return element;
+        Element rootElement = element.element("Body");
+        return rootElement;
     }
 
     /**
@@ -63,7 +64,8 @@ public class XmlJointWisdomUtil {
     public static Order getJointWisdomAvailOrder(String xml) throws Exception {
         Order order = new Order();
         //解析xml
-        Element element = dealXmlStr(xml);//根节点
+        Element dealXmlStr = dealXmlStr(xml);
+        Element element = dealXmlStr.element("OTA_HotelAvailRQ");//根节点
         Element param = element.element("AvailRequestSegments").element("AvailRequestSegment").element("HotelSearchCriteria").element("Criterion");
         //酒店的code
         order.setInnCode(param.element("HotelRef").attributeValue("HotelCode"));
@@ -124,7 +126,8 @@ public class XmlJointWisdomUtil {
         order.setOrderStatus(OrderStatus.ACCEPT);
         //付款状态
         order.setFeeStatus(FeeStatus.NOT_PAY);
-        Element element = dealXmlStr(xml);
+        Element dealXmlStr = dealXmlStr(xml);
+        Element element = dealXmlStr.element("OTA_HotelResRQ");
         Element param = element.element("HotelReservations").element("HotelReservation");
         //房型信息
         Element roomTypeParam = param.element("RoomStays").element("RoomStay");
