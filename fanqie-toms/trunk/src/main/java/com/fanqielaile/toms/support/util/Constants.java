@@ -56,5 +56,6 @@ public class Constants {
     public static final int DI_VALUE = 1;
     
     public static final String OTA_CTRIP = "3";
-    
+    //众荟房态天数
+    public static final int day = 10;
 }

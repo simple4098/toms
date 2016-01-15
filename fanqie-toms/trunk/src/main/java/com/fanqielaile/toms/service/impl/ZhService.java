@@ -113,7 +113,7 @@ public class ZhService implements ITPService {
                     }
                 }
                 String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus,10);
+                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus,Constants.day);
                 List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
                 List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
                 InnRoomHelper.updateRoomTypeInfo(roomTypeInfoList,statusDetails);
@@ -263,47 +263,51 @@ public class ZhService implements ITPService {
     @Override
     public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId, String companyId, String userId, String json) throws Exception {
         log.info("===================众荟修改价格=======================");
-        Company company = companyDao.selectCompanyById(companyId);
-        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
-        List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
-        if (!CollectionUtils.isEmpty(prices)) {
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(Integer.valueOf(innId),companyId, infoRefDto.getOtaInfoId());
+        if (otaInnOta!=null && Constants.FC_SJ == otaInnOta.getSj()){
+            Company company = companyDao.selectCompanyById(companyId);
+            OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
+            List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
+            if (!CollectionUtils.isEmpty(prices)) {
+                OtaRoomPriceDto priceDto = null;
+                for (AddFangPrice price : prices) {
+                    if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
+                        JointWisdomInnRoomMappingDto mappingDto = jointWisdomInnRoomDao.selectJsInnRooType(companyId,Integer.valueOf(innId), price.getRoomTypeId());
+                        priceDto = new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId());
+                        priceDto.build(price,innId,userId);
+                        if (mappingDto != null  && mappingDto.getSj() == Constants.FC_SJ) {
+                            String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), Integer.valueOf(innId), price.getRoomTypeId(), CommonApi.checkRoom,Constants.day);
+                            List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
+                            boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
+                            if (b) {
+                                RoomTypeInfo roomTypeInfo = JwXHotelUtil.buildRoomTypeInfo(roomDetailList,mappingDto);
+                                Result result = jointWisdomARI.updateJsPriceInventory(mappingDto, roomTypeInfo, priceDto, commission);
+                                if (result!=null && Constants.SUCCESS200.equals(result.getStatus())) {
+                                    otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                                } else {
+                                    log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + result.getMessage());
+                                    throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + result.getMessage());
+                                }
 
-            OtaRoomPriceDto priceDto = null;
-            for (AddFangPrice price : prices) {
-                if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
-                    JointWisdomInnRoomMappingDto mappingDto = jointWisdomInnRoomDao.selectJsInnRooType(companyId,Integer.valueOf(innId), price.getRoomTypeId());
-                    //CtripRoomTypeMapping ctripRoomTypeMapping = ctripRoomTypeMappingDao.selectMappingInnIdAndRoomTypeId(innId,String.valueOf(price.getRoomTypeId()));
-                    priceDto = new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId());
-                    priceDto.build(price,innId,userId);
-                    if (mappingDto != null  && mappingDto.getSj() == Constants.FC_SJ) {
-                        String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), Integer.valueOf(innId), price.getRoomTypeId(), CommonApi.checkRoom,60);
-                        List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
-                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
-                        /*if (b) {
-                            RequestResponse response = CtripXHotelUtil.syncRoomInfo(company,infoRefDto, ctripRoomTypeMapping , priceDto, commission);
-                            RequestResult requestResult = response.getRequestResult();
-                            if (requestResult!=null && CtripConstants.resultCode.equals(requestResult.getResultCode())) {
-                                otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+
                             } else {
-                                log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + requestResult.getMessage());
-                                throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + requestResult.getMessage());
+                                log.info("房型Id" + price.getRoomTypeId() + " 减小的价格不能低于1元");
+                                throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 减小的价格不能低于1元");
                             }
+
                         } else {
-                            log.info("房型Id" + price.getRoomTypeId() + " 减小的价格不能低于1元");
-                            throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 减小的价格不能低于1元");
-                        }*/
+                            log.info("innId：" + innId + " 房型id" + price.getRoomTypeId() + "还没有上架到携程");
+                            throw new TomsRuntimeException("innId：" + innId + " 房型名称" + price.getRoomTypeName() + "还没有上架到携程");
+                        }
 
                     } else {
-                        log.info("innId：" + innId + " 房型id" + price.getRoomTypeId() + "还没有上架到携程");
-                        throw new TomsRuntimeException("innId：" + innId + " 房型名称" + price.getRoomTypeName() + "还没有上架到携程");
+                        log.info("innId：" + innId + " 房型id" + price.getRoomTypeId() + " 开始结束时间为空!");
                     }
 
-                } else {
-                    log.info("innId：" + innId + " 房型id" + price.getRoomTypeId() + " 开始结束时间为空!");
+
                 }
-
-
             }
+
         }
 
 
