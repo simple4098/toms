@@ -76,14 +76,15 @@ public class JoinUtils {
                     rr.setEnd(relation.getEnd());
                 }else{//触发新的Rate节点
                     if(null!=rr){
-                        rr.setEnd(dealEndDate(rr.getEnd()));
+                       // rr.setEnd(dealEndDate(rr.getEnd()));
                         newRoomPriceRelations.add(rr);
                     }
                     rr = copyRateData(relation);
                     lastMoney = rr.getAmountBeforeTax();
                 }
             }
-        rr.setEnd(dealEndDate(rr.getEnd()));
+      //  rr.setEnd(dealEndDate(rr.getEnd()));
+       // rr.setEnd(rr.getEnd());
         newRoomPriceRelations.add(rr);
         return newRoomPriceRelations;
     }
@@ -104,14 +105,14 @@ public class JoinUtils {
                 ir.setEnd(relation.getEnd());
             }else{//触发新的Rate节点
                 if(null!=ir){
-                    ir.setEnd(dealEndDate(ir.getEnd()));
+                  //  ir.setEnd(dealEndDate(ir.getEnd()));
                     newInventoryRelations.add(ir);
                 }
                 ir = copyInventoryData(relation);
                 lastCount = ir.getInventoryCount();
             }
         }
-        ir.setEnd(dealEndDate(ir.getEnd()));
+       // ir.setEnd(dealEndDate(ir.getEnd()));
         newInventoryRelations.add(ir);
         return newInventoryRelations;
     }
