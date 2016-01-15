@@ -4,6 +4,7 @@ import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.order.*;
 import com.fanqie.jw.enums.OrderRequestType;
 import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderErrorResponse;
+import com.fanqie.jw.response.order.JointWisdomOrderErrorResponse;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
@@ -408,11 +409,11 @@ public class OTAManageController extends BaseController {
                 return map.get("data");
             } else {
                 logger.info("众荟传入xml为空");
-                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "xml is null", "param xml is null");
+                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("传入xml为空");
             }
         } catch (Exception e) {
             logger.info("处理众荟下单流程异常" + e);
-            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "joint winsdom exception", "exception" + e);
+            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("众荟试订单异常" + e);
         }
     }
 
@@ -433,15 +434,15 @@ public class OTAManageController extends BaseController {
                     Map<String, Object> map = this.jointWisdomOrderService.dealCancelOrder(xml);
                     return map.get("data");
                 } else {
-                    return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "order request type is not exit", "order request type is not exit");
+                    return new JointWisdomOrderErrorResponse().getBasicError("500", "error", "订单请求类型不存在");
                 }
             } else {
                 logger.info("众荟传入xml为空");
-                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "xml is null", "param xml is null ");
+                return new JointWisdomOrderErrorResponse().getBasicError("500", "error", "传入xml为空");
             }
         } catch (Exception e) {
             logger.info("处理众荟下单流程异常" + e);
-            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "joint winsdom exception", "joint winsdom exception" + e);
+            return new JointWisdomOrderErrorResponse().getBasicError("500", "error", "众荟订单请求异常" + e);
         }
     }
 
