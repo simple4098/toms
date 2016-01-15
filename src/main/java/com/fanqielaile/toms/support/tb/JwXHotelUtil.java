@@ -89,4 +89,11 @@ public class JwXHotelUtil {
         jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
         return jointWisdomInnRoom;
     }
+
+    public static RoomTypeInfo buildRoomTypeInfo(List<RoomDetail> roomDetailList, JointWisdomInnRoomMappingDto mappingDto) {
+        RoomTypeInfo roomTypeInfo = new RoomTypeInfo();
+        roomTypeInfo.setRoomDetail(roomDetailList);
+        roomTypeInfo.setRoomTypeId(mappingDto.getRoomTypeId());
+        return roomTypeInfo;
+    }
 }
