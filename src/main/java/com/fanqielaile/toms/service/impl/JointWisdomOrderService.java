@@ -190,7 +190,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                             //设置加减价
                             //设置加减价
                             if (null != otaRoomPriceDto && dailyInfos1.getDay().getTime() >= otaRoomPriceDto.getStartDate().getTime() && dailyInfos1.getDay().getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
-                                base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountBeforeTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
+                                base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountAfterTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
                             }
                             base.setAmountBeforeTax(base.getAmountAfterTax());
                             base.setCurrencyCode(base.getCurrencyCode());
@@ -346,7 +346,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                         //设置加减价
                                         //设置加减价
                                 if (null != otaRoomPriceDto && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() >= otaRoomPriceDto.getStartDate().getTime() && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
-                                            base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountBeforeTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
+                                    base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountAfterTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
                                         }
                                         base.setAmountBeforeTax(base.getAmountAfterTax());
                                         base.setCurrencyCode(base.getCurrencyCode());
