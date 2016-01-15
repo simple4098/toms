@@ -9,6 +9,7 @@ import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.IJointWisdomARI;
 import com.fanqielaile.toms.support.JointWisdomARIUtils;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,6 +39,9 @@ public class JointWisdomARI implements IJointWisdomARI {
                                        OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) throws Exception{
         Result result = new Result();
         if (roomTypeInfo!=null){
+            if (CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
+                throw new TomsRuntimeException("oms 获取房型为空 ");
+            }
             RoomPrice roomPrice = JwXHotelUtil.buildRoomPrice(mappingDto,roomTypeInfo,priceDto,commission);
             Inventory inventory = JwXHotelUtil.inventory(mappingDto, roomTypeInfo);
                 OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
@@ -53,9 +57,11 @@ public class JointWisdomARI implements IJointWisdomARI {
                     }else {
                         if (!CollectionUtils.isEmpty(refsOrSuccess) ){
                             logger.error("=====推送价格异常=====");
+                            result.setMessage("=====推送价格异常=====");
                         }
                         if (!CollectionUtils.isEmpty(successOrWarnings)){
                             logger.error("=====推送库存异常=====");
+                            result.setMessage("=====推送库存异常=====");
 
                         }
                         result.setStatus(Constants.ERROR400);

@@ -2,14 +2,20 @@ package com.fanqielaile.toms.support.tb;
 
 import com.fanqie.jw.dto.*;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.helper.InnRoomHelper;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,5 +101,17 @@ public class JwXHotelUtil {
         roomTypeInfo.setRoomDetail(roomDetailList);
         roomTypeInfo.setRoomTypeId(mappingDto.getRoomTypeId());
         return roomTypeInfo;
+    }
+
+    /**
+     *
+     * @param company 公司
+     * @param mapping 映射对象
+     * @throws java.io.IOException
+     */
+    public static RoomTypeInfo buildRoomTypeInfo(Company company,JointWisdomInnRoomMappingDto mapping) throws IOException {
+        String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), mapping.getInnId(), mapping.getRoomTypeId(), CommonApi.checkRoom, Constants.day);
+        List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
+        return JwXHotelUtil.buildRoomTypeInfo(roomDetailList, mapping);
     }
 }
