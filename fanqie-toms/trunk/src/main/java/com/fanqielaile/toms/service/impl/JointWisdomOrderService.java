@@ -414,7 +414,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             }
         } catch (Exception e) {
             JointWisdomAvailCheckOrderErrorResponse errorResult = new JointWisdomAvailCheckOrderErrorResponse();
-            JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("500", "error", "处理众荟试订单异常", "处理众荟试订单异常");
+            JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("处理众荟试订单异常");
             logger.info("对接众荟试订单出错,返回值=>" + basicError.toString() + e);
             map.put("status", false);
             map.put("data", basicError);
@@ -476,7 +476,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         } else {
             //预定失败
             map.put("status", false);
-            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Commited.name(), Version.v1003.getText(), "302", "error", jsonModel.getMessage(), "预定失败"));
+            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Commited.name(), Version.v1003.getText(), jsonModel.getMessage() + "  预定失败"));
             return map;
 
         }
@@ -504,12 +504,12 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 return map;
             } else {
                 map.put("status", false);
-                map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "302", "error", "取消订单失败", "酒店拒绝取消订单"));
+                map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "酒店拒绝取消订单"));
                 return map;
             }
         } else {
             map.put("status", false);
-            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "400", "error", "订单不存在", "订单不存在"));
+            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "订单不存在"));
             return map;
         }
     }

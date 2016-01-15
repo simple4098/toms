@@ -35,7 +35,7 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
             return FcUtil.fcRequest(map.get("data"));
         } else {
             logger.info("众荟传入xml为空");
-            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("传入xml参数为空"));
         }
     }
 
@@ -55,11 +55,11 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
                 logger.info("众荟取消订单返回值：" + FcUtil.fcRequest(map.get("data")));
                 return FcUtil.fcRequest(map.get("data"));
             } else {
-                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "订单流程中请求类型不存在", "订单流程中请求类型不存在"));
+                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("订单流程中请求类型不存在"));
             }
         } else {
             logger.info("众荟传入xml为空");
-            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("500", "error", "传入xml参数为空", "传入xml参数为空"));
+            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("传入xml参数为空"));
         }
     }
 }
