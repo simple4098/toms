@@ -52,6 +52,7 @@
         <result column="order_room_type_name" property="orderRoomTypeName"/>
         <result column="person" property="person"/>
         <result column="interface_send_id" property="interFaceSendID"/>
+        <result column="basic_total_price" property="basicTotalPrice"/>
     </resultMap>
     <resultMap id="OrderDtoResults" type="com.fanqielaile.toms.dto.OrderParamDto">
         <id column="id" property="id"/>
@@ -104,6 +105,7 @@
         <result column="order_room_type_name" property="orderRoomTypeName"/>
         <result column="person" property="person"/>
         <result column="interface_send_id" property="interFaceSendID"/>
+        <result column="basic_total_price" property="basicTotalPrice"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, creator_id, created_date,
