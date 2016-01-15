@@ -61,5 +61,12 @@
               SELECT  * from jw_inn_room_mapping where deleted=0 and company_id='${companyId}' and ota_info_id='${otaInfoId}' and sj=1
        </select>
 
+       <select id="selectJwMapping" parameterType="com.fanqie.jw.dto.JointWisdomInnRoomMappingDto" resultMap="BaseResultMap">
+              SELECT  * from jw_inn_room_mapping where deleted=0 and sj=1 and company_id='${companyId}' and inn_id=#{innId}
+              <if test="roomTypeId!=null">
+                     and room_type_id=#{roomTypeId}
+              </if>
+       </select>
+
 
 </mapper>

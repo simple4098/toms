@@ -707,6 +707,7 @@ public class TBXHotelUtil {
             xRoom.setInventory(json);
             rate.setInventoryPrice(inventoryRate);
             log.info("价格 json:" + inventoryRate);
+            log.info("库存 json:" + json);
             roomUpdate(o, xRoom);
             rateUpdate(o,pushRoom.getRoomType(),rate);
         }

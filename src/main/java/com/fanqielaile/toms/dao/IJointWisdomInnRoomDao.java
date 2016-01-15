@@ -39,6 +39,12 @@ public interface IJointWisdomInnRoomDao {
      * @param otaInfoId 渠道id
      */
     List<JointWisdomInnRoomMappingDto> selectJsRoomInnSj(@Param("companyId")String companyId, @Param("otaInfoId")String otaInfoId);
+
+    /**
+     *
+     * @param mappingDto 关联对象
+     */
+    List<JointWisdomInnRoomMappingDto> selectJwMapping(JointWisdomInnRoomMappingDto mappingDto);
     /**
      *  保存关系
      * @param jointWisdomInnRoomMappingDto

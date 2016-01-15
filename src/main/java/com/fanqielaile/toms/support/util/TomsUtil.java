@@ -371,4 +371,21 @@ public class TomsUtil {
             BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
         }
     }
+
+    /**
+     * 推送过来的xml 拼接accountId
+     * @param pushRoomList
+     */
+    public static String pushXml(List<PushRoom> pushRoomList) {
+
+        if (!CollectionUtils.isEmpty(pushRoomList)){
+            StringBuffer buffer = new StringBuffer();
+            for (PushRoom r:pushRoomList){
+                buffer.append(" accountId:").append(r.getRoomType().getAccountId());
+            }
+            return  buffer.toString();
+        }
+        return null;
+    }
+
 }

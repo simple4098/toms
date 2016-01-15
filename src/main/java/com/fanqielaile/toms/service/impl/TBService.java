@@ -359,7 +359,7 @@ public class TBService implements ITPService {
             if ( bangInn!=null){
                 if (good!=null){
                     OtaPriceModelDto priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
-                    log.info("roomTypeId:"+pushRoom.getRoomType().getRoomTypeId() +" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
+                    log.info("roomTypeId:"+roomTypeId+" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(o.getCompanyId(), roomTypeId,  o.getOtaInfoId()));
                     TBXHotelUtil.updateHotelPushRoom(o, pushRoom, priceModel, priceDto,commission);
                 } else {

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.PushRoom;
@@ -8,6 +9,7 @@ import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +45,8 @@ public class RouterRestController {
         Result result = new Result();
         try {
             pushRoomList = XmlDeal.getPushRoom(pushXml);
+            log.info("===========start=============="+DateUtil.format(new Date(),"yyyyMMddHHmm")+"accountIdList:"+ TomsUtil.pushXml(pushRoomList));
+            log.info(pushXml);
             List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
             ITPService service = null;
             for (OtaInfoRefDto o : infoDtoList) {
