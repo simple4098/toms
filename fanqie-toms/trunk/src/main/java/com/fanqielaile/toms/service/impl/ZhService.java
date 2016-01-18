@@ -1,16 +1,12 @@
 package com.fanqielaile.toms.service.impl;
 
-import com.fanqie.bean.response.RequestResponse;
-import com.fanqie.bean.response.RequestResult;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
-import com.fanqie.support.CtripConstants;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
-import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
@@ -21,7 +17,6 @@ import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.holder.TPHolder;
-import com.fanqielaile.toms.support.tb.CtripXHotelUtil;
 import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ThreadCallableBean;
@@ -33,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -60,10 +54,6 @@ public class ZhService implements ITPService {
     private IOtaInfoDao otaInfoDao;
     @Resource
     private TPHolder tpHolder;
-    @Resource
-    private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
-    @Resource
-    private ICtripRoomService ctripRoomService;
     @Resource
     private IJointWisdomInnRoomDao jointWisdomInnRoomDao;
     @Resource
@@ -121,14 +111,13 @@ public class ZhService implements ITPService {
                 if (!CollectionUtils.isEmpty(roomTypeInfoList)){
                     OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
                     JointWisdomInnRoomMappingDto jointWisdomInnRoom = null;
-                    List<JointWisdomInnRoomMappingDto> allList = new ArrayList<>();
+
                     OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
                     OtaRoomPriceDto priceDto = null;
                     for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
                         priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfo.getOtaInfoId()));
                         JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
                         jointWisdomInnRoom = JwXHotelUtil.buildMapping(roomTypeInfo, company.getId(), Integer.valueOf(innId),String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(),tbParam.isSj());
-                        allList.add(jointWisdomInnRoom);
                         Result result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
                         jointWisdomInnRoom.build(result.getStatus());
                         if (jw==null ){
@@ -227,7 +216,6 @@ public class ZhService implements ITPService {
         String companyId = o.getCompanyId();
         Company company = companyDao.selectCompanyById(companyId);
         List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
-        List<CtripRoomTypeMapping> list = new ArrayList<>();
         for (TimerRatePrice ratePrice : timerRatePriceList) {
             List<JointWisdomInnRoomMappingDto> mappings = jointWisdomInnRoomDao.selectJwMapping(new JointWisdomInnRoomMappingDto(companyId,ratePrice.getInnId(),null));
             if (!CollectionUtils.isEmpty(mappings)) {
