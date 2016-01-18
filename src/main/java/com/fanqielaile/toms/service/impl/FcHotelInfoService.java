@@ -101,7 +101,7 @@ public class FcHotelInfoService implements IFcHotelInfoService {
                             jointWisdomInnRoom.setInnId(bangInnDto.getInnId());
                             jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
                             jointWisdomInnRoom.setInnCode(company.getOtaId() + "_" + bangInnDto.getInnId());
-                            jointWisdomInnRoom.setRoomTypeIdCode(company.getOtaId()+"_"+roomTypeInfo.getRoomTypeId());
+                            jointWisdomInnRoom.setRoomTypeIdCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
                             jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
                             jointWisdomInnRoom.setTelPhone(omsInnDto.getFrontPhone());
                             jointWisdomInnRoom.setProvince(omsInnDto.getProvince());
