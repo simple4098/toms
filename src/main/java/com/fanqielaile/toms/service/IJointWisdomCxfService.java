@@ -15,7 +15,7 @@ import javax.jws.soap.SOAPBinding;
 public interface IJointWisdomCxfService {
     @WebResult
     @WebMethod
-    public String CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", mode = WebParam.Mode.INOUT) OTA_HotelAvailRQ hotelAvailRQ) throws Exception;
+    public String CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ") OTA_HotelAvailRQ hotelAvailRQ) throws Exception;
 
 //    @WebMethod(operationName = "ProcessReservationRequest", action = "urn:HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
 //    @WebResult
