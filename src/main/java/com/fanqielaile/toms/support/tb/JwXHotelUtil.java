@@ -82,13 +82,12 @@ public class JwXHotelUtil {
     }
 
     public static JointWisdomInnRoomMappingDto buildMapping(RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,boolean isSj){
-        //todo 代码写死了~~~ 一定要改
         JointWisdomInnRoomMappingDto jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
         jointWisdomInnRoom.setCompanyId(companyId);
         jointWisdomInnRoom.setInnId(innId);
         jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
         jointWisdomInnRoom.setRoomTypeIdCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        jointWisdomInnRoom.setInnCode("919" + "_" +innId);
+        jointWisdomInnRoom.setInnCode(otaId + "_" +innId);
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
         jointWisdomInnRoom.setSj(isSj?1:0);
