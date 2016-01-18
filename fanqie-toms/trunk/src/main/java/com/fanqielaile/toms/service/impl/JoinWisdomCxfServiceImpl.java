@@ -31,6 +31,7 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
         String xml = "";
         if (hotelAvailRQ != null) {
             xml = FcUtil.fcRequest(hotelAvailRQ);
+            logger.info("对象转换为xml值为：" + xml);
         }
         if (StringUtils.isNotEmpty(xml)) {
             //解析xml获取请求
