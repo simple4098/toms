@@ -42,31 +42,32 @@ public class JointWisdomARI implements IJointWisdomARI {
             if (CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
                 throw new TomsRuntimeException("oms 获取房型为空 ");
             }
+            String sj = mappingDto.getSj()==1?"上架":"下架";
             RoomPrice roomPrice = JwXHotelUtil.buildRoomPrice(mappingDto,roomTypeInfo,priceDto,commission);
             Inventory inventory = JwXHotelUtil.inventory(mappingDto, roomTypeInfo);
-                OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
-                OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);
-                List<Object> refsOrSuccess = null;
-                List<Object> successOrWarnings = null;
-                if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
-                    refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
-                    successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
-                    if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
-                        logger.info("=====众荟成功=====");
-                        result.setStatus(Constants.SUCCESS200);
-                    }else {
-                        if (!CollectionUtils.isEmpty(refsOrSuccess) ){
-                            logger.error("=====推送价格异常=====");
-                            result.setMessage("=====推送价格异常=====");
-                        }
-                        if (!CollectionUtils.isEmpty(successOrWarnings)){
-                            logger.error("=====推送库存异常=====");
-                            result.setMessage("=====推送库存异常=====");
-
-                        }
-                        result.setStatus(Constants.ERROR400);
+            OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
+            OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);
+            List<Object> refsOrSuccess = null;
+            List<Object> successOrWarnings = null;
+            if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
+                refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
+                successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
+                if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
+                    logger.info(sj+"=====众荟成功=====");
+                    result.setStatus(Constants.SUCCESS200);
+                }else {
+                    if (!CollectionUtils.isEmpty(refsOrSuccess) ){
+                        logger.error(sj+"=====推送价格异常=====");
+                        result.setMessage(sj+"=====推送价格异常=====");
                     }
+                    if (!CollectionUtils.isEmpty(successOrWarnings)){
+                        logger.error(sj+"=====推送库存异常=====");
+                        result.setMessage(sj+"=====推送库存异常=====");
+
+                    }
+                    result.setStatus(Constants.ERROR400);
                 }
+            }
         }
         return result;
     }
