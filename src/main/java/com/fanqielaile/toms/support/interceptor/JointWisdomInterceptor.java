@@ -5,7 +5,7 @@ import org.apache.cxf.binding.soap.saaj.SAAJInInterceptor;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import javax.xml.soap.*;
 
@@ -52,7 +52,8 @@ public class JointWisdomInterceptor extends AbstractPhaseInterceptor<SoapMessage
         }
 
         try {
-
+//            org.w3c.dom.Node node = body.getElementsByTagName("OTA_HotelAvailRQ").item(0).getAttributes().removeNamedItem("xmlns");
+//            System.out.println(body.toString());
             //读取自定义的节点
 //            SOAPElement soapElement = body.addChildElement("ser:CheckAvailability");
 //            System.out.println("添加节点成功"+soapElement.toString());
