@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+
 import com.fanqie.jw.request.availCheckOrder.OTAHotelAvailRQ;
 
 import javax.jws.WebMethod;
