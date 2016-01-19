@@ -22,6 +22,9 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         <jaxws:serviceBean>
             <ref bean="jointWisdomService"/>
         </jaxws:serviceBean>
+        <jaxws:inInterceptors>
+            <!--<bean class="com.fanqielaile.toms.support.interceptor.JointWisdomInterceptor"/>-->
+        </jaxws:inInterceptors>
     </jaxws:server>
     <!--  <jaxws:endpoint id="ctripCxfOrderService" implementor="com.fanqielaile.toms.service.impl.CtripOrderCxfServiceImpl" address="/ctripOrder"/>-->
 </beans>
