@@ -4,6 +4,7 @@ import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.order.*;
 import com.fanqie.jw.enums.OrderRequestType;
 import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderErrorResponse;
+import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderSuccessResponse;
 import com.fanqie.jw.response.order.JointWisdomOrderErrorResponse;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
@@ -409,11 +410,11 @@ public class OTAManageController extends BaseController {
                 return map.get("data");
             } else {
                 logger.info("众荟传入xml为空");
-                return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("传入xml为空");
+                return new JointWisdomAvailCheckOrderSuccessResponse().getBasicError("传入xml为空");
             }
         } catch (Exception e) {
             logger.info("处理众荟下单流程异常" + e);
-            return new JointWisdomAvailCheckOrderErrorResponse().getBasicError("众荟试订单异常" + e);
+            return new JointWisdomAvailCheckOrderSuccessResponse().getBasicError("众荟试订单异常" + e);
         }
     }
 
