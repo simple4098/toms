@@ -48,6 +48,15 @@ public class RoomTypeInfo implements Serializable
     private String facilities; /* 基本设施 */
     private String roomInfo; /* 房间简介 */
     private Integer bindingRoomNumber;/*绑定的房间数*/
+    private Double proxyExtraPrice;
+
+    public Double getProxyExtraPrice() {
+        return proxyExtraPrice;
+    }
+
+    public void setProxyExtraPrice(Double proxyExtraPrice) {
+        this.proxyExtraPrice = proxyExtraPrice;
+    }
 
     private List<FacilitiesVo> facilitiesMap;/* 基本设施  key value 形式*/
 

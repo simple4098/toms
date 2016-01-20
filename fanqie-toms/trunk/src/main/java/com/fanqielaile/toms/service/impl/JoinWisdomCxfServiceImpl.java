@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.Map;
 /**
  * Created by wangdayin on 2016/1/13.
  */
-@WebService(serviceName = "JoinWisdomCxfServiceImpl", targetNamespace = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService/")
+@WebService(serviceName = "JoinWisdomCxfServiceImpl")
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
     private static Logger logger = LoggerFactory.getLogger(JoinWisdomCxfServiceImpl.class);
@@ -31,6 +32,7 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
     private IJointWisdomOrderService jointWisdomOrderService;
 
     @Override
+    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://service.toms.fanqielaile.com/")
     @WebMethod(operationName = "CheckAvailability", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#CheckAvailability")
     public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ") OTAHotelAvailRQ hotelAvailRQ) throws Exception {
         String xml = "";
@@ -55,7 +57,7 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
         }
     }
 
-    @Override
+   /* @Override
     @WebMethod(operationName = "ProcessReservationRequest", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
     public String ProcessReservationRequest(@WebParam(name = "xml") String xml) throws Exception {
         if (StringUtils.isNotEmpty(xml)) {
@@ -80,5 +82,5 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
         }
         return null;
     }
-
+*/
 }

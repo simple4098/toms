@@ -1,18 +1,14 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
-import com.fanqie.jw.enums.OrderRequestType;
 import com.fanqie.jw.enums.OrderResponseType;
-import com.fanqie.jw.enums.ResponseType;
 import com.fanqie.jw.enums.Version;
+import com.fanqie.jw.request.availCheckOrder.GuestCount;
 import com.fanqie.jw.response.order.AvailCheckOrder.*;
 import com.fanqie.jw.response.order.JointWisdomAddOrderSuccessResponse;
 import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderErrorResponse;
 import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderSuccessResponse;
 import com.fanqie.jw.response.order.JointWisdomOrderErrorResponse;
-import com.fanqie.jw.response.order.baseResponse.*;
-import com.fanqie.jw.response.order.baseResponse.Error;
-import com.fanqie.jw.response.order.newOrder.HotelReservation;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
@@ -28,7 +24,6 @@ import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import com.fanqielaile.toms.service.IJointWisdomOrderService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
-import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
@@ -40,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.xml.bind.JAXBException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -227,16 +221,17 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     List<RoomType> roomTypeList = new ArrayList<>();
                     roomTypeList.add(roomType);
                     roomStay.setRoomTypes(roomTypeList);
-                    BasicPropertyInfo basicPropertyInfo = new BasicPropertyInfo();
-                    basicPropertyInfo.setHotelName(bangInn.getInnName());
-                    basicPropertyInfo.setHotelCode(availOrder.getInnCode());
-                    responseResult.setBasicPropertyInfo(basicPropertyInfo);
                     List<GuestCount> guestCountList = new ArrayList<>();
                     GuestCount guestCount = new GuestCount();
                     guestCount.setCount(String.valueOf(availOrder.getHomeAmount()));
                     guestCount.setAgeQualifyingCode("10");
                     guestCountList.add(guestCount);
-                    responseResult.setGuestCounts(guestCountList);
+                    roomStay.setGuestCounts(guestCountList);
+                    BasicPropertyInfo basicPropertyInfo = new BasicPropertyInfo();
+                    basicPropertyInfo.setHotelName(bangInn.getInnName());
+                    basicPropertyInfo.setHotelCode(availOrder.getInnCode());
+                    responseResult.setBasicPropertyInfo(basicPropertyInfo);
+
                     TimeSpan timeSpan = new TimeSpan();
                     timeSpan.setStart(DateUtil.format(availOrder.getLiveTime(), "yyyy-MM-dd"));
                     timeSpan.setEnd(DateUtil.format(availOrder.getLeaveTime(), "yyyy-MM-dd"));
@@ -385,6 +380,12 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 roomStay.setRoomTypes(roomTypeList);
                 roomStay.setRoomRates(roomRateList);
                 roomStay.setRatePlans(ratePlanList);
+                List<GuestCount> guestCountList = new ArrayList<>();
+                GuestCount guestCount = new GuestCount();
+                guestCount.setCount(String.valueOf(availOrder.getHomeAmount()));
+                guestCount.setAgeQualifyingCode("10");
+                guestCountList.add(guestCount);
+                roomStay.setGuestCounts(guestCountList);
                 JointWisdomAvailCheckOrderSuccessResponse responseResult = new JointWisdomAvailCheckOrderSuccessResponse();
                 responseResult.setEchoToken(responseResult.getEchoToken());
                 responseResult.setTimeStamp(responseResult.getTimeStamp());
@@ -398,12 +399,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 basicPropertyInfo.setHotelName(bangInn.getInnName());
                 basicPropertyInfo.setHotelCode(availOrder.getInnCode());
                 responseResult.setBasicPropertyInfo(basicPropertyInfo);
-                List<GuestCount> guestCountList = new ArrayList<>();
-                GuestCount guestCount = new GuestCount();
-                guestCount.setCount(String.valueOf(availOrder.getHomeAmount()));
-                guestCount.setAgeQualifyingCode("10");
-                guestCountList.add(guestCount);
-                responseResult.setGuestCounts(guestCountList);
+
                 TimeSpan timeSpan = new TimeSpan();
                 timeSpan.setStart(DateUtil.format(availOrder.getLiveTime(), "yyyy-MM-dd"));
                 timeSpan.setEnd(DateUtil.format(availOrder.getLeaveTime(), "yyyy-MM-dd"));
