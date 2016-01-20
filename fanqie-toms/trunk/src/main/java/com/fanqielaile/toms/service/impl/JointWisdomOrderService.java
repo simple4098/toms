@@ -215,7 +215,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     responseResult.setTimeStamp(responseResult.getTimeStamp());
                     responseResult.setSuccess("success");
                     responseResult.setVersion(responseResult.getVersion());
-                    responseResult.setXmlns(responseResult.getXmlns());
+//                    responseResult.setXmlns(responseResult.getXmlns());
                     RoomStay roomStay = new RoomStay();
                     //房型与价格对应关系
                     roomStay.setRoomRates(roomRateList);
@@ -390,7 +390,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 responseResult.setTimeStamp(responseResult.getTimeStamp());
                 responseResult.setSuccess("success");
                 responseResult.setVersion(responseResult.getVersion());
-                responseResult.setXmlns(responseResult.getXmlns());
+//                responseResult.setXmlns(responseResult.getXmlns());
                 List<RoomStay> roomStayList = new ArrayList<>();
                 roomStayList.add(roomStay);
                 responseResult.setRoomStays(roomStayList);
@@ -413,7 +413,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 return map;
             }
         } catch (Exception e) {
-            JointWisdomAvailCheckOrderErrorResponse errorResult = new JointWisdomAvailCheckOrderErrorResponse();
+            JointWisdomAvailCheckOrderSuccessResponse errorResult = new JointWisdomAvailCheckOrderSuccessResponse();
             JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("处理众荟试订单异常");
             logger.info("对接众荟试订单出错,返回值=>" + basicError.toString() + e);
             map.put("status", false);
