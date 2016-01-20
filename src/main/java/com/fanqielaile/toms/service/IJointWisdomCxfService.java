@@ -16,15 +16,15 @@ import javax.xml.ws.Action;
 /**
  * Created by wangdayin on 2016/1/13.
  */
-@WebService
+@WebService(name = "IJointWisdomCxfService")
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public interface IJointWisdomCxfService {
-    @WebResult(name = "OTA_HotelAvailRS", partName = "OTA_HotelAvailRS")
+    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://service.toms.fanqielaile.com/")
     @WebMethod(operationName = "CheckAvailability", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#CheckAvailability")
     public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", partName = "OTA_HotelAvailRQ") OTAHotelAvailRQ hotelAvailRQ) throws Exception;
 
-    @WebResult
+   /* @WebResult
     @WebMethod(operationName = "ProcessReservationRequest", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
-    public String ProcessReservationRequest(@WebParam(name = "xml") String xml) throws Exception;
+    public String ProcessReservationRequest(@WebParam(name = "xml") String xml) throws Exception;*/
 }
 
