@@ -1,14 +1,7 @@
-package com.fanqielaile.toms.service.impl;
+package com.fanqielaile.toms.service.jointwisdomService;
 
-import com.fanqie.jw.enums.OrderRequestType;
-import com.fanqie.jw.request.availCheckOrder.OTAHotelAvailRQ;
-import com.fanqie.jw.response.order.JointWisdomAddOrderSuccessResponse;
-import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderErrorResponse;
-import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderSuccessResponse;
-import com.fanqielaile.toms.service.IJointWisdomCxfService;
 import com.fanqielaile.toms.service.IJointWisdomOrderService;
 import com.fanqielaile.toms.support.util.FcUtil;
-import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +17,7 @@ import java.util.Map;
 /**
  * Created by wangdayin on 2016/1/13.
  */
-@WebService(serviceName = "JoinWisdomCxfServiceImpl")
+@WebService(serviceName = "JoinWisdomCxfServiceImpl", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
     private static Logger logger = LoggerFactory.getLogger(JoinWisdomCxfServiceImpl.class);
@@ -32,9 +25,9 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
     private IJointWisdomOrderService jointWisdomOrderService;
 
     @Override
-    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://service.toms.fanqielaile.com/")
+    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
     @WebMethod(operationName = "CheckAvailability", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#CheckAvailability")
-    public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ") OTAHotelAvailRQ hotelAvailRQ) throws Exception {
+    public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", targetNamespace = "http://www.opentravel.org/OTA/2003/05") OTAHotelAvailRQ hotelAvailRQ) throws Exception {
         String xml = "";
         if (hotelAvailRQ != null) {
             xml = FcUtil.fcRequest(hotelAvailRQ);

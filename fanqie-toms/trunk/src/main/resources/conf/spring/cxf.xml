@@ -16,8 +16,8 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
         </jaxws:serviceBean>
     </jaxws:server>
 
-    <bean id="jointWisdomService" class="com.fanqielaile.toms.service.impl.JoinWisdomCxfServiceImpl"/>
-    <jaxws:server id="jointCxfService" serviceClass="com.fanqielaile.toms.service.IJointWisdomCxfService"
+    <bean id="jointWisdomService" class="com.fanqielaile.toms.service.jointwisdomService.JoinWisdomCxfServiceImpl"/>
+    <jaxws:server id="jointCxfService" serviceClass="com.fanqielaile.toms.service.jointwisdomService.IJointWisdomCxfService"
                   address="/jointWisdomOrder">
         <jaxws:serviceBean>
             <ref bean="jointWisdomService"/>
