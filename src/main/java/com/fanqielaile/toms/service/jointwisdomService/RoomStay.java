@@ -17,7 +17,47 @@ public class RoomStay {
     private List<GuestCount> guestCounts;
     private TimeSpan timeSpan;
     private BasicPropertyInfo basicPropertyInfo;
+    private Guarantee guarantee;
+    private Total total;
+    private String resGuestRPHs;
+    private List<SpecialRequest> specialRequests;
 
+    @XmlElement(name = "SpecialRequest", namespace = "http://www.opentravel.org/OTA/2003/05")
+    @XmlElementWrapper(name = "SpecialRequests")
+    public List<SpecialRequest> getSpecialRequests() {
+        return specialRequests;
+    }
+
+    public void setSpecialRequests(List<SpecialRequest> specialRequests) {
+        this.specialRequests = specialRequests;
+    }
+
+    @XmlElement(name = "ResGuestRPHs", namespace = "http://www.opentravel.org/OTA/2003/05")
+    public String getResGuestRPHs() {
+        return resGuestRPHs;
+    }
+
+    public void setResGuestRPHs(String resGuestRPHs) {
+        this.resGuestRPHs = resGuestRPHs;
+    }
+
+    @XmlElement(name = "Total", namespace = "http://www.opentravel.org/OTA/2003/05")
+    public Total getTotal() {
+        return total;
+    }
+
+    public void setTotal(Total total) {
+        this.total = total;
+    }
+
+    @XmlElement(name = "Guarantee", namespace = "http://www.opentravel.org/OTA/2003/05")
+    public Guarantee getGuarantee() {
+        return guarantee;
+    }
+
+    public void setGuarantee(Guarantee guarantee) {
+        this.guarantee = guarantee;
+    }
 
     @XmlElement(name = "BasicPropertyInfo")
     public BasicPropertyInfo getBasicPropertyInfo() {

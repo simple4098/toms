@@ -1,7 +1,9 @@
 package com.fanqielaile.toms.service.jointwisdomService;
 
+import com.fanqie.jw.enums.OrderRequestType;
 import com.fanqielaile.toms.service.IJointWisdomOrderService;
 import com.fanqielaile.toms.support.util.FcUtil;
+import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,30 +52,39 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
         }
     }
 
-   /* @Override
+    @Override
+    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
     @WebMethod(operationName = "ProcessReservationRequest", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
-    public String ProcessReservationRequest(@WebParam(name = "xml") String xml) throws Exception {
-        if (StringUtils.isNotEmpty(xml)) {
-            //解析xml获取请求类型
-            OrderRequestType orderRequestType = XmlJointWisdomUtil.getOrderRequestType(xml);
-            //下单
-            if (OrderRequestType.Commit.equals(orderRequestType)) {
-                Map<String, Object> map = this.jointWisdomOrderService.dealAddOrder(xml);
-                logger.info("众荟下单返回值：" + FcUtil.fcRequest(map.get("data")));
-                return FcUtil.fcRequest(map.get("data"));
-            } else if (OrderRequestType.Cancel.equals(orderRequestType)) {
-                //取消订单
-                Map<String, Object> map = this.jointWisdomOrderService.dealCancelOrder(xml);
-                logger.info("众荟取消订单返回值：" + FcUtil.fcRequest(map.get("data")));
-                return FcUtil.fcRequest(map.get("data"));
-            } else {
-//                return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("订单流程中请求类型不存在"));
-            }
-        } else {
-            logger.info("众荟传入xml为空");
-//            return FcUtil.fcRequest(new JointWisdomAvailCheckOrderErrorResponse().getBasicError("传入xml参数为空"));
+    public JointWisdomAddOrderSuccessResponse ProcessReservationRequest(@WebParam(name = "OTA_HotelResRQ") OTAHotelResRQ otaHotelResRQ) throws Exception {
+        String xml = "";
+        if (null != otaHotelResRQ) {
+            xml = FcUtil.fcRequest(otaHotelResRQ);
+            logger.info("众荟订单流程传入参数：" + xml);
         }
-        return null;
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                //解析xml获取请求类型
+                OrderRequestType orderRequestType = XmlJointWisdomUtil.getOrderRequestType(xml);
+                //下单
+                if (OrderRequestType.Commit.equals(orderRequestType)) {
+                    Map<String, Object> map = this.jointWisdomOrderService.dealAddOrder(xml);
+                    logger.info("众荟下单返回值：" + FcUtil.fcRequest(map.get("data")));
+                    return (JointWisdomAddOrderSuccessResponse) map.get("data");
+                } else if (OrderRequestType.Cancel.equals(orderRequestType)) {
+                    //取消订单
+                    Map<String, Object> map = this.jointWisdomOrderService.dealCancelOrder(xml);
+                    logger.info("众荟取消订单返回值：" + FcUtil.fcRequest(map.get("data")));
+                    return (JointWisdomAddOrderSuccessResponse) map.get("data");
+                } else {
+                    return new JointWisdomAddOrderSuccessResponse().getBasicError("订单流程中请求类型不存在");
+                }
+            } else {
+                logger.info("众荟传入xml为空");
+                return new JointWisdomAddOrderSuccessResponse().getBasicError("传入xml参数为空");
+            }
+        } catch (Exception e) {
+            logger.info("处理携程订单流程异常" + e);
+            return new JointWisdomAddOrderSuccessResponse().getBasicError("处理众荟订单流程异常" + e);
+        }
     }
-*/
 }

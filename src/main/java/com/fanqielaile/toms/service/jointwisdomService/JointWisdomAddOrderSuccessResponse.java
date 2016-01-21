@@ -1,9 +1,6 @@
 package com.fanqielaile.toms.service.jointwisdomService;
 
 import com.fanqie.jw.enums.ResponseType;
-import com.fanqie.jw.response.order1.newOrder.HotelReservation;
-import com.fanqie.jw.response.order1.newOrder.HotelReservationID;
-import com.fanqie.jw.response.order1.newOrder.ResGlobalInfo;
 import com.fanqie.jw.util.JointWisdomUtils;
 import com.fanqie.support.OtaRequest;
 
@@ -19,13 +16,12 @@ import java.util.List;
  * Created by wangdayin on 2016/1/13.
  */
 @XmlRootElement(name = "OTA_HotelResRS", namespace = "http://www.opentravel.org/OTA/2003/05")
-public class JointWisdomAddOrderSuccessResponse extends OtaRequest {
+public class JointWisdomAddOrderSuccessResponse extends JointWisdomAvailCheckOrderErrorResponse {
     private List<HotelReservation> hotelReservations;
     private String message;
     private String echoToken;
     private String timeStamp;
     private String version;
-    private String xmlns = "http://www.opentravel.org/OTA/2003/05";
     private String responseType;
 
     @XmlAttribute(name = "EchoToken")
@@ -55,15 +51,6 @@ public class JointWisdomAddOrderSuccessResponse extends OtaRequest {
         this.version = version;
     }
 
-    @XmlAttribute(name = "xmlns")
-    public String getXmlns() {
-        return xmlns;
-    }
-
-    public void setXmlns(String xmlns) {
-        this.xmlns = xmlns;
-    }
-
 
     @XmlAttribute(name = "ResResponseType")
     public String getResponseType() {
@@ -74,7 +61,7 @@ public class JointWisdomAddOrderSuccessResponse extends OtaRequest {
         this.responseType = responseType;
     }
 
-    @XmlElement(name = "Success")
+    @XmlElement(name = "Success", namespace = "http://www.opentravel.org/OTA/2003/05")
     public String getMessage() {
         return message;
     }
@@ -83,7 +70,7 @@ public class JointWisdomAddOrderSuccessResponse extends OtaRequest {
         this.message = message;
     }
 
-    @XmlElement(name = "HotelReservation")
+    @XmlElement(name = "HotelReservation", namespace = "http://www.opentravel.org/OTA/2003/05")
     @XmlElementWrapper(name = "HotelReservations")
     public List<HotelReservation> getHotelReservations() {
         return hotelReservations;
@@ -93,24 +80,33 @@ public class JointWisdomAddOrderSuccessResponse extends OtaRequest {
         this.hotelReservations = hotelReservations;
     }
 
-    public static List<HotelReservation> getHotelReservationResult(String orderId, String pmsOrderId) {
+    public List<HotelReservation> getHotelReservationResult(String orderId, String pmsOrderId) {
         List<HotelReservation> result = new ArrayList<HotelReservation>();
         HotelReservation hotelReservation = new HotelReservation();
         ResGlobalInfo resGlobalInfo = new ResGlobalInfo();
         List<HotelReservationID> hotelReservationIDList = new ArrayList<HotelReservationID>();
         //ota
         HotelReservationID otaId = new HotelReservationID();
-        otaId.setResType(ResponseType.R24.getText());
-        otaId.setResValue(orderId);
+        otaId.setResIDType(ResponseType.R24.getText());
+        otaId.setResIDValue(orderId);
         hotelReservationIDList.add(otaId);
         //pms
         HotelReservationID pmsId = new HotelReservationID();
-        pmsId.setResType(ResponseType.R10.getText());
-        pmsId.setResValue(pmsOrderId);
+        pmsId.setResIDType(ResponseType.R10.getText());
+        pmsId.setResIDValue(pmsOrderId);
         hotelReservationIDList.add(pmsId);
-        resGlobalInfo.setHotelReservationIDList(hotelReservationIDList);
+        resGlobalInfo.setHotelReservationIDs(hotelReservationIDList);
         hotelReservation.setResGlobalInfo(resGlobalInfo);
         result.add(hotelReservation);
         return result;
     }
+
+    public JointWisdomAddOrderSuccessResponse getBasicError(String message) {
+        JointWisdomAddOrderSuccessResponse result = new JointWisdomAddOrderSuccessResponse();
+        Error error = new Error();
+        error.setError(message);
+        result.setErrors(error);
+        return result;
+    }
+
 }
