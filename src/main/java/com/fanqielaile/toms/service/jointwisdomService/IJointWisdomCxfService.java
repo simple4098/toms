@@ -1,27 +1,24 @@
-package com.fanqielaile.toms.service;
+package com.fanqielaile.toms.service.jointwisdomService;
 
 
-import com.fanqie.jw.request.availCheckOrder.OTAHotelAvailRQ;
-import com.fanqie.jw.response.order.JointWisdomAddOrderSuccessResponse;
-import com.fanqie.jw.response.order.JointWisdomAvailCheckOrderSuccessResponse;
-import com.fanqie.support.OtaRequest;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
-import javax.xml.ws.Action;
+import javax.xml.ws.ResponseWrapper;
 
 /**
  * Created by wangdayin on 2016/1/13.
  */
-@WebService(name = "IJointWisdomCxfService")
+@WebService(name = "IJointWisdomCxfService", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 public interface IJointWisdomCxfService {
-    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://service.toms.fanqielaile.com/")
+    @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
     @WebMethod(operationName = "CheckAvailability", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#CheckAvailability")
-    public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", partName = "OTA_HotelAvailRQ") OTAHotelAvailRQ hotelAvailRQ) throws Exception;
+    public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", targetNamespace = "http://www.opentravel.org/OTA/2003/05", partName = "OTA_HotelAvailRQ") OTAHotelAvailRQ hotelAvailRQ) throws Exception;
 
    /* @WebResult
     @WebMethod(operationName = "ProcessReservationRequest", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
