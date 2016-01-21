@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service.jointwisdomService;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -12,6 +13,16 @@ public class Total {
     private String amountAfterTax;
     private String currencyCode = "RMB";
     private String amountBeforeTax;
+    private Taxes taxes;
+
+    @XmlElement(name = "Taxes", namespace = "http://www.opentravel.org/OTA/2003/05")
+    public Taxes getTaxes() {
+        return taxes;
+    }
+
+    public void setTaxes(Taxes taxes) {
+        this.taxes = taxes;
+    }
 
     @XmlAttribute(name = "AmountAfterTax")
     public String getAmountAfterTax() {

@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.service.jointwisdomService;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -7,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by wangdayin on 2016/1/18.
  */
 @XmlRootElement(name = "Source", namespace = "http://www.opentravel.org/OTA/2003/05")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Source {
     private RequestorID requestorID;
     private BookingChannel bookingChannel;

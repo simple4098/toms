@@ -470,7 +470,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         } else {
             //预定失败
             map.put("status", false);
-            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Commited.name(), Version.v1003.getText(), jsonModel.getMessage() + "  预定失败"));
+            map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError(jsonModel.getMessage() + "  预定失败"));
             return map;
 
         }
@@ -498,12 +498,12 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 return map;
             } else {
                 map.put("status", false);
-                map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "酒店拒绝取消订单"));
+                map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("酒店拒绝取消订单"));
                 return map;
             }
         } else {
             map.put("status", false);
-            map.put("data", new JointWisdomOrderErrorResponse().getBasicError(OrderResponseType.Cancelled.name(), Version.v1003.getText(), "订单不存在"));
+            map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("订单不存在"));
             return map;
         }
     }

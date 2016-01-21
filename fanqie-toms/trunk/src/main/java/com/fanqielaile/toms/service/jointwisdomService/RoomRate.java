@@ -16,6 +16,16 @@ public class RoomRate {
     private String ratePlanCode;//价格code
     private List<Rate> rates;//价格
     private Total total;
+    private String numberOfUnits;
+
+    @XmlAttribute(name = "NumberOfUnits")
+    public String getNumberOfUnits() {
+        return numberOfUnits;
+    }
+
+    public void setNumberOfUnits(String numberOfUnits) {
+        this.numberOfUnits = numberOfUnits;
+    }
 
     @XmlElement(name = "Total")
     public Total getTotal() {

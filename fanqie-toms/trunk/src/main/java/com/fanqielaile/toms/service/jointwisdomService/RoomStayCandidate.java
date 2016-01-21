@@ -12,6 +12,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class RoomStayCandidate {
     private String quantity;
     private GuestCounts guestCounts;
+    private String roomTypeCode;
+
+    @XmlAttribute(name = "RoomTypeCode")
+    public String getRoomTypeCode() {
+        return roomTypeCode;
+    }
+
+    public void setRoomTypeCode(String roomTypeCode) {
+        this.roomTypeCode = roomTypeCode;
+    }
 
     @XmlElement(name = "GuestCounts", namespace = "http://www.opentravel.org/OTA/2003/05")
     public GuestCounts getGuestCounts() {
