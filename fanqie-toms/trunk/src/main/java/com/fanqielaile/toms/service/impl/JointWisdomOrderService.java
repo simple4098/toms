@@ -102,6 +102,8 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 availOrder.setRoomTypeId(String.valueOf(jointWisdomInnRoomMappingDto.getRoomTypeId()));
                 //酒店id
                 availOrder.setInnId(jointWisdomInnRoomMappingDto.getInnId());
+                //处理一下离店日期，不需要包含最后一天
+                availOrder.setLeaveTime(DateUtil.addDay(availOrder.getLeaveTime(), -1));
                 logger.info("众荟试订单oms接口传递参数=>" + availOrder.toRoomAvail(company, availOrder).toString());
                 String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), availOrder.toRoomAvail(company, availOrder));
                 JSONObject jsonObject = JSONObject.fromObject(response);
@@ -472,7 +474,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             JointWisdomAddOrderSuccessResponse result = new JointWisdomAddOrderSuccessResponse();
             result.setMessage("预定成功");
             result.setVersion(Version.v1003.getText());
-            result.setResponseType(OrderResponseType.Commited.name());
+            result.setResponseType(OrderResponseType.Committed.name());
             result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
             map.put("status", true);
             map.put("data", result);
