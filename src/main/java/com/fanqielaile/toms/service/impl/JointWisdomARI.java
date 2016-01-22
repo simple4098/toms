@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.jw.dto.HotelRoomAvail;
 import com.fanqie.jw.dto.Inventory;
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.jw.dto.RoomPrice;
@@ -14,6 +15,7 @@ import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.opentravel.ota._2003._05.ErrorsType;
+import org.opentravel.ota._2003._05.OTAHotelAvailNotifRS;
 import org.opentravel.ota._2003._05.OTAHotelInvCountNotifRS;
 import org.opentravel.ota._2003._05.OTAHotelRatePlanNotifRS;
 import org.slf4j.Logger;
@@ -53,8 +55,14 @@ public class JointWisdomARI implements IJointWisdomARI {
                 refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
                 successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
                 if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
-                    logger.info(sj+"=====众荟成功=====");
-                    result.setStatus(Constants.SUCCESS200);
+                    //房型上下架
+                    Result status = xjRoomStatus(mappingDto, roomTypeInfo);
+                    logger.info(sj+status.getStatus()+"=====众荟成功=====");
+                    if (Constants.SUCCESS200 == status.getStatus()){
+                        result.setStatus(Constants.SUCCESS200);
+                    }else {
+                        result.setStatus(Constants.ERROR400);
+                    }
                 }else {
                     if (!CollectionUtils.isEmpty(refsOrSuccess) ){
                         logger.error(sj+"=====推送价格异常=====");
@@ -68,6 +76,27 @@ public class JointWisdomARI implements IJointWisdomARI {
                     result.setStatus(Constants.ERROR400);
                 }
             }
+        }
+        return result;
+    }
+
+    @Override
+    public Result xjRoomStatus(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo) {
+        HotelRoomAvail hotelRoomAvail = JwXHotelUtil.hotelRoomAvail(mappingDto, roomTypeInfo);
+        Result result = new Result();
+        try {
+            OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(hotelRoomAvail);
+            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getErrorsOrWarningsOrSuccess();
+            if (CollectionUtils.isEmpty(errorsOrWarningsOrSuccess)){
+                result.setStatus(Constants.SUCCESS200);
+            }else {
+                logger.info("下架失败");
+                result.setStatus(Constants.ERROR400);
+            }
+            return  result;
+        } catch (Exception e) {
+            result.setStatus(Constants.ERROR400);
+            logger.error("下架失败",e);
         }
         return result;
     }

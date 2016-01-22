@@ -87,7 +87,7 @@ public class JwXHotelUtil {
         jointWisdomInnRoom.setInnId(innId);
         jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
         jointWisdomInnRoom.setRoomTypeIdCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        jointWisdomInnRoom.setInnCode(otaId + "_" +innId);
+        jointWisdomInnRoom.setInnCode("919" + "_" +innId);
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
         jointWisdomInnRoom.setSj(isSj?1:0);
@@ -112,5 +112,29 @@ public class JwXHotelUtil {
         String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), mapping.getInnId(), mapping.getRoomTypeId(), CommonApi.checkRoom, Constants.day);
         List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
         return JwXHotelUtil.buildRoomTypeInfo(roomDetailList, mapping);
+    }
+
+    /**
+     * 客栈下架
+     * @param mappingDto 众荟关联关系
+     * @param roomTypeInfo 房型信息
+     */
+    public static HotelRoomAvail hotelRoomAvail(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo) {
+        List<RoomDetail> roomDetail = roomTypeInfo.getRoomDetail();
+        RoomDetail statDetail = roomDetail.get(0);
+        RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
+        HotelRoomAvail hotelRoomAvail =new HotelRoomAvail();
+        hotelRoomAvail.setStart(statDetail.getRoomDate());
+        hotelRoomAvail.setEnd(endRoomDetail.getRoomDate());
+        hotelRoomAvail.setInnId(mappingDto.getInnCode());
+        hotelRoomAvail.setRoomTypeId(mappingDto.getRoomTypeIdCode());
+        hotelRoomAvail.setUsed(true);
+        hotelRoomAvail.setRatePlan(mappingDto.getRatePlanCode());
+        if (mappingDto.getSj()==1){
+            hotelRoomAvail.setOpen();
+        }else {
+            hotelRoomAvail.setClose();
+        }
+        return hotelRoomAvail;
     }
 }

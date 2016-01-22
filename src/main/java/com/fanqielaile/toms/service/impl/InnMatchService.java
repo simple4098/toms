@@ -7,6 +7,7 @@ import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.CompanyDao;
 import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.service.IInnMatchService;
@@ -30,20 +31,9 @@ public class InnMatchService implements IInnMatchService {
     private CompanyDao companyDao;
 
     @Override
-    public InnDto obtOmsInn(BangInn bangInn){
+    public InnDto obtOmsInn(BangInn bangInn) throws IOException {
         Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
         String innInfoUrl = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInn.getAccountId()), CommonApi.INN_INFO);
-        String gets = null;
-        try {
-            gets = HttpClientUtil.httpGets(innInfoUrl, null);
-            JSONObject jsonInn = JSONObject.fromObject(gets);
-            if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
-                return JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
-            }
-        } catch (IOException e) {
-            throw  new RuntimeException(e);
-        }
-
-        return null;
+        return InnRoomHelper.getInnInfo(innInfoUrl);
     }
 }
