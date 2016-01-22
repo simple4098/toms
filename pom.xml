@@ -102,19 +102,19 @@
         <dependency>
             <groupId>com.fanqie</groupId>
             <artifactId>JointWisdom</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <version>1.2.5-SNAPSHOT</version>
         </dependency>
         <!--淘宝依赖-->
         <dependency>
             <groupId>com.taobao.api</groupId>
             <artifactId>taobao-sdk</artifactId>
-            <version>1.0.1</version>
+            <version>2.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.taobao.api</groupId>
             <artifactId>taobao-sdk-source</artifactId>
-            <version>1.0.1</version>
+            <version>2.0</version>
             <type>jar</type>
         </dependency>
         <!--日志-->
