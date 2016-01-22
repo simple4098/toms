@@ -136,9 +136,9 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                         }
                     }
                     if (canBook) {
-                        roomType.setNumberOfUnits("True");
+                        roomType.setNumberOfUnits("true");
                     } else {
-                        roomType.setNumberOfUnits("False");
+                        roomType.setNumberOfUnits("false");
                     }
                     RoomDescription roomDescription = new RoomDescription();
                     roomDescription.setName(jointWisdomInnRoomMappingDto.getRoomTypeName());
@@ -358,7 +358,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                         roomRate.setTotal(total);
                         roomRateList.add(roomRate);
                         //加载房型
-                        roomType.setNumberOfUnits(isCanbook ? "True" : "False");
+                        roomType.setNumberOfUnits(isCanbook ? "true" : "false");
                         roomTypeList.add(roomType);
                     }
                     //价格计划
