@@ -4,6 +4,8 @@ import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 
+import java.io.IOException;
+
 /**
  * DESC :
  * @author : 番茄木-ZLin
@@ -16,5 +18,5 @@ public interface IInnMatchService {
      * 获取oms客栈数据
      * @param bangInn 绑定客栈信息
      */
-    InnDto obtOmsInn(BangInn bangInn) throws TomsRuntimeException;
+    InnDto obtOmsInn(BangInn bangInn) throws TomsRuntimeException, IOException;
 }

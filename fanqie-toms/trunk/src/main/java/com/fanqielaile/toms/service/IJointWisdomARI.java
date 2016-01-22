@@ -23,4 +23,7 @@ public interface IJointWisdomARI {
      * @param commission 佣金比
      */
     public Result updateJsPriceInventory(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo,OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws Exception;
+
+
+    public Result xjRoomStatus(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo);
 }
