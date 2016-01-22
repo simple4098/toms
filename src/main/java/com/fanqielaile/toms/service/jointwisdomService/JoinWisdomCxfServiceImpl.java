@@ -1,6 +1,8 @@
 package com.fanqielaile.toms.service.jointwisdomService;
 
 import com.fanqie.jw.enums.OrderRequestType;
+import com.fanqie.jw.enums.OrderResponseType;
+import com.fanqie.jw.enums.Version;
 import com.fanqielaile.toms.service.IJointWisdomOrderService;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
@@ -76,15 +78,15 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
                     logger.info("众荟取消订单返回值：" + FcUtil.fcRequest(map.get("data")));
                     return (JointWisdomAddOrderSuccessResponse) map.get("data");
                 } else {
-                    return new JointWisdomAddOrderSuccessResponse().getBasicError("订单流程中请求类型不存在");
+                    return new JointWisdomAddOrderSuccessResponse().getBasicError("订单流程中请求类型不存在", Version.v1003.getText(), OrderResponseType.Committed.name());
                 }
             } else {
                 logger.info("众荟传入xml为空");
-                return new JointWisdomAddOrderSuccessResponse().getBasicError("传入xml参数为空");
+                return new JointWisdomAddOrderSuccessResponse().getBasicError("传入xml参数为空", Version.v1003.getText(), OrderResponseType.Committed.name());
             }
         } catch (Exception e) {
             logger.info("处理携程订单流程异常" + e);
-            return new JointWisdomAddOrderSuccessResponse().getBasicError("处理众荟订单流程异常" + e);
+            return new JointWisdomAddOrderSuccessResponse().getBasicError("处理众荟订单流程异常", Version.v1003.getText(), OrderResponseType.Committed.name());
         }
     }
 }
