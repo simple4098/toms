@@ -101,11 +101,13 @@ public class JointWisdomAddOrderSuccessResponse extends JointWisdomAvailCheckOrd
         return result;
     }
 
-    public JointWisdomAddOrderSuccessResponse getBasicError(String message) {
+    public JointWisdomAddOrderSuccessResponse getBasicError(String message, String version, String responseType) {
         JointWisdomAddOrderSuccessResponse result = new JointWisdomAddOrderSuccessResponse();
         Error error = new Error();
         error.setError(message);
         result.setErrors(error);
+        result.setVersion(version);
+        result.setResponseType(responseType);
         return result;
     }
 
