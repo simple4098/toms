@@ -139,6 +139,9 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                         roomType.setNumberOfUnits("true");
                     } else {
                         roomType.setNumberOfUnits("false");
+                        map.put("status", false);
+                        map.put("data", new JointWisdomAvailCheckOrderSuccessResponse().getBasicError("房型剩余放量不满足预定，请重试"));
+                        return map;
                     }
                     RoomDescription roomDescription = new RoomDescription();
                     roomDescription.setName(jointWisdomInnRoomMappingDto.getRoomTypeName());
@@ -323,30 +326,30 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                 OtaRoomPriceDto otaRoomPriceDto = this.otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(jointWisdomInnRoomMappingDto.getRoomTypeId()), otaInfo.getOtaInfoId()));
 
 
-                                        Rate rate = new Rate();
+                                Rate rate = new Rate();
                                 rate.setEffectiveDate(DateUtil.format(DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd"), "yyyy-MM-dd"));
                                 rate.setExpireDate(DateUtil.format(DateUtil.addDay(DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd"), 1), "yyyy-MM-dd"));
-                                        Base base = new Base();
-                                        base.setCurrencyCode(base.getCurrencyCode());
-                                        //判断当前客栈的价格模式
-                                        if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
-                                            base.setAmountAfterTax(String.valueOf(TomsUtil.getPriceRoundUp(BigDecimal.valueOf(detail.getRoomPrice()).multiply(new BigDecimal(1).subtract(percent)).doubleValue())));
-                                        } else {
-                                            base.setAmountAfterTax(String.valueOf(detail.getRoomPrice()));
-                                        }
-                                        //设置加减价
-                                        //设置加减价
+                                Base base = new Base();
+                                base.setCurrencyCode(base.getCurrencyCode());
+                                //判断当前客栈的价格模式
+                                if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+                                    base.setAmountAfterTax(String.valueOf(TomsUtil.getPriceRoundUp(BigDecimal.valueOf(detail.getRoomPrice()).multiply(new BigDecimal(1).subtract(percent)).doubleValue())));
+                                } else {
+                                    base.setAmountAfterTax(String.valueOf(detail.getRoomPrice()));
+                                }
+                                //设置加减价
+                                //设置加减价
                                 if (null != otaRoomPriceDto && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() >= otaRoomPriceDto.getStartDate().getTime() && DateUtil.parseDate(detail.getRoomDate(), "yyyy-MM-dd").getTime() <= otaRoomPriceDto.getEndDate().getTime()) {
                                     base.setAmountAfterTax(String.valueOf(BigDecimal.valueOf(Double.parseDouble(base.getAmountAfterTax())).add(BigDecimal.valueOf(otaRoomPriceDto.getValue()))));
-                                        }
-                                        base.setAmountBeforeTax(base.getAmountAfterTax());
-                                        base.setCurrencyCode(base.getCurrencyCode());
-                                        Taxes taxes = new Taxes();
-                                        taxes.setCurrencyCode(base.getCurrencyCode());
-                                        base.setTaxes(taxes);
-                                        rate.setBase(base);
-                                        rateList.add(rate);
-                                        totalPrice = totalPrice.add(BigDecimal.valueOf(Double.valueOf(base.getAmountAfterTax())));
+                                }
+                                base.setAmountBeforeTax(base.getAmountAfterTax());
+                                base.setCurrencyCode(base.getCurrencyCode());
+                                Taxes taxes = new Taxes();
+                                taxes.setCurrencyCode(base.getCurrencyCode());
+                                base.setTaxes(taxes);
+                                rate.setBase(base);
+                                rateList.add(rate);
+                                totalPrice = totalPrice.add(BigDecimal.valueOf(Double.valueOf(base.getAmountAfterTax())));
 
                             }
                         }
@@ -355,11 +358,13 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                         total.setAmountAfterTax(String.valueOf(totalPrice));
                         total.setAmountBeforeTax(total.getAmountAfterTax());
                         total.setCurrencyCode("RMB");
-                        roomRate.setTotal(total);
-                        roomRateList.add(roomRate);
-                        //加载房型
-                        roomType.setNumberOfUnits(isCanbook ? "true" : "false");
-                        roomTypeList.add(roomType);
+                        if (isCanbook) {
+                            roomRate.setTotal(total);
+                            roomRateList.add(roomRate);
+                            //加载房型
+                            roomType.setNumberOfUnits(isCanbook ? "true" : "false");
+                            roomTypeList.add(roomType);
+                        }
                     }
                     //价格计划
                     RatePlan ratePlan = new RatePlan();
@@ -375,6 +380,11 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     ratePlanList.add(ratePlan);
                 }
                 roomStay.setRoomTypes(roomTypeList);
+                if (ArrayUtils.isEmpty(roomTypeList.toArray())) {
+                    map.put("status", false);
+                    map.put("data", new JointWisdomAvailCheckOrderSuccessResponse().getBasicError("房型剩余放量不足，请重试"));
+                    return map;
+                }
                 roomStay.setRoomRates(roomRateList);
                 roomStay.setRatePlans(ratePlanList);
                 List<GuestCount> guestCountList = new ArrayList<>();
