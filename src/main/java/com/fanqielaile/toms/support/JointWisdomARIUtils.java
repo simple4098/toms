@@ -165,7 +165,7 @@ public class JointWisdomARIUtils{
      *  设置开关房
      */
     public static  OTAHotelAvailNotifRS  hotelAvailNotifRQ(HotelRoomAvail hotelRoomAvail) throws Exception{
-        LOGGER.info("推送房价接受的参数："+JSON.toJSON(hotelRoomAvail));
+        LOGGER.info("请求众荟设置房态接受的参数："+JSON.toJSON(hotelRoomAvail));
         Assert.isTrue(StringUtils.isNotEmpty(hotelRoomAvail.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(hotelRoomAvail.getRoomTypeId()));
         Assert.isTrue(StringUtils.isNotEmpty(hotelRoomAvail.getStart()));
@@ -203,7 +203,7 @@ public class JointWisdomARIUtils{
         availStatusMessage.setRestrictionStatus(restrictionStatus);
         restrictionStatus.setRestriction(MASTER); //默认
         restrictionStatus.setStatus(hotelRoomAvail.getAvailabilityStatusType());// 房态（开房或者关房状态）
-        LOGGER.info("请求众荟设置房态 request->："+JSON.toJSON(rq));
+        LOGGER.info("请求众荟设置房态: request->："+JSON.toJSON(rq));
         OTAHotelAvailNotifRS  resp =  JointWiddomRequest.getDefaultInstance().otaHotelAvailNotifRQ(rq);
         LOGGER.info("请求众荟设置房态：response->"+JSON.toJSON(resp));
         return resp;
