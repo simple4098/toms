@@ -224,7 +224,6 @@ public class JointWisdomARIUtils{
             LOGGER.error("众荟设置响应失败：",e);
             throw  new RuntimeException(e.getMessage());
         }
-        LOGGER.info("请求众荟设置房态：response->"+JSON.toJSON(resp));
         return resp;
     }
 
