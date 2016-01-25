@@ -7,6 +7,7 @@ import com.fanqie.jw.dto.RoomPrice;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.zh.JointWisdomMappingDto;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.IJointWisdomARI;
 import com.fanqielaile.toms.support.JointWisdomARIUtils;
@@ -46,9 +47,13 @@ public class JointWisdomARI implements IJointWisdomARI {
             }
             String sj = mappingDto.getSj()==1?"上架":"下架";
             RoomPrice roomPrice = JwXHotelUtil.buildRoomPrice(mappingDto,roomTypeInfo,priceDto,commission);
+            List<RoomPrice> roomPrices = new ArrayList<>();
+            roomPrices.add(roomPrice);
             Inventory inventory = JwXHotelUtil.inventory(mappingDto, roomTypeInfo);
-            OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
-            OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);
+            List<Inventory> inventories = new ArrayList<>();
+            inventories.add(inventory);
+            OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrices);
+            OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventories);
             List<Object> refsOrSuccess = null;
             List<Object> successOrWarnings = null;
             if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
@@ -83,9 +88,11 @@ public class JointWisdomARI implements IJointWisdomARI {
     @Override
     public Result xjRoomStatus(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo) {
         HotelRoomAvail hotelRoomAvail = JwXHotelUtil.hotelRoomAvail(mappingDto, roomTypeInfo);
+        List<HotelRoomAvail> list = new ArrayList<>();
+        list.add(hotelRoomAvail);
         Result result = new Result();
         try {
-            OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(hotelRoomAvail);
+            OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(list);
             List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getErrorsOrWarningsOrSuccess();
             if (CollectionUtils.isEmpty(errorsOrWarningsOrSuccess)){
                 result.setStatus(Constants.SUCCESS200);
@@ -99,5 +106,70 @@ public class JointWisdomARI implements IJointWisdomARI {
             logger.error("下架失败",e);
         }
         return result;
+    }
+
+    @Override
+    public Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) {
+        Result result = new Result();
+        if (jointWisdomInnRoomList!=null){
+
+            List<RoomPrice> roomPrice = JwXHotelUtil.buildRoomPrice(jointWisdomInnRoomList,priceDto,commission);
+            List<Inventory> inventory = JwXHotelUtil.inventory(jointWisdomInnRoomList);
+            OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
+            OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);
+            List<Object> refsOrSuccess = null;
+            List<Object> successOrWarnings = null;
+            if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
+                refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
+                successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
+                if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
+                    //房型上下架
+                    Result status = xjRoomStatus(jointWisdomInnRoomList);
+                    if (Constants.SUCCESS200 == status.getStatus()){
+                        logger.info("上/下架 和 推送价格库存成功");
+                        result.setStatus(Constants.SUCCESS200);
+                    }else {
+                        result.setStatus(Constants.ERROR400);
+                        throw  new TomsRuntimeException("上/下架 失败");
+                    }
+                }else {
+                    if (!CollectionUtils.isEmpty(refsOrSuccess) ){
+                        logger.error("=====推送价格异常=====");
+                        result.setMessage("=====推送价格异常=====");
+                        throw  new TomsRuntimeException("推送价格异常");
+                    }
+                    if (!CollectionUtils.isEmpty(successOrWarnings)){
+                        logger.error("=====推送库存异常=====");
+                        result.setMessage("=====推送库存异常=====");
+                        throw  new TomsRuntimeException("推送库存异常");
+
+                    }
+                    result.setStatus(Constants.ERROR400);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Result xjRoomStatus(List<JointWisdomMappingDto> jointWisdomInnRoomList) {
+        List<HotelRoomAvail> hotelRoomAvail = JwXHotelUtil.hotelRoomAvail(jointWisdomInnRoomList);
+        Result result = new Result();
+        try {
+            OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(hotelRoomAvail);
+            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getErrorsOrWarningsOrSuccess();
+            if (CollectionUtils.isEmpty(errorsOrWarningsOrSuccess)){
+                result.setStatus(Constants.SUCCESS200);
+            }else {
+                logger.info("上/下架失败");
+                result.setStatus(Constants.ERROR400);
+            }
+            return  result;
+        } catch (Exception e) {
+            result.setStatus(Constants.ERROR400);
+            logger.error("上/下架失败",e);
+            throw  new TomsRuntimeException("上/下架失败",e);
+        }
+
     }
 }
