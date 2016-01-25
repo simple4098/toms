@@ -4,7 +4,10 @@ import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.zh.JointWisdomMappingDto;
 import com.fanqielaile.toms.model.Result;
+
+import java.util.List;
 
 /**
  * DESC : 众荟推送房价 房态， 逻辑处理
@@ -26,4 +29,14 @@ public interface IJointWisdomARI {
 
 
     public Result xjRoomStatus(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo);
+
+    public Result xjRoomStatus(List<JointWisdomMappingDto> jointWisdomInnRoomList);
+
+    /**
+     * 客栈一次性上下架
+     * @param jointWisdomInnRoomList 关联对象集合
+     * @param priceDto 价格
+     * @param commission 佣金比
+     */
+    Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission);
 }

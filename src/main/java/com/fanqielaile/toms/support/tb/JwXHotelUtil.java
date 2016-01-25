@@ -8,6 +8,7 @@ import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaRoomPriceDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.zh.JointWisdomMappingDto;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.Constants;
@@ -81,17 +82,19 @@ public class JwXHotelUtil {
         return null;
     }
 
-    public static JointWisdomInnRoomMappingDto buildMapping(RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,boolean isSj){
-        JointWisdomInnRoomMappingDto jointWisdomInnRoom = new JointWisdomInnRoomMappingDto();
+    public static JointWisdomMappingDto buildMapping(OtaRoomPriceDto priceDto,RoomTypeInfo roomTypeInfo,String companyId,Integer innId,String otaId,String otaInfoId,String ratePlanCode,boolean isSj){
+        JointWisdomMappingDto jointWisdomInnRoom = new JointWisdomMappingDto();
         jointWisdomInnRoom.setCompanyId(companyId);
         jointWisdomInnRoom.setInnId(innId);
         jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
-        jointWisdomInnRoom.setRoomTypeIdCode(otaId + "_" +roomTypeInfo.getRoomTypeId());
-        jointWisdomInnRoom.setInnCode(innId.toString());
+        jointWisdomInnRoom.setRoomTypeIdCode(roomTypeInfo.getRoomTypeId().toString());
+        jointWisdomInnRoom.setInnCode("919" + "_" +innId.toString());
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
-        jointWisdomInnRoom.setSj(isSj?1:0);
+        jointWisdomInnRoom.setSj(isSj ? 1 : 0);
         jointWisdomInnRoom.setRoomTypeName(roomTypeInfo.getRoomTypeName());
+        jointWisdomInnRoom.setRoomTypeInfo(roomTypeInfo);
+        jointWisdomInnRoom.setPriceDto(priceDto);
         return jointWisdomInnRoom;
     }
 
@@ -136,5 +139,87 @@ public class JwXHotelUtil {
             hotelRoomAvail.setClose();
         }
         return hotelRoomAvail;
+    }
+
+    public static List<RoomPrice> buildRoomPrice(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) {
+
+        List<RoomPrice> list = new ArrayList<>();
+        if (jointWisdomInnRoomList!=null ){
+            RoomPrice roomPrice = null;
+            for (JointWisdomMappingDto mappingDto:jointWisdomInnRoomList){
+                List<RoomDetail> roomDetail = mappingDto.getRoomTypeInfo().getRoomDetail();
+                RoomDetail statDetail = roomDetail.get(0);
+                RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
+                List<RoomPriceRelation> relations = new ArrayList<>();
+                roomPrice = new RoomPrice(mappingDto.getInnCode(),mappingDto.getRoomTypeIdCode(),statDetail.getRoomDate(),
+                        endRoomDetail.getRoomDate(),mappingDto.getRatePlanCode());
+                RoomPriceRelation roomPriceRelation = null;
+                for (RoomDetail detail:roomDetail){
+                    roomPriceRelation = new RoomPriceRelation();
+                    DateUtil.fromDate(1,detail.getRoomDate());
+                    Double price = TomsUtil.price(detail.getRoomPrice(),DateUtil.parseDate(detail.getRoomDate()) , commission, priceDto);
+                    roomPriceRelation.setAmountAfterTax(price.toString());
+                    roomPriceRelation.setAmountBeforeTax(price.toString());
+                    roomPriceRelation.setStart(detail.getRoomDate());
+                    roomPriceRelation.setEnd(detail.getRoomDate());
+                    roomPriceRelation.setUsed(mappingDto.getSj()==1);
+                    relations.add(roomPriceRelation);
+                }
+                roomPrice.setRelations(relations);
+                list.add(roomPrice);
+            }
+        }
+
+        return list;
+    }
+
+    public static List<Inventory> inventory(List<JointWisdomMappingDto> jointWisdomInnRoomList) {
+        List<Inventory> list = new ArrayList<>();
+        if (jointWisdomInnRoomList!=null ){
+            for (JointWisdomMappingDto mappingDto:jointWisdomInnRoomList){
+                List<RoomDetail> roomDetail = mappingDto.getRoomTypeInfo().getRoomDetail();
+                List<InventoryRelation> relations = new ArrayList<>();
+                InventoryRelation inventoryRelation = null;
+                Inventory  inventory = new Inventory(mappingDto.getInnCode(),mappingDto.getRoomTypeIdCode());
+                for (RoomDetail detail:roomDetail){
+                    inventoryRelation = new InventoryRelation();
+                    inventoryRelation.setInventoryCount(detail.getRoomNum());
+                    inventoryRelation.setStart(detail.getRoomDate());
+                    inventoryRelation.setEnd(detail.getRoomDate());
+                    inventoryRelation.setUsed(mappingDto.getSj()==1);
+                    relations.add(inventoryRelation);
+                }
+                inventory.setRelations(relations);
+                list.add(inventory);
+            }
+        }
+        return  list;
+    }
+
+    public static List<HotelRoomAvail> hotelRoomAvail(List<JointWisdomMappingDto> jointWisdomInnRoomList) {
+        List<HotelRoomAvail> list = new ArrayList<>();
+        if (jointWisdomInnRoomList!=null){
+            for (JointWisdomMappingDto mappingDto:jointWisdomInnRoomList){
+                List<RoomDetail> roomDetail = mappingDto.getRoomTypeInfo().getRoomDetail();
+                RoomDetail statDetail = roomDetail.get(0);
+                RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
+                HotelRoomAvail hotelRoomAvail =new HotelRoomAvail();
+                hotelRoomAvail.setStart(statDetail.getRoomDate());
+                hotelRoomAvail.setEnd(endRoomDetail.getRoomDate());
+                hotelRoomAvail.setInnId(mappingDto.getInnCode());
+                hotelRoomAvail.setRoomTypeId(mappingDto.getRoomTypeIdCode());
+                hotelRoomAvail.setUsed(true);
+                hotelRoomAvail.setRatePlan(mappingDto.getRatePlanCode());
+                if (mappingDto.getSj()==1){
+                    hotelRoomAvail.setOpen();
+                }else {
+                    hotelRoomAvail.setClose();
+                }
+                list.add(hotelRoomAvail);
+            }
+
+        }
+
+        return list;
     }
 }

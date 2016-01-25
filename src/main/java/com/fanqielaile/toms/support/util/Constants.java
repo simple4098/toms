@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqie.util.PropertiesUtil;
+
 /**
  * Created by wangdayin on 2015/5/12.
  */
@@ -57,5 +59,6 @@ public class Constants {
     
     public static final String OTA_CTRIP = "3";
     //众荟房态天数
-    public static final int day = 10;
+    public static final int day = Integer.valueOf(PropertiesUtil.readFile("/data.properties","zh.day"));
+    //public static final int day = 60;
 }
