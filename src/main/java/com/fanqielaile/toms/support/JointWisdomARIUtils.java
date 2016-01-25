@@ -108,6 +108,7 @@ public class JointWisdomARIUtils{
             LOGGER.error("众荟推送库存响应失败：",e);
             throw  new RuntimeException(e.getMessage());
         }
+        LOGGER.info("请求众荟推送库存->response：" + JSON.toJSON(resp));
         return  resp;
     }
     /**
