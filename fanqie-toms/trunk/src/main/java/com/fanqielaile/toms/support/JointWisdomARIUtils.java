@@ -155,7 +155,7 @@ public class JointWisdomARIUtils{
             }
         }
         ratePlans.getRatePlan().add(hotelRatePlanType);
-        otaHotel.setRatePlans(ratePlans);
+    //    otaHotel.setRatePlans(ratePlans);
         }
         OTAHotelRatePlanNotifRS resp = null;
         try{
