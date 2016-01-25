@@ -100,7 +100,14 @@ public class JointWisdomARIUtils{
             bct.setStatusApplicationControl(sact);
         }
         LOGGER.info("请求众荟推送库存->request：" + JSON.toJSON(invCountNotifRQ));
-        OTAHotelInvCountNotifRS resp = JointWiddomRequest.getDefaultInstance().otaHotelInvCountNotifRQ(invCountNotifRQ);
+        OTAHotelInvCountNotifRS resp = null;
+        try{
+            resp =  JointWiddomRequest.getDefaultInstance().otaHotelInvCountNotifRQ(invCountNotifRQ);
+            LOGGER.info("请求众荟推送库存：response->"+JSON.toJSON(resp));
+        }catch (Exception e){
+            LOGGER.error("众荟推送库存响应失败：",e);
+            throw  new RuntimeException(e.getMessage());
+        }
         LOGGER.info("请求众荟推送库存->response：" + JSON.toJSON(resp));
         return  resp;
     }
@@ -111,7 +118,7 @@ public class JointWisdomARIUtils{
      * @throws Exception
      *             所有异常父类。其中包括参数异常，携程请求异常等
      */
-    public static OTAHotelRatePlanNotifRS pushRoomPrice(RoomPrice roomPrice) throws Exception{
+    public static OTAHotelRatePlanNotifRS pushRoomPrice(RoomPrice roomPrice){
         LOGGER.info("推送房价接受的参数："+JSON.toJSON(roomPrice));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(roomPrice.getRatePlanCode()));
@@ -154,8 +161,14 @@ public class JointWisdomARIUtils{
         ratePlans.getRatePlan().add(hotelRatePlanType);
         otaHotel.setRatePlans(ratePlans);
         LOGGER.info("请求众荟推送房价 request->："+JSON.toJSON(otaHotel));
-        OTAHotelRatePlanNotifRS resp =  JointWiddomRequest.getDefaultInstance().otaHotelRatePlanNotifRQ(otaHotel);
-        LOGGER.info("请求众荟推送房价：response->"+JSON.toJSON(resp));
+        OTAHotelRatePlanNotifRS resp = null;
+        try{
+            resp =  JointWiddomRequest.getDefaultInstance().otaHotelRatePlanNotifRQ(otaHotel);
+            LOGGER.info("请求众荟推送房价：response->"+JSON.toJSON(resp));
+        }catch (Exception e){
+            LOGGER.error("众荟推送响应失败：",e);
+            throw  new RuntimeException(e.getMessage());
+        }
         return  resp;
     }
 
@@ -164,7 +177,7 @@ public class JointWisdomARIUtils{
     /**
      *  设置开关房
      */
-    public static  OTAHotelAvailNotifRS  hotelAvailNotifRQ(HotelRoomAvail hotelRoomAvail) throws Exception{
+    public static  OTAHotelAvailNotifRS  hotelAvailNotifRQ(HotelRoomAvail hotelRoomAvail){
         LOGGER.info("请求众荟设置房态接受的参数："+JSON.toJSON(hotelRoomAvail));
         Assert.isTrue(StringUtils.isNotEmpty(hotelRoomAvail.getInnId()));
         Assert.isTrue(StringUtils.isNotEmpty(hotelRoomAvail.getRoomTypeId()));
@@ -204,7 +217,14 @@ public class JointWisdomARIUtils{
         restrictionStatus.setRestriction(MASTER); //默认
         restrictionStatus.setStatus(hotelRoomAvail.getAvailabilityStatusType());// 房态（开房或者关房状态）
         LOGGER.info("请求众荟设置房态: request->："+JSON.toJSON(rq));
-        OTAHotelAvailNotifRS  resp =  JointWiddomRequest.getDefaultInstance().otaHotelAvailNotifRQ(rq);
+        OTAHotelAvailNotifRS  resp = null;
+        try{
+            resp =  JointWiddomRequest.getDefaultInstance().otaHotelAvailNotifRQ(rq);
+            LOGGER.info("请求众荟设置房态：response->"+JSON.toJSON(resp));
+        }catch (Exception e){
+            LOGGER.error("众荟设置响应失败：",e);
+            throw  new RuntimeException(e.getMessage());
+        }
         LOGGER.info("请求众荟设置房态：response->"+JSON.toJSON(resp));
         return resp;
     }
