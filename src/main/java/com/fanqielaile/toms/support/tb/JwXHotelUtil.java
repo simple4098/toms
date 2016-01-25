@@ -87,8 +87,8 @@ public class JwXHotelUtil {
         jointWisdomInnRoom.setCompanyId(companyId);
         jointWisdomInnRoom.setInnId(innId);
         jointWisdomInnRoom.setRoomTypeId(roomTypeInfo.getRoomTypeId());
-        jointWisdomInnRoom.setRoomTypeIdCode(roomTypeInfo.getRoomTypeId().toString());
-        jointWisdomInnRoom.setInnCode("919" + "_" +innId.toString());
+        jointWisdomInnRoom.setRoomTypeIdCode(otaId + "_" +roomTypeInfo.getRoomTypeId().toString());
+        jointWisdomInnRoom.setInnCode(innId.toString());
         jointWisdomInnRoom.setRatePlanCode(ratePlanCode);
         jointWisdomInnRoom.setOtaInfoId(otaInfoId);
         jointWisdomInnRoom.setSj(isSj ? 1 : 0);
