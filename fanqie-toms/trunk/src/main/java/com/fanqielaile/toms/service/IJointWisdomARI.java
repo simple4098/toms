@@ -35,8 +35,7 @@ public interface IJointWisdomARI {
     /**
      * 客栈一次性上下架
      * @param jointWisdomInnRoomList 关联对象集合
-     * @param priceDto 价格
      * @param commission 佣金比
      */
-    Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission);
+    Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaCommissionPercentDto commission);
 }
