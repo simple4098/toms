@@ -109,11 +109,11 @@ public class JointWisdomARI implements IJointWisdomARI {
     }
 
     @Override
-    public Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) {
+    public Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList,  OtaCommissionPercentDto commission) {
         Result result = new Result();
         if (jointWisdomInnRoomList!=null){
 
-            List<RoomPrice> roomPrice = JwXHotelUtil.buildRoomPrice(jointWisdomInnRoomList,priceDto,commission);
+            List<RoomPrice> roomPrice = JwXHotelUtil.buildRoomPrice(jointWisdomInnRoomList,commission);
             List<Inventory> inventory = JwXHotelUtil.inventory(jointWisdomInnRoomList);
             OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
             OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);

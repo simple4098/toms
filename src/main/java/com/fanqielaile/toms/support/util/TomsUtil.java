@@ -241,6 +241,7 @@ public class TomsUtil {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         tbParam.setsJiaModel(priceModel);
         tbParam.setCompanyCode(company.getCompanyCode());
+        tbParam.setUpDown(true);
         return  tbParam;
     }
 

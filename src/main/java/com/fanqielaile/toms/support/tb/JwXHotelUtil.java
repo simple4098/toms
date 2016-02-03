@@ -141,7 +141,7 @@ public class JwXHotelUtil {
         return hotelRoomAvail;
     }
 
-    public static List<RoomPrice> buildRoomPrice(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission) {
+    public static List<RoomPrice> buildRoomPrice(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaCommissionPercentDto commission) {
 
         List<RoomPrice> list = new ArrayList<>();
         if (jointWisdomInnRoomList!=null ){
@@ -157,7 +157,7 @@ public class JwXHotelUtil {
                 for (RoomDetail detail:roomDetail){
                     roomPriceRelation = new RoomPriceRelation();
                     DateUtil.fromDate(1,detail.getRoomDate());
-                    Double price = TomsUtil.price(detail.getRoomPrice(),DateUtil.parseDate(detail.getRoomDate()) , commission, priceDto);
+                    Double price = TomsUtil.price(detail.getRoomPrice(),DateUtil.parseDate(detail.getRoomDate()) , commission, mappingDto.getPriceDto());
                     roomPriceRelation.setAmountAfterTax(price.toString());
                     roomPriceRelation.setAmountBeforeTax(price.toString());
                     roomPriceRelation.setStart(detail.getRoomDate());
