@@ -312,3 +312,67 @@ $('.btn-export-form').on('click', function () {
         }
     }
 });
+//下单到oms
+$('.create-order-oms').on('click', function () {
+    var url = $(this).attr('data-url');
+    $('.create-order-oms-url').val(url);
+    $("#createOrderOms").modal();
+});
+//取消订单同步oms
+$('.cancel-order-oms').on('click', function () {
+    var url = $(this).attr('data-url');
+    $('.cancel-order-oms-url').val(url);
+    $("#cancelOrderOms").modal();
+});
+//确认下单到oms
+$('.btn-create-order-oms').on('click', function () {
+    var url = $('.create-order-oms-url').val();
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    })
+});
+//确认取消订单同步oms
+$('.btn-cancel-order-oms').on('click', function () {
+    var url = $('.cancel-order-oms-url').val();
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    })
+});

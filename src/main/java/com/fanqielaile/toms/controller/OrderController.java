@@ -380,4 +380,42 @@ public class OrderController extends BaseController {
             model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
         }
     }
+
+    /**
+     * 下单到oms
+     *
+     * @param model
+     * @param id
+     */
+    @RequestMapping("create_order_oms")
+    public void createOrderOms(Model model, String id) {
+        try {
+            OrderParamDto orderParamDto = this.orderService.findOrderById(id);
+            if (null != orderParamDto) {
+                JsonModel orderOmsMethod = this.orderService.createOrderOmsMethod(orderParamDto, getCurrentUser());
+                model.addAttribute(Constants.STATUS, orderOmsMethod.isSuccess());
+                model.addAttribute(Constants.MESSAGE, orderOmsMethod.getMessage());
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+            }
+        } catch (Exception e) {
+            logger.info("下单到oms异常");
+        }
+    }
+
+    @RequestMapping("cancel_order_oms")
+    public void cancelOrderOms(Model model, String id) {
+        try {
+            OrderParamDto orderParamDto = this.orderService.findOrderById(id);
+            if (null != orderParamDto) {
+                this.orderService.cancelOrderOmsMethod(orderParamDto, getCurrentUser());
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+            }
+        } catch (Exception e) {
+            logger.info("oms取消订单异常");
+        }
+    }
 }

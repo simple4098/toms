@@ -7,6 +7,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2015/6/19.
@@ -100,4 +101,14 @@ public interface OrderDao {
      * @return
      */
     List<OrderParamDto> selectOrderByNoPage(@Param("order") OrderParamDto orderParamDto);
+
+    List<Order> selectExceptionOrderList(@Param("beginDate") String beginDate, @Param("endDate") String endDate);
+
+    /**
+     * 分页查询异常订单列表
+     *
+     * @param pageBounds
+     * @return
+     */
+    List<Order> selectAllExceptionOrder(PageBounds pageBounds);
 }

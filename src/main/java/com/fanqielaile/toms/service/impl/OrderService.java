@@ -105,6 +105,8 @@ public class OrderService implements IOrderService {
     private CtripRoomTypeMappingDao ctripRoomTypeMappingDao;
     @Resource
     private IJointWisdomInnRoomDao jointWisdomInnRoomDao;
+    @Resource
+    private ExceptionOrderDao exceptionOrderDao;
 
 
     @Override
@@ -1481,5 +1483,42 @@ public class OrderService implements IOrderService {
         builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
         ExportExcelUtil.execlOrderExport(orderDtos, response, builder.toString());
 
+    }
+
+    @Override
+    public List<Order> findExceptionOrderList(Map<String, String> map) {
+        return this.orderDao.selectExceptionOrderList(map.get("fifteenDate"), map.get("fourteenDate"));
+    }
+
+    @Override
+    public JsonModel createOrderOmsMethod(OrderParamDto orderParamDto, UserInfo currentUser) throws Exception {
+        //下单到oms
+        JsonModel jsonModel = payBackDealMethod(orderParamDto, new UserInfo(), OtaType.TB.name());
+        //更新异常订单状态为删除
+        ExceptionOrder exceptionOrder = new ExceptionOrder(OrderStatus.ACCEPT, orderParamDto.getId(), FeeStatus.PAID);
+        exceptionOrder.setModifierId(currentUser.getId());
+        this.exceptionOrderDao.updateExceptionOrder(exceptionOrder);
+        return jsonModel;
+    }
+
+    @Override
+    public JsonModel cancelOrderOmsMethod(OrderParamDto order, UserInfo currentUser) throws Exception {
+        // 查询调用的url
+        Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
+        //查询公司信息
+        OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
+        Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
+        if (null != dictionary) {
+            //发送请求
+            logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+            String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
+            logger.info("调用OMS取消订单的返回值=>" + respose.toString());
+            JSONObject jsonObject = JSONObject.fromObject(respose);
+            //同步成功后在修改数据库
+            this.orderDao.updateOrderStatusAndReason(order);
+            //写入操作记录
+            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.CANCEL_ORDER, "取消订单接口", ChannelSource.TAOBAO.name()));
+        }
+        return new JsonModel(true, "取消订单成功");
     }
 }

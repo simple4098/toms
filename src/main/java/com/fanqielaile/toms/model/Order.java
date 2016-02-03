@@ -158,6 +158,26 @@ public class Order extends Domain {
     private String innCode;
     //酒店房型id——int
     private int roomTypeIdInt;
+    //异常订单
+    private List<ExceptionOrder> exceptionOrderList;
+    //ota订单状态
+    private OtaOrderStatus otaOrderStatus;
+
+    public OtaOrderStatus getOtaOrderStatus() {
+        return otaOrderStatus;
+    }
+
+    public void setOtaOrderStatus(OtaOrderStatus otaOrderStatus) {
+        this.otaOrderStatus = otaOrderStatus;
+    }
+
+    public List<ExceptionOrder> getExceptionOrderList() {
+        return exceptionOrderList;
+    }
+
+    public void setExceptionOrderList(List<ExceptionOrder> exceptionOrderList) {
+        this.exceptionOrderList = exceptionOrderList;
+    }
 
     public int getRoomTypeIdInt() {
         return roomTypeIdInt;
@@ -919,4 +939,17 @@ public class Order extends Domain {
     }
 
 
+    public Order getOrderToExceptionOrder(List<Order> exceptionOrderList) {
+        Order order = new Order();
+        List<ExceptionOrder> exceptionOrders = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(exceptionOrderList.toArray())) {
+            for (Order o : exceptionOrderList) {
+                ExceptionOrder exceptionOrder = new ExceptionOrder();
+                exceptionOrder.setOrderId(o.getId());
+                exceptionOrders.add(exceptionOrder);
+            }
+        }
+        order.setExceptionOrderList(exceptionOrders);
+        return order;
+    }
 }

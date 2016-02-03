@@ -285,4 +285,30 @@ public interface IOrderService {
      * @throws Exception
      */
     JsonModel payBackDealMethod(Order order, UserInfo userInfo, String otaType) throws Exception;
+
+    /**
+     * 查询异常订单
+     *
+     * @param map
+     * @return
+     */
+    List<Order> findExceptionOrderList(Map<String, String> map);
+
+    /**
+     * 下单到oms
+     *
+     * @param orderParamDto
+     * @param currentUser
+     * @return
+     */
+    JsonModel createOrderOmsMethod(OrderParamDto orderParamDto, UserInfo currentUser) throws Exception;
+
+    /**
+     * 取消订单到oms
+     *
+     * @param orderParamDto
+     * @param currentUser
+     * @return
+     */
+    JsonModel cancelOrderOmsMethod(OrderParamDto orderParamDto, UserInfo currentUser) throws Exception;
 }
