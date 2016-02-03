@@ -109,15 +109,25 @@
                     <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
                                     fn:contains(url, '/order/find_pay_back_orders')
                  || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig')
-                 || fn:contains(url, '/innMatch/match')|| fn:contains(url, '/distribution/addFangPrice')}">class="open active" </c:if>  >
+                 || fn:contains(url, '/innMatch/match')|| fn:contains(url, '/distribution/addFangPrice') || fn:contains(url, '/exceptionOrder/find_exceptionOrders')}">class="open active" </c:if>  >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
                         <span class="menu-text"> 分销管理 </span>
                         <b class="arrow icon-angle-down"></b>
                     </a>
                     <ul class="submenu">
+                        <toms:authorize uri="/exceptionOrder/find_exceptionOrders">
+                            <li
+                                    <c:if test="${fn:contains(url, '/exceptionOrder/find_exceptionOrders')}">class="active" </c:if> >
+                                <a href="<c:url value="/exceptionOrder/find_exceptionOrders"/>">
+                                    <i class="icon-double-angle-right"></i>
+                                    异常订单管理
+                                </a>
+                            </li>
+                        </toms:authorize>
                         <toms:authorize uri="/innMatch/">
-                            <li <c:if test="${fn:contains(url, '/innMatch/')}">class="active" </c:if> >
+                            <li
+                                    <c:if test="${fn:contains(url, '/innMatch/')}">class="active"</c:if> >
                                 <a href="<c:url value="/innMatch/match"/>">
                                     <i class="icon-double-angle-right"></i>
                                     客栈匹配

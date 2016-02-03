@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -387,5 +388,23 @@ public class TomsUtil {
         }
         return null;
     }
+
+    /**
+     * 得到系统当前时间的前15分钟
+     *
+     * @return
+     */
+    public static Map<String, String> getFifteenDate() {
+        Map<String, String> map = new HashMap<>();
+        long time = new Date().getTime();
+        long l = (time / 1000 / 60 - 15) * 60 * 1000;
+        String fifteenDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(l);
+        long l1 = (time / 1000 / 60 - 14) * 60 * 1000;
+        String fourteenDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(l1);
+        map.put("fifteen", fifteenDate);
+        map.put("fourteen", fourteenDate);
+        return map;
+    }
+
 
 }

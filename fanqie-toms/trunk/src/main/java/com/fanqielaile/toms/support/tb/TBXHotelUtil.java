@@ -770,4 +770,19 @@ public class TBXHotelUtil {
             }
         }
     }
+
+    /**
+     * 查询订单状态
+     *
+     * @return
+     */
+    public static String searchOrderStatus(Order order, OtaInfoRefDto company) throws Exception {
+        TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelOrderSearchRequest req = new XhotelOrderSearchRequest();
+        req.setOrderTids(order.getChannelOrderCode());
+        req.setCreatedEnd(order.getLastestArriveTime());
+        req.setCreatedStart(order.getEariestArriveTime());
+        XhotelOrderSearchResponse rsp = client.execute(req, company.getSessionKey());
+        return rsp.getBody();
+    }
 }

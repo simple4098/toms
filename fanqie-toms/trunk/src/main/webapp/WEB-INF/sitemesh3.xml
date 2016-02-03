@@ -17,4 +17,7 @@
     <mapping path="/operate/*" decorator="/WEB-INF/decorators/main-dc.jsp"/>
     <mapping path="/oms/obtRoomType" decorator="/WEB-INF/decorators/main-room-type.jsp"/>
     <mapping path="/inn_manage/activeInn" decorator="/WEB-INF/decorators/main-dc.jsp"/>
+    <!-- 异常订单页面-->
+    <mapping path="/exceptionOrder/*" decorator="/WEB-INF/decorators/main.jsp"/>
+
 </sitemesh>
