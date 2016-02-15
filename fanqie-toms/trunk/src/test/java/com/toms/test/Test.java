@@ -1,7 +1,12 @@
 package com.toms.test;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,9 +33,17 @@ public class Test {
 //        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?> <FcRequest>    <Header TimeStamp=\"2014-02-16 15:36:48\" PartnerCode=\"F01202154\"  RequestType= \"cancelHotelOrder\" Signature=\"484D30CBF4F167CBC803BF5A6AAEF1A8\"/>    <CancelHotelOrderRequest>       <SpOrderId>77918027-79fc-420a-ac21-4e4ca6654d44</SpOrderId>       <CancelReason>退改申请原因</CancelReason>    </CancelHotelOrderRequest> </FcRequest>";
 //        Element element = XmlDeal.dealXmlStr(xml);
 //        Element header = element.element("Header");
-        System.out.println(Calendar.getInstance().getTime());
-
-
+//        System.out.println(Calendar.getInstance().getTime());
+//        Order order = new Order();
+//        order.setId("1605860805110771");
+//        OtaInfoRefDto otaInfoRefDto = new OtaInfoRefDto();
+//        otaInfoRefDto.setAppKey("23192376");
+//        otaInfoRefDto.setAppSecret("c2e9acffbdf281c93b167601781cd228");
+//        otaInfoRefDto.setSessionKey("6101d17e6a86e1e2ad2dea0c013764ef01cc94f1eaace162555889376");
+//        String xml = TBXHotelUtil.searchOrderStatus(order, otaInfoRefDto);
+//        JSONObject jsonObject = JSONObject.parseObject(xml);
+//        JSONObject object = jsonObject.getJSONObject("xhotel_order_search_response");
+//        System.out.println(xml);
     }
 
     /**
