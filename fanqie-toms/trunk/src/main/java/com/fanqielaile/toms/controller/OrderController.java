@@ -404,12 +404,20 @@ public class OrderController extends BaseController {
         }
     }
 
+    /**
+     * 取消订单同步oms
+     *
+     * @param model
+     * @param id
+     */
     @RequestMapping("cancel_order_oms")
     public void cancelOrderOms(Model model, String id) {
         try {
             OrderParamDto orderParamDto = this.orderService.findOrderById(id);
             if (null != orderParamDto) {
-                this.orderService.cancelOrderOmsMethod(orderParamDto, getCurrentUser());
+                JsonModel jsonModel = this.orderService.cancelOrderOmsMethod(orderParamDto, getCurrentUser());
+                model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+                model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
             } else {
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
                 model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
