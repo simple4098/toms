@@ -2,6 +2,10 @@ package com.fanqielaile.toms.support.util;
 
 import com.alibaba.fastjson.JSON;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.PropertiesUtil;
+import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.LogDec;
+import com.fanqielaile.toms.enums.OtaType;
 import com.tomasky.msp.client.model.PendingNotify;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
 import com.tomasky.msp.client.support.MessageBuilder;
@@ -24,6 +28,7 @@ import java.util.List;
  */
 public class MessageCenterUtils {
 
+    private static BizLogClient bizLogClient = new BizLogClient();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageCenterUtils.class);
 
@@ -112,6 +117,44 @@ public class MessageCenterUtils {
         } catch (Exception e) {
             LOGGER.error("微信发送失败",e);
             throw  new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     *
+     * @param otaType 渠道类型
+     * @param innId 客栈id
+     * @param roomTypeId 房型id
+     * @param userName 用户名称（用户id），可以为null； 如果为null就填系统操作，
+     * @param logDec 日志描述
+     * @param content 日志内容
+     */
+    public static void savePushTomsLog(OtaType otaType, Integer innId, Integer roomTypeId,
+                                       String userName, LogDec logDec, String content){
+        boolean logOpen = ResourceBundleUtil.getBoolean("log.open");
+        if (logOpen){
+            LOGGER.info("=====记录日志开始======");
+            BizType parentBizType = new BizType(logDec.getpId(),logDec.getValue(), null);
+            BizType bizType = new BizType(logDec.getLogTypeId(), logDec.getValue(), parentBizType);
+            BizData bizData = new BizData(logDec,userName==null?"系统操作":userName,content,innId,roomTypeId,otaType);
+            BizLog bizLog = new BizLog(innId, bizType, "TOMS", bizData);
+            bizLogClient.save(bizLog);
+            LOGGER.info("=====记录日志结束======");
+        }
+    }
+
+    public static void savePushTomsLog(ChannelSource channelSource, Integer innId, Integer roomTypeId,
+                                       String userName, LogDec logDec, String content){
+        boolean logOpen = ResourceBundleUtil.getBoolean("log.open");
+        if (logOpen){
+            LOGGER.info("=====记录日志开始======");
+            BizType parentBizType = new BizType(logDec.getpId(),logDec.getValue(), null);
+            BizType bizType = new BizType(logDec.getLogTypeId(), logDec.getValue(), parentBizType);
+            BizData bizData = new BizData(logDec,userName==null?"系统操作":userName,content,innId,roomTypeId,channelSource);
+            BizLog bizLog = new BizLog(innId, bizType, "TOMS", bizData);
+            bizLogClient.save(bizLog);
+            LOGGER.info("=====记录日志结束======");
         }
     }
 

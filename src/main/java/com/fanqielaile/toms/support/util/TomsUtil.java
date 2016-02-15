@@ -250,10 +250,9 @@ public class TomsUtil {
             List<ProxyInns> list = new ArrayList<ProxyInns>();
             ProxyInns p = null;
             List<PricePattern> pricePatterns = null;
-            PricePattern pricePattern = null;
             for (BangInnDto b:bangInnDtoList){
                 p = new ProxyInns();
-                pricePatterns = new ArrayList<PricePattern>();
+               /* pricePatterns = new ArrayList<PricePattern>();
                 pricePattern = new PricePattern();
                 if (Constants.MAI.equals(b.getsJiaModel())){
                     pricePattern.setPattern(Constants.MAI_VALUE);
@@ -264,9 +263,11 @@ public class TomsUtil {
                     pricePattern.setPattern(Constants.DI_VALUE);
                     pricePattern.setAccountId(b.getAccountIdDi());
                     pricePatterns.add(pricePattern);
-                }
+                }*/
                 p.setPricePatterns(pricePatterns);
                 p.setInnId(b.getInnId());
+                p.setAccountId(b.getAccountId());
+                p.setAccountIdDi(b.getAccountIdDi());
                 list.add(p);
             }
             return list;
@@ -408,4 +409,47 @@ public class TomsUtil {
     }
 
 
+    /**
+     *
+     * @param otaPriceModel 价格模式对象
+     */
+    public static String obtOtaPriceModelId(OtaPriceModelDto otaPriceModel) {
+        String otaPriceModelId=null;
+        if (StringUtils.isEmpty(otaPriceModel.getId())){
+            otaPriceModelId = otaPriceModel.getUuid();
+        }else {
+            otaPriceModelId = otaPriceModel.getId();
+        }
+        return otaPriceModelId;
+    }
+
+    public static String obtOtaInnOtaId(OtaInnOtaDto otaInnOta) {
+        String otaInnOtaId = null;
+        if (StringUtils.isEmpty(otaInnOta.getId())){
+            otaInnOtaId = otaInnOta.getUuid();
+        }else {
+            otaInnOtaId = otaInnOta.getId();
+        }
+        return otaInnOtaId;
+    }
+
+    /**
+     * 构建 OtaRoomPriceDto 对象
+     * @param companyId 公司id
+     * @param roomTypeId 房型id
+     * @param otaInfoId 渠道id
+     * @param price 价格增减价对象
+     * @param innId 客栈id
+     * @param userId 修改人
+     */
+    public static OtaRoomPriceDto buildRoomPrice(String companyId,Integer roomTypeId,String otaInfoId,AddFangPrice price,Integer innId,String userId){
+        OtaRoomPriceDto priceDto = new OtaRoomPriceDto(companyId,roomTypeId,otaInfoId);
+        priceDto.setStartDateStr(price.getStartDateStr());
+        priceDto.setEndDateStr(price.getEndDateStr());
+        priceDto.setValue(price.getPriceChange());
+        priceDto.setInnId(innId);
+        priceDto.setModifierId(userId);
+        priceDto.setRoomTypeName(price.getRoomTypeName());
+        return  priceDto;
+    }
 }

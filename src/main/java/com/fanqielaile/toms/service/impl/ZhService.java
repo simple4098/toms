@@ -8,11 +8,12 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.zh.JointWisdomMappingDto;
+import com.fanqielaile.toms.enums.LogDec;
+import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
-import com.fanqielaile.toms.service.ICtripRoomService;
 import com.fanqielaile.toms.service.IJointWisdomARI;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
@@ -21,6 +22,7 @@ import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ThreadCallableBean;
+import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -74,7 +76,7 @@ public class ZhService implements ITPService {
         String otaInfoId = otaInfo.getOtaInfoId();
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tpHolder.validate(company, innId, otaInfoId);
-        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+        tbParam.setOtaId(company.getOtaId().toString());
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
         InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
         if (omsInnDto != null) {
@@ -135,6 +137,8 @@ public class ZhService implements ITPService {
                                     jointWisdomInnRoom.setId(jw.getId());
                                     jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
                                 }
+                                //记录日志
+                                MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
                             }
                         }
                     }
@@ -173,7 +177,6 @@ public class ZhService implements ITPService {
                 Company company = ThreadCallableBean.getLocalThreadBean().getCompany();
                 OtaInfoRefDto o = ThreadCallableBean.getLocalThreadBean().getO();
                 OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
-                //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(mapping.getInnId()));
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(
                         new OtaRoomPriceDto(company.getId(), Integer.valueOf(mapping.getRoomTypeId()), o.getOtaInfoId()));
                 try {
@@ -182,6 +185,8 @@ public class ZhService implements ITPService {
                     if (result!=null && !Constants.SUCCESS200.equals(result.getStatus())) {
                         timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(mapping.getRoomTypeId()),
                                 Integer.valueOf(mapping.getInnId()), result.getMessage(), TimerRateType.NEW));
+                        //记录日志
+                        MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(mapping.getInnId()), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH_PRICE,"定时任务执行,房价库存房量...");
                     }
                 } catch (Exception e) {
                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(mapping.getRoomTypeId()),
@@ -210,7 +215,10 @@ public class ZhService implements ITPService {
                     //上架房型 房量 库存
                     RoomTypeInfo roomTypeInfo = JwXHotelUtil.buildRoomTypeInfo(company,mapping);
                     Result result = jointWisdomARI.updateJsPriceInventory(mapping, roomTypeInfo, priceDto, commission);
-                    if (!Constants.SUCCESS200.equals(result.getStatus())) {
+                    if (Constants.SUCCESS200.equals(result.getStatus())) {
+                        //记录日志
+                        MessageCenterUtils.savePushTomsLog(OtaType.ZH, bangInn.getInnId(), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH_PRICE,"及时推送房型房价库存");
+                    }else {
                         log.error("及时推送失败:" + result.getMessage());
                     }
                 } else {
@@ -278,6 +286,9 @@ public class ZhService implements ITPService {
                                 Result result = jointWisdomARI.updateJsPriceInventory(mappingDto, roomTypeInfo, priceDto, commission);
                                 if (result!=null && Constants.SUCCESS200.equals(result.getStatus())) {
                                     otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                                    //记录日志
+                                    MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), priceDto.getRoomTypeId(), userId, LogDec.MT_RoomType_Price,
+                                            "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());
                                 } else {
                                     log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + result.getMessage());
                                     throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + result.getMessage());

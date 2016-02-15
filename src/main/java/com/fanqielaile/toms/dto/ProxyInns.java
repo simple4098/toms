@@ -11,6 +11,25 @@ import java.util.List;
 public class ProxyInns {
     private Integer innId;
     private List<PricePattern> pricePatterns;
+    //卖价accountId
+    private Integer accountId;
+    //低价accountId
+    private Integer accountIdDi;
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
+    }
+
+    public Integer getAccountIdDi() {
+        return accountIdDi;
+    }
+
+    public void setAccountIdDi(Integer accountIdDi) {
+        this.accountIdDi = accountIdDi;
+    }
 
     public Integer getInnId() {
         return innId;

@@ -10,13 +10,14 @@
               <result column="rid" property="rId"/>
               <result column="price_model_id" property="priceModelId"/>
               <result column="ota_wg_id" property="otaWgId"/>
-              <result column="ota_wg_id" property="otaWgId"/>
               <result column="deleted" property="deleted"/>
+              <result column="created_date" property="createdDate"/>
+              <result column="updated_date" property="updatedDate"/>
        </resultMap>
 
        <insert id="saveBangInnRoom" parameterType="com.fanqielaile.toms.dto.OtaBangInnRoomDto">
-               insert into ota_bang_inn_room(id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id,deleted)
-              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{rId},#{priceModelId},#{otaWgId},0)
+               insert into ota_bang_inn_room(id,inn_id,room_type_id,room_type_name,company_id,rid,price_model_id,ota_wg_id,deleted,created_date,updated_date)
+              values (#{uuid},#{innId},#{roomTypeId},#{roomTypeName},#{companyId},#{rId},#{priceModelId},#{otaWgId},0,now(),now())
        </insert>
 
        <select id="selectBangInnRoomByInnIdAndRoomTypeId" resultMap="BaseResultMap">
