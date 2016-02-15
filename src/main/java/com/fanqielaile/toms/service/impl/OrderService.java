@@ -339,12 +339,13 @@ public class OrderService implements IOrderService {
     @Override
 //    @Log(descr = "付款成功回调")
     public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
+        Order orderXml = XmlDeal.getOrder(xmlStr);
         try {
             //日志
             String logStr = "付款成功回调传递参数" + xmlStr;
 //        businLog.setDescr(logStr);
 //        businLogClient.save(businLog);
-            Order orderXml = XmlDeal.getOrder(xmlStr);
+
             //获取订单号，判断订单是否存在
             Order order = this.orderDao.selectOrderByIdAndChannelSource(orderXml.getId(), channelSource);
             logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
@@ -371,6 +372,7 @@ public class OrderService implements IOrderService {
                 return new JsonModel(true, "付款成功");
             }
         } catch (Exception e) {
+            MessageCenterUtils.sendWeiXin("付款异常：渠道：" + channelSource + " 订单号为：" + orderXml.getChannelOrderCode());
             return new JsonModel(false, "系统内部错误");
         }
     }
@@ -430,6 +432,7 @@ public class OrderService implements IOrderService {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.PAID);
                 JsonModel resultJson = dealCancelOrder(order, currentUser, otaInfo);
+                MessageCenterUtils.sendWeiXin("付款成功回调时，调用oms下单接口异常，订单号为：" + order.getChannelOrderCode());
                 return resultJson;
             }
             logger.info("OMS接口响应=>" + respose);
@@ -1014,6 +1017,7 @@ public class OrderService implements IOrderService {
             this.dailyInfosDao.insertDailyInfos(hangOrder);
             //创建入住人信息
             this.orderGuestsDao.insertOrderGuests(hangOrder);
+            MessageCenterUtils.sendWeiXin("手动下单，调用oms下单接口异常，订单号为：" + order.getChannelOrderCode());
             result.put("status", false);
             result.put("message", "同步oms失败");
         }

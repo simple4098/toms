@@ -56,7 +56,7 @@ public class TestJointWisdom {
         relations.add(relation2);
         try {
             // 请求成功
-            JointWisdomARIUtils.pushRoomPrice(roomPriceRelation);
+//            JointWisdomARIUtils.pushRoomPrice(roomPriceRelation);
         } catch (Exception e) {
             // 请求失败
             e.printStackTrace();
@@ -81,7 +81,7 @@ public class TestJointWisdom {
         inventory.setRelations(relations);
         try {
             // 请求成功
-            JointWisdomARIUtils.pushRoomInventory(inventory);
+//            JointWisdomARIUtils.pushRoomInventory(inventory);
         } catch (Exception e) {
             // 请求失败
             e.printStackTrace();
