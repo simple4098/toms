@@ -6,16 +6,12 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ParamJson;
-import com.fanqielaile.toms.service.ICommissionService;
-import com.fanqielaile.toms.service.IOrderService;
-import com.fanqielaile.toms.service.IOtaInfoService;
-import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
-import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.FileDealUtil;
-import com.fanqielaile.toms.support.util.JsonModel;
-import com.fanqielaile.toms.support.util.ResourceBundleUtil;
+import com.fanqielaile.toms.support.util.*;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.slf4j.Logger;
@@ -29,6 +25,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -50,6 +47,9 @@ public class APIController extends BaseController {
     private IOtaInfoService otaInfoService;
     @Resource
     private IOrderService orderService;
+    @Resource
+    private IExceptionOrderService exceptionOrderService;
+
 
     /**
      * 客栈上架、下架
@@ -206,5 +206,31 @@ public class APIController extends BaseController {
             FileDealUtil.deleteDir(new File(FileDealUtil.getCurrentPath() + ResourceBundleUtil.getString(Constants.FcDownLoadSavePath) + DateUtil.format(new Date(), "yyyy-MM-dd")));
         }
         log.info("=====处理增量数据结束========");
+    }
+
+    /**
+     * 得到异常订单信息
+     */
+    @RequestMapping("/get_exception_order")
+    @ResponseBody
+    public Object taskCycle() {
+        log.info(new Date() + "开始执行定时任务=======>");
+        try {
+            Map<String, String> map = TomsUtil.getFifteenDate();
+            List<Order> exceptionOrderList = this.orderService.findExceptionOrderList(map);
+            Order order = new Order().getOrderToExceptionOrder(exceptionOrderList);
+            log.info("插入异常订单一共" + (null == order.getExceptionOrderList() ? 0 : order.getExceptionOrderList().size()));
+            if (ArrayUtils.isNotEmpty(order.getExceptionOrderList().toArray())) {
+                //插入之前先删除已经存在异常订单
+                this.exceptionOrderService.deleteExceptionOrder(order);
+                //插入异常订单
+                this.exceptionOrderService.createExceptionOrder(order);
+            }
+        } catch (Exception e) {
+            log.info("处理异常订单信息异常" + e);
+            return false;
+        }
+        log.info(new Date() + "结束执行定时任务======>");
+        return true;
     }
 }
