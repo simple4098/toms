@@ -2,19 +2,18 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
-import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
-import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
+import com.fanqielaile.toms.enums.LogDec;
+import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.fc.Response;
 import com.fanqielaile.toms.service.IFcRoomTypeFqService;
-import com.fanqielaile.toms.service.IOtaRoomPriceService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -22,8 +21,10 @@ import com.fanqielaile.toms.support.exception.VettedOTAException;
 import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.FCXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.ThreadCallableBean;
-import net.sf.json.JSONObject;
+import com.fanqielaile.toms.support.util.MessageCenterUtils;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +52,6 @@ public class FcService implements ITPService {
     @Resource
     private IFcRoomTypeFqDao fcRoomTypeFqDao;
     @Resource
-    private IOtaInnOtaDao otaInnOtaDao;
-    @Resource
-    private IOtaRoomPriceService otaRoomPriceService;
-    @Resource
     private IOtaRoomPriceDao otaRoomPriceDao;
     @Resource
     private IFcRoomTypeFqService fcRoomTypeFqService;
@@ -73,12 +70,10 @@ public class FcService implements ITPService {
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         tpHolder.validate(company, innId, otaInfo.getOtaInfoId());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
-        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
-        String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
-        JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
+        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId()!= null?tbParam.getAccountId():tbParam.getAccountIdDi(), CommonApi.INN_INFO);
+        InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
         //客栈
-        if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list") != null) {
-            InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+        if (omsInnDto != null) {
             omsInnDto.setInnId(innId);
             BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
             //未绑定
@@ -90,15 +85,7 @@ public class FcService implements ITPService {
             } else {
                 log.info("fc 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
                 BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
-                if (Constants.DI.equals(tbParam.getsJiaModel()) && tbParam.getAccountId() == null) {
-                    if (!tbParam.isSj()) {
-                        bangInn.setAccountIdDi(null);
-                    } else {
-                        bangInn.setSj(1);
-                    }
-                } else {
-                    BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
-                }
+                TomsUtil.sjModel(tbParam,bangInn,omsInnDto);
                 bangInnDao.updateBangInnTp(bangInn);
                 //下架状态的时候 要把房仓的宝贝下架掉
                 List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ, innId, company.getId(), otaInfo.getOtaInfoId()));
@@ -106,10 +93,14 @@ public class FcService implements ITPService {
                     if (Constants.FC_XJ.equals(bangInn.getSj())) {
                         for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
                             fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fqDto.getId());
+                            MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
+                                    LogDec.XJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
                         }
                     } else if (Constants.FC_SJ.equals(bangInn.getSj())) {
                         for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
                             fcRoomTypeFqService.updateSjMatchRoomType(company.getId(), fqDto.getId());
+                            MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
+                                    LogDec.SJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
                         }
                     }
                 }
@@ -127,7 +118,6 @@ public class FcService implements ITPService {
         log.info("====Fc 同步 start====");
         Company company = companyDao.selectCompanyByCompanyCode(o.getCompanyCode());
         List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ, null, company.getId(), o.getOtaInfoId()));
-        //todo 房仓定时获取房型修改成多线程
         if (!CollectionUtils.isEmpty(roomTypeFqDtoList)) {
             int size = roomTypeFqDtoList.size();
             int timerThread = size / Constants.timerThread;
@@ -152,19 +142,24 @@ public class FcService implements ITPService {
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getInnId()));
                 OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), fcRoomTypeFqDto.getOtaInfoId()));
                 Response response = null;
+                TimerRateType notHoveRouse = TimerRateType.NEW;
+                String message = null;
                 try {
                     response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), priceDto, commission);
                     if (response!=null && !Constants.FcResultNo.equals(response.getResultNo())) {
-                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()), response.getResultMsg(), TimerRateType.NEW));
+                        notHoveRouse = TimerRateType.NEW;
+                        message = response.getResultMsg();
                     }
                     if (response==null){
-                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()), "房仓获取不到oms房型数据",TimerRateType.NOT_HOVE_ROUSE));
+                        notHoveRouse = TimerRateType.NOT_HOVE_ROUSE;
+                        message = "房仓获取不到oms房型数据";
                     }
+                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(),
+                            Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()),
+                            message,notHoveRouse));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("同步房仓房型接口异常" + e);
+                    log.error("同步房仓房型接口异常" , e);
                 }
-
                 return null;
             }
         };
@@ -188,10 +183,11 @@ public class FcService implements ITPService {
                     Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId, priceDto, commission);
                     if (Constants.FcResultNo.equals(response.getResultNo())) {
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
+                        MessageCenterUtils.savePushTomsLog(OtaType.FC, bangInn.getInnId(), priceDto.getRoomTypeId(), null, LogDec.RoomType_PHSH_PRICE,
+                                "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());
                     } else {
                         log.error("及时推送失败:" + response.getResultMsg());
                     }
-
                 } else {
                     log.info("(房仓)此房型还没有上架 roomTypeId:" + pushRoom.getRoomType().getRoomTypeId());
                 }
@@ -226,15 +222,11 @@ public class FcService implements ITPService {
                             fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fcRoomTypeFqDto.getId());
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        log.error("FC updateHotelFailTimer 异常:" + e.getMessage());
+                        log.error("FC updateHotelFailTimer 异常:" , e);
                     }
-
                 }
-
             }
         }
-
     }
 
     @Override
@@ -249,22 +241,19 @@ public class FcService implements ITPService {
             for (AddFangPrice price : prices) {
                 if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
                     fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(Integer.valueOf(innId), price.getRoomTypeId(), infoRefDto.getOtaInfoId(), companyId);
-                    priceDto = new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId());
-                    priceDto.setStartDateStr(price.getStartDateStr());
-                    priceDto.setEndDateStr(price.getEndDateStr());
-                    priceDto.setValue(price.getPriceChange());
-                    priceDto.setInnId(Integer.valueOf(innId));
-                    priceDto.setModifierId(userId);
+                    priceDto = TomsUtil.buildRoomPrice(companyId,price.getRoomTypeId(),infoRefDto.getOtaInfoId(),price,Integer.valueOf(innId),userId);
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
                         String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),price.getRoomTypeId(), CommonApi.checkRoom);
-                        //List<RoomDetail> roomDetailList = otaRoomPriceService.obtRoomAvailFc(bangInn, price.getRoomTypeId());
                         List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
                         boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList,commission);
                         if (b) {
                             Response response = FCXHotelUtil.syncRoomInfo(infoRefDto, fcRoomTypeFqDto, roomDetailList, priceDto, commission);
                             if (Constants.FcResultNo.equals(response.getResultNo())) {
                                 otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                                //改价成功 记录日志
+                                MessageCenterUtils.savePushTomsLog(OtaType.TB, Integer.valueOf(innId), price.getRoomTypeId(), userId, LogDec.MT_RoomType_Price,
+                                        "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());
                             } else {
                                 log.info("房型Id" + price.getRoomTypeId() + " 同步失败：" + response.getResultMsg());
                                 throw new TomsRuntimeException("房型名称:" + price.getRoomTypeName() + " 同步失败：" + response.getResultMsg());
@@ -280,7 +269,6 @@ public class FcService implements ITPService {
                     }
 
                 } else {
-                    //priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId()));
                     log.info("innId：" + innId + " 房型id" + price.getRoomTypeId() + " 开始结束时间为空!");
                 }
 
@@ -303,23 +291,4 @@ public class FcService implements ITPService {
         return result;
     }
 
-   /* private boolean checkRooPrice(double value,List<RoomDetail> roomDetailList){
-        if (value<0){
-           if (!CollectionUtils.isEmpty(roomDetailList)){
-                List<Double> priceList = new ArrayList<Double>();
-                for (RoomDetail roomDetail:roomDetailList){
-                    priceList.add(roomDetail.getRoomPrice());
-                }
-                if (!CollectionUtils.isEmpty(priceList)){
-                    Collections.sort(priceList);
-                    Double price  = priceList.get(0);
-                    //value本来为负数, 转化为整数比较
-                    if (!(price+value >= 1)){
-                        return false;
-                    }
-                }
-           }
-        }
-        return true;
-    }*/
 }

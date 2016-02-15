@@ -15,7 +15,6 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.collections.CollectionUtils;
-import org.opentravel.ota._2003._05.ErrorsType;
 import org.opentravel.ota._2003._05.OTAHotelAvailNotifRS;
 import org.opentravel.ota._2003._05.OTAHotelInvCountNotifRS;
 import org.opentravel.ota._2003._05.OTAHotelRatePlanNotifRS;
@@ -46,12 +45,8 @@ public class JointWisdomARI implements IJointWisdomARI {
                 throw new TomsRuntimeException("oms 获取房型为空 ");
             }
             String sj = mappingDto.getSj()==1?"上架":"下架";
-            RoomPrice roomPrice = JwXHotelUtil.buildRoomPrice(mappingDto,roomTypeInfo,priceDto,commission);
-            List<RoomPrice> roomPrices = new ArrayList<>();
-            roomPrices.add(roomPrice);
-            Inventory inventory = JwXHotelUtil.inventory(mappingDto, roomTypeInfo);
-            List<Inventory> inventories = new ArrayList<>();
-            inventories.add(inventory);
+            List<RoomPrice> roomPrices = JwXHotelUtil.buildRoomPrice(mappingDto, roomTypeInfo, priceDto, commission);
+            List<Inventory> inventories = JwXHotelUtil.inventory(mappingDto, roomTypeInfo);
             OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrices);
             OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventories);
             List<Object> refsOrSuccess = null;
@@ -109,11 +104,11 @@ public class JointWisdomARI implements IJointWisdomARI {
     }
 
     @Override
-    public Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList,  OtaCommissionPercentDto commission) {
+    public Result updateJsPriceInventory(List<JointWisdomMappingDto> jointWisdomInnRoomList, OtaCommissionPercentDto commission) {
         Result result = new Result();
         if (jointWisdomInnRoomList!=null){
 
-            List<RoomPrice> roomPrice = JwXHotelUtil.buildRoomPrice(jointWisdomInnRoomList,commission);
+            List<RoomPrice> roomPrice = JwXHotelUtil.buildRoomPrice(jointWisdomInnRoomList, commission);
             List<Inventory> inventory = JwXHotelUtil.inventory(jointWisdomInnRoomList);
             OTAHotelRatePlanNotifRS otaHotelRatePlanNotifRS = JointWisdomARIUtils.pushRoomPrice(roomPrice);
             OTAHotelInvCountNotifRS otaHotelInvCountNotifRS = JointWisdomARIUtils.pushRoomInventory(inventory);
