@@ -258,6 +258,7 @@ public class TBService implements ITPService {
             }
             es.shutdown();
             proxyList = null;
+            bangInnDtoList = null;
         }
     }
 
@@ -265,17 +266,6 @@ public class TBService implements ITPService {
         return new Callable<CallableBean>() {
             @Override
             public CallableBean call()  {
-                /*ThreadCallableBean.setLocalThreadBean(new CallableBean(company,o,tbParam));
-                Company company = ThreadCallableBean.getLocalThreadBean().getCompany();
-                OtaInfoRefDto o = ThreadCallableBean.getLocalThreadBean().getO();
-                TBParam tbParam = ThreadCallableBean.getLocalThreadBean().getTbParam();*/
-                //OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
-                //if (proxyInns.getInnId().equals(7221) || proxyInns.getInnId().equals(51279)|| proxyInns.getInnId().equals(51770)|| proxyInns.getInnId().equals(30979)) {
-               /* if (proxyInns.getAccountId()!=null) {
-                    tbParam.setAccountId(String.valueOf(proxyInns.getAccountId()));
-                }*/
-                //String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.ROOM_TYPE);
-                //String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.roomStatus);
                 log.info(" url:" + proxyInns.getRoomTypeUrl());
                 try {
                     long start = new Date().getTime();
@@ -284,7 +274,7 @@ public class TBService implements ITPService {
                     InnRoomHelper.updateRoomTypeInfo(list,roomStatusDetails);
                     log.info("=======start=======");
                         //房型
-                        if (list != null) {
+                        /*if (list != null) {
                             OtaRoomPriceDto priceDto = null;
                             String inventoryRate = null;
                             String inventory = null;
@@ -318,7 +308,7 @@ public class TBService implements ITPService {
                             log.info("=======end======= 消耗时间："+(System.currentTimeMillis()-start));
                         }else {
                             timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空", TimerRateType.NOT_HOVE_ROUSE));
-                        }
+                        }*/
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
                     }

@@ -113,6 +113,8 @@ public class XcService implements ITPService {
             for (CtripRoomTypeMapping mapping : mappings) {
                 cs.submit(getTask(company, mapping, o));
             }
+            es.shutdown();
+            mappings = null;
         }
     }
 
