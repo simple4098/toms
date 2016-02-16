@@ -127,6 +127,8 @@ public class FcService implements ITPService {
             for (FcRoomTypeFqDto fcRoomTypeFqDto : roomTypeFqDtoList) {
                 cs.submit(getTask(company, fcRoomTypeFqDto, o));
             }
+            es.shutdown();
+            roomTypeFqDtoList = null;
         }
 
     }
