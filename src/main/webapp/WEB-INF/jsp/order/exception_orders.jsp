@@ -12,7 +12,8 @@
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
-    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_pay_back_orders"/>"
+    <form class="form-page" name="form-page" id="form-page"
+          action="<c:url value="/exceptionOrder/find_exceptionOrders"/>"
           method="post">
         <input type="hidden" class="pageId" id="pageId" name="page"/>
     </form>
@@ -43,7 +44,6 @@
                                 <th style="width: 180px;">住离日期</th>
                                 <th>总价</th>
                                 <th>预付金额</th>
-                                <th>成本价</th>
                                 <th>下单时间</th>
                                 <th>操作</th>
                             </tr>
@@ -76,7 +76,6 @@
                                             </c:if>
                                         </td>
                                         <td>${d.prepayPrice}</td>
-                                        <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                                         <td>
                                             <button class="btn btn-danger create-order-oms"
