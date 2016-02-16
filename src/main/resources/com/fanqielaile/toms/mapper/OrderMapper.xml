@@ -254,7 +254,8 @@
     <select id="selectAllExceptionOrder" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from ota_toms_order where id in (SELECT order_id as id from ota_exception_order where deleted = 0)
+        from ota_toms_order where id in (SELECT order_id as id from ota_exception_order where deleted = 0) ORDER BY
+        created_date DESC
     </select>
     <select id="selectExceptionOrderList" resultMap="BaseResultsMap"
             parameterType="com.fanqielaile.toms.dto.OrderParamDto">
