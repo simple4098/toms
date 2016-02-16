@@ -1529,14 +1529,18 @@ public class OrderService implements IOrderService {
         //下单到oms
         JsonModel jsonModel = payBackDealMethod(orderParamDto, new UserInfo(), OtaType.TB.name());
         //更新异常订单状态为删除
-        ExceptionOrder exceptionOrder = new ExceptionOrder(OrderStatus.ACCEPT, orderParamDto.getId(), FeeStatus.PAID);
-        exceptionOrder.setModifierId(currentUser.getId());
-        this.exceptionOrderDao.updateExceptionOrder(exceptionOrder);
+        //判断oms是否成功
+        if (jsonModel.isSuccess()) {
+            ExceptionOrder exceptionOrder = new ExceptionOrder(OrderStatus.ACCEPT, orderParamDto.getId(), FeeStatus.PAID);
+            exceptionOrder.setModifierId(currentUser.getId());
+            this.exceptionOrderDao.updateExceptionOrder(exceptionOrder);
+        }
         return jsonModel;
     }
 
     @Override
     public JsonModel cancelOrderOmsMethod(OrderParamDto order, UserInfo currentUser) throws Exception {
+        JsonModel result = new JsonModel();
         // 查询调用的url
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
         //查询公司信息
@@ -1548,10 +1552,27 @@ public class OrderService implements IOrderService {
             String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
             logger.info("调用OMS取消订单的返回值=>" + respose.toString());
             JSONObject jsonObject = JSONObject.fromObject(respose);
-            //同步成功后在修改数据库
-            this.orderDao.updateOrderStatusAndReason(order);
             //写入操作记录
             this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.CANCEL_ORDER, "取消订单接口", ChannelSource.TAOBAO.name()));
+            //判断oms响应值
+            if (!jsonObject.get("status").equals(200)) {
+                //如果取消订单失败，不修改订单状态
+                result.setMessage("取消订单失败");
+                result.setSuccess(false);
+            } else {
+                //同步成功后在修改数据库，退款申请成功修改订单状态为已取消
+                order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                order.setReason("买家申请退款");
+                result.setSuccess(true);
+                result.setMessage("取消订单成功");
+                //同步成功后在修改数据库
+                this.orderDao.updateOrderStatusAndReason(order);
+                //取消成功后更新异常订单表
+                ExceptionOrder exceptionOrder = new ExceptionOrder(OrderStatus.CANCEL_ORDER, orderParamDto.getId(), FeeStatus.PAID);
+                exceptionOrder.setModifierId(currentUser.getId());
+                this.exceptionOrderDao.updateExceptionOrder(exceptionOrder);
+            }
+            return result;
         }
         return new JsonModel(true, "取消订单成功");
     }
