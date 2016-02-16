@@ -12,4 +12,6 @@ public interface ExceptionOrderDao {
     void updateExceptionOrder(ExceptionOrder exceptionOrder);
 
     void deleteExceptionOrder(Order order);
+
+    void insertExceptionOrderByException(ExceptionOrder exceptionOrder);
 }
