@@ -416,7 +416,7 @@ public class OrderController extends BaseController {
             OrderParamDto orderParamDto = this.orderService.findOrderById(id);
             if (null != orderParamDto) {
                 JsonModel jsonModel = this.orderService.cancelOrderOmsMethod(orderParamDto, getCurrentUser());
-                model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+                model.addAttribute(Constants.STATUS, Constants.SUCCESS);
                 model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
             } else {
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
