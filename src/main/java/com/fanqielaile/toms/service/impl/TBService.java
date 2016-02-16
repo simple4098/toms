@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
@@ -240,6 +241,10 @@ public class TBService implements ITPService {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         tbParam.setSj(true);
         List<BangInnDto> bangInnDtoList =  bangInnDao.selectBangInnByCompanyIdSj(company.getId(),o.getOtaInfoId());
+        for (int i=0;i<25;i++){
+            bangInnDtoList.addAll(bangInnDtoList);
+        }
+        log.info("定时任务数据大小："+bangInnDtoList.size());
         if (!CollectionUtils.isEmpty(bangInnDtoList)){
             List<ProxyInns> proxyList = TomsUtil.toProxyInns(bangInnDtoList);
             int size = bangInnDtoList.size();
@@ -281,11 +286,14 @@ public class TBService implements ITPService {
                                 OtaInnRoomTypeGoodsDto good = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), r.getRoomTypeId());
                                 Rate rate = TBXHotelUtil.rateGet(o, r);
                                 XRoom xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), o);
+                                OtaRoomPriceDto priceDto = null;
+                                String inventoryRate = null;
+                                String inventory = null;
                                 if (good!=null && rate!=null && xRoom!=null){
-                                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
-                                    OtaPriceModelDto otaPriceModelDto = new OtaPriceModelDto(new BigDecimal(1));
-                                    String inventoryRate = TomsUtil.obtInventoryRate(r, otaPriceModelDto, priceDto,commission);
-                                    String inventory = TomsUtil.obtInventory(r);
+                                    priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
+                                    inventoryRate = TomsUtil.obtInventoryRate(r, new OtaPriceModelDto(new BigDecimal(1)), priceDto, commission);
+                                    inventory = TomsUtil.obtInventory(r);
+                                    log.info("roomId:"+r.getRoomTypeId()+" goodId:"+good.getGid()+" xRoom:"+xRoom.getGid() +" inventory:"+inventory+" inventoryRate:"+inventoryRate);
                                     rate.setInventoryPrice(inventoryRate);
                                     xRoom.setInventory(inventory);
                                     String gidAndRpId = TBXHotelUtil.rateUpdate(o, r, rate);
