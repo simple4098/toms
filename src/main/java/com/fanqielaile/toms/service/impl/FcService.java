@@ -128,7 +128,7 @@ public class FcService implements ITPService {
                 cs.submit(getTask(company, fcRoomTypeFqDto, o));
             }
             es.shutdown();
-            roomTypeFqDtoList = null;
+            TomsUtil.obtNull(roomTypeFqDtoList);
         }
 
     }

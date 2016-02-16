@@ -167,7 +167,7 @@ public class ZhService implements ITPService {
                 cs.submit(getTask(company, mapping, o));
             }
             es.shutdown();
-            jointWisdomInnRoomMappings = null;
+            TomsUtil.obtNull(jointWisdomInnRoomMappings);
         }
     }
 

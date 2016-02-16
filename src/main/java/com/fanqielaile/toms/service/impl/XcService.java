@@ -114,7 +114,7 @@ public class XcService implements ITPService {
                 cs.submit(getTask(company, mapping, o));
             }
             es.shutdown();
-            mappings = null;
+            TomsUtil.obtNull(mappings);
         }
     }
 
