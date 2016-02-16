@@ -241,54 +241,61 @@ public class TBService implements ITPService {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         tbParam.setSj(true);
         List<BangInnDto> bangInnDtoList =  bangInnDao.selectBangInnByCompanyIdSj(company.getId(),o.getOtaInfoId());
-         for (int i=0;i<5;i++){
+         for (int i=0;i<6;i++){
             bangInnDtoList.addAll(bangInnDtoList);
         }
         log.info("定时任务数据大小："+bangInnDtoList.size());
         if (!CollectionUtils.isEmpty(bangInnDtoList)){
-            List<ProxyInns> proxyList = TomsUtil.toProxyInns(bangInnDtoList);
+            List<ProxyInns> proxyList = TomsUtil.toProxyInns(bangInnDtoList,company);
             int size = bangInnDtoList.size();
             int timerThread = size/Constants.timerThread;
             int threadNum = timerThread==0?1:timerThread;
             ExecutorService es = Executors.newFixedThreadPool(threadNum);
             CompletionService cs = new ExecutorCompletionService(es);
+            OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
             for (ProxyInns proxyInns:proxyList){
-                cs.submit(getTask(company, o, tbParam, proxyInns));
+                cs.submit(getTask(company, o,  proxyInns,commission));
             }
+            es.shutdown();
+            proxyList = null;
         }
     }
 
-    private Callable getTask(final Company company, final OtaInfoRefDto o, final TBParam tbParam, final ProxyInns proxyInns) {
+    private Callable getTask(final Company company, final OtaInfoRefDto o,  final ProxyInns proxyInns,final  OtaCommissionPercentDto commission) {
         return new Callable<CallableBean>() {
             @Override
             public CallableBean call()  {
-               /* ThreadCallableBean.setLocalThreadBean(new CallableBean(company,o,tbParam));
+                /*ThreadCallableBean.setLocalThreadBean(new CallableBean(company,o,tbParam));
                 Company company = ThreadCallableBean.getLocalThreadBean().getCompany();
                 OtaInfoRefDto o = ThreadCallableBean.getLocalThreadBean().getO();
                 TBParam tbParam = ThreadCallableBean.getLocalThreadBean().getTbParam();*/
-                OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
+                //OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
                 //if (proxyInns.getInnId().equals(7221) || proxyInns.getInnId().equals(51279)|| proxyInns.getInnId().equals(51770)|| proxyInns.getInnId().equals(30979)) {
-                if (proxyInns.getAccountId()!=null) {
+               /* if (proxyInns.getAccountId()!=null) {
                     tbParam.setAccountId(String.valueOf(proxyInns.getAccountId()));
-                }
-                String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-                String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus);
-                log.info(" url:" + room_type);
+                }*/
+                //String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.ROOM_TYPE);
+                //String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.roomStatus);
+                log.info(" url:" + proxyInns.getRoomTypeUrl());
                 try {
                     long start = new Date().getTime();
-                    List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
-                    List<RoomStatusDetail> roomStatusDetails = InnRoomHelper.getRoomStatus(roomStatus);
+                    List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo( proxyInns.getRoomTypeUrl());
+                    List<RoomStatusDetail> roomStatusDetails = InnRoomHelper.getRoomStatus( proxyInns.getRoomStatusUrl());
                     InnRoomHelper.updateRoomTypeInfo(list,roomStatusDetails);
                     log.info("=======start=======");
                         //房型
                         if (list != null) {
+                            OtaRoomPriceDto priceDto = null;
+                            String inventoryRate = null;
+                            String inventory = null;
+                            String gidAndRpId = null;
+                            Long gId = null;
+                            Rate rate = null;
+                            XRoom xRoom = null;
                             for (RoomTypeInfo r : list) {
                                 OtaInnRoomTypeGoodsDto good = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), r.getRoomTypeId());
-                                Rate rate = TBXHotelUtil.rateGet(o, r);
-                                XRoom xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), o);
-                                OtaRoomPriceDto priceDto = null;
-                                String inventoryRate = null;
-                                String inventory = null;
+                                rate = TBXHotelUtil.rateGet(o, r);
+                                xRoom = TBXHotelUtil.roomGet(r.getRoomTypeId(), o);
                                 if (good!=null && rate!=null && xRoom!=null){
                                     priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
                                     inventoryRate = TomsUtil.obtInventoryRate(r, new OtaPriceModelDto(new BigDecimal(1)), priceDto, commission);
@@ -296,8 +303,8 @@ public class TBService implements ITPService {
                                     log.info("roomId:"+r.getRoomTypeId()+" goodId:"+good.getGid()+" xRoom:"+xRoom.getGid() +" inventory:"+inventory+" inventoryRate:"+inventoryRate);
                                     rate.setInventoryPrice(inventoryRate);
                                     xRoom.setInventory(inventory);
-                                    String gidAndRpId = TBXHotelUtil.rateUpdate(o, r, rate);
-                                    Long gId = TBXHotelUtil.roomUpdate(o, xRoom);
+                                    gidAndRpId = TBXHotelUtil.rateUpdate(o, r, rate);
+                                    gId = TBXHotelUtil.roomUpdate(o, xRoom);
                                     if (StringUtils.isEmpty(gidAndRpId) || gId==null){
                                         timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"gidAndRpId is "+gidAndRpId+" gId is "+gId, TimerRateType.NEW));
                                     }
@@ -306,6 +313,7 @@ public class TBService implements ITPService {
                                     log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());
                                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom, TimerRateType.NEW));
                                 }
+                                System.gc();
                             }
                             log.info("=======end======= 消耗时间："+(System.currentTimeMillis()-start));
                         }else {

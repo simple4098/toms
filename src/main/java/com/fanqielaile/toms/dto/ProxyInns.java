@@ -15,6 +15,25 @@ public class ProxyInns {
     private Integer accountId;
     //低价accountId
     private Integer accountIdDi;
+    private String roomTypeUrl;
+    private String roomStatusUrl;
+
+    public String getRoomTypeUrl() {
+        return roomTypeUrl;
+    }
+
+    public void setRoomTypeUrl(String roomTypeUrl) {
+        this.roomTypeUrl = roomTypeUrl;
+    }
+
+    public String getRoomStatusUrl() {
+        return roomStatusUrl;
+    }
+
+    public void setRoomStatusUrl(String roomStatusUrl) {
+        this.roomStatusUrl = roomStatusUrl;
+    }
+
     public Integer getAccountId() {
         return accountId;
     }
