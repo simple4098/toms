@@ -26,7 +26,7 @@ public class ExceptionOrderTask {
     @Resource
     private IExceptionOrderService exceptionOrderService;
 
-    //    @Scheduled(cron = "0 0/1 * * * ? ") //间隔60秒执行
+    @Scheduled(cron = "0 0/3 * * * ? ") //间隔60秒执行
     public void taskCycle() {
         logger.info(new Date() + "开始执行定时任务=======>");
         Map<String, String> map = TomsUtil.getFifteenDate();
