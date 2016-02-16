@@ -447,4 +447,12 @@ public class TomsUtil {
         priceDto.setRoomTypeName(price.getRoomTypeName());
         return  priceDto;
     }
+
+    public static void  gc(){
+        System.gc();
+    }
+
+    public static void obtNull(Object o){
+        o = null;
+    }
 }

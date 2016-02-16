@@ -257,8 +257,8 @@ public class TBService implements ITPService {
                 cs.submit(getTask(company, o,  proxyInns,commission));
             }
             es.shutdown();
-            proxyList = null;
-            bangInnDtoList = null;
+            TomsUtil.obtNull(proxyList);
+            TomsUtil.obtNull(bangInnDtoList);
         }
     }
 
@@ -274,7 +274,7 @@ public class TBService implements ITPService {
                     InnRoomHelper.updateRoomTypeInfo(list,roomStatusDetails);
                     log.info("=======start=======");
                         //房型
-                        /*if (list != null) {
+                        if (list != null) {
                             OtaRoomPriceDto priceDto = null;
                             String inventoryRate = null;
                             String inventory = null;
@@ -303,12 +303,14 @@ public class TBService implements ITPService {
                                     log.info("保存信息："+company.getId()+"客栈id"+proxyInns.getInnId()+" otaInfoId:"+o.getOtaInfoId()+" roomTypeId:"+r.getRoomTypeId());
                                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom, TimerRateType.NEW));
                                 }
-                                System.gc();
                             }
                             log.info("=======end======= 消耗时间："+(System.currentTimeMillis()-start));
                         }else {
                             timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空", TimerRateType.NOT_HOVE_ROUSE));
-                        }*/
+                        }
+                    TomsUtil.obtNull(list);
+                    TomsUtil.obtNull(roomStatusDetails);
+                    TomsUtil.gc();
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
                     }
