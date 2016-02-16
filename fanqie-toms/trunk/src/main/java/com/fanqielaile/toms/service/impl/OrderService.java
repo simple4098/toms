@@ -1518,7 +1518,10 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<Order> findExceptionOrderList(Map<String, String> map) {
-        return this.orderDao.selectExceptionOrderList(map.get("fifteenDate"), map.get("fourteenDate"));
+        OrderParamDto order = new OrderParamDto();
+        order.setBeginDate(map.get("fifteen"));
+        order.setEndDate(map.get("fourteen"));
+        return this.orderDao.selectExceptionOrderList(order);
     }
 
     @Override

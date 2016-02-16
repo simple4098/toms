@@ -6,6 +6,7 @@ import com.fanqielaile.toms.model.Order;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public interface OrderDao {
      */
     List<OrderParamDto> selectOrderByNoPage(@Param("order") OrderParamDto orderParamDto);
 
-    List<Order> selectExceptionOrderList(@Param("beginDate") String beginDate, @Param("endDate") String endDate);
+    List<Order> selectExceptionOrderList(@Param("order") OrderParamDto orderParamDto);
 
     /**
      * 分页查询异常订单列表

@@ -256,9 +256,11 @@
         <include refid="Base_Column_List"/>
         from ota_toms_order where id in (SELECT order_id as id from ota_exception_order where deleted = 0)
     </select>
-    <select id="selectExceptionOrderList" resultMap="BaseResultsMap">
+    <select id="selectExceptionOrderList" resultMap="BaseResultsMap"
+            parameterType="com.fanqielaile.toms.dto.OrderParamDto">
         SELECT
         <include refid="Base_Column_List"/>
-        from ota_toms_order where created_date BETWEEN #{beginDate} and #{endDate}
+        from ota_toms_order where order_status='ACCEPT' and fee_status='NOT_PAY' and created_date BETWEEN
+        '${order.beginDate}' and '${order.endDate}'
     </select>
 </mapper>
