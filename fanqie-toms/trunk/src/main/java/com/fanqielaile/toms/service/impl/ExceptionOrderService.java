@@ -2,6 +2,7 @@ package com.fanqielaile.toms.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dao.DailyInfosDao;
 import com.fanqielaile.toms.dao.ExceptionOrderDao;
 import com.fanqielaile.toms.dao.IOtaInfoDao;
 import com.fanqielaile.toms.dao.OrderDao;
@@ -9,6 +10,7 @@ import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OtaOrderStatus;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.ExceptionOrder;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.service.IExceptionOrderService;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -32,6 +35,8 @@ public class ExceptionOrderService implements IExceptionOrderService {
     private OrderDao orderDao;
     @Resource
     private IOtaInfoDao otaInfoDao;
+    @Resource
+    private DailyInfosDao dailyInfosDao;
 
     @Override
     public void createExceptionOrder(Order order) {
@@ -65,6 +70,22 @@ public class ExceptionOrderService implements IExceptionOrderService {
                         }
                     }
 
+                }
+                //
+                //设置总价和每日价格
+                if (null != order.getAddPrice()) {
+                    List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
+                    BigDecimal addTatalPirce = BigDecimal.ZERO;
+                    if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                        for (DailyInfos dailyInfos : dailyInfoses) {
+                            if (1 == dailyInfos.getWeatherAdd()) {
+                                dailyInfos.setPrice(dailyInfos.getPrice().add(order.getAddPrice()));
+                                addTatalPirce = addTatalPirce.add(order.getAddPrice());
+                            }
+                        }
+                    }
+                    order.setTotalPrice(order.getTotalPrice().add(addTatalPirce));
+                    order.setTotalPrice(order.getBasicTotalPrice());
                 }
             }
         }
