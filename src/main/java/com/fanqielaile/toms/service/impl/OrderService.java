@@ -661,9 +661,14 @@ public class OrderService implements IOrderService {
                 this.orderDao.updateOrderStatusAndFeeStatus(order);
                 //记录操作日志
                 this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.REFUSE, "淘宝下单到oms响应失败", null == currentUser.getId() ? ChannelSource.TAOBAO.name() : currentUser.getId()));
-                MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                        "淘宝更新订单传入订单号为orderCode：" + order.getChannelOrderCode());
+            } else {
+                //如果淘宝返回值为空或者false，记录该订单为异常单
+                ExceptionOrder exceptionOrder = new ExceptionOrder();
+                exceptionOrder.setOrderId(order.getId());
+                this.exceptionOrderDao.insertExceptionOrderByException(exceptionOrder);
             }
+            MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
+                    "淘宝更新订单传入订单号为orderCode：" + order.getChannelOrderCode());
             return new JsonModel(false, "OMS系统异常");
         } else if (ChannelSource.FC.equals(order.getChannelSource())) {
             //如果付款失败，天下房仓返回创建订单失败

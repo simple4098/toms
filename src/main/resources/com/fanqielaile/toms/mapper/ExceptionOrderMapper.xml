@@ -21,6 +21,11 @@
             (#{eo.uuid},#{eo.orderId},now(),now(),#{eo.modifierId},#{eo.modifierStatus},0)
         </foreach>
     </insert>
+    <insert id="insertExceptionOrderByException" parameterType="com.fanqielaile.toms.model.ExceptionOrder">
+        INSERT INTO ota_exception_order(id,order_id,created_date,updated_date,modifier_person,modifier_status,deleted)
+        VALUES
+            (#{uuid},#{orderId},now(),now(),#{modifierId},#{modifierStatus},0)
+    </insert>
     <select id="selectAllExceptionOrder" resultMap="BaseResultsMap">
         select
         <include refid="Base_Column_List"/>
