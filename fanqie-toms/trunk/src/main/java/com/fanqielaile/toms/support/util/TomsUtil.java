@@ -252,18 +252,6 @@ public class TomsUtil {
             List<PricePattern> pricePatterns = null;
             for (BangInnDto b:bangInnDtoList){
                 p = new ProxyInns();
-               /* pricePatterns = new ArrayList<PricePattern>();
-                pricePattern = new PricePattern();
-                if (Constants.MAI.equals(b.getsJiaModel())){
-                    pricePattern.setPattern(Constants.MAI_VALUE);
-                    pricePattern.setAccountId(b.getAccountId());
-                    pricePatterns.add(pricePattern);
-                }
-                if (Constants.DI.equals(b.getsJiaModel())){
-                    pricePattern.setPattern(Constants.DI_VALUE);
-                    pricePattern.setAccountId(b.getAccountIdDi());
-                    pricePatterns.add(pricePattern);
-                }*/
                 p.setPricePatterns(pricePatterns);
                 p.setInnId(b.getInnId());
                 p.setAccountId(b.getAccountId());
