@@ -448,11 +448,9 @@ public class TomsUtil {
         return  priceDto;
     }
 
-    public static void  gc(){
-        System.gc();
-    }
 
     public static void obtNull(Object o){
         o = null;
+        System.gc();
     }
 }
