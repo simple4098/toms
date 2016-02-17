@@ -21,8 +21,8 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.JwXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.ThreadCallableBean;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
+import com.fanqielaile.toms.support.util.ThreadCallableBean;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -204,16 +204,18 @@ public class ZhService implements ITPService {
     public void updateHotelRoom(OtaInfoRefDto infoRefDto, List<PushRoom> pushRoomList) throws Exception {
         Company company = companyDao.selectCompanyById(infoRefDto.getCompanyId());
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
+        BangInn bangInn = null;
+        OtaRoomPriceDto priceDto = null;
         for (PushRoom pushRoom : pushRoomList) {
             Integer roomTypeId = pushRoom.getRoomType().getRoomTypeId();
             //查询客栈是否是上架状态
-            BangInn bangInn = bangInnDao.selectBangInnByParam(infoRefDto.getCompanyId(), infoRefDto.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
+            bangInn = bangInnDao.selectBangInnByParam(infoRefDto.getCompanyId(), infoRefDto.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
             if (bangInn != null) {
                 JointWisdomInnRoomMappingDto mapping = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(), bangInn.getInnId(), roomTypeId);
                 //满足这些条件 才是之前上架过。
                 if (mapping != null && mapping.getSj() == Constants.FC_SJ) {
-                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(mapping.getCompanyId(), roomTypeId, infoRefDto.getOtaInfoId()));
+                    priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(mapping.getCompanyId(), roomTypeId, infoRefDto.getOtaInfoId()));
                     //上架房型 房量 库存
                     RoomTypeInfo roomTypeInfo = JwXHotelUtil.buildRoomTypeInfo(company,mapping);
                     Result result = jointWisdomARI.updateJsPriceInventory(mapping, roomTypeInfo, priceDto, commission);
@@ -230,6 +232,7 @@ public class ZhService implements ITPService {
                 log.info("(众荟)此客栈已经下架AccountId:" + pushRoom.getRoomType().getAccountId());
             }
         }
+        TomsUtil.obtNull(pushRoomList);
     }
 
     @Override

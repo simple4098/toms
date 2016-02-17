@@ -22,8 +22,8 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.CtripXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
-import com.fanqielaile.toms.support.util.ThreadCallableBean;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
+import com.fanqielaile.toms.support.util.ThreadCallableBean;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -151,16 +151,18 @@ public class XcService implements ITPService {
     public void updateHotelRoom(OtaInfoRefDto infoRefDto, List<PushRoom> pushRoomList) throws Exception {
         Company company = companyDao.selectCompanyById(infoRefDto.getCompanyId());
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
+        BangInn bangInn = null;
+        OtaRoomPriceDto priceDto = null;
         for (PushRoom pushRoom : pushRoomList) {
             Integer roomTypeId = pushRoom.getRoomType().getRoomTypeId();
             //查询客栈是否是上架状态
-            BangInn bangInn = bangInnDao.selectBangInnByParam(infoRefDto.getCompanyId(), infoRefDto.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
+            bangInn = bangInnDao.selectBangInnByParam(infoRefDto.getCompanyId(), infoRefDto.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
             if (bangInn != null) {
                 CtripRoomTypeMapping mapping = ctripRoomTypeMappingDao.selectMappingInnIdAndRoomTypeId(String.valueOf(bangInn.getInnId()), String.valueOf(roomTypeId));
                 //满足这些条件 才是之前上架过。
                 if (mapping != null && !StringUtils.isEmpty(mapping.getTomRoomTypeId()) && mapping.getSj() == Constants.FC_SJ) {
-                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(mapping.getCompanyId(), roomTypeId, infoRefDto.getOtaInfoId()));
+                    priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(mapping.getCompanyId(), roomTypeId, infoRefDto.getOtaInfoId()));
                     //上架房型 房量 库存
                     RequestResponse syncRoomInfo = CtripXHotelUtil.syncRoomInfo(company,infoRefDto, mapping, priceDto, commission);
                     if (CtripConstants.resultCode.equals(syncRoomInfo.getRequestResult().getResultCode())) {
@@ -177,6 +179,7 @@ public class XcService implements ITPService {
                 log.info("(携程)此客栈已经下架AccountId:" + pushRoom.getRoomType().getAccountId());
             }
         }
+        TomsUtil.obtNull(pushRoomList);
     }
 
     @Override

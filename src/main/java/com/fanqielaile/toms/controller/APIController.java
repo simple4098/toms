@@ -88,7 +88,7 @@ public class APIController extends BaseController {
     /**
      * 删除客栈
      * @param tbParam 绿番茄参数
-     */
+     *//*
     @RequestMapping("/hotel/del")
     @ResponseBody
     public Object del(TBParam tbParam){
@@ -111,7 +111,7 @@ public class APIController extends BaseController {
             log.error(e.getMessage());
         }
         return  jsonModel;
-    }
+    }*/
 
     /**
      * 定时更新酒店
