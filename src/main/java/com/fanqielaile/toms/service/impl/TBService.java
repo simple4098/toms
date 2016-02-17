@@ -18,7 +18,6 @@ import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
-import com.fanqielaile.toms.support.util.ThreadCallableBean;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
@@ -32,8 +31,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 
