@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fanqie.bean.response.CtripHotelInfo;
 import com.fanqie.bean.response.CtripHotelRoomType;
+
 import org.apache.ibatis.annotations.Param;
 
 
@@ -34,4 +35,12 @@ public interface CtripHotelRoomTypeDao {
 	 * @param ctripHotelInfo
 	 */
 	void insertCtripHotelRoomTypeByCtripHotel(@Param("ctripHotelInfo") CtripHotelInfo ctripHotelInfo);
+	
+
+    /**
+     *  修改母房型对应的子房型ID
+     * @param childRoomId 子房型ID
+     * @param masterRoomId 母房型ID
+     */
+    void  updateChildRoomId(@Param("childRoomId")String childRoomId,@Param("masterRoomId")String masterRoomId);
 }
