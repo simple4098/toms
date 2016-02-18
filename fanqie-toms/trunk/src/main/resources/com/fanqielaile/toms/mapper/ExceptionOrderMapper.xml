@@ -35,7 +35,7 @@
         update ota_exception_order
         <trim prefix="SET" suffixOverrides=",">
             deleted = 1,updated_date = now(),
-            <if test="modifierId != null and mofifierId != ''">
+            <if test="modifierId != null and modifierId != ''">
                 modifier_person= #{modifierId},
             </if>
             <if test="modifierStatus != null and modifierStatus != ''">
