@@ -74,6 +74,7 @@ public class CtripMappingBy {
 		crm.setRatePlanCodeName(ratePlan.getCtripRatePlanName());
 		crm.setDeleted(0);
 		crm.setTomRoomTypeName(matchRoomType.getRoomTypeName());
+		crm.setCtripMasterRoomId(matchRoomType.getFcRoomTypeId());//  保存当前操作的母房型
 		return crm;
 	}
 

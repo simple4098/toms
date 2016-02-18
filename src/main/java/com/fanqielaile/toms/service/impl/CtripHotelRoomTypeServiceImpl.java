@@ -191,6 +191,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		String hotelId = null;
 		for (CtripRoomTypeMapping ctripRoomTypeMapping : crms) {
 			ctripRoomTypeMappingDao.saveRoomTypeMapping(ctripRoomTypeMapping);
+			ctripHotelRoomTypeDao.updateChildRoomId(ctripRoomTypeMapping.getCtripChildRoomTypeId(), ctripRoomTypeMapping.getCtripMasterRoomId());
 			hotelId = ctripRoomTypeMapping.getCtripChildHotelId();
 		}
 		
@@ -205,17 +206,32 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		if(null==ratePlan){
 			throw new RuntimeException("请先设计默认的价格计划");
 		}
+		CtripHotelInfo ctripHotelInfo =  ctripHotelInfoDao.findByParentHotelId(ctripMasterHotelId);
 		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
 		SetMappingInfoRequest mapping = new SetMappingInfoRequest();
 		HeaderInfo headerInfo = new  HeaderInfo(dto.getUserId(), CtripConstants.requestorId,false);
-        headerInfo.build(dto.getXcUserName(),dto.getXcPassword(),CtripRequestType.SetMappingInfo, CtripVersion.V12);
+		headerInfo.build(dto.getXcUserName(),dto.getXcPassword(),CtripRequestType.SetMappingInfo, CtripVersion.V12);
 		mapping.setHeaderInfo(headerInfo);
 		SetMappingInfoRequestParams sip = new SetMappingInfoRequestParams(SetMappingInfoRequestParams.TYPE_ADD_ROOM_RALATION);
-		sip.setMasterHotel(ctripMasterHotelId);
-		sip.setHotelGroupHotelCode(innId);
-		sip.setMasterRoom(matchRoomType.getFcRoomTypeId());
+		if(StringUtils.isNotBlank(ctripHotelInfo.getChildHotelId())){//有子酒店
+			sip.setHotel(ctripHotelInfo.getChildHotelId());
+		//	String masterRoomId = matchRoomType.getFcRoomTypeId().replace("\n", "");
+		//	Integer  ctripMasterRoomId = Integer.parseInt(masterRoomId);
+			
+			CtripHotelRoomType ctripHotelRoomType = ctripHotelRoomTypeDao.findByCtripParentHotelIdAndRoomTypeId(ctripMasterHotelId,matchRoomType.getFcRoomTypeId());
+			if(StringUtils.isNotBlank(ctripHotelRoomType.getChildRoomId())){//有子房型(3.1)
+				sip.setRoom(ctripHotelRoomType.getChildRoomId());
+			}else{// 没有子房型 （3.3）
+				sip.setMasterRoom(matchRoomType.getFcRoomTypeId());
+				sip.setMasterHotel(ctripMasterHotelId);
+			}
+		}else{
+			sip.setMasterHotel(ctripMasterHotelId);
+			sip.setMasterRoom(matchRoomType.getFcRoomTypeId());
+		}
 		sip.setHotelGroupRoomName(matchRoomType.getRoomTypeName());
 		sip.setHotelGroupRoomTypeCode(matchRoomType.getRoomTypeId());
+		sip.setHotelGroupHotelCode(innId);
 		sip.setSupplierID(dto.getAppKey());
 		mapping.setInfoRequestParams(sip);
 		sip.setRatePlanCode(ratePlan.getRatePlanCode().toString());
@@ -224,6 +240,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		String mappingResponse = CtripHttpClient.execute(mappingXml);
 		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->response:"+mappingResponse);
 		HandlerResult.handerResultCode(mappingResponse);
+		
 	}
 
 

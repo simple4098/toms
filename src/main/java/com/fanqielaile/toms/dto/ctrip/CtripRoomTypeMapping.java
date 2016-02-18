@@ -4,6 +4,10 @@ import com.fanqie.core.Domain;
 
 import java.util.Date;
 
+import javax.persistence.Transient;
+
+import org.springframework.transaction.annotation.Transactional;
+
 public class CtripRoomTypeMapping extends  Domain{
 	
 	 private String   innId ; // 客栈id
@@ -21,6 +25,18 @@ public class CtripRoomTypeMapping extends  Domain{
 	 private String   bedWid ;
 	 private String	  ratePlanCodeName;
 	 
+	 private String ctripMasterRoomId; //携程masterId
+	 
+	 
+	 @Transient
+	public String getCtripMasterRoomId() {
+		return ctripMasterRoomId;
+	}
+
+	public void setCtripMasterRoomId(String ctripMasterRoomId) {
+		this.ctripMasterRoomId = ctripMasterRoomId;
+	}
+
 	public void setId(Long id) {
 		super.setId(id.toString());
 	}
