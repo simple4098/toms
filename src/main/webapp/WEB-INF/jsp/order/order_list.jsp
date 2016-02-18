@@ -170,7 +170,7 @@
                                         </option>
                                     </select>
                                 </th>
-
+                                <th>付款状态</th>
                                 <th>
                                     客栈名称
                                 </th>
@@ -192,9 +192,11 @@
                                     <tr>
                                         <td>
                                                 ${d.channelSource.text}
+                                                    <c:if test="${d.channelSource == 'FC'}">(${d.partnerCode})</c:if>
                                         </td>
                                         <td>${d.channelOrderCode}</td>
                                         <td>${d.orderStatus.text}</td>
+                                        <td>${d.feeStatus.text}</td>
                                         <td>${d.innName}</td>
                                         <td>${d.guestName}</td>
                                         <td>${d.roomTypeName}</td>
