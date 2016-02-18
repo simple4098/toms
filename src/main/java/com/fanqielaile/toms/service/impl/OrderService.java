@@ -1527,7 +1527,19 @@ public class OrderService implements IOrderService {
     @Override
     public JsonModel createOrderOmsMethod(OrderParamDto orderParamDto, UserInfo currentUser) throws Exception {
         //下单到oms
-        JsonModel jsonModel = payBackDealMethod(orderParamDto, new UserInfo(), OtaType.TB.name());
+        String otaType = "";
+        if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+            otaType = OtaType.TB.name();
+        } else if (ChannelSource.FC.equals(orderParamDto.getChannelSource())) {
+            otaType = OtaType.FC.name();
+        } else if (ChannelSource.XC.equals(orderParamDto.getChannelSource())) {
+            otaType = OtaType.XC.name();
+        } else if (ChannelSource.ZH.equals(orderParamDto.getChannelSource())) {
+            otaType = OtaType.ZH.name();
+        } else {
+            throw new TomsRuntimeException("系统内部错误，未找到该渠道信息!");
+        }
+        JsonModel jsonModel = payBackDealMethod(orderParamDto, new UserInfo(), otaType);
         //更新异常订单状态为删除
         //判断oms是否成功
         if (jsonModel.isSuccess()) {
