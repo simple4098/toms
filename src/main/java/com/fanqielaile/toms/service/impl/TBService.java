@@ -261,9 +261,10 @@ public class TBService implements ITPService {
             public CallableBean call()  {
                 log.info(" url:" + proxyInns.getRoomTypeUrl());
                 try {
-
-                    List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo( proxyInns.getRoomTypeUrl());
-                    List<RoomStatusDetail> roomStatusDetails = InnRoomHelper.getRoomStatus( proxyInns.getRoomStatusUrl());
+                    String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.ROOM_TYPE);
+                    String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), proxyInns.getAccountId().toString(), CommonApi.roomStatus);
+                    List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo( room_type);
+                    List<RoomStatusDetail> roomStatusDetails = InnRoomHelper.getRoomStatus( roomStatus);
                     InnRoomHelper.updateRoomTypeInfo(list, roomStatusDetails);
                         //房型
                         if (list != null) {
@@ -300,8 +301,7 @@ public class TBService implements ITPService {
                         }else {
                             timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空", TimerRateType.NOT_HOVE_ROUSE));
                         }
-                   /* TomsUtil.obtNull(list);
-                    TomsUtil.obtNull(roomStatusDetails);*/
+
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
                     }
@@ -348,13 +348,13 @@ public class TBService implements ITPService {
     @Override
     public void updateHotelFailTimer(OtaInfoRefDto o)  {
         String companyId = o.getCompanyId();
-        //Company company = companyDao.selectCompanyById(companyId);
+        Company company = companyDao.selectCompanyById(companyId);
         List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
         TBParam tbParam = null;
         try {
             for (TimerRatePrice ratePrice:timerRatePriceList){
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, ratePrice.getInnId());
-                    /*if (TimerRateType.NOT_HOVE_ROUSE.equals(ratePrice.getRateType())){
+                    if (TimerRateType.NOT_HOVE_ROUSE.equals(ratePrice.getRateType())){
                         List<OtaInnRoomTypeGoodsDto> list = goodsDao.selectGoodsByInnIdAndCompany(ratePrice.getInnId(),companyId);
                         TBXHotelUtil.roomRoomNumZeroUpdate(list,o);
                     }else {
@@ -363,9 +363,7 @@ public class TBService implements ITPService {
                             tbParam = TomsUtil.toTbParam(bangInn, company, otaInnOtaDto);
                             updateOrAddHotel(tbParam, o);
                         }
-                    }*/
-                log.info("=================="+bangInn.getInnId());
-                    Thread.sleep(1500);
+                    }
                     timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId()));
             }
         } catch (Exception e) {
