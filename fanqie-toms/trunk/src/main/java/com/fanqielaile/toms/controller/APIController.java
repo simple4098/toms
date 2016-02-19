@@ -225,6 +225,8 @@ public class APIController extends BaseController {
                 this.exceptionOrderService.deleteExceptionOrder(order);
                 //插入异常订单
                 this.exceptionOrderService.createExceptionOrder(order);
+                //发送微信
+                MessageCenterUtils.sendWeiXin("发现异常单,一共：" + order.getExceptionOrderList().size() + "单，请及时检查");
             }
         } catch (Exception e) {
             log.info("处理异常订单信息异常" + e);
