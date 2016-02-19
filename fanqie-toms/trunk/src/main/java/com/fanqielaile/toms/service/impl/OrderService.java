@@ -230,7 +230,7 @@ public class OrderService implements IOrderService {
         } else if (ChannelSource.FC.equals(channelSource)) {
             FcRoomTypeFqDto fcRoomTypeFqDto = this.fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(order.getRoomTypeId());
             if (null != fcRoomTypeFqDto) {
-                order.setOrderRoomTypeName(fcRoomTypeFqDto.getFcRoomTypeName());
+                order.setOrderRoomTypeName(fcRoomTypeFqDto.getFqRoomTypeName());
             }
         } else if (ChannelSource.XC.equals(channelSource)) {
             CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
