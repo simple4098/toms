@@ -18,6 +18,7 @@ import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
+import com.fanqielaile.toms.support.util.ResourceBundleUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
@@ -238,16 +239,11 @@ public class TBService implements ITPService {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         tbParam.setSj(true);
         List<BangInnDto> bangInnDtoList =  bangInnDao.selectBangInnByCompanyIdSj(company.getId(),o.getOtaInfoId());
-       /* for (int i=0;i<6;i++){
-            bangInnDtoList.addAll(bangInnDtoList);
-        }*/
         log.info("定时任务数据大小："+bangInnDtoList.size());
         if (!CollectionUtils.isEmpty(bangInnDtoList)){
             List<ProxyInns> proxyList = TomsUtil.toProxyInns(bangInnDtoList,company);
-            int size = bangInnDtoList.size();
-            int timerThread = size/Constants.timerThread;
-            int threadNum = timerThread==0?1:timerThread;
-            ExecutorService es = Executors.newFixedThreadPool(threadNum);
+            int size = ResourceBundleUtil.getInt("threadNum");
+            ExecutorService es = Executors.newFixedThreadPool(size);
             CompletionService cs = new ExecutorCompletionService(es);
             OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), o.getUsedPriceModel().name()));
             for (ProxyInns proxyInns:proxyList){
@@ -300,12 +296,11 @@ public class TBService implements ITPService {
                                     timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), r.getRoomTypeId(),proxyInns.getInnId(),"rate is "+rate+" xRoom is "+xRoom, TimerRateType.NEW));
                                 }
                             }
-                            //log.info("=======end======= 消耗时间："+(System.currentTimeMillis()-start));
                         }else {
                             timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(), null,proxyInns.getInnId(),"获取oms房型信息为空", TimerRateType.NOT_HOVE_ROUSE));
                         }
-                    TomsUtil.obtNull(list);
-                    TomsUtil.obtNull(roomStatusDetails);
+                   /* TomsUtil.obtNull(list);
+                    TomsUtil.obtNull(roomStatusDetails);*/
                     } catch (Exception e) {
                         log.error("定时任务 获取oms房型异常"+e);
                     }
@@ -453,4 +448,19 @@ public class TBService implements ITPService {
         }
         return result;
     }
+
+   /* @Override
+    public void sellingRoomType(OtaInfoRefDto otaInfoRefDto) {
+        String companyId = otaInfoRefDto.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
+        try {
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(company);
+            for (SellingRoomType sellingRoomType:roomTypes){
+                List<OtaInnRoomTypeGoodsDto> list = TomsUtil.obtOtaInnRoomTypeGoodsDto(sellingRoomType.getOtaRoomTypeId());
+                TBXHotelUtil.roomRoomNumZeroUpdate(list,otaInfoRefDto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
 }
