@@ -11,14 +11,29 @@ public class RoomDetail {
 	private Integer priceStatus;/* 价格状态 0-默认价 1-周末价 2-特殊价*/
 	private Double  costPrice;//成本价
 	private Double  priceValue;//特殊处理价格
-	
+	private Double originalPrice; /* 老板设置原始价格 */
+	private Double operatorPrice; /* 运营修改后的渠道价格 */
 	/*兼容美团数据格式*/
 	private Integer roomPriceInt;
 	private Integer priRoomPriceInt;
 	private String otaRoomTypeIdstr;
 
-	
-	
+	public Double getOriginalPrice() {
+		return originalPrice;
+	}
+
+	public void setOriginalPrice(Double originalPrice) {
+		this.originalPrice = originalPrice;
+	}
+
+	public Double getOperatorPrice() {
+		return operatorPrice;
+	}
+
+	public void setOperatorPrice(Double operatorPrice) {
+		this.operatorPrice = operatorPrice;
+	}
+
 	public Integer getRoomPriceInt() {
 		return (Integer)roomPrice.intValue();
 	}
