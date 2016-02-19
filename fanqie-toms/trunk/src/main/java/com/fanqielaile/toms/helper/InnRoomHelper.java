@@ -1,19 +1,20 @@
 package com.fanqielaile.toms.helper;
 
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dto.InnDto;
-import com.fanqielaile.toms.dto.RoomDetail;
-import com.fanqielaile.toms.dto.RoomStatusDetail;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  */
 public class InnRoomHelper {
 
+    private static  final Logger log = LoggerFactory.getLogger(InnRoomHelper.class);
     /**
      * 获取oms房态数据
      * @param roomStatusUrl oms房态url
@@ -36,6 +38,8 @@ public class InnRoomHelper {
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
             return  JacksonUtil.json2list(jsonObject.get("list").toString(), RoomStatusDetail.class);
+        }else {
+            log.info("oms 房态返回错误："+jsonObject.get("message"));
         }
         return null;
     }
@@ -51,6 +55,8 @@ public class InnRoomHelper {
         //房型
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null) {
             return JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+        }else {
+            log.info("oms 房型返回错误："+jsonObject.get("message"));
         }
         return null;
     }
@@ -108,4 +114,20 @@ public class InnRoomHelper {
         }
         return null;
     }
+
+    /**
+     * 获取客栈下架的房型
+     * @param company 公司信息
+     */
+    /*public static List<SellingRoomType> obtSellingRoomType(Company company )throws Exception{
+        String sellingRoomTypeUrl = DcUtil.omsSellingRoomType(company.getOtaId(), company.getUserAccount(),
+                company.getUserPassword(), CommonApi.sellingRoomType);
+        String roomTypeGets = HttpClientUtil.httpGets(sellingRoomTypeUrl, null);
+        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
+        if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null) {
+            return JacksonUtil.json2list(jsonObject.getJSONArray("list").toString(), SellingRoomType.class);
+        }
+        return null;
+    }*/
+
 }

@@ -4,7 +4,6 @@ import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
-import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.model.BangInn;
@@ -250,8 +249,6 @@ public class TomsUtil {
         if (!CollectionUtils.isEmpty(bangInnDtoList)){
             List<ProxyInns> list = new ArrayList<ProxyInns>();
             ProxyInns p = null;
-            String room_type = null;
-            String roomStatus = null;
             List<PricePattern> pricePatterns = null;
             for (BangInnDto b:bangInnDtoList){
                 p = new ProxyInns();
@@ -259,10 +256,6 @@ public class TomsUtil {
                 p.setInnId(b.getInnId());
                 p.setAccountId(b.getAccountId());
                 p.setAccountIdDi(b.getAccountIdDi());
-                room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), b.getAccountId().toString(), CommonApi.ROOM_TYPE);
-                roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), b.getAccountId().toString(), CommonApi.roomStatus);
-                p.setRoomTypeUrl(room_type);
-                p.setRoomStatusUrl(roomStatus);
                 list.add(p);
             }
             return list;
@@ -452,5 +445,19 @@ public class TomsUtil {
     public static void obtNull(Object o){
         o = null;
         System.gc();
+    }
+
+    public static List<OtaInnRoomTypeGoodsDto> obtOtaInnRoomTypeGoodsDto(  List<Integer> otaRoomTypeIdList){
+        if (!CollectionUtils.isEmpty(otaRoomTypeIdList)){
+            OtaInnRoomTypeGoodsDto goodsDto = null;
+            List<OtaInnRoomTypeGoodsDto> list = new ArrayList<>();
+            for (Integer roomTypeId:otaRoomTypeIdList){
+                goodsDto = new OtaInnRoomTypeGoodsDto();
+                goodsDto.setRoomTypeId(roomTypeId);
+                list.add(goodsDto);
+            }
+            return list;
+        }
+        return  null;
     }
 }
