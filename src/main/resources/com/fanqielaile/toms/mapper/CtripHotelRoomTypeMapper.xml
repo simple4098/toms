@@ -14,10 +14,12 @@
         <result column="bed_type" property="bedType"/>
         <result column="currency" property="currency"/>
         <result column="check_in_num" property="checkInNum"/>
+        <result column="child_room_id" property="childRoomId"/>
+        
     </resultMap>
 
     <sql id="Base_Column_List">
-  			id,ctrip_prent_hotel_id,room_type_name,room_type_id,bed_type,created_date,updated_date,deleted
+  			id,ctrip_prent_hotel_id,room_type_name,room_type_id,bed_type,created_date,updated_date,deleted,child_room_id
        </sql>
     
        
@@ -56,4 +58,10 @@
             (#{i.uuid},#{i.ctripParentHotelId},#{i.roomTypeName},#{i.roomTypeId},#{i.currency},#{i.bedType},now(),now(),0)
         </foreach>
     </insert>
+    
+    <update id="updateChildRoomId" >
+    			update ctrip_parent_room set child_room_id = #{childRoomId} where room_type_id = #{masterRoomId}
+    </update>
+    
+    
 </mapper>
