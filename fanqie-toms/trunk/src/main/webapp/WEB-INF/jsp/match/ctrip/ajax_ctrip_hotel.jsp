@@ -13,7 +13,7 @@
   <label>
       <input type="radio" name="fcHotelId" value="${ho.parentHotelId}"  >
       <div class="result-box">
-        <p>名称11：<span>${ho.hotelName}</span></p>
+        <p>名称：<span>${ho.hotelName}</span></p>
      <%--    <p>电话：<span>${ho.telephone}</span></p>
         <p>地址：<span>${ho.hotelAddress}</span></p> --%>
       </div>
