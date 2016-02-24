@@ -126,7 +126,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     //组装返回参数
                     //1.组装房型
                     RoomType roomType = new RoomType();
-                    roomType.setRoomTypeCode(availOrder.getRoomTypeCode());
+                    roomType.setRoomTypeCode(jointWisdomInnRoomMappingDto.getRoomTypeIdCode());
                     boolean canBook = false;
                     //判断是否可预定
                     for (DailyInfos dailyInfos1 : dailyInfos) {
@@ -166,7 +166,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     //3.组装房型与价格计划的对应关系
                     RoomRate roomRate = new RoomRate();
                     roomRate.setRatePlanCode(String.valueOf(otaRatePlan.getRatePlanCode()));
-                    roomRate.setRoomTypeCode(availOrder.getRoomTypeId());
+                    roomRate.setRoomTypeCode(jointWisdomInnRoomMappingDto.getRoomTypeIdCode());
                     List<Rate> rateList = new ArrayList<>();
                     BigDecimal totalPrice = BigDecimal.ZERO;
                     if (ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
