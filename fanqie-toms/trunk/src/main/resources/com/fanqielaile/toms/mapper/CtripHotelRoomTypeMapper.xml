@@ -46,8 +46,8 @@
     </select>
 
     <insert id="saveCtripHotelRoomType" parameterType="com.fanqie.bean.response.CtripHotelRoomType">
-          insert into ctrip_parent_room(id,ctrip_prent_hotel_id,room_type_name,room_type_id,currency,bed_type,created_date,updated_date,deleted)
-              values (#{uuid},#{ctripParentHotelId},#{roomTypeName},#{roomTypeId},#{currency},#{bedType},now(),now(),0)
+          insert into ctrip_parent_room(id,ctrip_prent_hotel_id,room_type_name,room_type_id,currency,bed_type,created_date,updated_date,deleted,check_in_num)
+              values (#{uuid},#{ctripPrentHotelId},#{roomTypeName},#{roomTypeId},#{currency},#{bedType},now(),now(),0,#{checkInNum})
     </insert>
 
     <insert id="insertCtripHotelRoomTypeByCtripHotel" parameterType="com.fanqie.bean.response.CtripHotelInfo">
