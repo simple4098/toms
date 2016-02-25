@@ -474,6 +474,8 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             //自动下单
             //设置订单状态为：接受
             order.setOrderStatus(OrderStatus.ACCEPT);
+            //设置订单房型信息
+            order.setRoomTypeName(jointWisdomInnRoomMappingDto.getRoomTypeName());
             jsonModel = this.orderService.payBackDealMethod(order, new UserInfo(), OtaType.ZH.name());
         } else {
             //手动下单,手动下单修改订单状态为待处理

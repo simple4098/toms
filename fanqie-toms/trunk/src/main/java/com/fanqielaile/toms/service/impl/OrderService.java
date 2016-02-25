@@ -587,7 +587,7 @@ public class OrderService implements IOrderService {
                 logger.info("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
                 throw new TomsRuntimeException("查询订单房型信息出错,订单号为：" + order.getChannelOrderCode());
             } else {
-                order.setOrderRoomTypeName(ctripRoomTypeMapping.getTomRoomTypeName());
+                order.setRoomTypeName(ctripRoomTypeMapping.getTomRoomTypeName());
             }
         }
         return order;
