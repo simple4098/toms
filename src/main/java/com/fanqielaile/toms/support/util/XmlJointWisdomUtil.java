@@ -154,6 +154,8 @@ public class XmlJointWisdomUtil {
         order.setLastestArriveTime(DateUtil.parse(TomsUtil.getDateString(guestParam.element("ArrivalTransport").element("TransportInfo").attributeValue("Time")), "yyyy-MM-dd HH:mm:ss"));
         //入住人信息
         order.setOrderGuestses(getOrderGuest(guestParam.element("Profiles").element("ProfileInfo").element("Profile").element("Customer").elements("PersonName"), order));
+        //联系人信息
+        order.setGuestName(getGuestInfo(order.getOrderGuestses()));
         //渠道订单号
         order.setChannelOrderCode(param.element("ResGlobalInfo").element("HotelReservationIDs").element("HotelReservationID").attributeValue("ResID_Value"));
         //设置预付金额
@@ -161,6 +163,25 @@ public class XmlJointWisdomUtil {
         //设置已付金额
         order.setPayment(order.getTotalPrice());
         return order;
+    }
+
+    /**
+     * 得到订单联系人信息（众荟用入住人，以逗号分隔多个入住人）
+     *
+     * @param orderGuestses
+     * @return
+     */
+    private static String getGuestInfo(List<OrderGuests> orderGuestses) {
+        String guestName = "";
+        if (ArrayUtils.isNotEmpty(orderGuestses.toArray())) {
+            for (OrderGuests guests : orderGuestses) {
+                guestName = guestName + guests.getName() + ",";
+            }
+        }
+        if (guestName.length() != 0) {
+            guestName = guestName.substring(0, guestName.length() - 1);
+        }
+        return guestName;
     }
 
     /**
@@ -176,7 +197,7 @@ public class XmlJointWisdomUtil {
             for (Element e : elements) {
                 OrderGuests orderGuests = new OrderGuests();
                 orderGuests.setOrderId(order.getId());
-                orderGuests.setName(e.elementText("GivenName") + e.elementText("MiddleName") + e.elementText("Surname"));
+                orderGuests.setName(e.elementText("NamePrefix") + "_" + e.elementText("Surname") + e.elementText("GivenName"));
                 result.add(orderGuests);
             }
         }

@@ -366,6 +366,10 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                                 totalPrice = totalPrice.add(BigDecimal.valueOf(Double.valueOf(base.getAmountAfterTax())));
 
                             }
+                        } else {
+                            map.put("status", false);
+                            map.put("data", new JointWisdomAvailCheckOrderSuccessResponse().getBasicError("客栈中不存在满足预定的房型，请重试"));
+                            return map;
                         }
                         roomRate.setRates(rateList);
                         Total total = new Total();
