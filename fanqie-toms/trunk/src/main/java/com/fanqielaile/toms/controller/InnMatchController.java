@@ -609,13 +609,13 @@ public class InnMatchController extends BaseController {
         Result result = new Result();
         try {
         	List<CtripRoomTypeMapping> crms = ctripHotelRoomTypeService.updateRoomBypeRelation(companyId,json,innId,fcHotelId);
-        	if(null!=crms && !crms.isEmpty()){
+        /*	if(null!=crms && !crms.isEmpty()){
         		log.info("同步OMS数据，上传最新客栈房型绑定关系");
         		Company company = companyService.findCompanyByid(companyId);
         		OtaInfoRefDto dto =  otaInfoService.findAllOtaByCompanyAndType(companyId, OtaType.XC);
         		iCtripRoomService.updateRoomPrice(company, dto, crms, true);
         		log.info("同步OMS数据完成");
-        	}
+        	}*/
         } catch (CtripDataException e) {
         	log.error(e.getMessage());
         	result.setStatus(Constants.ERROR400);
