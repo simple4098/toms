@@ -389,7 +389,7 @@ public class TomsUtil {
         long time = new Date().getTime();
         long l = (time / 1000 / 60 - 33) * 60 * 1000;
         String fifteenDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(l);
-        long l1 = (time / 1000 / 60 - 30) * 60 * 1000;
+        long l1 = (time / 1000 / 60 - 32) * 60 * 1000;
         String fourteenDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(l1);
         map.put("fifteen", fifteenDate);
         map.put("fourteen", fourteenDate);
