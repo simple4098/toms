@@ -142,7 +142,7 @@ public class XmlJointWisdomUtil {
         order.setPerson(Integer.valueOf(roomTypeParam.element("GuestCounts").element("GuestCount").attributeValue("Count")));
         order.setLiveTime(DateUtil.parse(roomTypeParam.element("TimeSpan").attributeValue("Start"), "yyyy-MM-dd"));
         order.setLeaveTime(DateUtil.parse(roomTypeParam.element("TimeSpan").attributeValue("End"), "yyyy-MM-dd"));
-        order.setTotalPrice(BigDecimal.valueOf(Double.valueOf(roomTypeParam.element("Total").attributeValue("AmountBeforeTax"))));
+        order.setTotalPrice(BigDecimal.valueOf(Double.valueOf(roomTypeParam.element("Total").attributeValue("AmountAfterTax"))));
         order.setBasicTotalPrice(order.getTotalPrice());
         order.setCurrency(CurrencyCode.CNY);
         order.setInnCode(roomTypeParam.element("BasicPropertyInfo").attributeValue("HotelCode"));
@@ -213,7 +213,7 @@ public class XmlJointWisdomUtil {
                 DailyInfos d = new DailyInfos();
                 d.setOrderId(order.getId());
                 d.setDay(DateUtil.parse(element.attributeValue("EffectiveDate"), "yyyy-MM-dd"));
-                d.setPrice(BigDecimal.valueOf(Double.valueOf(element.element("Base").attributeValue("AmountBeforeTax"))));
+                d.setPrice(BigDecimal.valueOf(Double.valueOf(element.element("Base").attributeValue("AmountAfterTax"))));
                 d.setBasicPrice(d.getPrice());
                 result.add(d);
             }

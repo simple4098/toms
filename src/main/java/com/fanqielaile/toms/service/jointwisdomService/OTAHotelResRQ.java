@@ -15,7 +15,6 @@ public class OTAHotelResRQ extends OtaRequest {
     private String echoToken;
     private String timeStamp;
     private String version;
-    private String xmlns;
     private String resStatus;
     private POS pos;
 
@@ -63,14 +62,6 @@ public class OTAHotelResRQ extends OtaRequest {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getXmlns() {
-        return xmlns;
-    }
-
-    public void setXmlns(String xmlns) {
-        this.xmlns = xmlns;
     }
 
     @XmlElement(name = "HotelReservations", namespace = "http://www.opentravel.org/OTA/2003/05")
