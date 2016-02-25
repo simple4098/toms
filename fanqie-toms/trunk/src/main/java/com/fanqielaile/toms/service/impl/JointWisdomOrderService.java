@@ -83,6 +83,14 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         try {
             //解析xml得到order的查询对象
             Order availOrder = XmlJointWisdomUtil.getJointWisdomAvailOrder(xml);
+            //检查试订单日期
+            if (availOrder.getLiveTime().getTime() > availOrder.getLeaveTime().getTime()) {
+                JointWisdomAvailCheckOrderSuccessResponse errorResult = new JointWisdomAvailCheckOrderSuccessResponse();
+                JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("试订单入住时间必须小于等于离店时间");
+                map.put("data", basicError);
+                map.put("status", true);
+                return map;
+            }
             OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.ZH.name());
 
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
@@ -280,11 +288,15 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 List<RatePlan> ratePlanList = new ArrayList<>();
                 if (ArrayUtils.isNotEmpty(list.toArray())) {
                     OtaRatePlan otaRatePlan = new OtaRatePlan();
+                    outer:
                     for (RoomTypeInfo roomTypeInfo : list) {
                         //查询房型信息toms
                         availOrder.setRoomTypeId(String.valueOf(roomTypeInfo.getRoomTypeId()));
                         availOrder.setRoomTypeIdInt(roomTypeInfo.getRoomTypeId());
                         JointWisdomInnRoomMappingDto wisdomInnRoomMappingDto = this.jointWisdomInnRoomDao.selectRoomMappingByInnIdAndRoomTypeId(availOrder);
+                        if (null == wisdomInnRoomMappingDto) {
+                            continue outer;
+                        }
                         //查询价格计划
                         otaRatePlan = this.ratePlanDao.selectRatePlanByCompanyIdAndOtaIdAndRateCode(company.getId(), otaInfoRefDto.getId(), jointWisdomInnRoomMappingDto.getRatePlanCode());
                         //房型

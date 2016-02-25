@@ -21,6 +21,16 @@ public class RoomStay {
     private Total total;
     private String resGuestRPHs;
     private List<SpecialRequest> specialRequests;
+    private DepositPayments depositPayments;
+
+    @XmlElement(name = "DepositPayments")
+    public DepositPayments getDepositPayments() {
+        return depositPayments;
+    }
+
+    public void setDepositPayments(DepositPayments depositPayments) {
+        this.depositPayments = depositPayments;
+    }
 
     @XmlElement(name = "SpecialRequest", namespace = "http://www.opentravel.org/OTA/2003/05")
     @XmlElementWrapper(name = "SpecialRequests")
