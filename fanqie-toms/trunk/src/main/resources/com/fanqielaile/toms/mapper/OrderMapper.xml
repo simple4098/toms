@@ -106,6 +106,7 @@
         <result column="person" property="person"/>
         <result column="interface_send_id" property="interFaceSendID"/>
         <result column="basic_total_price" property="basicTotalPrice"/>
+        <result column="oms_order_code" property="omsOrderCode"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, creator_id, created_date,

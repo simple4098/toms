@@ -133,6 +133,7 @@
                      <property name="innInfo" value="http://192.168.1.159:8888/api/queryInn"></property>
                      <property name="roomStatus" value="http://192.168.1.159:8888/api/queryRoomStatus"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
+               <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
                      <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                      <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
@@ -174,7 +175,8 @@
                      <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/queryInn"></property>
                   <property name="roomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-                    <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+                  <property name="pmsOrderStatus" value="http://pms.test.fanqiele.com/api/book"></property>
+                  <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
                     <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
                     <property name="imgUrl" value="http://img.test.fanqiele.com"></property>
                   <property name="proxyOtaPercent" value="http://115.28.149.182:8282/proxysale/api/channel/"></property>
@@ -206,6 +208,7 @@
                   <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
                   <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
                   <property name="imgUrl" value="http://img.fanqiele.com"></property>
+                  <property name="pmsOrderStatus" value="http://www.fanqiele.com/api/book"></property>
                   <property name="proxyOtaPercent" value="http://www.afanqie.com/proxysale/api/channel/"></property>
                   <property name="fcHotelInfo" value="http://www.fangcang.com/USP/api_v1/getHotelInfo"></property>
                   <property name="fcAddHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/addHotelMapping"></property>

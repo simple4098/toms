@@ -376,3 +376,87 @@ $('.btn-cancel-order-oms').on('click', function () {
         }
     })
 });
+//点击关闭订单
+$('.close-order').on('click', function () {
+    var url = $(this).attr('data-url');
+    $('.close-order-url').val(url);
+    $("#closeOrder").modal();
+})
+//确认关闭订单
+$('.btn-close-order').on('click', function () {
+    var url = $('.close-order-url').val();
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    })
+});
+
+$('.oms-order-status').on('click', function () {
+    var url = $(this).attr('data-url');
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    layer.closeAll();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    layer.closeAll();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    });
+
+});
+$('.pms-order-status').on('click', function () {
+    var url = $(this).attr('data-url');
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'post',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    layer.closeAll();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    layer.closeAll();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    });
+});
