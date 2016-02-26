@@ -77,6 +77,13 @@ public interface CtripHotelRoomTypeService {
 	  void  cannelMappingAll(String companyId,String innId,String masterHotelId) throws RequestCtripException, JAXBException;
 	  
 	  
-		 
+	
+	  /**
+	   *  批量修改房型的Mapping关系，添加我们自己的房价代码Code
+	 * @throws CtripDataException 
+	 * @throws JAXBException 
+	 * @throws RequestCtripException 
+	   */
+	  void  updateBatchRoomMapping(String companyId) throws CtripDataException, RequestCtripException, JAXBException;
 
 }
