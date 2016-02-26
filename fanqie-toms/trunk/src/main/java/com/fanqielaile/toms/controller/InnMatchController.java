@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fanqie.bean.response.CtripHotelInfo;
 import com.fanqie.bean.response.CtripHotelRoomType;
-import com.fanqie.bean.response.RequestResponse;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.Pagination;
@@ -637,6 +636,27 @@ public class InnMatchController extends BaseController {
         return  result;
     }
 
+    
+    
+    
+    
+    //携程房型与番茄房型匹配
+    @RequestMapping("/btach/update/mapping")
+    @ResponseBody
+    public Result matchCtripRoomType(){
+        String companyId = getCurrentUser().getCompanyId();
+        Result result = new Result();
+        try {
+        	ctripHotelRoomTypeService.updateBatchRoomMapping(companyId);
+        	result.setStatus(Constants.SUCCESS200);
+		} catch (Exception e) {
+			e.printStackTrace();
+			 result.setMessage(e.getMessage());
+			 result.setStatus(Constants.ERROR400);
+		}
+        return  result;
+    }
+    
     //上架
     @RequestMapping("/ajax/sjMatchRoomType")
     @ResponseBody

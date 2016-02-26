@@ -11,6 +11,7 @@ import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.*;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -217,6 +219,7 @@ public class APIController extends BaseController {
         log.info(new Date() + "开始执行定时任务=======>");
         try {
             Map<String, String> map = TomsUtil.getFifteenDate();
+            
             List<Order> exceptionOrderList = this.orderService.findExceptionOrderList(map);
             Order order = new Order().getOrderToExceptionOrder(exceptionOrderList);
             log.info("插入异常订单一共" + (null == order.getExceptionOrderList() ? 0 : order.getExceptionOrderList().size()));
@@ -235,4 +238,5 @@ public class APIController extends BaseController {
         log.info(new Date() + "结束执行定时任务======>");
         return true;
     }
+    
 }

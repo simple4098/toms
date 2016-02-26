@@ -89,4 +89,18 @@ public interface CtripRoomTypeMappingDao {
      * @return
      */
     CtripRoomTypeMapping  selectByCtripHotelIdAndRoomId(@Param("childHotelId")String childHotelId, @Param("ctripRoomId")String ctripRoomId,@Param("companyId")String companyId);
+
+
+    /**
+     *  查询所有的携程房型Mapping关系
+     * @return
+     */
+    List<CtripRoomTypeMapping> findAll();
+    
+    
+    /**
+     *  临时方法,用于修改已经Mappingg过的房型。但是传入的酒店ID和房型ID未加OTA_前缀，
+     *  及其我们自己的价格计划
+     */
+    void  updateNewCode(@Param("id")String id,@Param("innCode")String innCode,@Param("roomTypeCode")String roomTypeCode);
 }
