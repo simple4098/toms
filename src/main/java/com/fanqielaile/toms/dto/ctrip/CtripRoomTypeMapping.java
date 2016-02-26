@@ -10,22 +10,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class CtripRoomTypeMapping extends  Domain{
 	
-	 private String   innId ; // 客栈id
-     private String   ctripChildHotelId ; // 房仓酒店id
-	 private String   companyId ; // 公司id
-	 private String   tomRoomTypeId ; // 番茄房型id
-	 private String   ctripChildRoomTypeId ; // 携程房型id
-	 private Double   roomArea ;
-	 private String   tomRoomTypeName ; // 番茄房型名称
-	 private String   ctripRoomTypeName ; // 房仓房型名称
-	 private String    ratePlanCode; // 价格计划id
-	 private  Integer   sj ; // 1 上架 0 下架 -1 没有上架
-	 private String   bedNum ;
-	 private String   bedLen ;
-	 private String   bedWid ;
-	 private String	  ratePlanCodeName;
+	private String   innId ; // 客栈id
+    private String   ctripChildHotelId ; // 房仓酒店id
+	private String   companyId ; // 公司id
+	private String   tomRoomTypeId ; // 番茄房型id
+	private String   ctripChildRoomTypeId ; // 携程房型id
+	private Double   roomArea ;
+	private String   tomRoomTypeName ; // 番茄房型名称
+	private String   ctripRoomTypeName ; // 房仓房型名称
+	private String    ratePlanCode; // 价格计划id
+	private  Integer   sj ; // 1 上架 0 下架 -1 没有上架
+	private String   bedNum ;
+	private String   bedLen ;
+	private String   bedWid ;
+	private String	  ratePlanCodeName;
 	 
-	 private String ctripMasterRoomId; //携程masterId
+	private String ctripMasterRoomId; //携程masterId
+	//客栈code
+	private String innCode;
+	//房型code
+	private String roomTypeCode;
+	//番茄番茄自己价格计划code(众荟的)
+	private String fanQieRatePlanCode;
 	 
 	 
 	 @Transient
@@ -137,4 +143,27 @@ public class CtripRoomTypeMapping extends  Domain{
 		this.ratePlanCodeName = ratePlanCodeName;
 	}
 
+	public String getInnCode() {
+		return innCode;
+	}
+
+	public void setInnCode(String innCode) {
+		this.innCode = innCode;
+	}
+
+	public String getRoomTypeCode() {
+		return roomTypeCode;
+	}
+
+	public void setRoomTypeCode(String roomTypeCode) {
+		this.roomTypeCode = roomTypeCode;
+	}
+
+	public String getFanQieRatePlanCode() {
+		return fanQieRatePlanCode;
+	}
+
+	public void setFanQieRatePlanCode(String fanQieRatePlanCode) {
+		this.fanQieRatePlanCode = fanQieRatePlanCode;
+	}
 }

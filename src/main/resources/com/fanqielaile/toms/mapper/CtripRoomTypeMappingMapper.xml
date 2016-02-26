@@ -65,9 +65,10 @@
     	INSERT INTO xc_roomtype_fq(
             inn_id, xc_child_hotel_id, company_id, fq_roomtype_id, xc_child_roomtype_id, 
             room_area, fq_roomtype_name, xc_roomtype_name, 
-             deleted, rate_plan_code, sj, bed_num, bed_len, bed_wid,rate_plan_code_name )
+             deleted, rate_plan_code, sj, bed_num, bed_len, bed_wid,rate_plan_code_name,fq_rate_plan_code,room_type_code,inn_code )
     VALUES (#{innId}, #{ctripChildHotelId}, #{companyId}, #{tomRoomTypeId},
-     #{ctripChildRoomTypeId},#{roomArea},#{tomRoomTypeName},#{ctripRoomTypeName},#{deleted}, #{ratePlanCode}, #{sj}, #{bedNum}, #{bedLen}, #{bedWid} , #{ratePlanCodeName} ) ;
+     #{ctripChildRoomTypeId},#{roomArea},#{tomRoomTypeName},#{ctripRoomTypeName},#{deleted}, #{ratePlanCode},
+        #{sj}, #{bedNum}, #{bedLen}, #{bedWid} , #{ratePlanCodeName},#{fanQieRatePlanCode},#{roomTypeCode},#{innCode}) ;
     </insert>   
     
     
