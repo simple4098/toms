@@ -40,6 +40,7 @@
                                 <th>渠道订单状态</th>
                                 <th>订单状态</th>
                                 <th>付款状态</th>
+                                <th>客栈名称</th>
                                 <th>房型</th>
                                 <th>房间数</th>
                                 <th style="width: 180px;">住离日期</th>
@@ -63,6 +64,7 @@
                                         </td>
                                         <td>${d.orderStatus.text}</td>
                                         <td>${d.feeStatus.text}</td>
+                                        <td>${d.orderInnName}</td>
                                         <td>${d.orderRoomTypeName}</td>
                                         <td>${d.homeAmount}</td>
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
@@ -88,6 +90,21 @@
                                                     data-url="<c:url value="/order/cancel_order_oms.json?id=${d.id}"/>"
                                                     type="button" data-toggle="modal" data-target="#cancelOrderOms">
                                                 取消订单
+                                            </button>
+                                            <button class="btn btn-pink close-order"
+                                                    data-url="<c:url value="/exceptionOrder/close_order.json?id=${d.id}"/>"
+                                                    type="button" data-toggle="modal" data-target="#closeOrder">
+                                                关闭订单
+                                            </button>
+                                            <button class="btn btn-pink oms-order-status"
+                                                    data-url="<c:url value="/exceptionOrder/find_oms_order_status.json?id=${d.id}"/>"
+                                                    type="button">
+                                                oms订单状态
+                                            </button>
+                                            <button class="btn btn-pink pms-order-status"
+                                                    data-url="<c:url value="/exceptionOrder/find_pms_order_status.json?id=${d.id}"/>"
+                                                    type="button">
+                                                pms订单状态
                                             </button>
                                         </td>
                                     </tr>
@@ -163,5 +180,28 @@
         </div>
     </div>
 </div>
+<%--关闭订单--%>
+<!-- Modal -->
+<div class="modal fade" id="closeOrder" tabindex="-1" role="dialog" aria-labelledby="myCloseOrder"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close btn-default" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myCloseOrder">提示信息</h4>
+            </div>
+            <div class="modal-body">
+                <span style="color: red">注：关闭订单，订单状态保持跟ota渠道一致</span> <br/>
+                您选择“关闭订单”操作，订单状态保持跟ota渠道一致！
+            </div>
+            <input type="hidden" class="close-order-url"/>
 
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success btn-close-order">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="<%=basePath%>/js/order.js"></script>

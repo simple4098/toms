@@ -1,10 +1,14 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.model.ExceptionOrder;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.support.util.JsonModel;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangdayin on 2016/1/28.
@@ -28,4 +32,28 @@ public interface IExceptionOrderService {
      * @param order
      */
     void deleteExceptionOrder(Order order);
+
+    /**
+     * 关闭订单
+     *
+     * @param orderParamDto
+     * @return
+     */
+    JsonModel dealCloseOrder(OrderParamDto orderParamDto) throws Exception;
+
+    /**
+     * 获取oms订单状态
+     *
+     * @param orderParamDto
+     * @return
+     */
+    Map<String, Object> findOmsOrderStatus(OrderParamDto orderParamDto) throws IOException;
+
+    /**
+     * 获取pms订单状态
+     *
+     * @param orderParamDto
+     * @return
+     */
+    Map<String, Object> finPmsOrderStatus(OrderParamDto orderParamDto) throws Exception;
 }

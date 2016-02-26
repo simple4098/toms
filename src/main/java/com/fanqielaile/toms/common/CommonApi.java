@@ -29,6 +29,7 @@ public class CommonApi {
     public static   String FcDeleteHotelMappingUrl;
     public static   String checkRoom;
     public static   String roomStatus;
+    public static String pmsOrderStatus;
 
     public  String getRoomStatus() {
         return roomStatus;
@@ -203,5 +204,13 @@ public class CommonApi {
 
     public  void setActiveInn(String activeInn) {
         ActiveInn = activeInn;
+    }
+
+    public void setPmsOrderStatus(String pmsOrderStatus) {
+        this.pmsOrderStatus = pmsOrderStatus;
+    }
+
+    public String getPmsOrderStatus() {
+        return pmsOrderStatus;
     }
 }
