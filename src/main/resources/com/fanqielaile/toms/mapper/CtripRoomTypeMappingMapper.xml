@@ -109,6 +109,13 @@
    		   and xc_child_hotel_id  = '${childHotelId}' and  xc_child_roomtype_id = '${ctripRoomId}' and company_id = '${companyId}'
     </select>
     
+    <select id="findAll" resultMap="BaseResultMap">
+    	 select 
+   		   <include refid="Base_Column_List"    /> from  xc_roomtype_fq  where     deleted = 0
+    </select>
     
+       <update id="updateNewCode" >
+    		update xc_roomtype_fq set fq_rate_plan_code= 'P_XCB',room_type_code ='${roomTypeCode}',inn_code = '${innCode}'  where id = '${id}'
+    </update>
 
 </mapper>
