@@ -1,12 +1,5 @@
 package com.fanqielaile.toms.support.util;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.log4j.Logger;
-
 import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.enums.CtripVersion;
 import com.fanqie.bean.request.mapping.HotelGroupInterfaceRoomTypeListRequest;
@@ -21,7 +14,13 @@ import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.exception.CtripDataException;
 import com.fanqielaile.toms.exception.RequestCtripException;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.fc.OtaRatePlan;
+import org.apache.log4j.Logger;
+
+import javax.xml.bind.JAXBException;
+import java.util.Date;
+import java.util.List;
 
 public class CtripMappingBy {
 	
@@ -29,7 +28,8 @@ public class CtripMappingBy {
 	
 	/**
 	 *   携程新增的MappingType转换为 我们自己的  CtripRoomTypeMapping 类型
-	 * @param companyId 公司Id
+	 * @param company 公司信息
+	 * @param fqRateCode (番茄价格计划code，番茄用的是众荟的)
 	 * @param innId 客栈ID
 	 * @param ctripMasterHotelId 携程母酒店ID
 	 * @param matchRoomType 新的关系对象
@@ -38,7 +38,7 @@ public class CtripMappingBy {
 	 * @throws JAXBException
 	 * @throws CtripDataException 
 	 */
-	public static CtripRoomTypeMapping   toMappingBy(String companyId, String innId,
+	public static CtripRoomTypeMapping   toMappingBy(Company company,OtaRatePlan fqRateCode, String innId,
 			String ctripMasterHotelId, MatchRoomType matchRoomType,OtaRatePlan ratePlan,OtaInfoRefDto dto) throws RequestCtripException, JAXBException, CtripDataException{
 		
 		HotelGroupInterfaceRoomTypeListRequest  request = new HotelGroupInterfaceRoomTypeListRequest();
@@ -63,7 +63,7 @@ public class CtripMappingBy {
 		crm.setBedLen(matchRoomType.getBedLen());
 		crm.setBedNum(matchRoomType.getBedNum());
 		crm.setBedWid(matchRoomType.getBedWid());
-		crm.setCompanyId(companyId);
+		crm.setCompanyId(company.getId());
 		crm.setCreatedDate(new Date());
 		crm.setCtripChildHotelId(roomMapping.getHotel());
 		crm.setCtripChildRoomTypeId(roomMapping.getRoom());
@@ -75,6 +75,9 @@ public class CtripMappingBy {
 		crm.setDeleted(0);
 		crm.setTomRoomTypeName(matchRoomType.getRoomTypeName());
 		crm.setCtripMasterRoomId(matchRoomType.getFcRoomTypeId());//  保存当前操作的母房型
+		crm.setRoomTypeCode(company.getOtaId()+"_"+matchRoomType.getRoomTypeId());
+		crm.setInnCode(company.getOtaId()+"_"+innId);
+		crm.setFanQieRatePlanCode(fqRateCode!=null?fqRateCode.getRatePlanCode().toString():"");
 		return crm;
 	}
 

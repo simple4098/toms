@@ -145,6 +145,10 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
 		OtaRatePlan ratePlan = fcRatePlanDao.selectDefaultCtripRatePlan();
 		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
+		//众荟ota信息
+		OtaInfoRefDto zHOtaDto = otaInfoDao.selectOtaInfoByType(OtaType.ZH.name());
+		//众荟价格计划code
+		OtaRatePlan otaRatePlan = fcRatePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), zHOtaDto.getOtaInfoId());
 		cannelMappingAll(companyId, innId, ctripMasterHotelId);
 		List<CtripRoomTypeMapping> crms = new ArrayList<CtripRoomTypeMapping>();
 		if(null!=matchRoomTypes && !matchRoomTypes.isEmpty()){
@@ -153,7 +157,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 						StringUtils.isNotBlank(matchRoomType.getFcRoomTypeId())
 						){
 					addNewRoomTypeMappingToCtrip(innId, ctripMasterHotelId, matchRoomType,companyId);
-					crms.add(CtripMappingBy.toMappingBy(companyId, innId,ctripMasterHotelId, matchRoomType,ratePlan,dto));
+					crms.add(CtripMappingBy.toMappingBy(company,otaRatePlan, innId,ctripMasterHotelId, matchRoomType,ratePlan,dto));
 				}
 			}
 			String wgId = saveMapping(crms,ctripMasterHotelId);
@@ -170,7 +174,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDto.setsJiaModel(Constants.MAI) ;  
 				otaInnOtaDto.setDeleted(0);
 				otaInnOtaDto.setBangInnId(bangInn.getId());
-				otaInnOtaDto.setOtaInfoId(Constants.OTA_CTRIP);  
+				otaInnOtaDto.setOtaInfoId(dto.getOtaInfoId());
 				otaInnOtaDto.setInnId(Integer.parseInt(innId));
 				otaInnOtaDto.setSj(0);
 				otaInnOtaDao.saveOtaInnOta(otaInnOtaDto);
