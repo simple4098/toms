@@ -19,6 +19,7 @@ import com.fanqielaile.toms.model.fc.OtaRatePlan;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -46,8 +47,8 @@ public class CtripMappingBy {
         headerInfo.build(dto.getXcUserName(),dto.getXcPassword(),CtripRequestType.GetCtripRoomTypeInfo, CtripVersion.V12);
 		request.setHeaderInfo(headerInfo);
 		HotelGroupInterfaceRoomTypeListRequestParams params = new HotelGroupInterfaceRoomTypeListRequestParams();
-		params.setHotelGroupHotelCode(innId);
-		params.setHotelGroupRoomTypeCode(matchRoomType.getRoomTypeId());
+		params.setHotelGroupHotelCode(company.getOtaId()+"_"+innId);
+		params.setHotelGroupRoomTypeCode(company.getOtaId()+"_"+matchRoomType.getRoomTypeId());
 		request.setParams(params);
 		String getMappingRoomRequest  = FcUtil.fcRequest(request);
 		LOGGER.info("获取酒店子房型"+innId+"request -->"+getMappingRoomRequest);

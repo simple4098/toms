@@ -6,7 +6,10 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ParamJson;
+import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.*;
@@ -51,6 +54,8 @@ public class APIController extends BaseController {
     private IOrderService orderService;
     @Resource
     private IExceptionOrderService exceptionOrderService;
+    @Resource
+    private IBangInnService bangInnService;
 
 
     /**
@@ -238,5 +243,33 @@ public class APIController extends BaseController {
         log.info(new Date() + "结束执行定时任务======>");
         return true;
     }
-    
+
+    @RequestMapping("/noMatch")
+    @ResponseBody
+    public Object test() {
+
+        Result result = new Result();
+        try {
+            Company company = new Company();
+            company.setCompanyCode("89894098");
+            company.setId("d0392bc8-131c-8989-846e-c81c66011111");
+            company.setOtaId(903);
+            company.setUserAccount("TB");
+            company.setUserPassword("tb");
+            OtaInfoRefDto otaInfoRefDto = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(company.getId(), "1");
+            List<BangInn> list = bangInnService.selectNoMatch();
+            for (BangInn d : list) {
+                BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(company.getId(), d.getInnId());
+                ITPService service = otaInfoRefDto.getOtaType().create();
+                TBParam tbParam = TomsUtil.toOtaParam(bangInn, company, 1, otaInfoRefDto);
+                service.updateOrAddHotel(tbParam, otaInfoRefDto);
+            }
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setMessage(e.getMessage());
+            result.setStatus(Constants.ERROR400);
+        }
+        return result;
+    }
+
 }

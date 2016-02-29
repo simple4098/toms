@@ -155,7 +155,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		//众荟ota信息
 		OtaInfoRefDto zHOtaDto = otaInfoDao.selectOtaInfoByType(OtaType.ZH.name());
 		//众荟价格计划code
-		OtaRatePlan otaRatePlan = fcRatePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), zHOtaDto.getOtaInfoId());
+		OtaRatePlan otaRatePlan = fcRatePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), zHOtaDto.getId());
 		cannelMappingAll(companyId, innId, ctripMasterHotelId);
 		List<CtripRoomTypeMapping> crms = new ArrayList<CtripRoomTypeMapping>();
 		if(null!=matchRoomTypes && !matchRoomTypes.isEmpty()){
@@ -163,7 +163,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				if(StringUtils.isNotBlank(matchRoomType.getFcRoomTypeId())  && 
 						StringUtils.isNotBlank(matchRoomType.getFcRoomTypeId())
 						){
-					addNewRoomTypeMappingToCtrip(innId, ctripMasterHotelId, matchRoomType,companyId);
+					addNewRoomTypeMappingToCtrip(otaRatePlan,innId, ctripMasterHotelId, matchRoomType,company);
 					crms.add(CtripMappingBy.toMappingBy(company,otaRatePlan, innId,ctripMasterHotelId, matchRoomType,ratePlan,dto));
 				}
 			}
@@ -210,15 +210,15 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 	}
 	
 	@Override
-	public void addNewRoomTypeMappingToCtrip(String innId, String ctripMasterHotelId,
-			MatchRoomType matchRoomType,String companyId) throws RequestCtripException, JAXBException {
+	public void addNewRoomTypeMappingToCtrip(OtaRatePlan otaRatePlan,String innId, String ctripMasterHotelId,
+			MatchRoomType matchRoomType,Company company) throws RequestCtripException, JAXBException {
 	
 		OtaRatePlan ratePlan = fcRatePlanDao.selectDefaultCtripRatePlan(); //  默认的价格计划
 		if(null==ratePlan){
 			throw new RuntimeException("请先设计默认的价格计划");
 		}
 		CtripHotelInfo ctripHotelInfo =  ctripHotelInfoDao.findByParentHotelId(ctripMasterHotelId);
-		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
+		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.XC.name());
 		SetMappingInfoRequest mapping = new SetMappingInfoRequest();
 		HeaderInfo headerInfo = new  HeaderInfo(dto.getUserId(), CtripConstants.requestorId,false);
 		headerInfo.build(dto.getXcUserName(),dto.getXcPassword(),CtripRequestType.SetMappingInfo, CtripVersion.V12);
@@ -243,9 +243,10 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 			sip.setRatePlanCode(ratePlan.getRatePlanCode().toString());
 		}
 		sip.setHotelGroupRoomName(matchRoomType.getRoomTypeName());
-		sip.setHotelGroupRoomTypeCode(matchRoomType.getRoomTypeId());
-		sip.setHotelGroupHotelCode(innId);
+		sip.setHotelGroupRoomTypeCode(company.getOtaId()+"_"+matchRoomType.getRoomTypeId());
+		sip.setHotelGroupHotelCode(company.getOtaId()+"_"+innId);
 		sip.setSupplierID(dto.getAppKey());
+		sip.setHotelGroupRatePlanCode(otaRatePlan.getRatePlanCode());
 		mapping.setInfoRequestParams(sip);
 		String mappingXml = FcUtil.fcRequest(mapping);
 		LOGGER.info("新增酒店"+innId+"的房型绑定关系-->request:"+mappingXml);

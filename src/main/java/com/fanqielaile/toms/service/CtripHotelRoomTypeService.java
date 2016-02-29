@@ -10,6 +10,8 @@ import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
 import com.fanqielaile.toms.dto.fc.MatchRoomType;
 import com.fanqielaile.toms.exception.CtripDataException;
 import com.fanqielaile.toms.exception.RequestCtripException;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.fc.OtaRatePlan;
 
 
 public interface CtripHotelRoomTypeService {
@@ -53,11 +55,11 @@ public interface CtripHotelRoomTypeService {
 	   * @param innId 客栈ID
 	   * @param ctripMasterHotelId 携程母酒店ID
 	   * @param matchRoomType 新的关系对象
-	   * @param companyId 公司Id
+	   * @param company 公司信息
 	   * @throws RequestCtripException
 	   */
-	  void  addNewRoomTypeMappingToCtrip(String innId, String ctripMasterHotelId,
-				MatchRoomType matchRoomType,String companyId)  throws RequestCtripException  ,JAXBException ;
+	  void  addNewRoomTypeMappingToCtrip(OtaRatePlan otaRatePlan,String innId, String ctripMasterHotelId,
+				MatchRoomType matchRoomType,Company company)  throws RequestCtripException  ,JAXBException ;
 	  
 	  
 	/**

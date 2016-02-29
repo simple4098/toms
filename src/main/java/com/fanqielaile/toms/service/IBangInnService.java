@@ -154,4 +154,6 @@ public interface IBangInnService {
     List<BangInnDto> findOTABangInn(BangInnDto bangInnDto, OtaInfoRefDto otaInfo, PageBounds pageBounds);
 
     List<BangInnDto> findFcBangInn(BangInnDto bangInnDto);
+
+    List<BangInn> selectNoMatch();
 }

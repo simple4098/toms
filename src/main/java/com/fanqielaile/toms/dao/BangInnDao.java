@@ -210,4 +210,6 @@ public interface BangInnDao {
      * @param sj 是否上架
      */
     void updateSjBangInn( @Param("innId") Integer innId, @Param("companyId") String companyId, @Param("sj")boolean sj);
+
+    List<BangInn> selectNoMatch();
 }
