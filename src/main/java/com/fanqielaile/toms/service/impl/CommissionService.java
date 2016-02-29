@@ -8,6 +8,7 @@ import com.fanqielaile.toms.enums.OperateType;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.service.ICommissionService;
+import com.fanqielaile.toms.support.util.Constants;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,7 +56,7 @@ public class CommissionService implements ICommissionService {
                 log.info("====佣金比新增===="+commissionPercent.getCommissionPercent()+" type:"+commissionPercent.getsJiaModel()+" otaId:"+commissionPercent.getOtaId());
             }
             list.add(commissionPercent);
-
+            addNewModel(list,commissionPercent);
         }
         OtaCommissionPercent percent = new OtaCommissionPercent(company.getOtaId(), company.getId(), null, OperateType.NEW);
         List<OtaCommissionPercentDto> percents = commissionPercentDao.selectCommissionList(percent);
@@ -68,6 +69,26 @@ public class CommissionService implements ICommissionService {
             }
 
         }
+    }
+
+    private void addNewModel(List<OtaCommissionPercent> list, OtaCommissionPercent commissionPercent) {
+        if (Constants.MAI.equals(commissionPercent.getsJiaModel())){
+            commissionPercent.setsJiaModel(Constants.MAI2DI);
+        }
+        if (Constants.MAI2DI.equals(commissionPercent.getsJiaModel())){
+            commissionPercent.setsJiaModel(Constants.MAI);
+        }
+        OtaCommissionPercentDto commissionDto = commissionPercentDao.selectCommission(commissionPercent);
+        if (commissionDto!=null){
+            commissionDto.setCommissionPercent(commissionPercent.getCommissionPercent());
+            commissionPercentDao.updateOtaCommission(commissionDto);
+            log.info("佣金比更新===="+commissionDto.getCommissionPercent()+" type:"+commissionDto.getsJiaModel()+" otaId:"+commissionDto.getOtaId());
+        }else {
+            commissionPercentDao.saveOtaCommission(commissionPercent);
+            log.info("佣金比新增===="+commissionPercent.getCommissionPercent()+" type:"+commissionPercent.getsJiaModel()+" otaId:"+commissionPercent.getOtaId());
+        }
+        list.add(commissionPercent);
+
     }
 
     private boolean isContains( List<OtaCommissionPercent> list,OtaCommissionPercentDto commissionPercent){
