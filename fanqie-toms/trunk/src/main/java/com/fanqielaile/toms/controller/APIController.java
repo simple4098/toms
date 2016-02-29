@@ -244,32 +244,6 @@ public class APIController extends BaseController {
         return true;
     }
 
-    @RequestMapping("/noMatch")
-    @ResponseBody
-    public Object test() {
 
-        Result result = new Result();
-        try {
-            Company company = new Company();
-            company.setCompanyCode("89894098");
-            company.setId("d0392bc8-131c-8989-846e-c81c66011111");
-            company.setOtaId(903);
-            company.setUserAccount("TB");
-            company.setUserPassword("tb");
-            OtaInfoRefDto otaInfoRefDto = otaInfoService.findOtaInfoByCompanyIdAndOtaInnOtaId(company.getId(), "1");
-            List<BangInn> list = bangInnService.selectNoMatch();
-            for (BangInn d : list) {
-                BangInn bangInn = bangInnService.findBangInnByCompanyIdAndInnId(company.getId(), d.getInnId());
-                ITPService service = otaInfoRefDto.getOtaType().create();
-                TBParam tbParam = TomsUtil.toOtaParam(bangInn, company, 1, otaInfoRefDto);
-                service.updateOrAddHotel(tbParam, otaInfoRefDto);
-            }
-            result.setStatus(Constants.SUCCESS200);
-        } catch (Exception e) {
-            result.setMessage(e.getMessage());
-            result.setStatus(Constants.ERROR400);
-        }
-        return result;
-    }
 
 }

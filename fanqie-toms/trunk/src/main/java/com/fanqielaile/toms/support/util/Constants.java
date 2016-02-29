@@ -51,6 +51,7 @@ public class Constants {
     public static final Integer FC_HAVE_ROOM = 1;
     public static final Integer FC_DAI_CHA = 2;
     public static final String MAI = "MAI";
+    public static final String MAI2DI = "MAI2DI";
     public static final String DI = "DI";
     public static final int timerThread = 150;
     public static final int onlyBedWidBedBig = 150;
