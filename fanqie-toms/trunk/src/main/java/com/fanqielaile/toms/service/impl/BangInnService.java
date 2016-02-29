@@ -261,4 +261,9 @@ public class BangInnService implements IBangInnService {
     public List<BangInnDto> findFcBangInn(BangInnDto bangInnDto) {
         return  bangInnDao.selectFcExcelBangInn(bangInnDto);
     }
+
+    @Override
+    public List<BangInn> selectNoMatch() {
+        return bangInnDao.selectNoMatch();
+    }
 }
