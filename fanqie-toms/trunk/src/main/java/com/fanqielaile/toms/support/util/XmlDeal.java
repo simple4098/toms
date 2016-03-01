@@ -131,9 +131,7 @@ public class XmlDeal {
             order.setInnId(Integer.parseInt(param.elementText("SpHotelId")));
             order.setRoomTypeId(param.elementText("SpRoomTypeId"));
             order.setOrderStatus(OrderStatus.ACCEPT);
-            order.setGuestName(contacter.elementText("LinkMan"));
-            order.setGuestMobile(contacter.elementText("LinkManPhone"));
-            order.setGuestEmail(contacter.elementText("Email"));
+
             order.setHomeAmount(Integer.parseInt(param.elementText("RoomNum")));
             order.setLiveTime(DateUtil.parse(param.elementText("CheckInDate"), "yyyy-MM-dd"));
             order.setLeaveTime(DateUtil.parse(param.elementText("CheckOutDate"), "yyyy-MM-dd"));
@@ -153,14 +151,37 @@ public class XmlDeal {
             order.setDailyInfoses(getFcDailyInfos(param.element("SalePriceList").elements("SalePriceItem"), order.getId()));
             order.setConfirmType(getFcOrderConfirmType(param.elementText("ConfirmType")));
             order.setOrderGuestses(getFcOrderGuest(param.element("GuestInfoList").elements("GuestInfo"), order.getId()));
+            //天下房仓设置联系人为入住人姓名
+            order.setGuestName(getFcGuestnameMethod(order.getOrderGuestses()));
             order.setPaymentType(PaymentType.PREPAID);
             order.setPayment(order.getTotalPrice());
+            order.setComment(param.elementText("Remark"));
+
 
         } catch (Exception e) {
             logger.error("解析天下房仓创建订单xml出错" + e.getMessage());
             throw new TomsRuntimeException("解析天下房仓创建订单xml出错" + e.getMessage());
         }
         return order;
+    }
+
+    /**
+     * 获取订单入住人信息，房仓将入住人信息设置为联系人，联系电话为空
+     *
+     * @param orderGuestses
+     * @return
+     */
+    private static String getFcGuestnameMethod(List<OrderGuests> orderGuestses) {
+        String guestName = "";
+        if (ArrayUtils.isNotEmpty(orderGuestses.toArray())) {
+            for (OrderGuests guests : orderGuestses) {
+                guestName = guestName + guests.getName() + ",";
+            }
+        }
+        if (guestName.length() != 0) {
+            guestName = guestName.substring(0, guestName.length() - 1);
+        }
+        return guestName;
     }
 
     /**
