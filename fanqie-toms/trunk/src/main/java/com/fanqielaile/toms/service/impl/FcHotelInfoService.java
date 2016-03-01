@@ -209,18 +209,17 @@ public class FcHotelInfoService implements IFcHotelInfoService {
             FcRoomTypeDtoInfo fcRoomTypeDtoInfo = null;
             for (BangInnDto bangInnDto:bangInns){
                 String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.INN_INFO);
-                String innInfoGet = HttpClientUtil.httpGets(inn_info, null);
-                JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
+                InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
                 //客栈
-                if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
-                    InnDto omsInnDto = JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+                if (omsInnDto!=null) {
                     FcProvince fcProvince = fcProvinceDao.selectProvince(omsInnDto.getProvince());
                     FcCity city = fcCityDao.selectFcCityByName(omsInnDto.getCity());
                     fcInnInfo = new FcInnInfoDto();
                     BeanUtils.copyProperties(omsInnDto,fcInnInfo);
-                    fcInnInfo.setProvinceCode(fcProvince!=null?fcProvince.getProvinceCode():null);
-                    fcInnInfo.setCityCode(city!=null?city.getCityCode():null);
+                    fcInnInfo.setProvinceCode(fcProvince != null ? fcProvince.getProvinceCode() : null);
+                    fcInnInfo.setCityCode(city != null ? city.getCityCode() : null);
                     fcInnInfo.setInnId(String.valueOf(bangInnDto.getInnId()));
+                    fcInnInfo.setInnName(omsInnDto.getBrandName());
                     List<FcInnImg> fcInnImgList = new ArrayList<FcInnImg>();
                    /* List<OmsImg> imgList = omsInnDto.getImgList();*/
                    /* for (OmsImg omsImg:imgList){
