@@ -6,15 +6,11 @@ import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ParamJson;
-import com.fanqielaile.toms.model.BangInn;
-import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Order;
-import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.*;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -54,8 +49,6 @@ public class APIController extends BaseController {
     private IOrderService orderService;
     @Resource
     private IExceptionOrderService exceptionOrderService;
-    @Resource
-    private IBangInnService bangInnService;
 
 
     /**
