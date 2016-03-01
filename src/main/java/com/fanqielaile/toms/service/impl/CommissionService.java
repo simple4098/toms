@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * DESC :
@@ -74,21 +75,26 @@ public class CommissionService implements ICommissionService {
     private void addNewModel(List<OtaCommissionPercent> list, OtaCommissionPercent commissionPercent) {
         if (Constants.MAI.equals(commissionPercent.getsJiaModel())){
             commissionPercent.setsJiaModel(Constants.MAI2DI);
+            commission(list,commissionPercent);
         }
         if (Constants.MAI2DI.equals(commissionPercent.getsJiaModel())){
             commissionPercent.setsJiaModel(Constants.MAI);
+            commission(list,commissionPercent);
         }
+    }
+
+    public void  commission(List<OtaCommissionPercent> list,OtaCommissionPercent commissionPercent){
         OtaCommissionPercentDto commissionDto = commissionPercentDao.selectCommission(commissionPercent);
         if (commissionDto!=null){
             commissionDto.setCommissionPercent(commissionPercent.getCommissionPercent());
             commissionPercentDao.updateOtaCommission(commissionDto);
             log.info("佣金比更新===="+commissionDto.getCommissionPercent()+" type:"+commissionDto.getsJiaModel()+" otaId:"+commissionDto.getOtaId());
         }else {
+            commissionPercent.setUuid(UUID.randomUUID().toString());
             commissionPercentDao.saveOtaCommission(commissionPercent);
             log.info("佣金比新增===="+commissionPercent.getCommissionPercent()+" type:"+commissionPercent.getsJiaModel()+" otaId:"+commissionPercent.getOtaId());
         }
         list.add(commissionPercent);
-
     }
 
     private boolean isContains( List<OtaCommissionPercent> list,OtaCommissionPercentDto commissionPercent){
