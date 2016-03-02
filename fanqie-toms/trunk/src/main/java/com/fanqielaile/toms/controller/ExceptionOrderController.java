@@ -74,6 +74,7 @@ public class ExceptionOrderController extends BaseController {
         try {
             OrderParamDto orderParamDto = this.orderService.findOrderById(id);
             if (null != orderParamDto) {
+                logger.info("关闭订单号为：" + orderParamDto.getChannelOrderCode());
                 JsonModel jsonModel = this.exceptionOrderService.dealCloseOrder(orderParamDto);
                 model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
                 model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());

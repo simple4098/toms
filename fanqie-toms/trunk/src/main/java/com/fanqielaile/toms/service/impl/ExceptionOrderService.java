@@ -16,6 +16,8 @@ import com.fanqielaile.toms.support.util.JsonModel;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +32,7 @@ import java.util.Map;
  */
 @Service
 public class ExceptionOrderService implements IExceptionOrderService {
+    Logger logger = LoggerFactory.getLogger(ExceptionOrderService.class);
     @Resource
     private ExceptionOrderDao exceptionOrderDao;
     @Resource
@@ -109,6 +112,7 @@ public class ExceptionOrderService implements IExceptionOrderService {
             order.setEariestArriveTime(DateUtil.parse(DateUtil.format(DateUtil.addDay(order.getCreatedDate(), -1), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss"));
             order.setLastestArriveTime(DateUtil.parse(DateUtil.format(DateUtil.addDay(order.getCreatedDate(), 1), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss"));
             String response = TBXHotelUtil.searchOrderStatus(order, otaInfo);
+            logger.info("关闭订单号：" + order.getChannelOrderCode() + " 淘宝返回值:" + response);
             if (StringUtils.isNotEmpty(response)) {
                 JSONObject jsonObject = JSONObject.parseObject(response);
                 if (null != jsonObject && null != jsonObject.get("xhotel_order_search_response")) {
