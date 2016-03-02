@@ -155,7 +155,7 @@ public class XmlDeal {
             order.setGuestName(getFcGuestnameMethod(order.getOrderGuestses()));
             order.setPaymentType(PaymentType.PREPAID);
             order.setPayment(order.getTotalPrice());
-            order.setComment(param.elementText("Remark"));
+            order.setComment(param.elementText("Remark") + " " + param.elementText("SpecialRequirement"));
 
 
         } catch (Exception e) {
