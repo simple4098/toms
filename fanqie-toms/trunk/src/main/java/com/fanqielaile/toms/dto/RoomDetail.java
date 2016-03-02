@@ -12,14 +12,14 @@ public class RoomDetail {
 	private Double  costPrice;//成本价
 	private Double  priceValue;//特殊处理价格
 	//TODO oms上线去掉注释
-	/*private Double originalPrice; *//* 老板设置原始价格 *//*
-	private Double operatorPrice; *//* 运营修改后的渠道价格 */
+	private Double originalPrice;  //老板设置原始价格
+	private Double operatorPrice;  //运营修改后的渠道价格
 	/*兼容美团数据格式*/
 	private Integer roomPriceInt;
 	private Integer priRoomPriceInt;
 	private String otaRoomTypeIdstr;
 
-	/*public Double getOriginalPrice() {
+	public Double getOriginalPrice() {
 		return originalPrice;
 	}
 
@@ -33,7 +33,7 @@ public class RoomDetail {
 
 	public void setOperatorPrice(Double operatorPrice) {
 		this.operatorPrice = operatorPrice;
-	}*/
+	}
 
 	public Integer getRoomPriceInt() {
 		return (Integer)roomPrice.intValue();
