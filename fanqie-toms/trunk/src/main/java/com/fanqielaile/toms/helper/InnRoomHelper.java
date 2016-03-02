@@ -119,8 +119,8 @@ public class InnRoomHelper {
      * 获取客栈下架的房型
      * @param company 公司信息
      */
-    /*public static List<SellingRoomType> obtSellingRoomType(Company company )throws Exception{
-        String sellingRoomTypeUrl = DcUtil.omsSellingRoomType(company.getOtaId(), company.getUserAccount(),
+    public static List<SellingRoomType> obtSellingRoomType(String from , String to,Company company )throws Exception{
+        String sellingRoomTypeUrl = DcUtil.omsSellingRoomType(from,to,company.getOtaId(), company.getUserAccount(),
                 company.getUserPassword(), CommonApi.sellingRoomType);
         String roomTypeGets = HttpClientUtil.httpGets(sellingRoomTypeUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
@@ -128,6 +128,6 @@ public class InnRoomHelper {
             return JacksonUtil.json2list(jsonObject.getJSONArray("list").toString(), SellingRoomType.class);
         }
         return null;
-    }*/
+    }
 
 }

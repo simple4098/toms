@@ -275,4 +275,36 @@ public class XcService implements ITPService {
         }
         return result;
     }
+
+    @Override
+    public void sellingRoomType(String from , String to,OtaInfoRefDto otaInfoRefDto) {
+        String companyId = otaInfoRefDto.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
+        try {
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from,to,company);
+            List<CtripRoomTypeMapping> list = new ArrayList<CtripRoomTypeMapping>();
+            CtripRoomTypeMapping mapping = null;
+            log.info("========携程下架房型=========");
+            for (SellingRoomType sellingRoomType:roomTypes){
+                if (!CollectionUtils.isEmpty(sellingRoomType.getOtaRoomTypeId())){
+                    for (Integer roomTypeId:sellingRoomType.getOtaRoomTypeId()){
+                        mapping = ctripRoomTypeMappingDao.selectMappingInnIdAndRoomTypeId(sellingRoomType.getInnId().toString(), roomTypeId.toString());
+                        if (mapping!=null && Constants.FC_SJ.equals(mapping.getSj())){
+                            //记录日志
+                            //MessageCenterUtils.savePushTomsLog(OtaType.XC, Integer.valueOf(mapping.getInnId()), Integer.valueOf(mapping.getTomRoomTypeId()),null, LogDec.XJ_RoomType,"");
+                            list.add(mapping);
+                        }else {
+                            log.info("此房型在携程没有上架，客栈id："+sellingRoomType.getInnId()+" 房型id："+roomTypeId);
+                        }
+                    }
+                }
+            }
+            if (!CollectionUtils.isEmpty(list)) {
+                ctripRoomService.updateRoomPrice(company, otaInfoRefDto, list, false);
+            }
+        } catch (Exception e) {
+            log.error("携程下架房型失败",e);
+        }
+    }
 }
+

@@ -70,4 +70,10 @@ public interface ITPService {
      * @param infoRefDto
      */
     Result validatedOTAAccuracy(OtaInfoRefDto infoRefDto);
+
+    /**
+     * 根据渠道下架获取到的房型集合
+     * @param otaInfoRefDto 渠道信息
+     */
+    void sellingRoomType(String from , String to,OtaInfoRefDto otaInfoRefDto);
 }

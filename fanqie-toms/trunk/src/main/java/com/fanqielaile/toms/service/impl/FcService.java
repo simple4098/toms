@@ -295,4 +295,30 @@ public class FcService implements ITPService {
         return result;
     }
 
+    @Override
+    public void sellingRoomType(String from , String to,OtaInfoRefDto otaInfoRefDto) {
+        String companyId = otaInfoRefDto.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
+        log.info("========淘房仓下架房型=========");
+        try {
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from,to,company);
+            FcRoomTypeFqDto roomTypeFqDto = null;
+            for (SellingRoomType sellingRoomType:roomTypes){
+                if (!CollectionUtils.isEmpty(sellingRoomType.getOtaRoomTypeId())){
+                    for (Integer roomTypeId:sellingRoomType.getOtaRoomTypeId()){
+                        roomTypeFqDto = fcRoomTypeFqDao.selectRoomTypeInfoByRoomTypeId(roomTypeId.toString());
+                        if (roomTypeFqDto!=null && Constants.FC_SJ.equals(roomTypeFqDto.getSj())){
+                            fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), roomTypeFqDto.getId());
+                            //MessageCenterUtils.savePushTomsLog(OtaType.FC, sellingRoomType.getInnId(), roomTypeId, null, LogDec.XJ_RoomType, "");
+                        }else {
+                            log.info("此房型在房仓没有上架，客栈id："+sellingRoomType.getInnId()+" 房型id："+roomTypeId);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("房仓下架房型失败",e);
+        }
+    }
+
 }
