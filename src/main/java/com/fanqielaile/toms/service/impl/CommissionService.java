@@ -59,7 +59,7 @@ public class CommissionService implements ICommissionService {
             list.add(commissionPercent);
             addNewModel(list,commissionPercent);
         }
-        OtaCommissionPercent percent = new OtaCommissionPercent(company.getOtaId(), company.getId(), null, OperateType.NEW);
+        /*OtaCommissionPercent percent = new OtaCommissionPercent(company.getOtaId(), company.getId(), null, OperateType.NEW);
         List<OtaCommissionPercentDto> percents = commissionPercentDao.selectCommissionList(percent);
         if (percents!=null && percents.size() != list.size()){
             for (OtaCommissionPercentDto c:percents){
@@ -69,7 +69,7 @@ public class CommissionService implements ICommissionService {
                 }
             }
 
-        }
+        }*/
     }
 
     private void addNewModel(List<OtaCommissionPercent> list, OtaCommissionPercent commissionPercent) {
