@@ -191,6 +191,33 @@ public class APIController extends BaseController {
     }
 
     /**
+     * 更新客栈房型下架
+     */
+    @RequestMapping("/sellingRoomType")
+    @ResponseBody
+    public Object sellingRoomType(final String from , final String to){
+        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
+                try {
+                    ITPService service = null;
+                    for (OtaInfoRefDto o:infoDtoList){
+                        service = o.getOtaType().create();
+                        service.sellingRoomType(from,to,o);
+                    }
+                } catch (Exception e) {
+                    throw  new TomsRuntimeException("定时更新客栈下架房型",e);
+                }
+            }
+        };
+        Thread t = new Thread(runnable);
+        t.start();
+        return  jsonModel;
+    }
+
+    /**
      * 获取天下房仓增量酒店，房型信息
      */
     @RequestMapping("/get_fc_hotel_info")

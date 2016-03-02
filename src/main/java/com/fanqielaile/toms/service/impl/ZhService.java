@@ -345,4 +345,40 @@ public class ZhService implements ITPService {
         }
         return result;
     }
+
+    @Override
+    public void sellingRoomType(String from , String to,OtaInfoRefDto otaInfoRefDto) {
+        String companyId = otaInfoRefDto.getCompanyId();
+        Company company = companyDao.selectCompanyById(companyId);
+        log.info("========众荟下架房型=========");
+        try {
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from,to,company);
+            if (!CollectionUtils.isEmpty(roomTypes)){
+                JointWisdomInnRoomMappingDto mappingDto=null;
+                for (SellingRoomType sellingRoomType:roomTypes){
+                    if (!CollectionUtils.isEmpty(sellingRoomType.getOtaRoomTypeId())){
+                        for (Integer roomTypeId:sellingRoomType.getOtaRoomTypeId()){
+                            mappingDto = jointWisdomInnRoomDao.selectJsInnRooType(companyId, sellingRoomType.getInnId(), roomTypeId);
+                            if (mappingDto!=null && Constants.FC_SJ.equals(mappingDto.getSj())){
+                                String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(),
+                                        sellingRoomType.getInnId(), roomTypeId, CommonApi.checkRoom,Constants.day);
+                                List<RoomDetail> roomDetails = InnRoomHelper.getRoomDetail(room_type);
+                                RoomTypeInfo roomTypeInfo = JwXHotelUtil.buildRoomTypeInfo(roomDetails, mappingDto);
+                                mappingDto.setSj(0);
+                                Result result = jointWisdomARI.xjRoomStatus(mappingDto,roomTypeInfo);
+                                if (Constants.SUCCESS200 == result.getStatus()){
+                                    jointWisdomInnRoomDao.updateJsRoomInnRooType(mappingDto);
+                                }
+                            }else {
+                                log.info("此房型在众荟没有上架，客栈id："+sellingRoomType.getInnId()+" 房型id："+roomTypeId);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            throw new TomsRuntimeException(e);
+        }
+    }
 }

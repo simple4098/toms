@@ -450,18 +450,20 @@ public class TBService implements ITPService {
         return result;
     }
 
-   /* @Override
-    public void sellingRoomType(OtaInfoRefDto otaInfoRefDto) {
+    @Override
+    public void sellingRoomType(String from , String to,OtaInfoRefDto otaInfoRefDto) {
         String companyId = otaInfoRefDto.getCompanyId();
         Company company = companyDao.selectCompanyById(companyId);
+        log.info("========淘宝下架房型=========");
         try {
-            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(company);
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from,to,company);
+            List<OtaInnRoomTypeGoodsDto> list = null;
             for (SellingRoomType sellingRoomType:roomTypes){
-                List<OtaInnRoomTypeGoodsDto> list = TomsUtil.obtOtaInnRoomTypeGoodsDto(sellingRoomType.getOtaRoomTypeId());
+                list = TomsUtil.obtOtaInnRoomTypeGoodsDto(sellingRoomType.getOtaRoomTypeId());
                 TBXHotelUtil.roomRoomNumZeroUpdate(list,otaInfoRefDto);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw  new TomsRuntimeException("下架房型更新失败",e);
         }
-    }*/
+    }
 }

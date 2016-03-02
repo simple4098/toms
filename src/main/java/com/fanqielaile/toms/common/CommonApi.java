@@ -30,6 +30,15 @@ public class CommonApi {
     public static   String checkRoom;
     public static   String roomStatus;
     public static String pmsOrderStatus;
+    public static   String sellingRoomType;
+
+    public  String getSellingRoomType() {
+        return sellingRoomType;
+    }
+
+    public  void setSellingRoomType(String sellingRoomType) {
+        CommonApi.sellingRoomType = sellingRoomType;
+    }
 
     public  String getRoomStatus() {
         return roomStatus;

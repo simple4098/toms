@@ -133,8 +133,9 @@
                      <property name="innInfo" value="http://192.168.1.159:8888/api/queryInn"></property>
                      <property name="roomStatus" value="http://192.168.1.159:8888/api/queryRoomStatus"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-               <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
+                     <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
                      <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+                     <property name="sellingRoomType" value="http://192.168.1.159:8888/api/getSellingRoomType"></property>
                      <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
                      <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
@@ -174,6 +175,7 @@
                      <property name="checkRoom" value="http://openapi.test.fanqielaile.com/api/check_room_avail"></property>
                      <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/queryInn"></property>
                   <property name="roomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
+                  <property name="sellingRoomType" value="http://openapi.test.fanqielaile.com/api/getSellingRoomType"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                   <property name="pmsOrderStatus" value="http://pms.test.fanqiele.com/api/book"></property>
                   <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
@@ -205,6 +207,7 @@
                   <property name="innInfo" value="http://oms.fanqiele.com/api/queryInn"></property>
                   <property name="roomStatus" value="http://oms.fanqiele.com/api/queryRoomStatus"></property>
                   <property name="checkRoom" value="http://oms.fanqiele.com/api/check_room_avail"></property>
+                  <property name="sellingRoomType" value="http://oms.fanqiele.com/api/getSellingRoomType"></property>
                   <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
                   <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
                   <property name="imgUrl" value="http://img.fanqiele.com"></property>
