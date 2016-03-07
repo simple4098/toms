@@ -92,6 +92,7 @@
               </property>
        </bean>
        <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+
     <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton" />
        <beans profile="dev">
               <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
@@ -108,6 +109,9 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>
+           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+               <constructor-arg name="systemName" value="TOMS_DEV"></constructor-arg>
+           </bean>
           <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">
                <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
                <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
@@ -164,6 +168,9 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>
+           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+               <constructor-arg name="systemName" value="TOMS_STAGING"></constructor-arg>
+           </bean>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                      <property name="QS" value="http://dc.test.fanqiele.com/api/toms/operate.json"></property>
                      <property name="QSDetail" value="http://dc.test.fanqiele.com/api/toms/opeDetail.json"></property>
@@ -196,6 +203,9 @@
 
        <beans profile="production">
            <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
+           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+               <constructor-arg name="systemName" value="TOMS_PRODUCTION"></constructor-arg>
+           </bean>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                   <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
                   <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
