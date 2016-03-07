@@ -758,15 +758,17 @@ public class TBXHotelUtil {
         if (!CollectionUtils.isEmpty(list)){
             for (OtaInnRoomTypeGoodsDto dto:list){
                 XRoom xRoom = roomGet(dto.getRoomTypeId(), refDto);
-                String inventory = xRoom.getInventory();
-                List<Inventory> inventoryList = JacksonUtil.json2list(inventory, Inventory.class);
-                for (Inventory in:inventoryList){
-                    in.setQuota(0);
+                if (xRoom!=null){
+                    String inventory = xRoom.getInventory();
+                    List<Inventory> inventoryList = JacksonUtil.json2list(inventory, Inventory.class);
+                    for (Inventory in:inventoryList){
+                        in.setQuota(0);
+                    }
+                    String json = JacksonUtil.obj2json(inventoryList);
+                    xRoom.setInventory(json);
+                    log.info("库存设置为0："+json);
+                    roomUpdate(refDto,xRoom);
                 }
-                String json = JacksonUtil.obj2json(inventoryList);
-                xRoom.setInventory(json);
-                log.info("库存设置为0："+json);
-                roomUpdate(refDto,xRoom);
             }
         }
     }
