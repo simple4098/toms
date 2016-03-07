@@ -1,7 +1,9 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.TimerRateType;
@@ -41,8 +43,11 @@ public class EventHelper implements IEventHelper {
     private IOtaInfoService otaInfoService;
 
     @Override
-    public void pushEvent(TBParam tbParam,String bizType) throws Exception {
-        if ("proxy_inn_onshelf".equals(bizType)){
+    public void pushEvent(JSONObject jsonObject) throws Exception {
+        String bizType = jsonObject.getString("bizType");
+        if (Constants.INN_UP_DOWN.equals(bizType)){
+            String content = jsonObject.getString("content");
+            TBParam tbParam = JacksonUtil.json2obj(content, TBParam.class);
             boolean validateParam = DcUtil.validateParam(tbParam);
             log.info("validateParam:"+validateParam+"推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
             if (!validateParam){

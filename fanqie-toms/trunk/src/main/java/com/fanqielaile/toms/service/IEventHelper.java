@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqie.core.dto.TBParam;
 
 /**
@@ -12,7 +13,7 @@ public interface IEventHelper {
 
     /**
      *
-     * @param tbParam 事件处理的参数
+     * @param jsonObject 事件处理的参数
      */
-    public void pushEvent(TBParam tbParam,String bizType) throws Exception;
+    public void pushEvent(JSONObject jsonObject) throws Exception;
 }
