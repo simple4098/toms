@@ -39,13 +39,11 @@ public class MsgConsumer implements MsgEventListener {
     @Override
     public void onEvent(MsgEvent msgEvent) {
         JSONObject jsonObject = JSON.parseObject(msgEvent.getSource().toString());
-        String bizType = jsonObject.getString("bizType");
-        String content = jsonObject.getString("content");
-        TBParam tbParam = JacksonUtil.json2obj(content, TBParam.class);
+
         try {
-            eventHelper.pushEvent(tbParam, bizType);
+            eventHelper.pushEvent(jsonObject);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("MsgConsumer onEvent",e);
         }
     }
 

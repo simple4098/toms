@@ -6,6 +6,8 @@ import com.fanqie.util.PropertiesUtil;
  * Created by wangdayin on 2015/5/12.
  */
 public class Constants {
+    //toms 客栈上下架类型
+    public static final String INN_UP_DOWN="proxy_inn_onshelf";
     //返回json状态
     public static final String STATUS = "status";
     //返回提示信息
