@@ -51,7 +51,6 @@ public class EventHelper implements IEventHelper {
             boolean validateParam = DcUtil.validateParam(tbParam);
             log.info("validateParam:"+validateParam+"推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
             if (!validateParam){
-                log.info("");
                 return ;
             }
             int size = ResourceBundleUtil.getInt("threadNum");
