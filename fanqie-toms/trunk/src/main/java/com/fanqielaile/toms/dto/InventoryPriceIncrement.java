@@ -7,10 +7,10 @@ package com.fanqielaile.toms.dto;
  * @version: v1.0.0
  */
 public class InventoryPriceIncrement extends Inventory {
-    private Integer price;
+    private Double price;
     private Integer status;
 
-    public InventoryPriceIncrement(Integer price, Integer status) {
+    public InventoryPriceIncrement(Double price, Integer status) {
         this.price = price;
         this.status = status;
     }
@@ -26,11 +26,11 @@ public class InventoryPriceIncrement extends Inventory {
         this.status = status;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 }
