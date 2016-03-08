@@ -3,8 +3,6 @@ package com.fanqielaile.toms.dto;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqielaile.toms.support.util.Constants;
 
-import java.util.Date;
-
 /**
  * DESC : 房型库存
  * @author : 番茄木-ZLin
@@ -15,6 +13,14 @@ public class Inventory {
     private String date;
 
     private int quota;
+
+    public Inventory(String date, int quota) {
+        this.date = date;
+        this.quota = quota;
+    }
+
+    public Inventory() {
+    }
 
     public String getDate() {
         return date;

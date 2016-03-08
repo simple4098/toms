@@ -1,10 +1,16 @@
 package com.fanqielaile.toms.support.util;
 
 import com.fanqie.util.JacksonUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.FacilitiesVo;
+import com.fanqielaile.toms.dto.OmsImg;
+import com.fanqielaile.toms.dto.TbImgDto;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DESC : tp店 服务设施
@@ -41,5 +47,78 @@ public class TPServiceUtil {
             return  JacksonUtil.obj2json(map);
         }
         return null;
+    }
+
+    /**
+     * 把图片集合转化成 json对象
+     * @param imgList 图片集合
+     */
+    public static String obtPics(List<OmsImg> imgList) {
+        List<TbImgDto> list = new ArrayList<>();
+        TbImgDto tbImgDto = null;
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(imgList)){
+            for (OmsImg img:imgList){
+                tbImgDto = new TbImgDto(CommonApi.IMG_URL+img,img.getIsCover()==1);
+                list.add(tbImgDto);
+            }
+        }
+        return JacksonUtil.obj2json(list);
+    }
+
+    /**
+     * 酒店设置转化成 json对象
+     * @param facilitiesMap 客栈设施
+     */
+    public static String obtHotelFacilities(List<FacilitiesVo> facilitiesMap) {
+        if (!CollectionUtils.isEmpty(facilitiesMap)){
+            Map<String,Object> map = new HashMap<String, Object>();
+            //健身房
+            map.put("fitnessClub",false);
+            //前台贵重物品保险柜
+            map.put("frontDeskSafe",false);
+            //乐场/棋牌室
+            map.put("casino",false);
+            //吸烟区
+            map.put("smoking area",false);
+            //商务设施
+            map.put("Business Facilities",false);
+            //自助厨房（餐厅）
+            map.put("restaurant",false);
+            for (FacilitiesVo f : facilitiesMap){
+                if (f.getValue()==1){
+                    map.put("free Wi-Fi in all rooms",true);
+                    map.put("wifi",true);
+                }
+                if (f.getValue()==3){
+                    map.put("bar",true);
+                }
+                if (f.getValue()==12){
+                    map.put("meetingRoom",true);
+                }if (f.getValue()==16){
+                    map.put("cafe ",true);
+                }
+
+            }
+            return  JacksonUtil.obj2json(map);
+        }
+        return null;
+    }
+
+    /**
+     * 宽带服务 A,B,C,D。分别代表： A：无宽带，B：免费宽带，C：收费宽带，D：部分收费宽带
+     * @param facilitiesMap 服务设施
+     * @return
+     */
+    public static String internet(List<FacilitiesVo> facilitiesMap) {
+
+        if (!CollectionUtils.isEmpty(facilitiesMap)){
+            for (FacilitiesVo f : facilitiesMap){
+                if (f.getValue()==4){
+                    return "B";
+                }
+            }
+
+        }
+        return "A";
     }
 }
