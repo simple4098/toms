@@ -605,7 +605,7 @@ public class TBXHotelUtilPromotion {
             if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
                 price = price + value;
             }
-            ratePrice = new InventoryPriceIncrement(Integer.parseInt(new DecimalFormat("0").format(price)),1);
+            ratePrice = new InventoryPriceIncrement(price,1);
             ratePrice.setDate(roomDate);
             ratePriceList.add(ratePrice);
             inventoryList.add(inventory);
