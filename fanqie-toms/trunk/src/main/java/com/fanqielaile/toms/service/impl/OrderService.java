@@ -24,7 +24,7 @@ import com.fanqielaile.toms.model.fc.SaleItem;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
-import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.tb.TBXHotelUtilPromotion;
 import com.fanqielaile.toms.support.util.*;
 import com.fanqielaile.toms.support.util.ftp.FTPUtil;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
@@ -627,7 +627,7 @@ public class OrderService implements IOrderService {
     private JsonModel pushSuccessToTB(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
         //更新淘宝订单状态
-        String result = TBXHotelUtil.orderUpdate(order, otaInfo, 2L);
+        String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
         logger.info("淘宝更新订单返回值=>" + result);
         if (null != result && result.equals("success")) {
             //同步成功后在修改数据库
@@ -655,7 +655,7 @@ public class OrderService implements IOrderService {
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
-            String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
+            String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
             logger.info("淘宝取消订单接口返回值=>" + result);
             if (null != result && result.equals("success")) {
                 this.orderDao.updateOrderStatusAndFeeStatus(order);
@@ -693,7 +693,7 @@ public class OrderService implements IOrderService {
         //更新淘宝订单状态
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
         logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
-        String result = TBXHotelUtil.orderUpdate(order, otaInfo, parm);
+        String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, parm);
         logger.info("淘宝更新订单返回值=>" + result);
         if (null != result && result.equals("success")) {
             //同步成功后在修改数据库

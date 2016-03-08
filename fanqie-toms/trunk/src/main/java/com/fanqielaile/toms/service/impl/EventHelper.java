@@ -14,19 +14,13 @@ import com.fanqielaile.toms.service.IEventHelper;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
-import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.ResourceBundleUtil;
-import com.fanqielaile.toms.support.util.TomsUtil;
-import com.taobao.api.domain.Rate;
-import com.taobao.api.domain.XRoom;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.*;
 

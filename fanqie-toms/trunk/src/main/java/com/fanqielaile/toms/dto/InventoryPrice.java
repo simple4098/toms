@@ -8,9 +8,9 @@ import java.util.List;
  * @data : 2015/6/24
  * @version: v1.0.0
  */
-public class InventoryPrice {
+public class InventoryPrice<T extends InventoryRate> {
     private boolean use_room_inventory = true;
-    private List<InventoryRate> inventory_price;
+    private List<T> inventory_price;
 
     public boolean isUse_room_inventory() {
         return use_room_inventory;
@@ -20,11 +20,11 @@ public class InventoryPrice {
         this.use_room_inventory = use_room_inventory;
     }
 
-    public List<InventoryRate> getInventory_price() {
+    public List<T> getInventory_price() {
         return inventory_price;
     }
 
-    public void setInventory_price(List<InventoryRate> inventory_price) {
+    public void setInventory_price(List<T> inventory_price) {
         this.inventory_price = inventory_price;
     }
 }
