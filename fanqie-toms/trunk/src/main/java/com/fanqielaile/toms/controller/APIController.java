@@ -58,7 +58,6 @@ public class APIController extends BaseController {
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody
     public Object hotel(TBParam tbParam){
-        lock.lock();
         JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         log.info("推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
@@ -78,10 +77,7 @@ public class APIController extends BaseController {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
             log.error(e.getMessage(),e);
-        }finally {
-            lock.unlock();
         }
-
         return  jsonModel;
     }
 
