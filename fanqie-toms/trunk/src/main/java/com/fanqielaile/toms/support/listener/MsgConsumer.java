@@ -2,9 +2,7 @@ package com.fanqielaile.toms.support.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fanqie.core.dto.TBParam;
-import com.fanqie.util.JacksonUtil;
-import com.fanqielaile.toms.service.IEventHelper;
+import com.fanqielaile.toms.support.util.Constants;
 import com.tomato.mq.client.event.listener.MsgEventListener;
 import com.tomato.mq.client.event.model.MsgEvent;
 import com.tomato.mq.client.event.publisher.MsgEventPublisher;
@@ -12,9 +10,9 @@ import com.tomato.mq.support.message.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * DESC : 事件处理，客栈上、下架
@@ -27,7 +25,7 @@ public class MsgConsumer implements MsgEventListener {
 
     private static  final Logger log = LoggerFactory.getLogger(MsgConsumer.class);
     @Autowired
-    private IEventHelper eventHelper;
+    private StringRedisTemplate redisTemplate;
     private String systemName;
 
     public MsgConsumer(String systemName) {
@@ -39,11 +37,13 @@ public class MsgConsumer implements MsgEventListener {
     @Override
     public void onEvent(MsgEvent msgEvent) {
         JSONObject jsonObject = JSON.parseObject(msgEvent.getSource().toString());
-
-        try {
-            eventHelper.pushEvent(jsonObject);
-        } catch (Exception e) {
-            log.error("MsgConsumer onEvent",e);
+        String bizType = jsonObject.getString("bizType");
+        if (Constants.INN_UP_DOWN.equals(bizType)){
+            String content = jsonObject.getString("content");
+            log.info("=====队列增加数据=================="+content);
+            //TBParam tbParam = JacksonUtil.json2obj(content, TBParam.class);
+            ListOperations<String, String> operations = redisTemplate.opsForList();
+            operations.leftPush(Constants.REDIS,content);
         }
     }
 
