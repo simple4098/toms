@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
  * @data : 2016/3/7
  * @version: v1.0.0
  */
-@Component
 public class MsgConsumer implements MsgEventListener {
 
     private static  final Logger log = LoggerFactory.getLogger(MsgConsumer.class);
