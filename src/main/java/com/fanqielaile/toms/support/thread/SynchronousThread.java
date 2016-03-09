@@ -47,7 +47,7 @@ public class SynchronousThread extends Thread {
                 String value = redisTemplate.execute(new RedisCallback<String>() {
                     @Override
                     public String doInRedis(RedisConnection connection) throws DataAccessException {
-                        List<byte[]> bytes = connection.bLPop(2, Constants.REDIS.getBytes(Charset.forName("UTF-8")));
+                        List<byte[]> bytes = connection.bRPop(2, Constants.REDIS.getBytes(Charset.forName("UTF-8")));
                         if (bytes!=null){
                             for (byte[] b:bytes){
                                 String s = new String(b);
