@@ -12,6 +12,7 @@ import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.service.impl.OtaInfoService;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.ResourceBundleUtil;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -40,7 +41,8 @@ public class SynchronousThread extends Thread {
     @Override
     public void run() {
     	log.info("线程名称："+Thread.currentThread().getName());
-        while (true) {
+        boolean logOpen = ResourceBundleUtil.getBoolean("redis.open");
+        while (logOpen) {
             try {
                 String value = redisTemplate.execute(new RedisCallback<String>() {
                     @Override
