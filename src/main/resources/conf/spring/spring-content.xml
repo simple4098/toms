@@ -102,9 +102,12 @@
         <!--最大空闲连接数, 默认8个-->
         <property name="maxIdle" value="5"></property>
         <!--//最大连接数, 默认8个-->
-        <property name="maxTotal" value="20"></property>
+        <property name="maxTotal" value="10"></property>
+        <property name="minIdle" value="2"></property>
         <!--获取连接时的最大等待毫秒数(如果设置为阻塞时BlockWhenExhausted),如果超时就抛异常, 小于零:阻塞不确定的时间,  默认-1-->
         <property name="maxWaitMillis" value="1000"></property>
+        <property name="testOnBorrow" value="true"></property>
+        <property name="testWhileIdle" value="true"></property>
     </bean>
 
     <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton" />
@@ -124,12 +127,13 @@
                      <property name="validationQuery" value="select 1"/>
               </bean>
            <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-               <constructor-arg name="systemName" value="TOMS_DEV_x"></constructor-arg>
+               <constructor-arg name="systemName" value="TOMS_DEV"></constructor-arg>
            </bean>
            <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
                <property name="hostName" value="192.168.1.159"/>
                <property name="port" value="6379"/>
                <property name="password" value="111111"/>
+               <property name="database" value="10"/>
                <property name="poolConfig" ref="jedisPoolConfig"></property>
            </bean>
           <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">
@@ -188,6 +192,13 @@
                      <property name="removeAbandonedTimeout" value="1800" />
                      <property name="validationQuery" value="select 1"/>
               </bean>
+           <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+               <property name="hostName" value="115.28.2.150"/>
+               <property name="port" value="6379"/>
+               <property name="password" value="mfgkftoajpvH3lds8ykgcnzeWcaAuwhlo0lqzqsappsfacjfenwqiJtadydqwfjrN2obv3xrmfoV6l5jl2ofwgPqndqaemcuppgYkzK4fotunwlznjhb1opvaiaozaYq"/>
+               <property name="database" value="10"/>
+               <property name="poolConfig" ref="jedisPoolConfig"></property>
+           </bean>
            <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
                <constructor-arg name="systemName" value="TOMS_STAGING"></constructor-arg>
            </bean>
@@ -225,6 +236,12 @@
            <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
            <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
                <constructor-arg name="systemName" value="TOMS_PRODUCTION"></constructor-arg>
+           </bean>
+           <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+               <property name="hostName" value="192.168.1.159"/>
+               <property name="port" value="6379"/>
+               <property name="password" value="111111"/>
+               <property name="poolConfig" ref="jedisPoolConfig"></property>
            </bean>
               <bean  class="com.fanqielaile.toms.common.CommonApi">
                   <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
