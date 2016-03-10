@@ -81,7 +81,7 @@ public class AjaxLabelInnController extends BaseController{
                     return new JsonModel(false, "该客栈已绑定过");
                 }
             } else {
-                return new JsonModel(false, "请检查公司唯一码是否正确、公司类型只能是线下专业类型");
+                return new JsonModel(false, "请检查公司唯一码是否正确、公司类型只能是线下专有类型");
             }
         } else {
             return new JsonModel(false, "请检查传递的参数!");
