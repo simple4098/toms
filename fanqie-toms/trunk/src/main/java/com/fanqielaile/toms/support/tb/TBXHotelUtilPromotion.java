@@ -566,87 +566,34 @@ public class TBXHotelUtilPromotion {
         String out_rid = pushRoom.getRoomType().getRoomTypeId().toString();
         inventoryPriceIncrementObj.setOut_rid(out_rid);
         inventoryPriceIncrementObj.setRateplan_code(out_rid);
-
         //库存对象
         List<InventoryRateIncrement> rateIncrementList = new ArrayList<InventoryRateIncrement>();
         InventoryRateIncrement inventoryRateIncrement =new InventoryRateIncrement(out_rid);
         rateIncrementList.add(inventoryRateIncrement);
-
-        //价格对象
-        InventoryPrice inventoryPrice = new InventoryPrice();
-        InventoryPriceIncrement ratePrice = null;
-        Inventory inventory = null;
-        List<InventoryPriceIncrement> ratePriceList = new ArrayList<InventoryPriceIncrement>();
-        List<Inventory>  inventoryList = new ArrayList<Inventory>();
         List<RoomDetail> roomDetails = pushRoom.getRoomDetails();
-        double price = 0;
-        Double value = null;
-        Date startDate = null;
-        Date endDate = null;
-        if (priceDto!=null) {
-            value = priceDto.getValue() * Constants.tpPriceUnit;
-            startDate = priceDto.getStartDate();
-            endDate = priceDto.getEndDate();
-        }
-        for (RoomDetail roomDetail:roomDetails){
-            String roomDate = roomDetail.getRoomDate();
-            Integer roomNum = roomDetail.getRoomNum();
-            Double  roomPrice = roomDetail.getRoomPrice();
-            inventory = new Inventory(roomDate,roomNum);
-            price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
-            //售价只有MAI2DI才展示
-            if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
-                price = TomsUtil.price(price, new BigDecimal(commission.getCommissionPercent()));
+        int size = roomDetails.size();
+        if (size<=Constants.tp_count){
+            ratesRoom(roomDetails,priceModel,otaInfoRefDto,commission,priceDto,inventoryPriceIncrementObj,rateIncrementList,inventoryRateIncrement);
+        }else {
+            RoomTypeInfo roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetails, Integer.valueOf(out_rid));
+            try {
+                updateRoomRate(otaInfoRefDto,roomTypeInfo,priceModel,priceDto,commission);
+            } catch (Exception e) {
+                log.error("价格、库存推送接口异常",e);
             }
-            price = price* Constants.tpPriceUnit;
-            //tp店价格为分，我们自己系统价格是元
-            Date parseDate = DateUtil.parseDate(roomDate);
-            //在设定的范围内才对价格进行处理
-            if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
-                price = price + value;
-            }
-            ratePrice = new InventoryPriceIncrement(price,1);
-            ratePrice.setDate(roomDate);
-            ratePriceList.add(ratePrice);
-            inventoryList.add(inventory);
-        }
-        inventoryPrice.setInventory_price(ratePriceList);
-        inventoryPriceIncrementObj.setData(inventoryPrice);
-        String obj2json = JacksonUtil.obj2json(inventoryPriceIncrementObj);
-        log.info("================================及时推送价格==============================");
-        log.info("["+obj2json+"]");
-
-        TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
-        XhotelRatesIncrementRequest req = new XhotelRatesIncrementRequest();
-        req.setRateInventoryPriceMap("["+obj2json+"]");
-        XhotelRatesIncrementResponse rsp = client.execute(req, otaInfoRefDto.getSessionKey());
-
-        inventoryRateIncrement.setRoomQuota(inventoryList);
-        String inventoryJson = JacksonUtil.obj2json(rateIncrementList);
-        log.info("================================及时推送库存==============================");
-        log.info(inventoryJson);
-
-        XhotelRoomsIncrementRequest req1 = new XhotelRoomsIncrementRequest();
-        req1.setRoomQuotaMap(inventoryJson);
-        XhotelRoomsIncrementResponse rsp1 = client.execute(req1, otaInfoRefDto.getSessionKey());
-        if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) || CollectionUtils.isEmpty(rsp1.getGids())){
-            throw  new TomsRuntimeException(rsp.getMsg()+" "+rsp1.getMsg());
         }
     }
 
-
-   /* public static void updateHotelPushRoom(OtaInfoRefDto o, PushRoom pushRoom,OtaPriceModelDto priceModel,
-                                           OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws ApiException {
-        log.info("---updateHotelPushRoom start---");
-        XRoom xRoom = roomGet(pushRoom.getRoomType().getRoomTypeId(), o);
-        Rate rate = rateGet(o, pushRoom.getRoomType());
-        if (xRoom!=null && rate!=null ){
-            String inventory = xRoom.getInventory();
-            String inventoryPrice = rate.getInventoryPrice();
-            List<Inventory> list = JacksonUtil.json2list(inventory, Inventory.class);
-            InventoryPrice inventoryPrices = JacksonUtil.json2obj(inventoryPrice, InventoryPrice.class);
-            List<InventoryRate> inventoryRateList = inventoryPrices.getInventory_price();
-            List<RoomDetail> roomDetails = pushRoom.getRoomDetails();
+    public static void ratesRoom(List<RoomDetail> roomDetails,OtaPriceModelDto priceModel,OtaInfoRefDto otaInfoRefDto,
+                           OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto,InventoryPriceIncrementObj inventoryPriceIncrementObj,
+                           List<InventoryRateIncrement> rateIncrementList,InventoryRateIncrement inventoryRateIncrement)throws ApiException{
+        if (!CollectionUtils.isEmpty(roomDetails)){
+            //价格对象
+            InventoryPrice inventoryPrice = new InventoryPrice();
+            InventoryPriceIncrement ratePrice = null;
+            Inventory inventory = null;
+            List<InventoryPriceIncrement> ratePriceList = new ArrayList<InventoryPriceIncrement>();
+            List<Inventory>  inventoryList = new ArrayList<Inventory>();
             double price = 0;
             Double value = null;
             Date startDate = null;
@@ -660,40 +607,48 @@ public class TBXHotelUtilPromotion {
                 String roomDate = roomDetail.getRoomDate();
                 Integer roomNum = roomDetail.getRoomNum();
                 Double  roomPrice = roomDetail.getRoomPrice();
-                for (InventoryRate ratePrice:inventoryRateList){
-                    if (ratePrice.getDate().equals(roomDate)){
-                        price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
-                        //售价只有MAI2DI才展示
-                        if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
-                            price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
-                        }
-                        price = price*Constants.tpPriceUnit;
-                        //tp店价格为分，我们自己系统价格是元
-                        Date parseDate = DateUtil.parseDate(roomDate);
-                        //在设定的范围内才对价格进行处理
-                        if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
-                            price = price + value;
-                        }
-                        ratePrice.setPrice(price);
-                    }
+                inventory = new Inventory(roomDate,roomNum);
+                price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
+                //售价只有MAI2DI才展示
+                if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
+                    price = TomsUtil.price(price, new BigDecimal(commission.getCommissionPercent()));
                 }
-                for (Inventory in:list){
-                    if (in.getDate().equals(roomDate)){
-                        in.setQuota(roomNum);
-                    }
+                price = price* Constants.tpPriceUnit;
+                //tp店价格为分，我们自己系统价格是元
+                Date parseDate = DateUtil.parseDate(roomDate);
+                //在设定的范围内才对价格进行处理
+                if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                    price = price + value;
                 }
+                ratePrice = new InventoryPriceIncrement(price,1);
+                ratePrice.setDate(roomDate);
+                ratePriceList.add(ratePrice);
+                inventoryList.add(inventory);
             }
-            String json = JacksonUtil.obj2json(list);
-            inventoryPrices.setInventory_price(inventoryRateList);
-            String inventoryRate = JacksonUtil.obj2json(inventoryPrices);
-            xRoom.setInventory(json);
-            rate.setInventoryPrice(inventoryRate);
-            log.info("价格 json:" + inventoryRate);
-            log.info("库存 json:" + json);
-            roomUpdate(o, xRoom);
-            rateUpdate(o,pushRoom.getRoomType(),rate);
+            inventoryPrice.setInventory_price(ratePriceList);
+            inventoryPriceIncrementObj.setData(inventoryPrice);
+            String obj2json = JacksonUtil.obj2json(inventoryPriceIncrementObj);
+            log.info("================================及时推送价格==============================");
+            log.info("["+obj2json+"]");
+
+            TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
+            XhotelRatesIncrementRequest req = new XhotelRatesIncrementRequest();
+            req.setRateInventoryPriceMap("["+obj2json+"]");
+            XhotelRatesIncrementResponse rsp = client.execute(req, otaInfoRefDto.getSessionKey());
+
+            inventoryRateIncrement.setRoomQuota(inventoryList);
+            String inventoryJson = JacksonUtil.obj2json(rateIncrementList);
+            log.info("================================及时推送库存==============================");
+            log.info(inventoryJson);
+
+            XhotelRoomsIncrementRequest req1 = new XhotelRoomsIncrementRequest();
+            req1.setRoomQuotaMap(inventoryJson);
+            XhotelRoomsIncrementResponse rsp1 = client.execute(req1, otaInfoRefDto.getSessionKey());
+            if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) || CollectionUtils.isEmpty(rsp1.getGids())){
+                throw  new TomsRuntimeException(rsp.getMsg()+" "+rsp1.getMsg());
+            }
         }
-    }*/
+    }
 
     /**
      * 查询订单状态
