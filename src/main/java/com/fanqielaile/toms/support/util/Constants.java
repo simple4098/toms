@@ -9,6 +9,7 @@ public class Constants {
     //toms 客栈上下架类型
     public static final String INN_UP_DOWN="proxy_inn_onshelf";
     public static final String REDIS="TOMS_INN_UP_DOWN";
+    public static final int tp_count=14;
     //返回json状态
     public static final String STATUS = "status";
     //返回提示信息
