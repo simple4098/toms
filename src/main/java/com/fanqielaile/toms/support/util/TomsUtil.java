@@ -475,4 +475,15 @@ public class TomsUtil {
         return roomTypeInfo;
     }
 
+    public static List<RoomDetail> buildRoomDetail(Integer roomTypeId) {
+        List<RoomDetail> list = new ArrayList<>();
+        RoomDetail roomDetail = null;
+        for (int i=0;i<60;i++){
+            roomDetail = new RoomDetail();
+            roomDetail.setRoomNum(0);
+            roomDetail.setRoomDate(DateUtil.format(DateUtil.addDay(new Date(), i), "yyyy-MM-dd"));
+            list.add(roomDetail);
+        }
+        return list;
+    }
 }
