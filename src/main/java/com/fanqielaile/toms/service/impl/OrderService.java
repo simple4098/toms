@@ -157,6 +157,7 @@ public class OrderService implements IOrderService {
         reslut.put("status", j.isSuccess());
         reslut.put("data", order);
         reslut.put("message", j.getMessage());
+        logger.info("淘宝创建订单返回值:" + j.toString());
         return reslut;
     }
 
@@ -277,16 +278,19 @@ public class OrderService implements IOrderService {
         this.orderGuestsDao.insertOrderGuests(order);
         //判断订单是否为信用住
         if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            logger.info("淘宝信用住订单，执行付款操作" + order.getChannelOrderCode());
             //信用住需要下单到oms
             try {
                 return payBackDealMethod(order, new UserInfo(), OtaType.TB.name());
             } catch (Exception e) {
                 result.setSuccess(false);
                 result.setMessage("信用住预定，系统异常" + e);
+                return result;
             }
+        } else {
+            result.setSuccess(true);
+            result.setMessage("创建订单成功");
         }
-        result.setSuccess(true);
-        result.setMessage("创建订单成功");
         return result;
     }
 
@@ -1671,7 +1675,7 @@ public class OrderService implements IOrderService {
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.TAOBAO, order.toRoomAvail(company, order).toString(), "淘宝试订单请求参数,oms请求参数"));
             String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(company, order));
             JSONObject jsonObject = JSONObject.fromObject(response);
-            logger.info("淘宝试订单接口传递参数=>" + response.toString());
+            logger.info("淘宝试订单接口返回值oms=>" + response.toString());
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.TAOBAO, response, "淘宝试订单请求参数,oms返回值"));
             if (jsonObject.get("status").equals(200)) {
                 List<RoomDetail> roomDetails = (List<RoomDetail>) JSONArray.toList(jsonObject.getJSONArray("data"), RoomDetail.class);
@@ -1695,9 +1699,10 @@ public class OrderService implements IOrderService {
                         if (null != otaRoomPriceDto) {
                             if (DateUtil.isBetween(d.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
                                 inventoryRate.setPrice((d.getPrice().doubleValue() + otaRoomPriceDto.getValue()) * Constants.tpPriceUnit);
+                            } else {
+                                inventoryRate.setPrice(d.getPrice().doubleValue() * Constants.tpPriceUnit);
                             }
                         } else {
-                            inventoryRate.setPrice(d.getPrice().doubleValue() * Constants.tpPriceUnit);
                         }
                         inventoryRate.setDate(DateUtil.format(d.getDay(), "yyyy-MM-dd"));
                         inventoryRate.setQuota(d.getRoomNum());
