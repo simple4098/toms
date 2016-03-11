@@ -2,19 +2,18 @@ package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.bean.order.*;
 import com.fanqie.util.HttpClientUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.ctrip.CtripRoomTypeMapping;
+import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.service.ICtripOrderService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
-import com.fanqielaile.toms.support.util.JsonModel;
-import com.fanqielaile.toms.support.util.ResourceBundleUtil;
-import com.fanqielaile.toms.support.util.TomsUtil;
-import com.fanqielaile.toms.support.util.XmlCtripUtil;
+import com.fanqielaile.toms.support.util.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.ArrayUtils;
@@ -90,6 +89,7 @@ public class CtripOrderService implements ICtripOrderService {
         CtripCheckRoomAvailResponse ctripCheckRoomAvailResponse = null;
         CtripCheckRoomAvailRequest ctripCheckAvailRequest = XmlCtripUtil.getCtripCheckAvailRequest(xml);
         logger.info("携程试订单转换为对象参数CtripCheckRoomAvailRequest=>" + ctripCheckAvailRequest.toString());
+        MessageCenterUtils.savePushTomsOrderLog(ctripCheckAvailRequest.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.XC, null, null, null, null, null, null, xml, null, ctripCheckAvailRequest.getInnId(), null, "携程试订单请求参数"));
         if (null != ctripCheckAvailRequest) {
             //1.将携程试订单请求对象转换为toms订单对象
             //1.1查询otainfo信息
@@ -105,9 +105,11 @@ public class CtripOrderService implements ICtripOrderService {
             Order order = XmlCtripUtil.getCheckAvailOrder(ctripCheckAvailRequest);
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
             logger.info("携程试订单oms接口传递参数=>" + order.toRoomAvail(company, order).toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(order.getChannelSource(), null, null, null, null, null, null, order.toRoomAvail(company, order).toString(), null, order.getInnId(), order.getInnCode(), "携程试订单请求，oms请求参数"));
             String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(company, order));
             JSONObject jsonObject = JSONObject.fromObject(response);
             logger.info("携程试订单oms接口返回值=>" + response.toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(order.getChannelSource(), null, null, null, null, null, null, order.toRoomAvail(company, order).toString(), response.toString(), order.getInnId(), order.getInnCode(), "携程试订单请求，oms返回值"));
             if (jsonObject.get("status").equals(200)) {
                 //查询当前的价格模式
                 BigDecimal percent = BigDecimal.ZERO;
@@ -228,6 +230,7 @@ public class CtripOrderService implements ICtripOrderService {
         } else {
             logger.info("解析携程试订单对象为空");
         }
+        MessageCenterUtils.savePushTomsOrderLog(ctripCheckAvailRequest.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.XC, xml, JacksonUtil.obj2json(ctripCheckRoomAvailResponse)));
         return ctripCheckRoomAvailResponse;
     }
 
@@ -243,6 +246,7 @@ public class CtripOrderService implements ICtripOrderService {
         DomesticCancelHotelOrderResponse domesticCancelHotelOrderResponse = new DomesticCancelHotelOrderResponse();
         if (null != cancelOrder) {
             Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(cancelOrder);
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "携程取消订单"));
             if (null != order) {
                 //3.oms取消订单处理业务方法
                 JsonModel jsonModel = this.orderService.cancelOrderMethod(order);
@@ -264,6 +268,7 @@ public class CtripOrderService implements ICtripOrderService {
         ctripCancelHotelOrderResponseResult.setDomesticCancelHotelOrderResponse(domesticCancelHotelOrderResponse);
         ctripCancelHotelOrderResponse.setCtripCancelHotelOrderResponseResult(ctripCancelHotelOrderResponseResult);
         logger.info("携程取消订单返回值:" + ctripCancelHotelOrderResponse.toString());
+        MessageCenterUtils.savePushTomsOrderLog(cancelOrder.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(ChannelSource.XC, JacksonUtil.obj2json(ctripCancelHotelOrderResponse), "携程取消订单返回值"));
         return ctripCancelHotelOrderResponse;
     }
 
@@ -282,6 +287,7 @@ public class CtripOrderService implements ICtripOrderService {
                 OrderEntity orderEntity = new OrderEntity();
                 //查询toms本地订单信息
                 Order orderDb = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+                MessageCenterUtils.savePushTomsOrderLog(orderDb.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(orderDb.getChannelSource(), xml, "携程获取订单状态请求参数"));
                 if (null != orderDb) {
                     //调用获取oms订单状态接口
                     String jsonString = this.orderService.getOrderStatusMethod(orderDb);
@@ -328,6 +334,7 @@ public class CtripOrderService implements ICtripOrderService {
         ctripGetOrderStatusResponseResult.setDomesticGetOrderStatusResponse(domesticGetOrderStatusResponse);
         ctripGetOrderStatusResponse.setCtripGetOrderStatusResponseResult(ctripGetOrderStatusResponseResult);
         logger.info("携程获取订单状态返回值：" + ctripGetOrderStatusResponse.toString());
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.SEARCH_ORDER, new OrderLogData(ChannelSource.XC, JacksonUtil.obj2json(ctripGetOrderStatusResponse), "携程获取订单状态返回值"));
         return ctripGetOrderStatusResponse;
     }
 
@@ -337,6 +344,7 @@ public class CtripOrderService implements ICtripOrderService {
         //解析xml成order对象
         Order order = XmlCtripUtil.getNewOrder(xml);
         logger.info("携程下单的订单号=>" + order.getChannelOrderCode());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "携程创建订单，传入参数"));
         CtripRoomTypeMapping ctripRoomTypeMapping = this.ctripRoomTypeMappingDao.selectRoomTypeByHotelIdAndRoomTypeId(order.getOTAHotelId(), order.getOTARoomTypeId());
         order.setInnId(Integer.parseInt(ctripRoomTypeMapping.getInnId()));
         order.setRoomTypeId(ctripRoomTypeMapping.getTomRoomTypeId());
@@ -390,6 +398,7 @@ public class CtripOrderService implements ICtripOrderService {
         }
         ctripNewHotelOrderResponseResult.setDomesticSubmitNewHotelOrderResponse(domesticSubmitNewHotelOrderResponse);
         ctripNewHotelOrderResponse.setCtripNewHotelOrderResponseResult(ctripNewHotelOrderResponseResult);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(ctripNewHotelOrderResponse), order.getInnId(), order.getInnCode(), "携程创建订单返回值"));
         return ctripNewHotelOrderResponse;
     }
 

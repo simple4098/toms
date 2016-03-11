@@ -3,8 +3,11 @@ package com.fanqielaile.toms.support.util;
 import com.alibaba.fastjson.JSON;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.PropertiesUtil;
+import com.fanqielaile.toms.dto.orderLog.OrderBizType;
+import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.LogDec;
+import com.fanqielaile.toms.enums.OrderLogDec;
 import com.fanqielaile.toms.enums.OtaType;
 import com.tomasky.msp.client.model.PendingNotify;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
@@ -154,6 +157,20 @@ public class MessageCenterUtils {
             BizData bizData = new BizData(logDec,userName==null?"系统操作":userName,content,innId,roomTypeId,channelSource);
             BizLog bizLog = new BizLog(innId, bizType, "TOMS", bizData);
             bizLogClient.save(bizLog);
+            LOGGER.info("=====记录日志结束======");
+        }
+    }
+
+    /**
+     * 推送toms订单日志
+     */
+    public static void savePushTomsOrderLog(Integer innId, OrderLogDec logDec, OrderLogData logData) {
+        boolean aBoolean = ResourceBundleUtil.getBoolean("log.open");
+        if (aBoolean) {
+            LOGGER.info("=====记录日志开始======");
+            OrderBizType orderBizType = new OrderBizType(logDec.getLogTypeId(), logDec.getpId());
+            BizLog biz = new BizLog(innId, orderBizType, "TOMS", logData);
+            bizLogClient.save(biz);
             LOGGER.info("=====记录日志结束======");
         }
     }

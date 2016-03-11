@@ -6,9 +6,11 @@ import com.fanqie.jw.enums.Version;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
@@ -20,6 +22,7 @@ import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.service.jointwisdomService.*;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
 import net.sf.json.JSONArray;
@@ -83,10 +86,12 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         try {
             //解析xml得到order的查询对象
             Order availOrder = XmlJointWisdomUtil.getJointWisdomAvailOrder(xml);
+            MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, xml, "众荟试订单传入参数"));
             //检查试订单日期
             if (availOrder.getLiveTime().getTime() > availOrder.getLeaveTime().getTime()) {
                 JointWisdomAvailCheckOrderSuccessResponse errorResult = new JointWisdomAvailCheckOrderSuccessResponse();
                 JointWisdomAvailCheckOrderErrorResponse basicError = errorResult.getBasicError("试订单入住时间必须小于等于离店时间");
+                MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, JacksonUtil.obj2json(basicError), "众荟试订单返回值"));
                 map.put("data", basicError);
                 map.put("status", true);
                 return map;
@@ -113,9 +118,11 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 //处理一下离店日期，不需要包含最后一天
                 availOrder.setLeaveTime(DateUtil.addDay(availOrder.getLeaveTime(), -1));
                 logger.info("众荟试订单oms接口传递参数=>" + availOrder.toRoomAvail(company, availOrder).toString());
+                MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, availOrder.getChannelOrderCode(), availOrder.getId(), availOrder.getOmsOrderCode(), availOrder.getOrderStatus(), availOrder.getOrderStatus(), availOrder.getFeeStatus(), availOrder.toRoomAvail(company, availOrder).toString(), null, availOrder.getInnId(), availOrder.getInnCode(), "众荟试订单，oms传入值"));
                 String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), availOrder.toRoomAvail(company, availOrder));
                 JSONObject jsonObject = JSONObject.fromObject(response);
                 logger.info("众荟试订单oms接口返回值=>" + response.toString());
+                MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, availOrder.getChannelOrderCode(), availOrder.getId(), availOrder.getOmsOrderCode(), availOrder.getOrderStatus(), availOrder.getOrderStatus(), availOrder.getFeeStatus(), availOrder.toRoomAvail(company, availOrder).toString(), response.toString(), availOrder.getInnId(), availOrder.getInnCode(), "众荟试订单，oms返回值"));
                 //解析返回数据
                 if ("200".equals(jsonObject.get("status").toString())) {
                     //查询当前的价格模式
@@ -249,6 +256,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     responseResult.setRoomStays(roomStayList);
                     map.put("status", true);
                     map.put("data", responseResult);
+                    MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, availOrder.getChannelOrderCode(), availOrder.getId(), availOrder.getOmsOrderCode(), availOrder.getOrderStatus(), availOrder.getOrderStatus(), availOrder.getFeeStatus(), availOrder.toRoomAvail(company, availOrder).toString(), JacksonUtil.obj2json(responseResult), availOrder.getInnId(), availOrder.getInnCode(), "众荟试订单，toms返回值"));
                     return map;
                 }
             } else {
@@ -432,6 +440,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 responseResult.setRoomStays(roomStayList);
                 map.put("status", true);
                 map.put("data", responseResult);
+                MessageCenterUtils.savePushTomsOrderLog(availOrder.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, availOrder.getChannelOrderCode(), availOrder.getId(), availOrder.getOmsOrderCode(), availOrder.getOrderStatus(), availOrder.getOrderStatus(), availOrder.getFeeStatus(), availOrder.toRoomAvail(company, availOrder).toString(), JacksonUtil.obj2json(responseResult), availOrder.getInnId(), availOrder.getInnCode(), "众荟试订单，toms返回值"));
                 return map;
             }
         } catch (Exception e) {
@@ -462,6 +471,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         order.setRoomTypeId(String.valueOf(jointWisdomInnRoomMappingDto.getRoomTypeId()));
         order.setRoomTypeIdInt(jointWisdomInnRoomMappingDto.getRoomTypeId());
         order.setInnId(jointWisdomInnRoomMappingDto.getInnId());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "众荟创建订单传入参数"));
         //1.创建toms本地订单
         this.orderService.createOrderMethod(order.getChannelSource(), order);
 
@@ -496,11 +506,13 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
             result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
             map.put("status", true);
             map.put("data", result);
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(result), order.getInnId(), order.getInnCode(), "众荟创建订单,toms返回值"));
             return map;
         } else {
             //预定失败
             map.put("status", false);
             map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError(jsonModel.getMessage() + "  预定失败", Version.v1003.getText(), OrderResponseType.Committed.name()));
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(new JointWisdomAddOrderSuccessResponse().getBasicError(jsonModel.getMessage() + "  预定失败", Version.v1003.getText(), OrderResponseType.Committed.name())), order.getInnId(), order.getInnCode(), "众荟创建订单,toms返回值"));
             return map;
 
         }
@@ -513,6 +525,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         Order order = XmlJointWisdomUtil.getCancelOrder(xml);
         logger.info("众荟取消订单号为：" + order.getChannelOrderCode());
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
+        MessageCenterUtils.savePushTomsOrderLog(orderParamDto.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(orderParamDto.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), orderParamDto.getOrderStatus(), orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), xml, null, orderParamDto.getInnId(), orderParamDto.getInnCode(), "众荟取消订单传入参数"));
         if (null != orderParamDto) {
             //取消订单，同步
             JsonModel jsonModel = this.orderService.cancelOrderMethod(orderParamDto);
@@ -525,15 +538,18 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                 result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
                 map.put("status", true);
                 map.put("data", result);
+                MessageCenterUtils.savePushTomsOrderLog(orderParamDto.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(orderParamDto.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), orderParamDto.getOrderStatus(), orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), xml, JacksonUtil.obj2json(result), orderParamDto.getInnId(), orderParamDto.getInnCode(), "众荟取消订单返回值"));
                 return map;
             } else {
                 map.put("status", false);
                 map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("酒店拒绝取消订单", Version.v1003.getText(), OrderResponseType.Cancelled.name()));
+                MessageCenterUtils.savePushTomsOrderLog(orderParamDto.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(orderParamDto.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), orderParamDto.getOrderStatus(), orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), xml, JacksonUtil.obj2json(new JointWisdomAddOrderSuccessResponse().getBasicError("酒店拒绝取消订单", Version.v1003.getText(), OrderResponseType.Cancelled.name())), orderParamDto.getInnId(), orderParamDto.getInnCode(), "众荟取消订单返回值"));
                 return map;
             }
         } else {
             map.put("status", false);
             map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("订单不存在", Version.v1003.getText(), OrderResponseType.Cancelled.name()));
+            MessageCenterUtils.savePushTomsOrderLog(orderParamDto.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(orderParamDto.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), orderParamDto.getOrderStatus(), orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), xml, JacksonUtil.obj2json(new JointWisdomAddOrderSuccessResponse().getBasicError("订单不存在", Version.v1003.getText(), OrderResponseType.Cancelled.name())), orderParamDto.getInnId(), orderParamDto.getInnCode(), "众荟取消订单返回值"));
             return map;
         }
     }

@@ -469,4 +469,33 @@ public class XmlDeal {
         order.setOmsOrderStatus(OrderMethodHelper.getOrderStatusByOmsPush(element.elementText("Status")));
         return order;
     }
+
+    /**
+     * 得到淘宝试订单请求对象
+     *
+     * @param xmlStr
+     * @return
+     */
+    public static Order getAvailOrder(String xmlStr) throws Exception {
+        Order order = new Order();
+        Element element = dealXmlStr(xmlStr);
+        order.setOTAHotelId(element.elementText("TaoBaoHotelId"));
+        order.setInnId(Integer.parseInt(element.elementText("HotelId")));
+        order.setOTARoomTypeId(element.elementText("TaoBaoRoomTypeId"));
+        order.setRoomTypeId(element.elementText("RoomTypeId"));
+        order.setOTARatePlanId(element.elementText("TaoBaoRatePlanId"));
+        order.setOTARateCode(element.elementText("RatePlanCode"));
+        order.setOTAGid(element.elementText("TaoBaoGid"));
+        order.setLiveTime(DateUtil.parse(element.elementText("CheckIn"), "yyyy-MM-dd"));
+        order.setLeaveTime(DateUtil.parse(element.elementText("CheckOut"), "yyyy-MM-dd"));
+        order.setHomeAmount(Integer.parseInt(element.elementText("RoomNum")));
+        if (element.elementText("PaymentType").equals("1")) {
+            order.setPaymentType(PaymentType.PREPAID);
+        } else if (element.elementText("PaymentType").equals("5")) {
+            order.setPaymentType(PaymentType.NOW_PAY);
+        } else {
+            order.setPaymentType(PaymentType.CREDIT);
+        }
+        return order;
+    }
 }
