@@ -16,8 +16,6 @@ import java.util.*;
  */
 public class Test {
     public static void main(String[] args) throws Exception {
-
-
        /* Random r=new Random();
         int nextInt = r.nextInt(90000);
         int i=nextInt+10000;

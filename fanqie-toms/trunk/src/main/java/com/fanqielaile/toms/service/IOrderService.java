@@ -47,7 +47,7 @@ public interface IOrderService {
      *
      * @param xmlStr
      */
-    Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception;
+    Map<String, Object> addOrder(String xmlStr, ChannelSource channelSource) throws Exception;
 
     /**
      * 取消订单
@@ -56,7 +56,7 @@ public interface IOrderService {
      * @param channelSource
      * @throws Exception
      */
-    JsonModel cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception;
+    Map<String, Object> cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception;
 
     /**
      * 付款成功回调
@@ -274,7 +274,7 @@ public interface IOrderService {
      * @param order
      * @throws IOException
      */
-    void createOrderMethod(ChannelSource channelSource, Order order) throws IOException;
+    JsonModel createOrderMethod(ChannelSource channelSource, Order order) throws IOException;
 
     /**
      * 订单付款
@@ -312,4 +312,12 @@ public interface IOrderService {
      * @return
      */
     JsonModel cancelOrderOmsMethod(OrderParamDto orderParamDto, UserInfo currentUser) throws Exception;
+
+    /**
+     * 淘宝试订单请求
+     *
+     * @param xmlStr
+     * @return
+     */
+    Map<String, Object> dealAvailOrder(String xmlStr) throws Exception;
 }

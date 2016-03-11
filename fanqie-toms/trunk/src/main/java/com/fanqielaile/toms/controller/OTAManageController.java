@@ -8,11 +8,14 @@ import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.CreateHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
+import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.OrderLogDec;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
+import com.fanqielaile.toms.model.TBAvailOrderResult;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.model.fc.FCcheckRoomAvailResponseResult;
 import com.fanqielaile.toms.model.fc.FcCancelHotelOrderResponseResult;
@@ -61,79 +64,110 @@ public class OTAManageController extends BaseController {
      */
     @RequestMapping("taobaoService")
     @ResponseBody
-    public Object TBService(HttpServletRequest request) throws Exception {
-        String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
+    public Object TBService(HttpServletRequest request) {
         Result result = new Result();
-        if (StringUtils.isNotEmpty(xmlStr)) {
-//            businLog.setDescr("淘宝接口传入XML参数：" + xmlStr);
-//            businLogClient.save(businLog);
-            //接口调用验证用户
-            UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
-            if (null != userNameAndPassword) {
-                //验证用户密码
-                if (Constants.TBUserName.equals(userNameAndPassword.getUserName()) && Constants.TBPassword.equals(userNameAndPassword.getPassword())) {
-                    //得到跟节点
-                    logger.info("xml参数：" + xmlStr);
-                    String rootElementString = XmlDeal.getRootElementString(xmlStr);
-                    //根据根节点判断执行的方法
-                    if (rootElementString.equals(OrderMethod.BookRQ.name())) {
-                        //创建订单
-                        Order order = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
-                        result.setResultCode("0");
-                        result.setMessage(order.getId());
-                    } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
-                        //取消订单
-                        JsonModel jsonModel = orderService.cancelOrder(xmlStr, ChannelSource.TAOBAO);
-                        if (jsonModel.isSuccess()) {
-                            result.setResultCode("0");
-                            result.setMessage("取消订单成功");
+        try {
+            String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
+            if (StringUtils.isNotEmpty(xmlStr)) {
+                //            businLog.setDescr("淘宝接口传入XML参数：" + xmlStr);
+                //            businLogClient.save(businLog);
+                //接口调用验证用户
+                UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
+                if (null != userNameAndPassword) {
+                    //验证用户密码
+                    if (Constants.TBUserName.equals(userNameAndPassword.getUserName()) && Constants.TBPassword.equals(userNameAndPassword.getPassword())) {
+                        //得到跟节点
+                        logger.info("xml参数：" + xmlStr);
+                        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.REQUEST_PARAM, new OrderLogData(ChannelSource.TAOBAO, xmlStr, "淘宝请求参数"));
+                        String rootElementString = XmlDeal.getRootElementString(xmlStr);
+                        //根据根节点判断执行的方法
+                        if (rootElementString.equals(OrderMethod.BookRQ.name())) {
+                            //创建订单
+                            Map<String, Object> map = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
+                            Order order = (Order) map.get("data");
+                            if ((Boolean) map.get("status")) {
+                                result.setResultCode("0");
+                                result.setMessage(order.getId());
+                            } else {
+                                result.setResultCode("-102");
+                                result.setMessage(String.valueOf(map.get("message")));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.ValidateRQ.name())) {
+                            //试订单请求
+                            Map<String, Object> map = orderService.dealAvailOrder(xmlStr);
+                            if ((Boolean) map.get("status")) {
+                                TBAvailOrderResult tbAvailOrderResult = new TBAvailOrderResult();
+                                tbAvailOrderResult.setMessage(String.valueOf(map.get("message")));
+                                tbAvailOrderResult.setResultCode("0");
+                                tbAvailOrderResult.setInventoryPrice(String.valueOf(map.get("data")));
+                                return tbAvailOrderResult;
+                            } else {
+                                result.setMessage(String.valueOf(map.get("message")));
+                                result.setResultCode("-3");
+                            }
+                        } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
+                            //取消订单
+                            Map<String, Object> map = orderService.cancelOrder(xmlStr, ChannelSource.TAOBAO);
+                            if ((Boolean) map.get("status")) {
+                                result.setResultCode("0");
+                                result.setMessage("取消订单成功");
+                                if (StringUtils.isNotEmpty(String.valueOf(map.get("orderId")))) {
+                                    result.setOrderId(String.valueOf(map.get("orderId")));
+                                }
+                            } else {
+                                result.setResultCode("-209");
+                                result.setMessage(String.valueOf(map.get("message")));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
+                            //付款成功回调
+                            //1.付款成功回调执行一次拦截
+                            JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
+                            if (jsonModel.isSuccess()) {
+                                result.setResultCode("0");
+                                result.setMessage("付款成功");
+                            } else {
+                                result.setResultCode("-400");
+                                result.setMessage(jsonModel.getMessage());
+                            }
+                            //查询订单状态
+                        } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
+                            Map<String, String> orderStatus = orderService.findOrderStatus(xmlStr, ChannelSource.TAOBAO);
+                            result.setMessage(orderStatus.get("message"));
+                            result.setResultCode(orderStatus.get("code"));
+                            if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
+                                result.setStatus(orderStatus.get("status"));
+                            }
+                            if (StringUtils.isNotEmpty(orderStatus.get("taobaoOrderId"))) {
+                                result.setTaoBaoOrderId(orderStatus.get("taobaoOrderId"));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
+                            Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
+                            result.setMessage(map.get("message"));
+                            result.setResultCode(map.get("status"));
+                            logger.info("付款成功回调返回值:" + result.toString());
                         } else {
-                            result.setResultCode("-209");
-                            result.setMessage(jsonModel.getMessage());
+                            logger.error("xml参数错误");
                         }
-                    } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
-                        //付款成功回调
-                        //1.付款成功回调执行一次拦截
-                        JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
-                        if (jsonModel.isSuccess()) {
-                            result.setResultCode("0");
-                            result.setMessage("付款成功");
-                        } else {
-                            result.setResultCode("-400");
-                            result.setMessage(jsonModel.getMessage());
-                        }
-                        //查询订单状态
-                    } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
-                        Map<String, String> orderStatus = orderService.findOrderStatus(xmlStr, ChannelSource.TAOBAO);
-                        result.setMessage(orderStatus.get("message"));
-                        result.setResultCode(orderStatus.get("code"));
-                        if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
-                            result.setStatus(orderStatus.get("status"));
-                        }
-                    } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
-                        Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
-                        result.setMessage(map.get("message"));
-                        result.setResultCode(map.get("status"));
-                        logger.info("付款成功回调返回值:" + result.toString());
                     } else {
-                        logger.error("xml参数错误");
+                        logger.error("创建订单失败,验证用户不通过", userNameAndPassword);
+                        result.setMessage("创建订单失败,验证用户不通过");
+                        result.setResultCode("-400");
                     }
                 } else {
-                    logger.error("创建订单失败,验证用户不通过", userNameAndPassword);
-                    result.setMessage("创建订单失败,验证用户不通过");
+                    logger.error("创建订单失败,用户不存在", userNameAndPassword);
+                    result.setMessage("创建订单失败,用户不存在");
                     result.setResultCode("-400");
                 }
             } else {
-                logger.error("创建订单失败,用户不存在", userNameAndPassword);
-                result.setMessage("创建订单失败,用户不存在");
+                logger.error("创建订单失败，原因：参数不正确", xmlStr);
+                result.setMessage("创建订单失败，原因：参数不正确");
                 result.setResultCode("-400");
             }
-        } else {
-            logger.error("创建订单失败，原因：参数不正确", xmlStr);
-            result.setMessage("创建订单失败，原因：参数不正确");
-            result.setResultCode("-400");
+            logger.info("返回淘宝的xml值=>" + result.toString());
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, result.toString(), "淘宝接口返回值"));
+        } catch (Exception e) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, e.getMessage(), "淘宝接口异常"));
         }
-        logger.info("返回淘宝的xml值=>" + result.toString());
         return result;
     }
 
@@ -145,78 +179,109 @@ public class OTAManageController extends BaseController {
     @RequestMapping("taobaoService_test")
     @ResponseBody
     public Object TBTestService(String xml) throws Exception {
-        String xmlStr = xml;
         Result result = new Result();
-        if (StringUtils.isNotEmpty(xmlStr)) {
-//            businLog.setDescr("淘宝接口传入XML参数：" + xmlStr);
-//            businLogClient.save(businLog);
-            //接口调用验证用户
-            UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
-            if (null != userNameAndPassword) {
-                //验证用户密码
-                if (Constants.TBUserName.equals(userNameAndPassword.getUserName()) && Constants.TBPassword.equals(userNameAndPassword.getPassword())) {
-                    //得到跟节点
-                    logger.info("xml参数：" + xmlStr);
-                    String rootElementString = XmlDeal.getRootElementString(xmlStr);
-                    //根据根节点判断执行的方法
-                    if (rootElementString.equals(OrderMethod.BookRQ.name())) {
-                        //创建订单
-                        Order order = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
-                        result.setResultCode("0");
-                        result.setMessage(order.getId());
-                    } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
-                        //取消订单
-                        JsonModel jsonModel = orderService.cancelOrder(xmlStr, ChannelSource.TAOBAO);
-                        if (jsonModel.isSuccess()) {
-                            result.setResultCode("0");
-                            result.setMessage("取消订单成功");
+        try {
+            String xmlStr = xml;
+            if (StringUtils.isNotEmpty(xmlStr)) {
+                //            businLog.setDescr("淘宝接口传入XML参数：" + xmlStr);
+                //            businLogClient.save(businLog);
+                //接口调用验证用户
+                UserInfo userNameAndPassword = OrderMethodHelper.getUserNameAndPassword(xmlStr);
+                if (null != userNameAndPassword) {
+                    //验证用户密码
+                    if (Constants.TBUserName.equals(userNameAndPassword.getUserName()) && Constants.TBPassword.equals(userNameAndPassword.getPassword())) {
+                        //得到跟节点
+                        logger.info("xml参数：" + xmlStr);
+                        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.REQUEST_PARAM, new OrderLogData(ChannelSource.TAOBAO, xmlStr, "淘宝请求参数"));
+                        String rootElementString = XmlDeal.getRootElementString(xmlStr);
+                        //根据根节点判断执行的方法
+                        if (rootElementString.equals(OrderMethod.BookRQ.name())) {
+                            //创建订单
+                            Map<String, Object> map = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
+                            Order order = (Order) map.get("data");
+                            if ((Boolean) map.get("status")) {
+                                result.setResultCode("0");
+                                result.setMessage(order.getId());
+                            } else {
+                                result.setResultCode("-102");
+                                result.setMessage(String.valueOf(map.get("message")));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.ValidateRQ.name())) {
+                            //试订单请求
+                            Map<String, Object> map = orderService.dealAvailOrder(xmlStr);
+                            if ((Boolean) map.get("status")) {
+                                TBAvailOrderResult tbAvailOrderResult = new TBAvailOrderResult();
+                                tbAvailOrderResult.setMessage(String.valueOf(map.get("message")));
+                                tbAvailOrderResult.setResultCode("0");
+                                tbAvailOrderResult.setInventoryPrice(String.valueOf(map.get("data")));
+                                return tbAvailOrderResult;
+                            } else {
+                                result.setMessage(String.valueOf(map.get("message")));
+                                result.setResultCode("-3");
+                            }
+                        } else if (rootElementString.equals(OrderMethod.CancelRQ.name())) {
+                            //取消订单
+                            Map<String, Object> map = orderService.cancelOrder(xmlStr, ChannelSource.TAOBAO);
+                            if ((Boolean) map.get("status")) {
+                                result.setResultCode("0");
+                                result.setMessage("取消订单成功");
+                                if (StringUtils.isNotEmpty(String.valueOf(map.get("orderId")))) {
+                                    result.setOrderId(String.valueOf(map.get("orderId")));
+                                }
+                            } else {
+                                result.setResultCode("-209");
+                                result.setMessage(String.valueOf(map.get("message")));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
+                            //付款成功回调
+                            //1.付款成功回调执行一次拦截
+                            JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
+                            if (jsonModel.isSuccess()) {
+                                result.setResultCode("0");
+                                result.setMessage("付款成功");
+                            } else {
+                                result.setResultCode("-400");
+                                result.setMessage(jsonModel.getMessage());
+                            }
+                            //查询订单状态
+                        } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
+                            Map<String, String> orderStatus = orderService.findOrderStatus(xmlStr, ChannelSource.TAOBAO);
+                            result.setMessage(orderStatus.get("message"));
+                            result.setResultCode(orderStatus.get("code"));
+                            if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
+                                result.setStatus(orderStatus.get("status"));
+                            }
+                            if (StringUtils.isNotEmpty(orderStatus.get("taobaoOrderId"))) {
+                                result.setTaoBaoOrderId(orderStatus.get("taobaoOrderId"));
+                            }
+                        } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
+                            Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
+                            result.setMessage(map.get("message"));
+                            result.setResultCode(map.get("status"));
+                            logger.info("付款成功回调返回值:" + result.toString());
                         } else {
-                            result.setResultCode("-209");
-                            result.setMessage(jsonModel.getMessage());
+                            logger.error("xml参数错误");
                         }
-                    } else if (rootElementString.equals(OrderMethod.PaySuccessRQ.name())) {
-                        //付款成功回调
-                        //1.付款成功回调执行一次拦截
-                        JsonModel jsonModel = orderService.paymentSuccessCallBack(xmlStr, ChannelSource.TAOBAO);
-                        if (jsonModel.isSuccess()) {
-                            result.setResultCode("0");
-                            result.setMessage("付款成功");
-                        } else {
-                            result.setResultCode("-400");
-                            result.setMessage(jsonModel.getMessage());
-                        }
-                        //查询订单状态
-                    } else if (rootElementString.equals(OrderMethod.QueryStatusRQ.name())) {
-                        Map<String, String> orderStatus = orderService.findOrderStatus(xmlStr, ChannelSource.TAOBAO);
-                        result.setMessage(orderStatus.get("message"));
-                        result.setResultCode(orderStatus.get("code"));
-                        if (StringUtils.isNotEmpty(orderStatus.get("status"))) {
-                            result.setStatus(orderStatus.get("status"));
-                        }
-                    } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
-                        Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
-                        result.setMessage(map.get("message"));
-                        result.setResultCode(map.get("status"));
-                        logger.info("付款成功回调返回值:" + result.toString());
                     } else {
-                        logger.error("xml参数错误");
+                        logger.error("创建订单失败,验证用户不通过", userNameAndPassword);
+                        result.setMessage("创建订单失败,验证用户不通过");
+                        result.setResultCode("-400");
                     }
                 } else {
-                    logger.error("创建订单失败,验证用户不通过", userNameAndPassword);
-                    result.setMessage("创建订单失败,验证用户不通过");
+                    logger.error("创建订单失败,用户不存在", userNameAndPassword);
+                    result.setMessage("创建订单失败,用户不存在");
                     result.setResultCode("-400");
                 }
             } else {
-                logger.error("创建订单失败,用户不存在", userNameAndPassword);
-                result.setMessage("创建订单失败,用户不存在");
+                logger.error("创建订单失败，原因：参数不正确", xmlStr);
+                result.setMessage("创建订单失败，原因：参数不正确");
                 result.setResultCode("-400");
             }
-        } else {
-            logger.error("创建订单失败，原因：参数不正确", xmlStr);
-            result.setMessage("创建订单失败，原因：参数不正确");
-            result.setResultCode("-400");
+            logger.info("返回淘宝的xml值=>" + result.toString());
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, result.toString(), "淘宝接口返回值"));
+        } catch (Exception e) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, e.getMessage(), "淘宝接口异常"));
         }
-        logger.info("返回淘宝的xml值=>" + result.toString());
         return result;
     }
 
@@ -231,6 +296,7 @@ public class OTAManageController extends BaseController {
     public Object checkRoomNum(String xml) throws Exception {
         FCcheckRoomAvailResponseResult result = new FCcheckRoomAvailResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓试订单请求参数"));
             CheckRoomAvailResponse checkRoomAvailResponse = this.orderService.checkRoomAvail(xml);
             if (null != checkRoomAvailResponse) {
                 result.setCheckRoomAvailResponse(checkRoomAvailResponse);
@@ -246,6 +312,7 @@ public class OTAManageController extends BaseController {
             result.setResultMsg("xml参数错误");
         }
         logger.info("试订单接口返回值=>" + result.toString());
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓试订单返回值"));
         return result;
     }
 
@@ -260,24 +327,25 @@ public class OTAManageController extends BaseController {
     public Object createhotelOrder(String xml) throws Exception {
         FcCreateHotelOrderResponseResult result = new FcCreateHotelOrderResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.ADD_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓创建订单传入参数"));
             Map<String, Object> map = this.orderService.createFcHotelOrder(xml);
             JsonModel jsonModel = (JsonModel) map.get("status");
             Order order = (Order) map.get("order");
             CreateHotelOrderResponse createHotelOrderResponse = new CreateHotelOrderResponse();
-            if (jsonModel.isSuccess()) {
-                createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
-                createHotelOrderResponse.setSpOrderId(order.getId());
-                createHotelOrderResponse.setOrderStatus(1);
-                result.setResultFlag("1");
-                result.setResultMsg("创建订单成功");
-            } else {
-                createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
-                createHotelOrderResponse.setSpOrderId(order.getId());
-                createHotelOrderResponse.setOrderStatus(2);
-                result.setResultFlag("1");
-                result.setResultMsg(jsonModel.getMessage());
-            }
             if (null != createHotelOrderResponse) {
+                if (jsonModel.isSuccess()) {
+                    createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
+                    createHotelOrderResponse.setSpOrderId(order.getId());
+                    createHotelOrderResponse.setOrderStatus(1);
+                    result.setResultFlag("1");
+                    result.setResultMsg("创建订单成功");
+                } else {
+                    createHotelOrderResponse.setFcOrderId(order.getChannelOrderCode());
+                    createHotelOrderResponse.setSpOrderId(order.getId());
+                    createHotelOrderResponse.setOrderStatus(2);
+                    result.setResultFlag("1");
+                    result.setResultMsg(jsonModel.getMessage());
+                }
                 result.setCreateHotelOrderResponse(createHotelOrderResponse);
             }
         } else {
@@ -285,6 +353,7 @@ public class OTAManageController extends BaseController {
             result.setResultMsg("xml参数错误");
         }
         logger.info("创建订单接口返回值=>" + result.toString());
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓创建订单返回值"));
         return result;
     }
 
@@ -299,6 +368,7 @@ public class OTAManageController extends BaseController {
     public Object cancelHotelOrder(String xml) throws Exception {
         FcCancelHotelOrderResponseResult result = new FcCancelHotelOrderResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓取消订单传入参数"));
             CancelHotelOrderResponse cancelHotelOrderResponse = this.orderService.cancelFcHotelOrder(xml);
             if (null != cancelHotelOrderResponse) {
                 result.setResultFlag("1");
@@ -314,6 +384,7 @@ public class OTAManageController extends BaseController {
             result.setResultMsg("xml参数错误");
         }
         logger.info("取消订单接口返回值=>" + result.toString());
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓取消订单返回值"));
         return result;
     }
 
@@ -328,6 +399,7 @@ public class OTAManageController extends BaseController {
     public Object getFcOrderStatus(String xml) throws Exception {
         FcGetOrderStatusResponseResult result = new FcGetOrderStatusResponseResult();
         if (StringUtils.isNotEmpty(xml)) {
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.SEARCH_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓查询订单传入参数"));
             GetOrderStatusResponse fcOrderStatus = this.orderService.getFcOrderStatus(xml);
             if (null != fcOrderStatus) {
                 result.setResultMsg("success");
@@ -342,6 +414,7 @@ public class OTAManageController extends BaseController {
             result.setResultMsg("xml参数错误");
         }
         logger.info("查询订单状态接口返回值=>" + result.toString());
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓查询订单返回值"));
         return result;
     }
 

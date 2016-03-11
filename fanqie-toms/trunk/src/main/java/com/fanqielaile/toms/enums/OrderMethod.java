@@ -9,6 +9,7 @@ public enum OrderMethod {
     CancelRQ("取消订单"),
     PaySuccessRQ("付款成功回调"),
     QueryStatusRQ("查询订单状态"),
+    ValidateRQ("试订单"),
     OrderRefundRQ("退款成功回调");
     private String text;
 

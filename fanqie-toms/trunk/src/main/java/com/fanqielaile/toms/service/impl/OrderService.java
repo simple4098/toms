@@ -15,6 +15,7 @@ import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeFqDto;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
+import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.*;
@@ -143,17 +144,20 @@ public class OrderService implements IOrderService {
 
     @Override
 //    @Log(descr = "创建订单")
-    public Order addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+    public Map<String, Object> addOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+        Map<String, Object> reslut = new HashMap<>();
         String logStr = "创建订单传递参数=>" + xmlStr;
         //解析xml
         Element dealXmlStr = XmlDeal.dealXmlStr(xmlStr);
         //转换成对象只针对淘宝传递的参数
         Order order = OrderMethodHelper.getOrder(dealXmlStr);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(ChannelSource.TAOBAO, order.getChannelOrderCode(), order.getId(), null, OrderStatus.ACCEPT, OrderStatus.ACCEPT, FeeStatus.NOT_PAY, JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "淘宝创建订单"));
         //创建订单
-        createOrderMethod(channelSource, order);
-        //保存日志
-        MessageCenterUtils.savePushTomsLog(channelSource, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order, "创建订单："+logStr);
-        return order;
+        JsonModel j = createOrderMethod(channelSource, order);
+        reslut.put("status", j.isSuccess());
+        reslut.put("data", order);
+        reslut.put("message", j.getMessage());
+        return reslut;
     }
 
     /**
@@ -162,7 +166,8 @@ public class OrderService implements IOrderService {
      * @param channelSource
      * @param order
      */
-    public void createOrderMethod(ChannelSource channelSource, Order order) throws IOException {
+    public JsonModel createOrderMethod(ChannelSource channelSource, Order order) throws IOException {
+        JsonModel result = new JsonModel();
         //查询客栈关联信息
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
         //查询价格模式（toms的增减价）
@@ -262,12 +267,27 @@ public class OrderService implements IOrderService {
         //不展示ota佣金
 //        order.setOTAPrice(order.getTotalPrice().multiply(otaInnOtaDto.getPriceModelValue()).subtract(order.getTotalPrice()));
         order.setCompanyId(otaInnOtaDto.getCompanyId());
+        //记录日志
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), OrderStatus.ACCEPT, OrderStatus.ACCEPT, order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "创建toms订单"));
         //创建订单
         this.orderDao.insertOrder(order);
         //创建每日价格信息
         this.dailyInfosDao.insertDailyInfos(order);
         //创建入住人信息
         this.orderGuestsDao.insertOrderGuests(order);
+        //判断订单是否为信用住
+        if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            //信用住需要下单到oms
+            try {
+                return payBackDealMethod(order, new UserInfo(), OtaType.TB.name());
+            } catch (Exception e) {
+                result.setSuccess(false);
+                result.setMessage("信用住预定，系统异常" + e);
+            }
+        }
+        result.setSuccess(true);
+        result.setMessage("创建订单成功");
+        return result;
     }
 
     private BigDecimal getOtaPercent(Company company, UsedPriceModel usedPriceModel) {
@@ -281,18 +301,26 @@ public class OrderService implements IOrderService {
 
     @Override
 //    @Log(descr = "取消订单")
-    public JsonModel cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+    public Map<String, Object> cancelOrder(String xmlStr, ChannelSource channelSource) throws Exception {
+        Map<String, Object> result = new HashMap<>();
         logger.info("取消订单传入xml=》" + xmlStr);
         //解析取消订单的xml
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
         logger.info("取消订单号为orderCode=" + order.getChannelOrderCode());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "取消订单传入参数"));
         if (null == order) {
             return new JsonModel(false, "订单不存在");
         }
         order.setReason(XmlDeal.getOrder(xmlStr).getReason());
-        return cancelOrderMethod(order);
+        JsonModel jsonModel = cancelOrderMethod(order);
+        result.put("status", jsonModel.isSuccess());
+        result.put("message", jsonModel.getMessage());
+        if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            result.put("orderId", order.getId());
+        }
+        return result;
     }
 
     /**
@@ -303,6 +331,7 @@ public class OrderService implements IOrderService {
      * @throws Exception
      */
     public JsonModel cancelOrderMethod(Order order) throws Exception {
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.CANCEL_ORDER);
         //判断订单是否需要同步OMS,条件根据订单是否付款
         if (!order.getFeeStatus().equals(FeeStatus.NOT_PAY) || ChannelSource.FC.equals(order.getChannelSource())) {
@@ -314,26 +343,28 @@ public class OrderService implements IOrderService {
             if (null != dictionary) {
                 //发送请求
                 logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+                MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), null, orderParamDto.getInnId(), orderParamDto.getInnCode(), "取消订单，调用oms接口，传递参数"));
                 String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
                 logger.info("调用OMS取消订单的返回值=>" + respose.toString());
+                MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), respose.toString(), orderParamDto.getInnId(), orderParamDto.getInnCode(), "取消订单，调用oms接口，oms返回值"));
                 JSONObject jsonObject = JSONObject.fromObject(respose);
                 if (!jsonObject.get("status").equals(200)) {
                     return new JsonModel(false, jsonObject.get("status").toString() + ":" + jsonObject.get("message"));
                 } else {
                     //同步成功后在修改数据库
                     this.orderDao.updateOrderStatusAndReason(order);
+                    MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), null, null, order.getInnId(), order.getInnCode(), "取消订单成功后修改toms订单状态"));
                     //写入操作记录
-                    this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.CANCEL_ORDER, "取消订单接口", ChannelSource.TAOBAO.name()));
+                    this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), beforeOrderStatus, OrderStatus.CANCEL_ORDER, "取消订单接口", ChannelSource.TAOBAO.name()));
                 }
             }
         } else {
             this.orderDao.updateOrderStatusAndReason(order);
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), null, null, order.getInnId(), order.getInnCode(), "取消订单成功后修改toms订单状态"));
         }
 //        businLog.setDescr(logStr + "取消的订单信息=>" + order.toString());
 //        //保存日志
 //        businLogClient.save(businLog);
-        MessageCenterUtils.savePushTomsLog(order.getChannelSource(), order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                "取消订单，取消订单号为orderCode：" + order.getChannelOrderCode());
         return new JsonModel(true, "取消订单成功");
     }
 
@@ -350,6 +381,7 @@ public class OrderService implements IOrderService {
             //获取订单号，判断订单是否存在
             Order order = this.orderDao.selectOrderByIdAndChannelSource(orderXml.getId(), channelSource);
             logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "付款通知传递参数"));
             //付款金额
             order.setPayment(orderXml.getPayment());
             //支付宝付款码
@@ -362,10 +394,9 @@ public class OrderService implements IOrderService {
                 //自动下单
                 //设置订单状态为：接受
                 order.setOrderStatus(OrderStatus.ACCEPT);
-                MessageCenterUtils.savePushTomsLog(channelSource, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                        "自动下单："+order.getChannelOrderCode());
                 return payBackDealMethod(order, new UserInfo(), OtaType.TB.name());
             } else {
+                OrderStatus beforeOrderStatus = order.getOrderStatus();
                 //手动下单,手动下单修改订单状态为待处理
                 order.setOrderStatus(OrderStatus.NOT_DEAL);
                 //待处理订单写入付款金额和付款码
@@ -373,8 +404,7 @@ public class OrderService implements IOrderService {
                 this.orderDao.updateOrderStatusAndFeeStatus(order);
                 this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.NOT_DEAL, "手动下单", ChannelSource.TAOBAO.name()));
                 //保存日志
-                MessageCenterUtils.savePushTomsLog(channelSource, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                        "手动下单："+order.getChannelOrderCode());
+                MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), null, null, order.getInnId(), order.getInnCode(), "下单到oms，设置为手动下单"));
                 return new JsonModel(true, "付款成功");
             }
         } catch (Exception e) {
@@ -393,6 +423,7 @@ public class OrderService implements IOrderService {
     public JsonModel payBackDealMethod(Order order, UserInfo currentUser, String otaType) throws Exception {
         //组装order参数
         order = packageOrder(order);
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         //判断订单是否同步OMS
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
 
@@ -429,6 +460,7 @@ public class OrderService implements IOrderService {
                 return (JsonModel) objectMap.get("jsonModel");
             }
             logger.info("OMS下单接口传递参数=>" + order.toOrderParamDto(order, company).toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), null, order.getInnId(), order.getInnCode(), "下单到oms，传递参数"));
             String respose = "";
             JSONObject jsonObject = null;
             try {
@@ -439,9 +471,11 @@ public class OrderService implements IOrderService {
                 order.setFeeStatus(FeeStatus.PAID);
                 JsonModel resultJson = dealCancelOrder(order, currentUser, otaInfo);
                 MessageCenterUtils.sendWeiXin("付款成功回调时，调用oms下单接口异常，订单号为：" + order.getChannelOrderCode());
+                MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), null, order.getInnId(), order.getInnCode(), "下单到oms，传递参数"));
                 return resultJson;
             }
-            logger.info("OMS接口响应=>" + respose);
+            logger.info("OMS接口响应=>" + respose + " 订单号：" + order.getChannelOrderCode());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，返回值"));
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
@@ -469,6 +503,7 @@ public class OrderService implements IOrderService {
                     order.setOrderStatus(OrderStatus.ACCEPT);
                     order.setFeeStatus(FeeStatus.PAID);
                     this.orderDao.updateOrderStatusAndFeeStatus(order);
+                    MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
                     return new JsonModel(true, "创建订单成功");
                 }
             }
@@ -626,6 +661,7 @@ public class OrderService implements IOrderService {
      */
     private JsonModel pushSuccessToTB(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         //更新淘宝订单状态
         String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
         logger.info("淘宝更新订单返回值=>" + result);
@@ -636,8 +672,7 @@ public class OrderService implements IOrderService {
             this.orderDao.updateOrderStatusAndFeeStatus(order);
             //记录操作日志
             this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
-            MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                    "淘宝更新订单传入订单号为orderCode：" + order.getChannelOrderCode());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toString(), result, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
             return new JsonModel(true, "付款成功");
         } else {
             return new JsonModel(false, "调用淘宝更新接口出错");
@@ -653,12 +688,12 @@ public class OrderService implements IOrderService {
      * @return
      */
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
+        this.orderDao.updateOrderStatusAndFeeStatus(order);
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
             String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
             logger.info("淘宝取消订单接口返回值=>" + result);
             if (null != result && result.equals("success")) {
-                this.orderDao.updateOrderStatusAndFeeStatus(order);
                 //记录操作日志
                 this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.REFUSE, "淘宝下单到oms响应失败", null == currentUser.getId() ? ChannelSource.TAOBAO.name() : currentUser.getId()));
             } else {
@@ -667,8 +702,6 @@ public class OrderService implements IOrderService {
                 exceptionOrder.setOrderId(order.getId());
                 this.exceptionOrderDao.insertExceptionOrderByException(exceptionOrder);
             }
-            MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                    "淘宝更新订单传入订单号为orderCode：" + order.getChannelOrderCode());
             return new JsonModel(false, "OMS系统异常");
         } else if (ChannelSource.FC.equals(order.getChannelSource())) {
             //如果付款失败，天下房仓返回创建订单失败
@@ -699,8 +732,6 @@ public class OrderService implements IOrderService {
             //同步成功后在修改数据库
             this.orderDao.updateOrderStatusAndReason(order);
             this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "调用淘宝取消接口", currentUser.getId()));
-            MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                    "淘宝更新订单传入订单号为orderCode：" + order.getChannelOrderCode());
             return new JsonModel(true, "更新订单成功");
         } else {
             return new JsonModel(false, "调用淘宝更新接口出错");
@@ -716,6 +747,7 @@ public class OrderService implements IOrderService {
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         //验证此订单是否存在
         Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "查询订单状态"));
         logger.info("查询订单状态订单单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
             result.put("status", "-302");
@@ -748,6 +780,10 @@ public class OrderService implements IOrderService {
             }
             result.put("message", order.getId());
             result.put("code", "0");
+            //判断订单是否为信用住
+            if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+                result.put("taobaoOrderId", order.getChannelOrderCode());
+            }
         }
        /* businLog.setDescr(logStr);
         businLogClient.save(businLog);*/
@@ -768,9 +804,11 @@ public class OrderService implements IOrderService {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
         Company company = this.companyDao.selectCompanyById(orderParamDto.getCompanyId());
         logger.info("查询订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), null, order.getInnId(), order.getInnCode(), "查询订单状态，oms传递参数"));
         //查询OMS订单状态
         String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
         logger.info("查询订单返回值=>" + respose);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "查询订单状态，oms返回值"));
         return respose;
     }
 
@@ -779,6 +817,7 @@ public class OrderService implements IOrderService {
         Map<String, String> result = new HashMap<>();
         String orderId = XmlDeal.getOrder(xmlStr).getId();
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderId, taobao);
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         if (null == order) {
             result.put("status", "-400");
             result.put("message", "没有此订单！");
@@ -797,6 +836,7 @@ public class OrderService implements IOrderService {
             }
         }
         this.orderDao.updateOrderStatusAndReason(order);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), null, null, order.getInnId(), order.getInnCode(), "申请退款订单，订单状态"));
         result.put("status", "0");
         result.put("message", "success");
         return result;
@@ -912,15 +952,25 @@ public class OrderService implements IOrderService {
     @Override
     public JsonModel confirmOrder(OrderParamDto order, UserInfo currentUser) throws Exception {
         JsonModel jsonModel = new JsonModel();
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         //手动确认并执行下单
         //设置订单状态为确认并执行下单
         order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
         //淘宝订单处理方法
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             jsonModel = payBackDealMethod(order, currentUser, OtaType.TB.name());
-        } else {
+        } else if (ChannelSource.FC.equals(order.getChannelSource())) {
             jsonModel = payBackDealMethod(order, currentUser, OtaType.FC.name());
 
+        } else if (ChannelSource.XC.equals(order.getChannelSource())) {
+            jsonModel = payBackDealMethod(order, currentUser, OtaType.XC.name());
+        } else if (ChannelSource.ZH.equals(order.getChannelSource())) {
+            jsonModel = payBackDealMethod(order, currentUser, OtaType.ZH.name());
+        } else {
+            throw new TomsRuntimeException("没有找到ota渠道信息");
+        }
+        if (jsonModel.isSuccess()) {
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "确认下单到oms"));
         }
         return jsonModel;
     }
@@ -930,6 +980,7 @@ public class OrderService implements IOrderService {
         JsonModel jsonModel = new JsonModel();
         //直接拒绝订单，不同步oms，直接调用淘宝更新订单状态接口
         //1.调用淘宝更新订单接口
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.HAND_REFUSE);
         order.setReason("手动直接拒绝");
         //淘宝更新订单
@@ -943,7 +994,9 @@ public class OrderService implements IOrderService {
             jsonModel.setSuccess(true);
             jsonModel.setMessage("成功拒绝订单");
         }
-
+        if (jsonModel.isSuccess()) {
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "手动拒绝订单"));
+        }
         return jsonModel;
 
     }
@@ -953,6 +1006,7 @@ public class OrderService implements IOrderService {
         JsonModel jsonModel = new JsonModel();
         //确认订单，但不同步oms
         //1.修改订单状态，2.调用淘宝更新订单确认有房
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.CONFIM_NO_ORDER);
         order.setReason("确认但不执行下单");
         //淘宝更新订单
@@ -965,6 +1019,9 @@ public class OrderService implements IOrderService {
             this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.NOT_DEAL, OrderStatus.HAND_REFUSE, "确认但是不执行下单", currentUser.getId()));
             jsonModel.setSuccess(true);
             jsonModel.setMessage("确认订单成功");
+        }
+        if (jsonModel.isSuccess()) {
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "确认单不执行下单"));
         }
         return jsonModel;
     }
@@ -1129,6 +1186,7 @@ public class OrderService implements IOrderService {
         JsonModel result = new JsonModel();
         //调用oms取消订单接口
         // 查询调用的url
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CANCEL_ORDER.name());
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(order.getId());
         //查询公司信息
@@ -1136,9 +1194,11 @@ public class OrderService implements IOrderService {
         if (null != dictionary) {
             //发送请求
             logger.info("oms取消订单传递参数=>" + order.toCancelOrderParam(order, company).toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.PAY_BACK, new OrderLogData(order.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), beforeOrderStatus, orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), null, orderParamDto.getInnId(), orderParamDto.getInnCode(), "同意退款,请求oms参数"));
             String respose = HttpClientUtil.httpGetCancelOrder(dictionary.getUrl(), order.toCancelOrderParam(order, company));
             JSONObject jsonObject = JSONObject.fromObject(respose);
             logger.info("oms取消订单返回值=>" + jsonObject.toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.PAY_BACK, new OrderLogData(order.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), beforeOrderStatus, orderParamDto.getOrderStatus(), orderParamDto.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), respose.toString(), orderParamDto.getInnId(), orderParamDto.getInnCode(), "同意退款,oms返回值"));
             if (!jsonObject.get("status").equals(200)) {
                 //如果取消订单失败，不修改订单状态
                 result.setMessage("取消订单失败");
@@ -1150,8 +1210,7 @@ public class OrderService implements IOrderService {
                 result.setSuccess(true);
                 result.setMessage("取消订单成功");
                 this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "同意退款", currentUser.getId()));
-                MessageCenterUtils.savePushTomsLog(OtaType.TB, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                        "买家申请退款：" + order.getChannelOrderCode());
+                MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.PAY_BACK, new OrderLogData(order.getChannelSource(), orderParamDto.getChannelOrderCode(), orderParamDto.getId(), orderParamDto.getOmsOrderCode(), beforeOrderStatus, OrderStatus.CANCEL_ORDER, orderParamDto.getFeeStatus(), order.toCancelOrderParam(order, company).toString(), respose.toString(), orderParamDto.getInnId(), orderParamDto.getInnCode(), "同意退款,oms返回值"));
             }
             this.orderDao.updateOrderStatusAndReason(order);
         } else {
@@ -1165,11 +1224,13 @@ public class OrderService implements IOrderService {
     public JsonModel refusePayBackOrder(OrderParamDto order, UserInfo currentUser) {
         JsonModel result = new JsonModel();
         //拒绝退款修改订单状态为接受
+        OrderStatus beforeOrderStatus = order.getOrderStatus();
         order.setOrderStatus(OrderStatus.ACCEPT);
         this.orderDao.updateOrderStatusAndReason(order);
         this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.PAY_BACK, order.getOrderStatus(), "拒绝退款", currentUser.getId()));
         result.setMessage("拒绝申请成功");
         result.setSuccess(true);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.PAY_BACK, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "拒绝退款,toms订单状态变更"));
         return result;
     }
 
@@ -1179,6 +1240,7 @@ public class OrderService implements IOrderService {
         Map<String, Object> result = new HashMap<>();
         //解析xml
         Order order = XmlDeal.getFcCreateOrder(xml);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "天下房仓创建订单传入参数"));
         //创建订单
         //1.天下房仓需要查询otahotelid
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
@@ -1196,8 +1258,6 @@ public class OrderService implements IOrderService {
             //设置订单状态为：接受
             order.setOrderStatus(OrderStatus.ACCEPT);
             jsonModel = payBackDealMethod(order, new UserInfo(), OtaType.FC.name());
-            MessageCenterUtils.savePushTomsLog(OtaType.FC, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                    "自动下单：" + order.getChannelOrderCode());
         } else {
             //手动下单,手动下单修改订单状态为待处理
             order.setOrderStatus(OrderStatus.NOT_DEAL);
@@ -1208,9 +1268,11 @@ public class OrderService implements IOrderService {
             jsonModel = new JsonModel(true, "付款成功");
             MessageCenterUtils.savePushTomsLog(OtaType.FC, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
                     "手动下单：" + order.getChannelOrderCode());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), OrderStatus.ACCEPT, order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "天下房仓创建订单，设置为手动下单"));
         }
         result.put("status", jsonModel);
         result.put("order", order);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), result.toString(), order.getInnId(), order.getInnCode(), "天下房仓创建订单，toms返回值"));
         return result;
     }
 
@@ -1222,6 +1284,7 @@ public class OrderService implements IOrderService {
         Order orderCancel = XmlDeal.getFcCancelOrder(xml);
         //查询数据库中是否存在此订单
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderCancel.getId(), ChannelSource.FC);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "天下房仓取消订单传入参数"));
         if (null == order) {
             return null;
         } else {
@@ -1234,9 +1297,8 @@ public class OrderService implements IOrderService {
             } else {
                 result.setCancelStatus(2);
             }
-            MessageCenterUtils.savePushTomsLog(OtaType.FC, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                    "天下房仓取消订单传入参数："+xml + " 订单号："+order.getChannelOrderCode()+" 取消CancelStatus:"+result.getCancelStatus());
         }
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, result.toString(), order.getInnId(), order.getInnCode(), "天下房仓取消订单,toms返回值"));
         return result;
     }
 
@@ -1247,6 +1309,7 @@ public class OrderService implements IOrderService {
         //解析xml
         Order orderParam = XmlDeal.getFcOrderStatus(xml);
         Order order = this.orderDao.selectOrderByIdAndChannelSource(orderParam.getId(), ChannelSource.FC);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "天下房仓查询订单传入参数"));
         if (null == order) {
             return null;
         } else {
@@ -1272,6 +1335,7 @@ public class OrderService implements IOrderService {
                 result.setSpOrderId(order.getId());
             }
         }
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, result.toString(), order.getInnId(), order.getInnCode(), "天下房仓查询订单，toms返回值"));
         return result;
     }
 
@@ -1281,15 +1345,18 @@ public class OrderService implements IOrderService {
         CheckRoomAvailResponse result = new CheckRoomAvailResponse();
         //解析xml
         Order order = XmlDeal.getCheckRoomAvailOrder(xml);
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, JacksonUtil.obj2json(order), "天下房仓试订单请求参数"));
         Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
         //1.查询公司信息
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectCompanyIdByAppKey(ResourceBundleUtil.getString("fc.appKey"), ResourceBundleUtil.getString("fc.appSecret"));
         //查询公司信息
         Company company = this.companyDao.selectCompanyById(otaInfo.getCompanyId());
         logger.info("天下房仓试订单接口传递参数=>" + order.toRoomAvail(company, order).toString());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, order.toRoomAvail(company, order).toString(), "天下房仓试订单请求参数,oms请求参数"));
         String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(company, order));
         JSONObject jsonObject = JSONObject.fromObject(response);
         logger.info("天下房仓试订单接口返回值=>" + response.toString());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, response, "天下房仓试订单请求参数,oms返回值"));
         if (jsonObject.get("status").equals(200)) {
             //查询当前的价格模式
             BigDecimal percent = BigDecimal.ZERO;
@@ -1367,8 +1434,7 @@ public class OrderService implements IOrderService {
             return null;
         }
         logger.info("天下房仓试订单返回值：" + result.toString());
-        MessageCenterUtils.savePushTomsLog(OtaType.FC, order.getInnId(), Integer.valueOf(order.getRoomTypeId()), null, LogDec.Order,
-                "天下房仓试订单："+result.toString() + " 订单号："+order.getChannelOrderCode());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓试订单请求参数,toms返回值"));
         return result;
     }
 
@@ -1587,5 +1653,68 @@ public class OrderService implements IOrderService {
             return result;
         }
         return new JsonModel(true, "取消订单成功");
+    }
+
+    @Override
+    public Map<String, Object> dealAvailOrder(String xmlStr) throws Exception {
+
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Order order = XmlDeal.getAvailOrder(xmlStr);
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.TAOBAO, order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "淘宝试订单请求参数"));
+            //查询客栈关联信息
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            //公司信息
+            Company company = this.companyDao.selectCompanyById(otaInnOtaDto.getCompanyId());
+            Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CHECK_ORDER.name());
+            logger.info("淘宝试订单接口传递参数=>" + order.toRoomAvail(company, order).toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.TAOBAO, order.toRoomAvail(company, order).toString(), "淘宝试订单请求参数,oms请求参数"));
+            String response = HttpClientUtil.httpGetRoomAvail(dictionary.getUrl(), order.toRoomAvail(company, order));
+            JSONObject jsonObject = JSONObject.fromObject(response);
+            logger.info("淘宝试订单接口传递参数=>" + response.toString());
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.TAOBAO, response, "淘宝试订单请求参数,oms返回值"));
+            if (jsonObject.get("status").equals(200)) {
+                List<RoomDetail> roomDetails = (List<RoomDetail>) JSONArray.toList(jsonObject.getJSONArray("data"), RoomDetail.class);
+                //转换oms房型信息为toms的每日入住信息
+                List<DailyInfos> dailyInfos = OrderMethodHelper.toDailyInfos(roomDetails);
+                //查询价格模式（toms的增减价）
+                OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), Integer.parseInt(order.getRoomTypeId()), otaInnOtaDto.getOtaInfoId()));
+                //价格比例
+                BigDecimal percent = BigDecimal.ZERO;
+                //查询
+                OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
+                percent = getOtaPercent(company, usedPriceModel);
+                List<InventoryRate> inventoryRates = new ArrayList<>();
+                if (ArrayUtils.isNotEmpty(dailyInfos.toArray())) {
+                    for (DailyInfos d : dailyInfos) {
+                        InventoryRate inventoryRate = new InventoryRate();
+                        if (null != usedPriceModel && usedPriceModel.equals(UsedPriceModel.MAI2DI)) {
+                            d.setPrice(d.getPrice().multiply(new BigDecimal(1).subtract(percent)));
+                        }
+                        if (null != otaRoomPriceDto) {
+                            if (DateUtil.isBetween(d.getDay(), otaRoomPriceDto.getStartDate(), otaRoomPriceDto.getEndDate())) {
+                                inventoryRate.setPrice((d.getPrice().doubleValue() + otaRoomPriceDto.getValue()) * Constants.tpPriceUnit);
+                            }
+                        } else {
+                            inventoryRate.setPrice(d.getPrice().doubleValue() * Constants.tpPriceUnit);
+                        }
+                        inventoryRate.setDate(DateUtil.format(d.getDay(), "yyyy-MM-dd"));
+                        inventoryRate.setQuota(d.getRoomNum());
+                        inventoryRates.add(inventoryRate);
+                    }
+                }
+                result.put("status", true);
+                result.put("data", JacksonUtil.obj2json(inventoryRates));
+                result.put("message", "淘宝试订单请求成功");
+            } else {
+                result.put("status", false);
+                result.put("message", "淘宝试订单失败，oms状态" + jsonObject.toString());
+            }
+        } catch (Exception e) {
+            result.put("status", false);
+            result.put("message", "处理淘宝试订单异常" + e);
+        }
+        return result;
     }
 }
