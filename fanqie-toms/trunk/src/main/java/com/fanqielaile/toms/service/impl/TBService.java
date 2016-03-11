@@ -338,9 +338,9 @@ public class TBService implements ITPService {
         Company company = companyDao.selectCompanyById(companyId);
         List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
         TBParam tbParam = null;
-        try {
             for (TimerRatePrice ratePrice:timerRatePriceList){
                 BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, ratePrice.getInnId());
+                 try {
                     if (TimerRateType.NOT_HOVE_ROUSE.equals(ratePrice.getRateType())){
                         List<OtaInnRoomTypeGoodsDto> list = goodsDao.selectGoodsByInnIdAndCompany(ratePrice.getInnId(),companyId);
                         TBXHotelUtilPromotion.roomRoomNumZeroUpdate(list,o,company);
@@ -352,10 +352,10 @@ public class TBService implements ITPService {
                         }
                     }
                     timerRatePriceDao.deletedTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId(), bangInn.getInnId()));
+                } catch (Exception e) {
+                   log.error("异常信息updateHotelFailTimer：", e);
+                }
             }
-        } catch (Exception e) {
-            log.error("异常信息updateHotelFailTimer：", e);
-        }
     }
 
     @Override

@@ -543,12 +543,8 @@ public class TBXHotelUtilPromotion {
 
         if (!CollectionUtils.isEmpty(list)){
             for (OtaInnRoomTypeGoodsDto dto:list){
-                String checkRoom = DcUtil.omsTbRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(),
-                        company.getOtaId(), dto.getInnId(), dto.getRoomTypeId(), CommonApi.checkRoom);
-                List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(checkRoom);
-                for (RoomDetail roomDetail:roomDetailList){
-                    roomDetail.setRoomNum(0);
-                }
+                log.info("库存更新0,roomTypeId:"+dto.getRoomTypeId());
+                List<RoomDetail> roomDetailList = TomsUtil.buildRoomDetail(dto.getRoomTypeId());
                 RoomTypeInfo roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetailList, dto.getRoomTypeId());
                 roomUpdate(roomTypeInfo,refDto, RoomSwitchCalStatus.XJ);
             }
