@@ -313,7 +313,7 @@ public class TBService implements ITPService {
             bangInn =  bangInnDao.selectBangInnByParam(o.getCompanyId(), o.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
             good  = goodsDao.selectGoodsByRoomTypeIdAndCompany(o.getCompanyId(), roomTypeId);
-            if ( bangInn!=null){
+            if ( bangInn!=null && Constants.FC_SJ.equals(bangInn.getSj())){
                 if (good!=null){
                     priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                     log.info("roomTypeId:"+roomTypeId+" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());

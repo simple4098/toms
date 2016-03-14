@@ -158,7 +158,7 @@ public class XcService implements ITPService {
             //查询客栈是否是上架状态
             bangInn = bangInnDao.selectBangInnByParam(infoRefDto.getCompanyId(), infoRefDto.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
-            if (bangInn != null) {
+            if (bangInn != null && Constants.FC_SJ.equals(bangInn.getSj())) {
                 CtripRoomTypeMapping mapping = ctripRoomTypeMappingDao.selectMappingInnIdAndRoomTypeId(String.valueOf(bangInn.getInnId()), String.valueOf(roomTypeId));
                 //满足这些条件 才是之前上架过。
                 if (mapping != null && !StringUtils.isEmpty(mapping.getTomRoomTypeId()) && mapping.getSj() == Constants.FC_SJ) {
