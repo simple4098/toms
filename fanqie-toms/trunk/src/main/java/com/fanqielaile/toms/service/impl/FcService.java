@@ -177,7 +177,7 @@ public class FcService implements ITPService {
             //查询客栈是否是上架状态
             bangInn = bangInnDao.selectBangInnByParam(o.getCompanyId(), o.getOtaInfoId(), pushRoom.getRoomType().getAccountId());
             //验证此房型是不是在数据库存在
-            if (bangInn != null) {
+            if (bangInn != null && Constants.FC_SJ.equals(bangInn.getSj())) {
                 FcRoomTypeFqDto fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(bangInn.getInnId(), roomTypeId, o.getOtaInfoId(), o.getCompanyId());
                 //满足这些条件 才是之前上架过。
                 if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
