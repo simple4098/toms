@@ -71,40 +71,44 @@ public class FcService implements ITPService {
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId()!= null?tbParam.getAccountId():tbParam.getAccountIdDi(), CommonApi.INN_INFO);
         InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
-        //客栈
-        if (omsInnDto != null) {
-            omsInnDto.setInnId(innId);
-            BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-            //未绑定
-            BangInnDto bangInnDto = null;
-            if (bangInn == null) {
-                bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
-                bangInnDao.createBangInn(bangInnDto);
-                log.info("fc 客栈" + tbParam.getInnId() + " 绑定");
-            } else {
-                log.info("fc 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
-                BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
-                TomsUtil.sjModel(tbParam,bangInn,omsInnDto);
-                bangInnDao.updateBangInnTp(bangInn);
-                //下架状态的时候 要把房仓的宝贝下架掉
-                List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ, innId, company.getId(), otaInfo.getOtaInfoId()));
-                if (!CollectionUtils.isEmpty(roomTypeFqDtoList)) {
-                    if (Constants.FC_XJ.equals(bangInn.getSj())) {
-                        for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
-                            fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fqDto.getId());
-                            MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
-                                    LogDec.XJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
-                        }
-                    } else if (Constants.FC_SJ.equals(bangInn.getSj())) {
-                        for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
-                            fcRoomTypeFqService.updateSjMatchRoomType(company.getId(), fqDto.getId());
-                            MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
-                                    LogDec.SJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+        List<FcRoomTypeFqDto> roomTypeFqDtoList = fcRoomTypeFqDao.selectFcRoomTypeFqBySJ(new FcRoomTypeFqDto(Constants.FC_SJ, innId, company.getId(), otaInfo.getOtaInfoId()));
+        if (!tbParam.isSj() && !CollectionUtils.isEmpty(roomTypeFqDtoList)){
+            log.info("===================房仓下架=========================");
+            for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
+                fcRoomTypeFqService.updateXjMatchRoomType(company.getId(), fqDto.getId());
+                MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
+                        LogDec.XJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
+            }
+        }else {
+            //客栈
+            if (omsInnDto != null) {
+                omsInnDto.setInnId(innId);
+                //未绑定
+                BangInnDto bangInnDto = null;
+                if (bangInn == null) {
+                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
+                    bangInnDao.createBangInn(bangInnDto);
+                    log.info("fc 客栈" + tbParam.getInnId() + " 绑定");
+                } else {
+                    log.info("fc 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
+                    BangInnDto.toUpdateDiDto(bangInn, tbParam, omsInnDto);
+                    TomsUtil.sjModel(tbParam, bangInn, omsInnDto);
+                    bangInnDao.updateBangInnTp(bangInn);
+                    //下架状态的时候 要把房仓的宝贝下架掉
+                    if (!CollectionUtils.isEmpty(roomTypeFqDtoList)) {
+                        if (Constants.FC_SJ.equals(bangInn.getSj())) {
+                            for (FcRoomTypeFqDto fqDto : roomTypeFqDtoList) {
+                                fcRoomTypeFqService.updateSjMatchRoomType(company.getId(), fqDto.getId());
+                                MessageCenterUtils.savePushTomsLog(OtaType.FC, Integer.valueOf(innId), Integer.valueOf(fqDto.getFqRoomTypeId()), null,
+                                        LogDec.SJ_RoomType, "FcHotelId:" + fqDto.getFcHotelId() + " fcRoomTypeId:" + fqDto.getFcRoomTypeId());
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
     @Override
@@ -150,14 +154,18 @@ public class FcService implements ITPService {
                     if (response!=null && !Constants.FcResultNo.equals(response.getResultNo())) {
                         notHoveRouse = TimerRateType.NEW;
                         message = response.getResultMsg();
+                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(),
+                                Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()),
+                                message, notHoveRouse));
                     }
                     if (response==null){
                         notHoveRouse = TimerRateType.NOT_HOVE_ROUSE;
                         message = "房仓获取不到oms房型数据";
+                        timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(),
+                                Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()),
+                                message,notHoveRouse));
                     }
-                    timerRatePriceDao.saveTimerRatePrice(new TimerRatePrice(company.getId(), o.getOtaInfoId(),
-                            Integer.valueOf(fcRoomTypeFqDto.getFqRoomTypeId()), Integer.valueOf(fcRoomTypeFqDto.getInnId()),
-                            message,notHoveRouse));
+
                 } catch (Exception e) {
                     log.error("同步房仓房型接口异常" , e);
                 }
@@ -206,6 +214,7 @@ public class FcService implements ITPService {
 
     @Override
     public void updateHotelFailTimer(OtaInfoRefDto o) {
+        log.info("===============FC START updateHotelFailTimer =================");
         String companyId = o.getCompanyId();
         Company company = companyDao.selectCompanyById(companyId);
         List<TimerRatePrice> timerRatePriceList = timerRatePriceDao.selectTimerRatePrice(new TimerRatePrice(companyId, o.getOtaInfoId()));
@@ -245,7 +254,7 @@ public class FcService implements ITPService {
             for (AddFangPrice price : prices) {
                 if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
                     fcRoomTypeFqDto = fcRoomTypeFqDao.findRoomTypeFqInnIdRoomIdOtaInfoId(Integer.valueOf(innId), price.getRoomTypeId(), infoRefDto.getOtaInfoId(), companyId);
-                    priceDto = TomsUtil.buildRoomPrice(companyId,price.getRoomTypeId(),infoRefDto.getOtaInfoId(),price,Integer.valueOf(innId),userId);
+                    priceDto = TomsUtil.buildRoomPrice(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId(), price, Integer.valueOf(innId), userId);
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (fcRoomTypeFqDto != null && !StringUtils.isEmpty(fcRoomTypeFqDto.getFcRoomTypeId()) && fcRoomTypeFqDto.getSj() == Constants.FC_SJ) {
                         String room_type = DcUtil.omsFcRoomTYpeUrl( company.getUserAccount(), company.getUserPassword(),company.getOtaId(),bangInn.getInnId(),price.getRoomTypeId(), CommonApi.checkRoom);
@@ -301,7 +310,7 @@ public class FcService implements ITPService {
         Company company = companyDao.selectCompanyById(companyId);
         log.info("========淘房仓下架房型=========");
         try {
-            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from,to,company);
+            List<SellingRoomType> roomTypes = InnRoomHelper.obtSellingRoomType(from, to, company);
             FcRoomTypeFqDto roomTypeFqDto = null;
             for (SellingRoomType sellingRoomType:roomTypes){
                 if (!CollectionUtils.isEmpty(sellingRoomType.getOtaRoomTypeId())){
