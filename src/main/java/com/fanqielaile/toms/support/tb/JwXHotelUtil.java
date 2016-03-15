@@ -15,9 +15,11 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,7 +38,7 @@ public class JwXHotelUtil {
     public static   List<RoomPrice>  buildRoomPrice(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo,
                                            OtaRoomPriceDto priceDto, OtaCommissionPercentDto commission){
 
-        if (mappingDto!=null && roomTypeInfo!=null){
+        if (mappingDto!=null && roomTypeInfo!=null && !CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             List<RoomPrice> roomPriceList = new ArrayList<>();
             List<RoomDetail> roomDetail = roomTypeInfo.getRoomDetail();
             RoomDetail statDetail = roomDetail.get(0);
@@ -64,7 +66,7 @@ public class JwXHotelUtil {
     }
 
     public static List<Inventory> inventory(JointWisdomInnRoomMappingDto mappingDto,RoomTypeInfo roomTypeInfo){
-        if (mappingDto!=null && roomTypeInfo!=null){
+        if (mappingDto!=null && roomTypeInfo!=null && !CollectionUtils.isEmpty( roomTypeInfo.getRoomDetail())){
             List<Inventory> inventoryList = new ArrayList<>();
             List<RoomDetail> roomDetail = roomTypeInfo.getRoomDetail();
             List<InventoryRelation> relations = new ArrayList<>();
@@ -114,10 +116,16 @@ public class JwXHotelUtil {
      * @param mapping 映射对象
      * @throws java.io.IOException
      */
-    public static RoomTypeInfo buildRoomTypeInfo(Company company,JointWisdomInnRoomMappingDto mapping) throws IOException {
+    public static RoomTypeInfo buildRoomTypeInfo(Company company,JointWisdomInnRoomMappingDto mapping) {
         String room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), mapping.getInnId(), mapping.getRoomTypeId(), CommonApi.checkRoom, Constants.day);
-        List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
-        return JwXHotelUtil.buildRoomTypeInfo(roomDetailList, mapping);
+        List<RoomDetail> roomDetailList = null;
+        try {
+            roomDetailList = InnRoomHelper.getRoomDetail(room_type);
+            return JwXHotelUtil.buildRoomTypeInfo(roomDetailList, mapping);
+        } catch (IOException e) {
+            log.error("众荟组织房型信息异常",e);
+        }
+        return  null;
     }
 
     /**
@@ -127,11 +135,21 @@ public class JwXHotelUtil {
      */
     public static HotelRoomAvail hotelRoomAvail(JointWisdomInnRoomMappingDto mappingDto, RoomTypeInfo roomTypeInfo) {
         List<RoomDetail> roomDetail = roomTypeInfo.getRoomDetail();
-        RoomDetail statDetail = roomDetail.get(0);
-        RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
+        /*String startDate = null;
+        String endDate = null;
+        if (!CollectionUtils.isEmpty(roomDetail)){
+            RoomDetail statDetail = roomDetail.get(0);
+            RoomDetail endRoomDetail = roomDetail.get(roomDetail.size() - 1);
+            startDate = statDetail.getRoomDate();
+            endDate = endRoomDetail.getRoomDate();
+        }else {
+            startDate = DateUtil.format(new Date(),"yyyy-MM-dd");
+            endDate = DateUtil.format(DateUtil.addDay(new Date(), 60), "yyyy-MM-dd");
+        }*/
+
         HotelRoomAvail hotelRoomAvail =new HotelRoomAvail();
-        hotelRoomAvail.setStart(statDetail.getRoomDate());
-        hotelRoomAvail.setEnd(endRoomDetail.getRoomDate());
+        hotelRoomAvail.setStart(DateUtil.format(new Date(),"yyyy-MM-dd"));
+        hotelRoomAvail.setEnd( DateUtil.format(DateUtil.addDay(new Date(), 60), "yyyy-MM-dd"));
         hotelRoomAvail.setInnId(mappingDto.getInnCode());
         hotelRoomAvail.setRoomTypeId(mappingDto.getRoomTypeIdCode());
         hotelRoomAvail.setUsed(true);
