@@ -58,7 +58,7 @@ public class APIController extends BaseController {
     @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
     @ResponseBody
     public Object hotel(TBParam tbParam){
-        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
         log.info("推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
         if (!validateParam){
@@ -142,7 +142,7 @@ public class APIController extends BaseController {
     @RequestMapping("/hotelFailTimer")
     @ResponseBody
     public Object hotelFailTimer(){
-        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -150,11 +150,13 @@ public class APIController extends BaseController {
                 try {
                     ITPService service = null;
                     for (OtaInfoRefDto o:infoDtoList){
+                        log.info("hotelFailTimer START:"+JacksonUtil.obj2json(o));
                         service = o.getOtaType().create();
                         service.updateHotelFailTimer(o);
+                        log.info("hotelFailTimer end:"+JacksonUtil.obj2json(o));
                     }
                 } catch (Exception e) {
-                   throw  new TomsRuntimeException("定时更新未成功酒店失败",e);
+                    log.error("定时更新未成功酒店失败",e);
                 }
             }
         };
@@ -169,7 +171,7 @@ public class APIController extends BaseController {
     @RequestMapping("/commission/update")
     @ResponseBody
     public Object commissionUpdate(String param){
-        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         ParamJson paramJson = JacksonUtil.json2obj(param, ParamJson.class);
         try {
             if(paramJson!=null && !StringUtils.isEmpty(paramJson.getCompanyCode())){
@@ -192,7 +194,7 @@ public class APIController extends BaseController {
     @RequestMapping("/sellingRoomType")
     @ResponseBody
     public Object sellingRoomType(final String from , final String to){
-        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+        JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

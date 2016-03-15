@@ -42,7 +42,10 @@ public class JointWisdomARI implements IJointWisdomARI {
         Result result = new Result();
         if (roomTypeInfo!=null){
             if (CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
-                throw new TomsRuntimeException("oms 获取房型为空 ");
+                //throw new Exception("oms 获取房型为空 ");
+                result.setStatus(Constants.ERROR400);
+                result.setMessage("oms 获取房型为空");
+                return result;
             }
             String sj = mappingDto.getSj()==1?"上架":"下架";
             List<RoomPrice> roomPrices = JwXHotelUtil.buildRoomPrice(mappingDto, roomTypeInfo, priceDto, commission);

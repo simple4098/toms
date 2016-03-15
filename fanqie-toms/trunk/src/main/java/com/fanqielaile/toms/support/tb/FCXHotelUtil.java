@@ -1,6 +1,8 @@
 package com.fanqielaile.toms.support.tb;
 
-import com.fanqie.util.*;
+import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
+import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
@@ -17,10 +19,7 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +50,6 @@ public class FCXHotelUtil {
         String room_type = DcUtil.omsFcRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), roomTypeId, CommonApi.checkRoom);
         log.info("fc oms url:" + room_type);
         List<RoomDetail> roomDetail = InnRoomHelper.getRoomDetail(room_type);
-        /*String roomTypeGets = HttpClientUtil.httpGets(room_type, null);
-        JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);*/
         if (!CollectionUtils.isEmpty(roomDetail)) {
             for (RoomDetail room : roomDetail) {
                 saleInfo = obtSaleInfoList(room, priceDto, commission);
@@ -61,7 +58,7 @@ public class FCXHotelUtil {
             syncRateInfoDataRequest.setSaleInfoList(saleInfoList);
             syncRateInfoRequest.setSyncRateInfoDataRequest(syncRateInfoDataRequest);
             String xml = FcUtil.fcRequest(syncRateInfoRequest);
-                   /* log.info("房仓推送宝贝上架xml:" + xml);*/
+            log.info("房仓请求xml:"+xml);
             String result = HttpClientUtil.httpPost(CommonApi.FcSyncRateInfoUrl, xml);
             log.info("fc result :" + result);
             return XmlDeal.pareFcResult(result);
