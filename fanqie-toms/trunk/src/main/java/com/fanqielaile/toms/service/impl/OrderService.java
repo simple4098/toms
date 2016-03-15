@@ -1722,4 +1722,61 @@ public class OrderService implements IOrderService {
         }
         return result;
     }
+
+    @Override
+    public JsonModel pushHotelOrderStatus(HotelOrderStatus hotelOrderStatus) throws Exception {
+        JsonModel result = new JsonModel();
+        Order orderParam = new Order();
+        orderParam.setChannelOrderCode(hotelOrderStatus.getTid());
+        orderParam.setOmsOrderCode(hotelOrderStatus.getOmsOrderCode());
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderParam);
+        if (null != order) {
+            //如果不为空，调用淘宝酒店更新接口
+            hotelOrderStatus.setOutId(order.getId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+            logger.info("淘宝信用住更新订单状态" + order.getChannelOrderCode() + "传入参数" + JacksonUtil.obj2json(hotelOrderStatus));
+            String response = TBXHotelUtilPromotion.updateHotelOrderStatus(hotelOrderStatus, otaInfo);
+            logger.info("淘宝信用住更新订单状态，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
+            JSONObject jsonObject = JSONObject.fromObject(response);
+            if (null != jsonObject && null != jsonObject.get("xhotel_order_alipayface_update_response")) {
+                result.setSuccess(true);
+                result.setMessage("更新订单状态成功");
+            } else {
+                result.setSuccess(false);
+                result.setMessage("更新订单状态失败");
+            }
+        } else {
+            result.setSuccess(false);
+            result.setMessage("无此订单信息");
+        }
+        return result;
+    }
+
+    @Override
+    public JsonModel dealOrderPay(HotelOrderPay hotelOrderPay) throws Exception {
+        JsonModel result = new JsonModel();
+        Order orderParam = new Order();
+        orderParam.setChannelOrderCode(hotelOrderPay.getTid());
+        orderParam.setOmsOrderCode(hotelOrderPay.getOmsOrderCode());
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderParam);
+        if (null != order) {
+            hotelOrderPay.setOutId(order.getId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+            logger.info("淘宝信用住结账:" + order.getChannelOrderCode() + "传入参数" + JacksonUtil.obj2json(hotelOrderPay));
+            String response = TBXHotelUtilPromotion.updateOrderPay(hotelOrderPay, otaInfo);
+            logger.info("淘宝信用住结账，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
+            JSONObject jsonObject = JSONObject.fromObject(response);
+            if (null != jsonObject && null != jsonObject.get("xhotel_order_alipayface_settle_response")) {
+                result.setSuccess(true);
+                result.setMessage("淘宝信用住结账成功");
+            } else {
+                result.setSuccess(false);
+                result.setMessage("淘宝信用住结账失败");
+            }
+        } else {
+            result.setSuccess(false);
+            result.setMessage("无此订单信息");
+        }
+        return result;
+    }
 }

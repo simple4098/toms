@@ -1,7 +1,10 @@
 package com.fanqielaile.toms.controller;
 
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqie.util.Pagination;
+import com.fanqielaile.toms.dto.HotelOrderPay;
+import com.fanqielaile.toms.dto.HotelOrderStatus;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.OrderMethod;
@@ -426,4 +429,38 @@ public class OrderController extends BaseController {
             logger.info("oms取消订单异常");
         }
     }
+
+    /**
+     * 酒店订单状态同步
+     */
+    @RequestMapping(value = "/hotel_order_status")
+    @ResponseBody
+    public void hotelOrderStatus(Model model, HotelOrderStatus hotelOrderStatus) {
+        logger.info("同步订单状态oms传入参数" + JacksonUtil.obj2json(hotelOrderStatus));
+        try {
+            JsonModel jsonModel = this.orderService.pushHotelOrderStatus(hotelOrderStatus);
+            model.addAttribute("status", jsonModel.isSuccess() ? 200 : 500);
+            model.addAttribute("message", jsonModel.getMessage());
+        } catch (Exception e) {
+            logger.info("淘宝信用住，系统处理异常" + JacksonUtil.obj2json(hotelOrderStatus));
+        }
+
+    }
+
+    /**
+     * 阿里信用住结账
+     */
+    @RequestMapping(value = "/hotel_order_pay")
+    @ResponseBody
+    public void hotelOrderPay(Model model, HotelOrderPay hotelOrderPay) {
+        logger.info("淘宝信用住结账传入参数:" + JacksonUtil.obj2json(hotelOrderPay));
+        try {
+            JsonModel jsonModel = this.orderService.dealOrderPay(hotelOrderPay);
+            model.addAttribute("status", jsonModel.isSuccess() ? 200 : 500);
+            model.addAttribute("message", jsonModel.getMessage());
+        } catch (Exception e) {
+            logger.info("淘宝信用住，系统处理异常" + JacksonUtil.obj2json(hotelOrderPay));
+        }
+    }
+
 }
