@@ -24,6 +24,7 @@ import com.taobao.api.domain.XRoomType;
 import com.taobao.api.request.*;
 import com.taobao.api.response.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -658,6 +659,68 @@ public class TBXHotelUtilPromotion {
         req.setCreatedEnd(order.getLastestArriveTime());
         req.setCreatedStart(order.getEariestArriveTime());
         XhotelOrderSearchResponse rsp = client.execute(req, company.getSessionKey());
+        return rsp.getBody();
+    }
+
+    /**
+     * 更新酒店订单状态
+     *
+     * @return
+     */
+    public static String updateHotelOrderStatus(HotelOrderStatus hotelOrderStatus, OtaInfoRefDto company) throws Exception {
+        TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelOrderAlipayfaceUpdateRequest req = new XhotelOrderAlipayfaceUpdateRequest();
+        req.setTid(Long.valueOf(hotelOrderStatus.getTid()));
+        req.setOptType(Long.valueOf(hotelOrderStatus.getOptType()));
+        req.setReasonType(Long.valueOf(hotelOrderStatus.getReasonType()));
+        req.setReasonText(hotelOrderStatus.getReasonText());
+        req.setOutRoomNumber(hotelOrderStatus.getOutRoomNumber());
+        req.setCheckinDate(DateUtil.format(hotelOrderStatus.getCheckinDate(), "yyyy-MM-dd"));
+        req.setCheckoutDate(DateUtil.format(hotelOrderStatus.getCheckoutDate(), "yyyy-MM-dd"));
+        req.setRooms(Long.valueOf(hotelOrderStatus.getRooms()));
+        req.setOutId("R12345678");
+        XhotelOrderAlipayfaceUpdateResponse rsp = client.execute(req, company.getSessionKey());
+        return rsp.getBody();
+    }
+
+    /**
+     * 淘宝信用住结账接口
+     *
+     * @param hotelOrderPay
+     * @param company
+     * @return
+     */
+    public static String updateOrderPay(HotelOrderPay hotelOrderPay, OtaInfoRefDto company) throws Exception {
+        TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        XhotelOrderAlipayfaceSettleRequest req = new XhotelOrderAlipayfaceSettleRequest();
+        req.setMemo(hotelOrderPay.getMemo());
+        req.setOutId(hotelOrderPay.getOutId());
+        req.setRoomNo(hotelOrderPay.getRoomNo());
+        req.setOtherFee(hotelOrderPay.getOtherFee().longValue());
+        req.setTotalRoomFee(hotelOrderPay.getTotalRoomFee().longValue());
+        req.setDailyPriceInfo(hotelOrderPay.getDailyPriceInfo());
+        req.setCheckOut(hotelOrderPay.getChekOut());
+        req.setTid(Long.valueOf(hotelOrderPay.getTid()));
+        req.setOtherFeeDetail(hotelOrderPay.getOtherFeeDetail());
+        List<XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo> listRoomSettleInfo = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(hotelOrderPay.getRoomSettleInfoList().toArray())) {
+            for (RoomSettleInfo roomSettleInfo : hotelOrderPay.getRoomSettleInfoList()) {
+                XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo objRoomSettleInfo = new XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo();
+                objRoomSettleInfo.setRoomNo(roomSettleInfo.getRoomNo());
+                objRoomSettleInfo.setRoomFee(roomSettleInfo.getRoomFee().longValue());
+                objRoomSettleInfo.setRoomOtherFee(roomSettleInfo.getRoomOtherFee().longValue());
+                objRoomSettleInfo.setRoomOtherFeeDetail(roomSettleInfo.getRoomOtherFeeDetail());
+                objRoomSettleInfo.setRoomCheckOut(roomSettleInfo.getRoomCheckOut());
+                objRoomSettleInfo.setRoomCheckIn(roomSettleInfo.getRoomCheckIn());
+                objRoomSettleInfo.setDailyPriceInfo(roomSettleInfo.getDailyPriceInfo());
+                objRoomSettleInfo.setRoomStatus(String.valueOf(roomSettleInfo.getRoomStatus()));
+                listRoomSettleInfo.add(objRoomSettleInfo);
+            }
+        }
+
+        req.setRoomSettleInfoList(listRoomSettleInfo);
+        req.setContainGuarantee(1L);
+        XhotelOrderAlipayfaceSettleResponse rsp = client.execute(req, company.getSessionKey());
         return rsp.getBody();
     }
 }

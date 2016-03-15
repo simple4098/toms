@@ -720,7 +720,13 @@ public class Order extends Domain {
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
         omsOrder.setRoomTypeNum(order.getHomeAmount());
-        omsOrder.setTypePay(1);
+        if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            //信用住
+            omsOrder.setTypePay(3);
+        } else {
+            //预付
+            omsOrder.setTypePay(1);
+        }
         omsOrder.setUserName(order.getGuestName());
         //TODO需要传入房态更新时间
         omsOrder.setProductTime(order.getOrderCreateTime() == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderTime()) : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(order.getOrderCreateTime()));
@@ -734,6 +740,8 @@ public class Order extends Domain {
                 childOrder.setCheckOutAt(new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.addDay(dailyInfos.getDay(), 1)));
                 childOrder.setRoomTypeId(order.getRoomTypeId());
                 childOrder.setRoomTypeName(order.getRoomTypeName());
+                //设置价格计划id，oms的价格计划code
+                childOrder.setRatePlanId(order.getOTARateCode());
                 childOrders.add(childOrder);
             }
         }

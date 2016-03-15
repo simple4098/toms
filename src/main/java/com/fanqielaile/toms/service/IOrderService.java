@@ -1,9 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqie.core.dto.ParamDto;
-import com.fanqielaile.toms.dto.OrderParamDto;
-import com.fanqielaile.toms.dto.RoomTypeInfoDto;
-import com.fanqielaile.toms.dto.UserInfoDto;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
@@ -320,4 +318,20 @@ public interface IOrderService {
      * @return
      */
     Map<String, Object> dealAvailOrder(String xmlStr) throws Exception;
+
+    /**
+     * 同步淘宝信用住订单状态
+     *
+     * @param hotelOrderStatus
+     * @return
+     */
+    JsonModel pushHotelOrderStatus(HotelOrderStatus hotelOrderStatus) throws Exception;
+
+    /**
+     * 淘宝信用住结账
+     *
+     * @param hotelOrderPay
+     * @return
+     */
+    JsonModel dealOrderPay(HotelOrderPay hotelOrderPay) throws Exception;
 }
