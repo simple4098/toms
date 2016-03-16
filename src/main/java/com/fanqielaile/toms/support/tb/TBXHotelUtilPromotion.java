@@ -678,7 +678,7 @@ public class TBXHotelUtilPromotion {
         req.setCheckinDate(DateUtil.format(hotelOrderStatus.getCheckinDate(), "yyyy-MM-dd"));
         req.setCheckoutDate(DateUtil.format(hotelOrderStatus.getCheckoutDate(), "yyyy-MM-dd"));
         req.setRooms(Long.valueOf(hotelOrderStatus.getRooms()));
-        req.setOutId("R12345678");
+        req.setOutId(hotelOrderStatus.getOutId());
         XhotelOrderAlipayfaceUpdateResponse rsp = client.execute(req, company.getSessionKey());
         return rsp.getBody();
     }
@@ -719,7 +719,7 @@ public class TBXHotelUtilPromotion {
         }
 
         req.setRoomSettleInfoList(listRoomSettleInfo);
-        req.setContainGuarantee(1L);
+        req.setContainGuarantee(Long.valueOf(hotelOrderPay.getContainGuarantee()));
         XhotelOrderAlipayfaceSettleResponse rsp = client.execute(req, company.getSessionKey());
         return rsp.getBody();
     }
