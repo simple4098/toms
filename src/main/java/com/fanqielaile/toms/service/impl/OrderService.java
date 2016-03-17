@@ -776,9 +776,23 @@ public class OrderService implements IOrderService {
             } else if (omsOrderStatus.equals("2")) {
                 result.put("status", "6");
             } else if (omsOrderStatus.equals("3")) {
-                result.put("status", "4");
+                if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+                    result.put("status", "7");
+                } else {
+                    result.put("status", "4");
+                }
             } else if (omsOrderStatus.equals("4")) {
                 result.put("status", "6");
+            } else if (omsOrderStatus.equals("5")) {
+                result.put("status", "3");
+            } else if (omsOrderStatus.equals("6")) {
+                result.put("status", "5");
+
+            } else if (omsOrderStatus.equals("7")) {
+                result.put("status", "9");
+
+            } else if (omsOrderStatus.equals("8")) {
+                result.put("status", "8");
             } else {
                 throw new TomsRuntimeException("OMS内部错误");
             }
