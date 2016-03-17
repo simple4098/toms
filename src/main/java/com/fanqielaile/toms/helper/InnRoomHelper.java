@@ -88,6 +88,8 @@ public class InnRoomHelper {
                 for (RoomStatusDetail detail:statusDetails){
                     if (roomTypeInfo.getRoomTypeId().equals(detail.getRoomTypeId())){
                         roomTypeInfo.setRoomDetail(detail.getRoomDetail());
+                        roomTypeInfo.setRatePlanConfig(detail.getRatePlanConfig());
+                        roomTypeInfo.setRatePlanCode(detail.getRatePlanCode());
                     }
                 }
             }

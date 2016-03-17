@@ -34,6 +34,11 @@ public enum OtaType {
         public ITPService create() {
             return (ZhService)SpringContextUtil.getBean("zhService");
         }
+    },CREDIT{
+        @Override
+        public ITPService create() {
+            return (ZhService)SpringContextUtil.getBean("creditService");
+        }
     };
     public abstract ITPService create();
 }

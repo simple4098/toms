@@ -34,6 +34,7 @@
             <result column="xc_password" property="xcPassword"/>
             <result column="updated_date" property="updatedDate"/>
              <result column="user_id" property="userId"/>
+             <result column="status" property="status"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
@@ -48,6 +49,16 @@
           LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id
           left JOIN  company c on c.id = o.company_id
           where oi.deleted=0 and c.id = '${companyId}' and oi.id='${otaInfoId}'  ORDER BY oi.sort limit 1
+       </select>
+       <select id="selectOtaInfoRefDtoById" resultMap="otaInfoRefId" >
+           SELECT  oi.ota_info,o.* from otainfo_company_ref o left JOIN  ota_info oi on oi.id = o.ota_info_id
+           where o.id='${otaInfoRefId}'
+
+       </select>
+       <select id="selectAllOtaByType" resultMap="otaInfoRefId" >
+           SELECT  oi.ota_info,c.company_code,o.* from otainfo_company_ref o left JOIN  ota_info oi on oi.id = o.ota_info_id
+           LEFT JOIN company c ON c.id = o.company_id
+           where o.tb_type='${otaTypeName}'
        </select>
 
        <select id="selectAllOtaByCompanyAndType"  resultMap="otaInfoRefId">
@@ -95,6 +106,10 @@
     </select>
     <update id="updateOtaInfoTbType" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" >
         update otainfo_company_ref set tb_type=#{tbType.name} where ota_info_id ='${otaInfoId}' and company_id='${companyId}'
+    </update>
+
+    <update id="updateOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" >
+        update otainfo_company_ref set appkey=#{appKey},appsecret=#{appSecret} ,sessionkey=#{sessionKey} ,status=#{status} where id ='${id}'
     </update>
 
     <select id="selectOtaByAppKey" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultType="java.lang.String">

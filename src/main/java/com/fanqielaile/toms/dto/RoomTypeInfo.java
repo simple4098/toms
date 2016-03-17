@@ -41,15 +41,22 @@ public class RoomTypeInfo implements Serializable
     private Integer bedLen; /* 床长 */
     private Integer bedWid; /* 床宽 */
     private String floorNum; /* 楼层数 */
-
     private Integer recommend;
-
+    //价格计划
+    private RatePlanConfig ratePlanConfig;
     @JsonIgnore
     private String facilities; /* 基本设施 */
     private String roomInfo; /* 房间简介 */
     private Integer bindingRoomNumber;/*绑定的房间数*/
     private Double proxyExtraPrice;
 
+
+    public RatePlanConfig getRatePlanConfig() {
+        return ratePlanConfig;
+    }
+    public void setRatePlanConfig(RatePlanConfig ratePlanConfig) {
+        this.ratePlanConfig = ratePlanConfig;
+    }
     public Double getProxyExtraPrice() {
         return proxyExtraPrice;
     }

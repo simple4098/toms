@@ -2,6 +2,7 @@ package com.fanqielaile.toms.support.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fanqielaile.toms.helper.EventFactory;
 import com.fanqielaile.toms.support.util.Constants;
 import com.tomato.mq.client.event.listener.MsgEventListener;
 import com.tomato.mq.client.event.model.MsgEvent;
@@ -26,6 +27,8 @@ public class MsgConsumer implements MsgEventListener {
     @Autowired
     private StringRedisTemplate redisTemplate;
     private String systemName;
+    @Autowired
+    private EventFactory eventFactory;
 
     public MsgConsumer(String systemName) {
         this.systemName = systemName;
@@ -36,14 +39,7 @@ public class MsgConsumer implements MsgEventListener {
     @Override
     public void onEvent(MsgEvent msgEvent) {
         JSONObject jsonObject = JSON.parseObject(msgEvent.getSource().toString());
-        String bizType = jsonObject.getString("bizType");
-        if (Constants.INN_UP_DOWN.equals(bizType)){
-            String content = jsonObject.getString("content");
-            log.info("=====队列增加数据=================="+content);
-            //TBParam tbParam = JacksonUtil.json2obj(content, TBParam.class);
-            ListOperations<String, String> operations = redisTemplate.opsForList();
-            operations.leftPush(Constants.REDIS,content);
-        }
+        eventFactory.pushEvent(jsonObject);
     }
 
     public void setSystemName(String systemName) {

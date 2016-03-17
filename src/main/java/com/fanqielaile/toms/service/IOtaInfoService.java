@@ -73,4 +73,19 @@ public interface IOtaInfoService {
      * @param otaInfo 渠道信息
      */
     List<String> findOtaByAppKey(OtaInfoRefDto otaInfo);
+
+    /**
+     * 查询公司具体渠道信息
+     * @param otaInfoRefId otainfo_company_ref 主键
+     * @return
+     */
+    OtaInfoRefDto findOtaInfoRefDtoById(String otaInfoRefId);
+
+    /**
+     * 更新公司渠道 appKey  appSecret sessionKey;
+     * @param otaInfoRefDto
+     */
+    void updateOtaInfo(OtaInfoRefDto otaInfoRefDto);
+
+    List<OtaInfoRefDto> findAllOtaByType(OtaType credit);
 }
