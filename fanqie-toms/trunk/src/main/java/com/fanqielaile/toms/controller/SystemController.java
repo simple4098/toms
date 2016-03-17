@@ -4,6 +4,7 @@ import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.*;
@@ -51,6 +52,8 @@ public class SystemController extends BaseController {
     private IBangInnService bangInnService;
     @Resource
     private ICompanyService companyService;
+    @Resource
+    private IOtaInfoService otaInfoService;
 
     /**
      * 登陆成功跳转
@@ -346,6 +349,54 @@ public class SystemController extends BaseController {
             logger.error("查询当前公司信息失败", e);
         }
         return "system/update_company";
+    }
+    /**
+     * 公司渠道列表
+     */
+    @RequestMapping("find_company_ota")
+    public String findCompanyOta(Model model,@RequestParam String id) {
+        try {
+            Company company = companyService.findCompanyByid(id);
+            List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(company.getCompanyCode());
+            model.addAttribute(Constants.DATA, list);
+            model.addAttribute("companyName",company.getCompanyName());
+            model.addAttribute("companyId",id);
+        } catch (Exception e) {
+            logger.error("查询当前公司信息失败", e);
+        }
+        return "system/company_ota_list";
+    }
+    /**
+     * 公司渠道具体某一个渠信息
+     */
+    @RequestMapping("find_company_ota_info")
+    public String findCompanyOtaInfo(Model model,@RequestParam String otaInfoRefId) {
+        try {
+            OtaInfoRefDto otaInfo = otaInfoService.findOtaInfoRefDtoById(otaInfoRefId);
+            model.addAttribute(Constants.DATA, otaInfo);
+        } catch (Exception e) {
+            logger.error("查询当前公司信息失败", e);
+        }
+        return "system/company_ota_info";
+    }
+
+    /**
+     * 更新公司渠道信息
+     */
+    @RequestMapping("update_company_otaInfo")
+    @ResponseBody
+    public Object updateCompanyOtaInfo(Model model,OtaInfoRefDto otaInfoRefDto) {
+        Map<String,Object> param = new HashMap<String, Object>();
+        try {
+            otaInfoService.updateOtaInfo(otaInfoRefDto);
+            param.put(Constants.STATUS, Constants.SUCCESS);
+            param.put(Constants.MESSAGE, "更新成功");
+        } catch (Exception e) {
+            param.put(Constants.STATUS, Constants.ERROR);
+            param.put(Constants.MESSAGE, e.getMessage());
+            logger.error("更新公司渠道信息失败!", e);
+        }
+        return param;
     }
 
     /**

@@ -49,9 +49,7 @@
                             <c:if test="${not empty data}">
                                 <c:forEach items="${data}" var="d">
                                     <tr>
-                                        <td>
-                                                ${d.companyName}
-                                        </td>
+                                        <td> ${d.companyName}</td>
                                         <td>${d.companyCode}</td>
                                         <td class="hidden-480">${d.otaId}</td>
                                         <td>${d.userAccount}</td>
@@ -74,7 +72,10 @@
                                                 <button type="button" data-whatever="${d.id}" data-url="<c:url value="/system/delete_company.json?companyId=${d.id}"/>" data-target="#myModal"
                                                         class="btn btn-danger btn-sm del-btn"  data-toggle="modal">
                                                     删除
-                                                </button>
+                                                </button> &nbsp;&nbsp;
+                                                <a class="green" href="<c:url value="/system/find_company_ota?id=${d.id}"/>">
+                                                    渠道列表
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

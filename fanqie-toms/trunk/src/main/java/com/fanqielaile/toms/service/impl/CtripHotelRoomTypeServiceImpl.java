@@ -152,6 +152,7 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 		BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
 		OtaRatePlan ratePlan = fcRatePlanDao.selectDefaultCtripRatePlan();
 		OtaInfoRefDto dto = otaInfoDao.selectAllOtaByCompanyAndType(companyId, OtaType.XC.name());
+		String priceModel = dto.getUsedPriceModel().name();
 		//众荟ota信息
 		OtaInfoRefDto zHOtaDto = otaInfoDao.selectOtaInfoByType(OtaType.ZH.name());
 		//众荟价格计划code
@@ -177,8 +178,8 @@ public class CtripHotelRoomTypeServiceImpl implements CtripHotelRoomTypeService{
 				otaInnOtaDto.setCompanyId(companyId);
 				otaInnOtaDto.setAliasInnName(bangInn.getInnName());
 				otaInnOtaDto.setOtaId(company.getOtaId().toString());
-				otaInnOtaDto.setPriceModel(Constants.MAI); 
-				otaInnOtaDto.setsJiaModel(Constants.MAI) ;  
+				otaInnOtaDto.setPriceModel(priceModel);
+				otaInnOtaDto.setsJiaModel(priceModel) ;
 				otaInnOtaDto.setDeleted(0);
 				otaInnOtaDto.setBangInnId(bangInn.getId());
 				otaInnOtaDto.setOtaInfoId(dto.getOtaInfoId());

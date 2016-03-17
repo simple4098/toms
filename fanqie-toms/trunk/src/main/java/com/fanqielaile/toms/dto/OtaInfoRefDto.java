@@ -37,6 +37,15 @@ public class OtaInfoRefDto extends Domain {
     private String xcPassword;
     //合作方编码
     private String userId;
+    private int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getXcUserName() {
         return xcUserName;

@@ -4,6 +4,7 @@ import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.enums.TBType;
 import com.fanqielaile.toms.enums.UsedPriceModel;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.Company;
@@ -153,7 +154,8 @@ public class TBXHotelUtilPromotion {
      * @param company 渠道信息
      */
     public static XRoomType addRoomType(String innId,RoomTypeInfo roomTypeInfo,OtaInfoRefDto company)   {
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        return  updateRoomType(company, roomTypeInfo,innId);
+        /*TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
         XhotelRoomtypeAddRequest req=new XhotelRoomtypeAddRequest();
         req.setOuterId(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setOutHid(innId);
@@ -174,16 +176,16 @@ public class TBXHotelUtilPromotion {
         req.setPics(TPServiceUtil.obtPics(roomTypeInfo.getImgList()));
         try {
             XhotelRoomtypeAddResponse response = client.execute(req , company.getSessionKey());
-          /*  log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());*/
+          *//*  log.info("addRoomType:"+response.getMsg()+ " error code:"+response.getErrorCode());*//*
             if (TomsConstants.ROOM_TYPE_EXIST.equals(response.getSubCode())) {
-                return  updateRoomType(company, roomTypeInfo);
+                return  updateRoomType(company, roomTypeInfo,innId);
             }
             log.info("addRoomType:" + response.getXroomtype());
             return response.getXroomtype();
         } catch (ApiException e) {
             log.error(e.getMessage());
         }
-        return null;
+        return null;*/
     }
 
     /**
@@ -206,9 +208,10 @@ public class TBXHotelUtilPromotion {
     /**
      * 更新房型
      */
-    public static XRoomType updateRoomType(OtaInfoRefDto otaInfoRefDto,RoomTypeInfo roomTypeInfo)   {
+    public static XRoomType updateRoomType(OtaInfoRefDto otaInfoRefDto,RoomTypeInfo roomTypeInfo,String innId)   {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
         XhotelRoomtypeUpdateRequest req=new XhotelRoomtypeUpdateRequest();
+        req.setHotelCode(innId);
         req.setOuterId(String.valueOf(roomTypeInfo.getRoomTypeId()));
         req.setName(roomTypeInfo.getRoomTypeName());
         //面积
@@ -237,30 +240,6 @@ public class TBXHotelUtilPromotion {
         }
         return  null;
     }
-
-    /**
-     * 获取宝贝信息
-     * @param outerId 房型id
-     * @param company 渠道信息
-     */
-   /* @Deprecated
-    public static XRoom roomGet(Integer outerId,OtaInfoRefDto company) throws ApiException {
-        log.info("roomGet outerId:" +outerId );
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
-        XhotelRoomGetRequest req=new XhotelRoomGetRequest();
-        req.setOutRid(String.valueOf(outerId));
-        XhotelRoomGetResponse response = null;
-        try {
-            response = client.execute(req , company.getSessionKey());
-            if (!StringUtils.isEmpty(response.getSubCode())){
-                return null;
-            }
-            return  response.getRoom();
-        } catch (ApiException e) {
-            log.error(e.getMessage());
-        }
-        return  null;
-    }*/
     /**
      * 添加商品
      * @param roomTypeInfo 房型信息
@@ -300,22 +279,32 @@ public class TBXHotelUtilPromotion {
 
     /**
      * 添加酒店RP,7天以内可以取消， 7天以外不可以取消
-     * @param company
+     * @param infoRefDto
      */
-    public static Long ratePlanAdd(OtaInfoRefDto company,RoomTypeInfo r) throws Exception {
+    public static Long ratePlanAdd(OtaInfoRefDto infoRefDto,RoomTypeInfo r) throws Exception {
         String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
         XhotelRateplanAddRequest req=new XhotelRateplanAddRequest();
-        req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
-        req.setName(ratePlanAdd);
-        //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
-        req.setPaymentType(1L);
-        //0：不含早1：含单早2：含双早N：含N早（1-99可选）
-        req.setBreakfastCount(0L);
-        //2.表示不能退{"cancelPolicyType":2}
-        req.setCancelPolicy("{\"cancelPolicyType\":2}");
+        if (TBType.CREDIT.equals(infoRefDto.getTbType())){
+            req.setRateplanCode(r.getRatePlanCode());
+            req.setName(ratePlanAdd);
+            //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
+            req.setPaymentType(6l);
+            //0：不含早1：含单早2：含双早N：含N早（1-99可选）
+            req.setBreakfastCount(Long.valueOf(r.getRatePlanConfig().getBreakfastCount()));
+            req.setCancelPolicy(JacksonUtil.obj2json(r.getRatePlanConfig().getCancelPolicy()));
+        }else {
+            req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
+            req.setName(ratePlanAdd);
+            //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
+            req.setPaymentType(1L);
+            //0：不含早1：含单早2：含双早N：含N早（1-99可选）
+            req.setBreakfastCount(0L);
+            //2.表示不能退{"cancelPolicyType":2}
+            req.setCancelPolicy("{\"cancelPolicyType\":2}");
+        }
         req.setStatus(1L);
-        XhotelRateplanAddResponse response = client.execute(req , company.getSessionKey());
+        XhotelRateplanAddResponse response = client.execute(req , infoRefDto.getSessionKey());
         log.info("ratePlanAdd:"+response.getBody());
         return response.getRpid();
     }
@@ -326,32 +315,42 @@ public class TBXHotelUtilPromotion {
      * @param roomTypeInfo 房型信息
      */
     public static Long ratePlanAddOrUpdate(OtaInfoRefDto otaInfoRefDto,RoomTypeInfo roomTypeInfo) throws Exception{
-        RatePlan ratePlan = getRatePlan(otaInfoRefDto,roomTypeInfo);
+        return ratePlanUpdate(otaInfoRefDto,roomTypeInfo);
+        /*RatePlan ratePlan = getRatePlan(otaInfoRefDto,roomTypeInfo);
         if (ratePlan==null){
             return  ratePlanAdd(otaInfoRefDto,roomTypeInfo);
         }else {
             return ratePlanUpdate(otaInfoRefDto,roomTypeInfo);
-        }
+        }*/
     }
 
     /**
      * 更新酒店RP,7天以内可以取消， 7天以外不可以取消
-     * @param company
+     * @param infoRefDto
      */
-    public static Long ratePlanUpdate(OtaInfoRefDto company,RoomTypeInfo r) throws Exception {
+    public static Long ratePlanUpdate(OtaInfoRefDto infoRefDto,RoomTypeInfo r) throws Exception {
         String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
-        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, company.getAppKey(), company.getAppSecret());
+        TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
         XhotelRateplanUpdateRequest req=new XhotelRateplanUpdateRequest();
-        req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
         req.setName(ratePlanAdd);
-        //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
-        req.setPaymentType(1L);
-        //0：不含早1：含单早2：含双早N：含N早（1-99可选）
-        req.setBreakfastCount(0L);
-        req.setCancelPolicy("{\"cancelPolicyType\":2}");
+        if (TBType.CREDIT.equals(infoRefDto.getTbType())){
+            req.setRateplanCode(r.getRatePlanCode());
+            //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
+            req.setPaymentType(6l);
+            //0：不含早1：含单早2：含双早N：含N早（1-99可选）
+            req.setBreakfastCount(Long.valueOf(r.getRatePlanConfig().getBreakfastCount()));
+            req.setCancelPolicy(JacksonUtil.obj2json(r.getRatePlanConfig().getCancelPolicy()));
+        }else {
+            req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
+            //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
+            req.setPaymentType(1L);
+            //0：不含早1：含单早2：含双早N：含N早（1-99可选）
+            req.setBreakfastCount(0L);
+            req.setCancelPolicy("{\"cancelPolicyType\":2}");
+        }
         req.setStatus(1L);
         try{
-            XhotelRateplanUpdateResponse response = client.execute(req , company.getSessionKey());
+            XhotelRateplanUpdateResponse response = client.execute(req , infoRefDto.getSessionKey());
             log.info("ratePlanUpdate:" + response.getRpid());
             return response.getRpid();
         }catch (ApiException e){
@@ -367,7 +366,11 @@ public class TBXHotelUtilPromotion {
     public static RatePlan getRatePlan(OtaInfoRefDto otaInfoRefDto,RoomTypeInfo r) throws ApiException {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
         XhotelRateplanGetRequest req=new XhotelRateplanGetRequest();
-        req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
+        if (TBType.CREDIT.equals(otaInfoRefDto.getTbType())){
+            req.setRateplanCode(r.getRatePlanCode());
+        }else {
+            req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
+        }
         XhotelRateplanGetResponse response = client.execute(req , otaInfoRefDto.getSessionKey());
         log.info("getRatePlan: " +response.getRateplan());
         return response.getRateplan();
@@ -401,7 +404,11 @@ public class TBXHotelUtilPromotion {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
-        req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        if (TBType.CREDIT.equals(infoRefDto.getTbType())){
+            req.setRateplanCode(roomTypeInfo.getRatePlanCode());
+        }else {
+            req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
+        }
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             InventoryPrice inventory = new InventoryPrice();
@@ -426,21 +433,23 @@ public class TBXHotelUtilPromotion {
      * @param roomTypeInfo
      * @return
      */
-    public static Rate rateGet(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo){
+    /*public static Rate rateGet(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo){
         return rateGet(company,roomTypeInfo.getRoomTypeId());
-    }
+    }*/
 
     /**
      * 获取库存
-     * @param infoRefDto 渠道信息
-     * @param roomTypeId 房型id
      * @return
      */
-    public static Rate rateGet(OtaInfoRefDto infoRefDto,Integer roomTypeId){
+    /*public static Rate rateGet(OtaInfoRefDto infoRefDto,Integer roomTypeId){
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
         XhotelRateGetRequest req=new XhotelRateGetRequest();
         req.setOutRid(roomTypeId.toString());
-        req.setRateplanCode(roomTypeId.toString());
+        if (TBType.CREDIT.equals(infoRefDto.getTbType())){
+            req.setRateplanCode(roomTypeId.toString());
+        }else {
+            req.setRateplanCode(roomTypeId.toString());
+        }
         try {
             XhotelRateGetResponse response = client.execute(req , infoRefDto.getSessionKey());
             log.info("rateGet:" +  response.getRate());
@@ -449,7 +458,7 @@ public class TBXHotelUtilPromotion {
             log.error(e.getErrMsg());
         }
         return  null;
-    }
+    }*/
 
     public static String rateUpdate(OtaInfoRefDto company,RoomTypeInfo roomTypeInfo,Rate rate)   {
         return rateUpdate(company,roomTypeInfo.getRoomTypeId(),rate);
@@ -510,7 +519,6 @@ public class TBXHotelUtilPromotion {
         Long gId = roomUpdate(roomTypeInfo, otaInfoRefDto, RoomSwitchCalStatus.SJ);
         String gidAndRpId = rateUpdate(otaInfoRefDto,roomTypeInfo,priceModel,priceDto,commission);
         if (gId==null || gidAndRpId==null){
-            //throw new TomsRuntimeException("更新房价 gidAndRpId："+gidAndRpId+" 更新库存:"+gidAndRpId);
             return  false;
         }
         return true;
@@ -540,7 +548,7 @@ public class TBXHotelUtilPromotion {
      * @param list 要更新房量为0的集合
      * @refDto 渠道信息
      */
-    public static void roomRoomNumZeroUpdate(List<OtaInnRoomTypeGoodsDto> list, OtaInfoRefDto refDto,Company company) throws Exception {
+    public static void roomRoomNumZeroUpdate(List<OtaInnRoomTypeGoodsDto> list, OtaInfoRefDto refDto) throws Exception {
 
         if (!CollectionUtils.isEmpty(list)){
             for (OtaInnRoomTypeGoodsDto dto:list){
@@ -562,7 +570,12 @@ public class TBXHotelUtilPromotion {
         InventoryPriceIncrementObj inventoryPriceIncrementObj = new InventoryPriceIncrementObj();
         String out_rid = pushRoom.getRoomType().getRoomTypeId().toString();
         inventoryPriceIncrementObj.setOut_rid(out_rid);
-        inventoryPriceIncrementObj.setRateplan_code(out_rid);
+        //todo
+        if (TBType.CREDIT.equals(otaInfoRefDto.getTbType())){
+            inventoryPriceIncrementObj.setRateplan_code("RP001");
+        }else {
+            inventoryPriceIncrementObj.setRateplan_code(out_rid);
+        }
         //库存对象
         List<InventoryRateIncrement> rateIncrementList = new ArrayList<InventoryRateIncrement>();
         InventoryRateIncrement inventoryRateIncrement =new InventoryRateIncrement(out_rid);

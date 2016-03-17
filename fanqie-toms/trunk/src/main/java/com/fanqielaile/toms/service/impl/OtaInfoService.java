@@ -100,4 +100,19 @@ public class OtaInfoService implements IOtaInfoService {
     public List<String> findOtaByAppKey(OtaInfoRefDto otaInfo) {
         return otaInfoDao.selectOtaByAppKey(otaInfo);
     }
+
+    @Override
+    public OtaInfoRefDto findOtaInfoRefDtoById(String otaInfoRefId) {
+        return otaInfoDao.selectOtaInfoRefDtoById(otaInfoRefId);
+    }
+
+    @Override
+    public void updateOtaInfo(OtaInfoRefDto otaInfoRefDto) {
+        otaInfoDao.updateOtaInfo(otaInfoRefDto);
+    }
+
+    @Override
+    public List<OtaInfoRefDto> findAllOtaByType(OtaType credit) {
+        return otaInfoDao.selectAllOtaByType(credit.name());
+    }
 }

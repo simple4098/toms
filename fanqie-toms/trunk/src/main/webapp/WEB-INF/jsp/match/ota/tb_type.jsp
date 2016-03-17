@@ -35,13 +35,22 @@
         <h4 class="blue smaller lighter animated fadeInUp">全新自动上线去啊后台</h4>
         <p class="animated fadeInUp"><span>推荐使用者：</span>去啊店铺新开张，该店铺还未上线售卖过酒店</p>
         <p class="animated fadeInUp"><span>实现方式：</span>系统自动将本系统酒店全新上线到去啊后台</p>
-        <p class="animated fadeInUp"><span>实现效果：</span>将本系统酒店全新上线去啊后台。子哦的那个建立本系统酒店和去啊酒店的直连关系</p>
+        <p class="animated fadeInUp"><span>实现效果：</span>将本系统酒店全新上线去啊后台。建立本系统酒店和去啊酒店的直连关系</p>
       </div>
     <div class="float-box-right">
       <h4 class="blue smaller lighter animated fadeInUp">匹配去啊有台已有酒店</h4>
       <p class="animated fadeInUp"><span>推荐使用者：</span>在去啊上早已上架酒店进行售卖的卖家</p>
       <p class="animated fadeInUp"><span>实现方式：</span>手动将本系统酒店与去啊已有酒店匹配关联</p>
       <p class="animated fadeInUp"><span>实现效果：</span>仍然沿用已有的去啊酒店及房型信息，只将本系统设置的酒店信息与去啊已有的酒店信息建议直连关系</p>
+    </div>
+  </div>
+  <div class="float-box">
+
+    <div class="float-box-left" data-type="CREDIT" >
+      <h4 class="blue smaller lighter animated fadeInUp">淘宝信用住</h4>
+      <p class="animated fadeInUp"><span>推荐使用者：</span>去啊店铺新开张，该店铺还未上线售卖过酒店</p>
+      <p class="animated fadeInUp"><span>实现方式：</span>系统自动将本系统酒店全新上线到去啊后台</p>
+      <p class="animated fadeInUp"><span>实现效果：</span>将本系统酒店全新上线去啊后台。建立本系统酒店和去啊酒店的直连关系</p>
     </div>
   </div>
 

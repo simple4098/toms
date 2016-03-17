@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.support.util;
 
+import com.fanqie.core.dto.PriceModel;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
@@ -485,5 +486,18 @@ public class TomsUtil {
             list.add(roomDetail);
         }
         return list;
+    }
+
+    public static void toCredit(TBParam tbParam,String companyCode) {
+        tbParam.setSj(true);
+        List<PriceModel> list = new ArrayList<PriceModel>();
+        PriceModel priceModel = new PriceModel();
+        priceModel.setAccountId(tbParam.getAccountId());
+        list.add(priceModel);
+        priceModel.setPattern(Constants.MAI);
+        tbParam.setCompanyCode(companyCode);
+        tbParam.setPriceModel(Constants.MAI);
+        tbParam.setsJiaModel(Constants.MAI);
+        tbParam.setPriceModelArray(list);
     }
 }

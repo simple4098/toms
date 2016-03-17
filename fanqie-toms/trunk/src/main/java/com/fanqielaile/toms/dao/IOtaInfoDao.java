@@ -64,4 +64,15 @@ public interface IOtaInfoDao {
      OtaInfoRefDto selectOtaInfoByAppKey(OtaInfoRefDto otaInfo);
 
     List<OtaInfoRefDto> selectOtaCompanyRefByOtaType(@Param("otaTypeName") String otaTypeName);
+
+    /**
+     * 查询公司具体渠道信息
+     * @param otaInfoRefId otainfo_company_ref 主键
+     * @return
+     */
+    OtaInfoRefDto selectOtaInfoRefDtoById(@Param("otaInfoRefId")String otaInfoRefId);
+
+    void updateOtaInfo(OtaInfoRefDto otaInfoRefDto);
+
+    List<OtaInfoRefDto> selectAllOtaByType(@Param("otaTypeName")String otaTypeName);
 }
