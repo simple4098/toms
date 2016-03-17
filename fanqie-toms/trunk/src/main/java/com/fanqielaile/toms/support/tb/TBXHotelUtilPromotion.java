@@ -699,7 +699,7 @@ public class TBXHotelUtilPromotion {
         req.setOtherFee(hotelOrderPay.getOtherFee().longValue());
         req.setTotalRoomFee(hotelOrderPay.getTotalRoomFee().longValue());
         req.setDailyPriceInfo(hotelOrderPay.getDailyPriceInfo());
-        req.setCheckOut(hotelOrderPay.getChekOut());
+        req.setCheckOut(DateUtil.parse(DateUtil.format(hotelOrderPay.getChekOut(), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss"));
         req.setTid(Long.valueOf(hotelOrderPay.getTid()));
         req.setOtherFeeDetail(hotelOrderPay.getOtherFeeDetail());
         List<XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo> listRoomSettleInfo = new ArrayList<>();

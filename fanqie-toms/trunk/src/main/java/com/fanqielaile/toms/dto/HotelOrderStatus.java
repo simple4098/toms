@@ -16,7 +16,7 @@ public class HotelOrderStatus {
     //实际离店时间
     private Date checkoutDate;
     //操作类型
-    private int optType;
+    private Integer optType;
     //入住房间号
     private String outRoomNumber;
     //无房原因描述
@@ -76,11 +76,22 @@ public class HotelOrderStatus {
         this.checkoutDate = checkoutDate;
     }
 
-    public int getOptType() {
+    public Integer getOptType() {
+        if (null != optType) {
+            if (3 == optType) {
+                return 8;
+            } else if (6 == optType) {
+                return 3;
+            } else if (7 == optType) {
+                return 4;
+            } else if (8 == optType) {
+                return 5;
+            }
+        }
         return optType;
     }
 
-    public void setOptType(int optType) {
+    public void setOptType(Integer optType) {
         this.optType = optType;
     }
 
