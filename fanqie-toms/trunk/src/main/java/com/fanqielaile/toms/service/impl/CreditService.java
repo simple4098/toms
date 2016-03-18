@@ -8,6 +8,7 @@ import com.fanqielaile.toms.dto.RoomStatusDetail;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.service.ICreditService;
 import com.fanqielaile.toms.service.ITPService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * @data : 2016/3/15
  * @version: v1.0.0
  */
+@Service("creditService")
 public class CreditService implements ITPService {
     @Resource
     private TBService tbService;
