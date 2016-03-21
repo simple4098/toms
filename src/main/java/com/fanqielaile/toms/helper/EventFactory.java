@@ -50,8 +50,8 @@ public class EventFactory {
                 tbParam = JacksonUtil.json2obj(content,TBParam.class);
                 TomsUtil.toCredit(tbParam,infoRefDto.getCompanyCode());
                 log.info("================加入信用住的客栈参数:"+JacksonUtil.obj2json(tbParam));
-                service = infoRefDto.getOtaType().create();
                 try {
+                    service = infoRefDto.getOtaType().create();
                     service.updateOrAddHotel(tbParam,infoRefDto);
                 } catch (Exception e) {
                     log.error("信用住异常",e);
