@@ -24,6 +24,8 @@ public class ModelViewUtil {
                 return "/match/ota/fc";
             }else if(OtaType.TB.equals(infoRefDto.getOtaType())){
                 return "/match/ota/tb";
+            }else if(OtaType.CREDIT.equals(infoRefDto.getOtaType())){
+                return "/match/ota/tb-credit";
             }else if (OtaType.XC.equals(infoRefDto.getOtaType())){
                 return "/match/ota/xc";
             }else if (OtaType.ZH.equals(infoRefDto.getOtaType())){
@@ -44,10 +46,15 @@ public class ModelViewUtil {
                 return "/match/inn_fc_match_list";
             }
             if ( OtaType.TB.equals(otaInfo.getOtaType())){
-                if(TBType.DEFAULT==otaInfo.getTbType()){
-                    return "/match/ota/tb_type";
-                }
-                return "/match/inn_tb_match_list";
+                    if(TBType.DEFAULT==otaInfo.getTbType()){
+                        return "/match/ota/tb_type";
+                    }
+                    return "/match/inn_tb_match_list";
+                }if ( OtaType.CREDIT.equals(otaInfo.getOtaType())){
+                    if(TBType.DEFAULT==otaInfo.getTbType()){
+                        return "/match/ota/tb_type_credit";
+                    }
+                    return "/match/inn_tb_credit_match_list";
             }
             if(OtaType.XC.equals(otaInfo.getOtaType())){
                 return "/match/inn_xc_match_list";

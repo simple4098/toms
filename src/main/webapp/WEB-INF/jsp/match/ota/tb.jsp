@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>客栈匹配列表</title>
+  <title>填写渠道信息</title>
 
   <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/userSet.css'/>">
   <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
@@ -27,8 +27,8 @@
     <div class="widget-header widget-header-flat">
       <h4 class="smaller">去啊旅行</h4>
     </div>
-
-    <div class="widget-body">
+     <c:import url="tb-common.jsp"></c:import>
+    <%--<div class="widget-body">
       <div class="widget-main ">
         <form class="form-horizontal" role="form">
           <input name="otaInfoId" id="otaInfoId" type="hidden" value="${otaInfoId}">
@@ -83,7 +83,7 @@
           </div>
         </form>
       </div>
-    </div>
+    </div>--%>
   </div>
 
 </div>

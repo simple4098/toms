@@ -8,6 +8,7 @@ import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.LogDec;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.enums.TBType;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
 import com.fanqielaile.toms.model.*;
@@ -20,7 +21,6 @@ import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.ResourceBundleUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
-import com.taobao.api.domain.Rate;
 import com.taobao.api.domain.XHotel;
 import com.taobao.api.domain.XRoomType;
 import org.apache.commons.lang3.StringUtils;
@@ -181,6 +181,7 @@ public class TBService implements ITPService {
         List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(room_type);
         List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
         InnRoomHelper.updateRoomTypeInfo(list,statusDetails);
+        Long rpid = null;
         //房型
         if (!CollectionUtils.isEmpty(list)){
             for (RoomTypeInfo r:list){
@@ -193,10 +194,22 @@ public class TBService implements ITPService {
                         OtaBangInnRoomDto innRoomDto = OtaBangInnRoomDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), r.getRoomTypeName(), company.getId(), otaPriceModelId, otaInnOtaId, xRoomType.getRid());
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
+                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
                     //添加商品
-                    Long gid = TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.getStatus());
+                    //Long gid = TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.getStatus());
                     //创建酒店rp
-                    Long rpid = TBXHotelUtilPromotion.ratePlanAddOrUpdate(otaInfo, r);
+                    if (TBType.CREDIT.equals(otaInfo.getTbType())){
+                        if (r.getRatePlanConfig()!=null){
+                            rpid = TBXHotelUtilPromotion.ratePlanAddOrUpdate(otaInfo, r);
+                        }else {
+                            continue;
+                        }
+                    }else {
+                        rpid = TBXHotelUtilPromotion.ratePlanAddOrUpdate(otaInfo, r);
+                    }
+                    String gid_rpId = TBXHotelUtilPromotion.rateAddOrUpdate(otaInfo, r, otaPriceModel, priceDto, commission);
+                    Long gid = TomsUtil.obtGidRpId(gid_rpId);
+                    log.info("==========================gid:"+gid+" gid_rpId:"+gid_rpId);
                     OtaInnRoomTypeGoodsDto innRoomTypeGoodsDto = goodsDao.findRoomTypeByRid(xRoomType.getRid());
                     if (innRoomTypeGoodsDto==null){
                         OtaInnRoomTypeGoodsDto goodsDto = OtaInnRoomTypeGoodsDto.toDto(tbParam.getInnId(), r.getRoomTypeId(), rpid, gid, company.getId(), otaInnOtaId, String.valueOf(xRoomType.getRid()));
@@ -213,8 +226,7 @@ public class TBService implements ITPService {
                         }
                         goodsDao.updateRoomTypeGoodsProductDate(innRoomTypeGoodsDto);
                     }
-                    OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
-                    TBXHotelUtilPromotion.rateAddOrUpdate(otaInfo, r, otaPriceModel, priceDto,commission);
+                    //TBXHotelUtilPromotion.rateAddOrUpdate(otaInfo, r, otaPriceModel, priceDto,commission);
                     //记录日志
                     MessageCenterUtils.savePushTomsLog(OtaType.TB, Integer.valueOf(tbParam.getInnId()), r.getRoomTypeId(), null, LogDec.RoomType_PHSH, "gid:" + gid + " rpid:" + rpid);
                 }else {
@@ -373,7 +385,6 @@ public class TBService implements ITPService {
             String checkRoom = null;
             OtaRoomPriceDto priceDto = null;
             List<RoomDetail> roomDetailList = null;
-            Rate rate = null;
             RoomTypeInfo roomTypeInfo = null;
             for (AddFangPrice price:prices){
                 if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange()!=null){

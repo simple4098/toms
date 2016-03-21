@@ -10,18 +10,19 @@ public class CancelPolicyType {
 
     //取消类型 0 随意取消 1 不能取消 2
     private Integer cancelPolicyType;
-    //从入住当天24点往前推算，提前多少小时能取消
-    private Integer timeBefore;
+    private PolicyInfo policyInfo;
+
+    public PolicyInfo getPolicyInfo() {
+        return policyInfo;
+    }
+    public void setPolicyInfo(PolicyInfo policyInfo) {
+        this.policyInfo = policyInfo;
+    }
     public Integer getCancelPolicyType() {
         return cancelPolicyType;
     }
     public void setCancelPolicyType(Integer cancelPolicyType) {
         this.cancelPolicyType = cancelPolicyType;
     }
-    public Integer getTimeBefore() {
-        return timeBefore;
-    }
-    public void setTimeBefore(int timeBefore) {
-        this.timeBefore = timeBefore;
-    }
+
 }
