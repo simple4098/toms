@@ -42,6 +42,7 @@ public class EventFactory {
             operations.leftPush(Constants.REDIS,content);
         }
         if (Constants.CREDIT.equals(bizType)){
+            log.info("信用住bizType:"+bizType);
             List<OtaInfoRefDto> list = otaInfoService.findAllOtaByType(OtaType.CREDIT);
             ITPService service = null;
             TBParam tbParam = null;

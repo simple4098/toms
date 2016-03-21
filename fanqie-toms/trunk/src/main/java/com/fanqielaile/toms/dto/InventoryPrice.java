@@ -9,7 +9,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 public class InventoryPrice<T extends InventoryRate> {
-    private boolean use_room_inventory = true;
+    private boolean use_room_inventory = false;
     private List<T> inventory_price;
 
     public boolean isUse_room_inventory() {

@@ -1,10 +1,7 @@
 package com.fanqielaile.toms.enums;
 
 import com.fanqielaile.toms.service.ITPService;
-import com.fanqielaile.toms.service.impl.FcService;
-import com.fanqielaile.toms.service.impl.TBService;
-import com.fanqielaile.toms.service.impl.XcService;
-import com.fanqielaile.toms.service.impl.ZhService;
+import com.fanqielaile.toms.service.impl.*;
 import com.fanqielaile.toms.support.SpringContextUtil;
 
 /**
@@ -37,7 +34,7 @@ public enum OtaType {
     },CREDIT{
         @Override
         public ITPService create() {
-            return (ZhService)SpringContextUtil.getBean("creditService");
+            return (CreditService)SpringContextUtil.getBean("creditService");
         }
     };
     public abstract ITPService create();

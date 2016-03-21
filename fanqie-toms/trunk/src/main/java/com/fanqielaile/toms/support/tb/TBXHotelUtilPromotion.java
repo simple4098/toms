@@ -270,7 +270,8 @@ public class TBXHotelUtilPromotion {
             req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
-            log.info("库存json:"+json);
+            log.info("库存json:" + json);
+            log.info("房态json:"+roomSwitchJson);
         }
         XhotelRoomUpdateResponse response = client.execute(req , otaInfoRefDto.getSessionKey());
         return response.getGid();
@@ -338,8 +339,9 @@ public class TBXHotelUtilPromotion {
             //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
             req.setPaymentType(6l);
             //0：不含早1：含单早2：含双早N：含N早（1-99可选）
-            req.setBreakfastCount(Long.valueOf(r.getRatePlanConfig().getBreakfastCount()));
-            req.setCancelPolicy(JacksonUtil.obj2json(r.getRatePlanConfig().getCancelPolicy()));
+            TomsUtil.obtRatePlanRequest(r.getRatePlanConfig(),req);
+            /*req.setBreakfastCount(Long.valueOf(r.getRatePlanConfig().getBreakfastCount()));
+            req.setCancelPolicy(JacksonUtil.obj2json(r.getRatePlanConfig().getCancelPolicy()));*/
         }else {
             req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
             //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
@@ -405,7 +407,7 @@ public class TBXHotelUtilPromotion {
         XhotelRateUpdateRequest req=new XhotelRateUpdateRequest();
         req.setOutRid(String.valueOf(roomTypeInfo.getRoomTypeId()));
         if (TBType.CREDIT.equals(infoRefDto.getTbType())){
-            req.setRateplanCode(roomTypeInfo.getRatePlanCode());
+            req.setRateplanCode(Constants.OMS_RATE_PLAN_CODE);
         }else {
             req.setRateplanCode(String.valueOf(roomTypeInfo.getRoomTypeId()));
         }
@@ -416,7 +418,7 @@ public class TBXHotelUtilPromotion {
             inventory.setInventory_price(rateList);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
-            log.info("价格json:" + json);
+            log.info("价格和库存json:" + json);
         }
         try {
             XhotelRateUpdateResponse response = client.execute(req , infoRefDto.getSessionKey());
@@ -516,9 +518,9 @@ public class TBXHotelUtilPromotion {
      */
     public static boolean updateRoomRate(OtaInfoRefDto otaInfoRefDto,RoomTypeInfo roomTypeInfo,OtaPriceModelDto priceModel,
                                          OtaRoomPriceDto priceDto,OtaCommissionPercentDto commission) throws Exception {
-        Long gId = roomUpdate(roomTypeInfo, otaInfoRefDto, RoomSwitchCalStatus.SJ);
+        //Long gId = roomUpdate(roomTypeInfo, otaInfoRefDto, RoomSwitchCalStatus.SJ);
         String gidAndRpId = rateUpdate(otaInfoRefDto,roomTypeInfo,priceModel,priceDto,commission);
-        if (gId==null || gidAndRpId==null){
+        if (gidAndRpId==null){
             return  false;
         }
         return true;
@@ -556,6 +558,7 @@ public class TBXHotelUtilPromotion {
                 List<RoomDetail> roomDetailList = TomsUtil.buildRoomDetail(dto.getRoomTypeId());
                 RoomTypeInfo roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetailList, dto.getRoomTypeId());
                 roomUpdate(roomTypeInfo,refDto, RoomSwitchCalStatus.XJ);
+                //updateRoomRate(refDto,roomTypeInfo,new OtaPriceModelDto(new BigDecimal(1)),null,null);
             }
         }
     }
@@ -572,7 +575,7 @@ public class TBXHotelUtilPromotion {
         inventoryPriceIncrementObj.setOut_rid(out_rid);
         //todo
         if (TBType.CREDIT.equals(otaInfoRefDto.getTbType())){
-            inventoryPriceIncrementObj.setRateplan_code("RP001");
+            inventoryPriceIncrementObj.setRateplan_code(Constants.OMS_RATE_PLAN_CODE);
         }else {
             inventoryPriceIncrementObj.setRateplan_code(out_rid);
         }

@@ -127,7 +127,7 @@
                      <property name="validationQuery" value="select 1"/>
               </bean>
            <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-               <constructor-arg name="systemName" value="TOMS_DEV111"></constructor-arg>
+               <constructor-arg name="systemName" value="TOMS_DEV"></constructor-arg>
            </bean>
            <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
                <property name="hostName" value="192.168.1.159"/>
@@ -156,15 +156,15 @@
                      <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
                      <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
                      <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
-                     <property name="roomType" value="http://192.168.1.159:8888/api/queryRoomType"></property>
-                     <property name="checkRoom" value="http://192.168.1.159:8888/api/check_room_avail"></property>
-                     <property name="innInfo" value="http://192.168.1.159:8888/api/queryInn"></property>
-                     <property name="roomStatus" value="http://192.168.1.159:8888/api/queryRoomStatus"></property>
+                     <property name="roomType" value="http://oms.local.fanqiele.com/api/queryRoomType"></property>
+                     <property name="checkRoom" value="http://oms.local.fanqiele.com/api/check_room_avail"></property>
+                     <property name="innInfo" value="http://oms.local.fanqiele.com/api/queryInn"></property>
+                     <property name="roomStatus" value="http://oms.local.fanqiele.com/api/queryRoomStatus"></property>
                      <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
                      <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
                      <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
-                     <property name="sellingRoomType" value="http://192.168.1.159:8888/api/getSellingRoomType"></property>
-                     <property name="ProxySaleList" value="http://192.168.1.159:8888/api/queryProxySaleList"></property>
+                     <property name="sellingRoomType" value="http://oms.local.fanqiele.com/api/getSellingRoomType"></property>
+                     <property name="ProxySaleList" value="http://oms.local.fanqiele.com/api/queryProxySaleList"></property>
                      <property name="imgUrl" value="http://img.fanqiele.com"></property>
                      <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
                      <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>

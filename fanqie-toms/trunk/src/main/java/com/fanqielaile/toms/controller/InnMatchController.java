@@ -94,8 +94,6 @@ public class InnMatchController extends BaseController {
     @Resource
     private IOtaInnOtaService  otaInnOtaService;
     @Resource
-    private IOtaRoomPriceService otaRoomPriceService;
-    @Resource
     private IFcRatePlanService fcRatePlanService;
     @Resource
     private IFcRoomTypeFqService fcRoomTypeFqService;
@@ -107,9 +105,6 @@ public class InnMatchController extends BaseController {
     private CtripHotelRoomTypeService  ctripHotelRoomTypeService;
     @Resource
     private CtripRoomTypeMappingService ctripRoomTypeMappingService;
-    
-    @Resource
-    private ICtripRoomService  iCtripRoomService;
 
     /**
      * 匹配列表
@@ -170,7 +165,7 @@ public class InnMatchController extends BaseController {
        Result result = new Result();
        UserInfo user = getCurrentUser();
        OtaInfoRefDto infoRefDto =  otaInfoService.findOtaInfo(otaInfoRefDto.getOtaInfoId());
-       if (infoRefDto!=null && OtaType.TB.equals(infoRefDto.getOtaType()) && user!=null){
+       if (infoRefDto!=null && ( OtaType.TB.equals(infoRefDto.getOtaType()) || OtaType.CREDIT.equals(infoRefDto.getOtaType()) ) && user!=null){
            otaInfoRefDto.setCompanyId(user.getCompanyId());
            result = otaInfoService.updateOtaInfoTbType(otaInfoRefDto);
        }

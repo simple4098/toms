@@ -11,7 +11,10 @@ import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import com.taobao.api.request.XhotelRateplanUpdateRequest;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,61 +48,8 @@ public class TomsUtil {
         return "";
     }
 
-    //日期库存json字符串
-    public static String obtInventory(RoomTypeInfo roomTypeInfo){
-        Inventory inventory =null;
-        List<Inventory> inventoryList = new ArrayList<Inventory>();
-        for (RoomDetail roomDetail:roomTypeInfo.getRoomDetail()){
-            inventory = new Inventory();
-            inventory.setDate(roomDetail.getRoomDate());
-            inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
-            inventoryList.add(inventory);
-        }
-        return JacksonUtil.obj2json(inventoryList);
-    }
-    //日期库存json字符串
-    public static String obtInventory( List<RoomDetail> roomDetailList){
-        Inventory inventory =null;
-        List<Inventory> inventoryList = new ArrayList<Inventory>();
-        if (!CollectionUtils.isEmpty(roomDetailList)){
-            for (RoomDetail roomDetail:roomDetailList){
-                inventory = new Inventory();
-                inventory.setDate(roomDetail.getRoomDate());
-                inventory.setQuota(roomDetail.getRoomNum() == null ? 0 : roomDetail.getRoomNum());
-                inventoryList.add(inventory);
-            }
-            return JacksonUtil.obj2json(inventoryList);
-        }
-        return  null;
-    }
 
 
-
-    public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto){
-        InventoryPrice inventoryPrice = new InventoryPrice();
-
-        List<InventoryRate> inventory = inventory(r.getRoomDetail(), null, priceModelDto,null);
-        inventoryPrice.setInventory_price(inventory);
-        return  JacksonUtil.obj2json(inventoryPrice);
-    }
-
-    public static String obtInventoryRate(List<RoomDetail> roomDetail,OtaPriceModelDto priceModelDto){
-        if (!CollectionUtils.isEmpty(roomDetail)){
-            InventoryPrice inventoryPrice = new InventoryPrice();
-            List<InventoryRate> inventory = inventory(roomDetail, null, priceModelDto,null);
-            inventoryPrice.setInventory_price(inventory);
-            return  JacksonUtil.obj2json(inventoryPrice);
-        }
-        return  null;
-    }
-
-    public static String obtInventoryRate(RoomTypeInfo r,OtaPriceModelDto priceModelDto,OtaRoomPriceDto priceDto,OtaCommissionPercent commission){
-        InventoryPrice inventoryPrice = new InventoryPrice();
-
-        List<InventoryRate> inventory = inventory(r.getRoomDetail(), priceDto, priceModelDto,commission);
-        inventoryPrice.setInventory_price(inventory);
-        return JacksonUtil.obj2json(inventoryPrice);
-    }
 
     public   static List<InventoryRate>  inventory(List<RoomDetail> roomDetails,OtaRoomPriceDto priceDto,OtaPriceModelDto priceModelDto,OtaCommissionPercent commission){
         InventoryRate inventoryRate = null;
@@ -130,6 +80,7 @@ public class TomsUtil {
                 }
                 //tp店价格为分，我们自己系统价格是元
                 inventoryRate.setPrice(price);
+                inventoryRate.setQuota(detail.getRoomNum() == null ? 0 : detail.getRoomNum());
                 inventoryRateList.add(inventoryRate);
             }
             return inventoryRateList;
@@ -138,12 +89,7 @@ public class TomsUtil {
 
     }
 
-    public static String obtInventoryRate(List<RoomDetail> roomDetail, OtaPriceModelDto priceModelDto, OtaRoomPriceDto priceDto, OtaCommissionPercent commission){
-        InventoryPrice inventoryPrice = new InventoryPrice();
-        List<InventoryRate> inventory = inventory(roomDetail, priceDto, priceModelDto,commission);
-        inventoryPrice.setInventory_price(inventory);
-        return JacksonUtil.obj2json(inventoryPrice);
-    }
+
 
     public static List<OrderConfigDto> orderConfig(String innId, String[] otaInfoIds, UserInfo currentUser,HttpServletRequest request) {
         List<OrderConfigDto> list = new ArrayList<OrderConfigDto>();
@@ -163,26 +109,7 @@ public class TomsUtil {
         return list;
     }
 
-    public static  String  listDateToStr(List<String> date){
-        StringBuilder buffer = new StringBuilder();
-        if (!CollectionUtils.isEmpty(date)){
-            for (String da:date){
-                buffer.append(da).append(",");
-            }
-            if (buffer.length()!=0){
-                buffer.deleteCharAt(buffer.length()-1);
-            }
-        }
-        return buffer.toString();
-    }
 
-    public static List<String> strToList(String dateJson) {
-        if (dateJson!=null && dateJson.length()!=0){
-            String[] split = dateJson.split(",");
-            return Arrays.asList(split);
-        }
-        return null;
-    }
 
     public static TBParam toTbParam(BangInn bangInn,Company company,OtaInnOtaDto otaInnOtaDto){
         TBParam tbParam = new TBParam();
@@ -499,5 +426,25 @@ public class TomsUtil {
         tbParam.setPriceModel(Constants.MAI);
         tbParam.setsJiaModel(Constants.MAI);
         tbParam.setPriceModelArray(list);
+    }
+
+    public static void obtRatePlanRequest(RatePlanConfig ratePlanConfig,XhotelRateplanUpdateRequest req) {
+        if (ratePlanConfig!=null){
+            req.setBreakfastCount(ratePlanConfig.getBreakfastCount() == null ? 0 : Long.valueOf(ratePlanConfig.getBreakfastCount()));
+            req.setCancelPolicy(JacksonUtil.obj2json(ratePlanConfig.getCancelPolicy()));
+            req.setGuaranteeType(Long.valueOf(ratePlanConfig.getGuaranteeType()));
+        }else {
+            throw  new TomsRuntimeException("信用住价格计划配置为null");
+        }
+    }
+
+    public static Long obtGidRpId(String gid_rpId) {
+        if (!StringUtils.isEmpty(gid_rpId)){
+            String[] split = gid_rpId.split("-");
+            if (!ArrayUtils.isEmpty(split)){
+                return Long.valueOf( split[0]);
+            }
+        }
+        return null;
     }
 }
