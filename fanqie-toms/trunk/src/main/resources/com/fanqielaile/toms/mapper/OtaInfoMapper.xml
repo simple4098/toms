@@ -56,7 +56,7 @@
 
        </select>
        <select id="selectAllOtaByType" resultMap="otaInfoRefId" >
-           SELECT  oi.ota_info,c.company_code,o.* from otainfo_company_ref o left JOIN  ota_info oi on oi.id = o.ota_info_id
+           SELECT  oi.ota_info,oi.ota_type,c.company_code,o.* from otainfo_company_ref o left JOIN  ota_info oi on oi.id = o.ota_info_id
            LEFT JOIN company c ON c.id = o.company_id
            where o.tb_type='${otaTypeName}'
        </select>
