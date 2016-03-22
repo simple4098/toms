@@ -741,7 +741,7 @@ public class Order extends Domain {
                 childOrder.setRoomTypeId(order.getRoomTypeId());
                 childOrder.setRoomTypeName(order.getRoomTypeName());
                 //设置价格计划id，oms的价格计划code
-                childOrder.setRatePlanId(order.getOTARateCode());
+                childOrder.setRatePlanCode(order.getOTARateCode());
                 childOrders.add(childOrder);
             }
         }
