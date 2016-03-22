@@ -716,15 +716,17 @@ public class Order extends Domain {
         omsOrder.setChildOtaId(order.getChannelSource().name());
         //因为存在加减价，为了屏蔽老板的误解和方便对账，这里将实付价格设置为订单总价
 //        omsOrder.setPaidAmount(order.getPayment() == null ? new BigDecimal(0) : order.getPayment());
-        omsOrder.setPaidAmount(order.getTotalPrice());
+        //如果是信用住，付款金额=付款金额
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
         omsOrder.setRoomTypeNum(order.getHomeAmount());
         if (PaymentType.CREDIT.equals(order.getPaymentType())) {
             //信用住
+            omsOrder.setPaidAmount(order.getPrepayPrice());
             omsOrder.setTypePay(3);
         } else {
             //预付
+            omsOrder.setPaidAmount(order.getTotalPrice());
             omsOrder.setTypePay(1);
         }
         omsOrder.setUserName(order.getGuestName());
