@@ -181,7 +181,7 @@ public class OrderService implements IOrderService {
         UsedPriceModel usedPriceModel = null;
         if (ChannelSource.TAOBAO.equals(channelSource)) {
             //查询
-            OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+            OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(company.getId(), otaInnOtaDto.getOtaInfoId());
             usedPriceModel = otaInfoRefDto.getUsedPriceModel();
             percent = getOtaPercent(company, usedPriceModel);
         } else if (ChannelSource.FC.equals(channelSource)) {
@@ -437,7 +437,10 @@ public class OrderService implements IOrderService {
             if (1 == dictionary.getWeatherAsynchronous()) {
                 dictionary.setUrl(dictionary.getAsynchronousUrl());
             }
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), otaType);
+            //查询当前酒店以什么模式发布
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
             //查询客栈信息
             BangInnDto bangInn = this.bangInnDao.selectBangInnByTBHotelId(order.getOTAHotelId(), otaInfo.getOtaInfoId(), order.getCompanyId());
             if (null == bangInn) {
@@ -446,8 +449,7 @@ public class OrderService implements IOrderService {
             }
             //公司信息
             Company company = this.companyDao.selectCompanyById(order.getCompanyId());
-            //查询当前酒店以什么模式发布
-            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            //判断当前客栈发布模式
             if (otaInnOtaDto.getsJiaModel().equals("DI")) {
                 order.setAccountId(bangInn.getAccountIdDi());
             } else {
@@ -731,8 +733,9 @@ public class OrderService implements IOrderService {
      * @throws ApiException
      */
     private JsonModel TBCancelMethod(Order order, long parm, UserInfo currentUser) throws ApiException {
+        OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
         //更新淘宝订单状态
-        OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
         logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
         String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, parm);
         logger.info("淘宝更新订单返回值=>" + result);
@@ -1704,7 +1707,7 @@ public class OrderService implements IOrderService {
                 //价格比例
                 BigDecimal percent = BigDecimal.ZERO;
                 //查询
-                OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectAllOtaByCompanyAndType(company.getId(), OtaType.TB.name());
+                OtaInfoRefDto otaInfoRefDto = otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(otaInnOtaDto.getCompanyId(), otaInnOtaDto.getOtaInfoId());
                 UsedPriceModel usedPriceModel = otaInfoRefDto.getUsedPriceModel();
                 percent = getOtaPercent(company, usedPriceModel);
                 List<InventoryRate> inventoryRates = new ArrayList<>();
@@ -1721,6 +1724,7 @@ public class OrderService implements IOrderService {
                                 inventoryRate.setPrice(d.getPrice().doubleValue() * Constants.tpPriceUnit);
                             }
                         } else {
+                            inventoryRate.setPrice(d.getPrice().doubleValue());
                         }
                         inventoryRate.setDate(DateUtil.format(d.getDay(), "yyyy-MM-dd"));
                         inventoryRate.setQuota(d.getRoomNum());
@@ -1751,7 +1755,8 @@ public class OrderService implements IOrderService {
         if (null != order) {
             //如果不为空，调用淘宝酒店更新接口
             hotelOrderStatus.setOutId(order.getId());
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
             logger.info("淘宝信用住更新订单状态" + order.getChannelOrderCode() + "传入参数" + JacksonUtil.obj2json(hotelOrderStatus));
             String response = TBXHotelUtilPromotion.updateHotelOrderStatus(hotelOrderStatus, otaInfo);
             logger.info("淘宝信用住更新订单状态，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
@@ -1779,7 +1784,8 @@ public class OrderService implements IOrderService {
         Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderParam);
         if (null != order) {
             hotelOrderPay.setOutId(order.getId());
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
             logger.info("淘宝信用住结账:" + order.getChannelOrderCode() + "传入参数" + JacksonUtil.obj2json(hotelOrderPay));
             String response = TBXHotelUtilPromotion.updateOrderPay(hotelOrderPay, otaInfo);
             logger.info("淘宝信用住结账，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
