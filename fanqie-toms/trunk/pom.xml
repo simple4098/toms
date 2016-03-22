@@ -4,7 +4,7 @@
     <groupId>com.fanqielaile.toms</groupId>
     <artifactId>toms</artifactId>
     <packaging>war</packaging>
-    <version>4.6.0</version>
+    <version>4.7.0</version>
     <name>toms Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.fanqie.xc</groupId>
             <artifactId>cx-1.2</artifactId>
-            <version>1.9.1-SNAPSHOT</version>
+            <version>1.9.3-SNAPSHOT</version>
         </dependency>
         <!--众荟依赖-->
         <dependency>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>com.fanqie.com</groupId>
             <artifactId>fanqie-core</artifactId>
-            <version>1.2.9</version>
+            <version>1.3.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

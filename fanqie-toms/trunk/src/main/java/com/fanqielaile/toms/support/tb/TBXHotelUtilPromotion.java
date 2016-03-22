@@ -251,26 +251,26 @@ public class TBXHotelUtilPromotion {
         req.setOutRid(roomTypeInfo.getRoomTypeId().toString());
         //库存
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
-            List<Inventory> list = new ArrayList<Inventory>();
+            /*List<Inventory> list = new ArrayList<Inventory>();*/
             List<RoomSwitchCal> roomSwitchCals = new ArrayList<RoomSwitchCal>();
-            Inventory inventory =null;
+            //Inventory inventory =null;
             RoomSwitchCal roomSwitchCal=null;
             for (RoomDetail r:roomTypeInfo.getRoomDetail()){
-                inventory = new Inventory();
+                //inventory = new Inventory();
                 roomSwitchCal = new RoomSwitchCal(r.getRoomDate());
                 roomSwitchCal.setRoomSwitchCalStatus(status);
-                inventory.setDate(r.getRoomDate());
+                /*inventory.setDate(r.getRoomDate());
                 inventory.setQuota(r.getRoomNum() == null ? 0 : r.getRoomNum());
                 inventory.setRoomSwitchCalStatus(status);
-                list.add(inventory);
+                list.add(inventory);*/
                 roomSwitchCals.add(roomSwitchCal);
             }
-            String json = JacksonUtil.obj2json(list);
+           /* String json = JacksonUtil.obj2json(list);*/
+           /* req.setInventory(json);*/
             String roomSwitchJson = JacksonUtil.obj2json(roomSwitchCals);
-            req.setInventory(json);
             //开关状态 1 上架  2 下架  3 删除
             req.setRoomSwitchCal(roomSwitchJson);
-            log.info("库存json:" + json);
+            /*log.info("库存json:" + json);*/
             log.info("房态json:"+roomSwitchJson);
         }
         XhotelRoomUpdateResponse response = client.execute(req , otaInfoRefDto.getSessionKey());
@@ -586,7 +586,7 @@ public class TBXHotelUtilPromotion {
         List<RoomDetail> roomDetails = pushRoom.getRoomDetails();
         int size = roomDetails.size();
         if (size<=Constants.tp_count){
-            ratesRoom(roomDetails,priceModel,otaInfoRefDto,commission,priceDto,inventoryPriceIncrementObj,rateIncrementList,inventoryRateIncrement);
+            ratesRoom(roomDetails,priceModel,otaInfoRefDto,commission,priceDto,inventoryPriceIncrementObj/*,rateIncrementList,inventoryRateIncrement*/);
         }else {
             RoomTypeInfo roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetails, Integer.valueOf(out_rid));
             try {
@@ -598,15 +598,15 @@ public class TBXHotelUtilPromotion {
     }
 
     public static void ratesRoom(List<RoomDetail> roomDetails,OtaPriceModelDto priceModel,OtaInfoRefDto otaInfoRefDto,
-                           OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto,InventoryPriceIncrementObj inventoryPriceIncrementObj,
-                           List<InventoryRateIncrement> rateIncrementList,InventoryRateIncrement inventoryRateIncrement)throws ApiException{
+                           OtaCommissionPercentDto commission,OtaRoomPriceDto priceDto,InventoryPriceIncrementObj inventoryPriceIncrementObj
+                           /*List<InventoryRateIncrement> rateIncrementList,InventoryRateIncrement inventoryRateIncrement*/)throws ApiException{
         if (!CollectionUtils.isEmpty(roomDetails)){
             //价格对象
             InventoryPrice inventoryPrice = new InventoryPrice();
             InventoryPriceIncrement ratePrice = null;
-            Inventory inventory = null;
             List<InventoryPriceIncrement> ratePriceList = new ArrayList<InventoryPriceIncrement>();
-            List<Inventory>  inventoryList = new ArrayList<Inventory>();
+           /* Inventory inventory = null;*/
+            /*List<Inventory>  inventoryList = new ArrayList<Inventory>();*/
             double price = 0;
             Double value = null;
             Date startDate = null;
@@ -620,7 +620,7 @@ public class TBXHotelUtilPromotion {
                 String roomDate = roomDetail.getRoomDate();
                 Integer roomNum = roomDetail.getRoomNum();
                 Double  roomPrice = roomDetail.getRoomPrice();
-                inventory = new Inventory(roomDate,roomNum);
+               /* inventory = new Inventory(roomDate,roomNum);*/
                 price = new BigDecimal(roomPrice).multiply(priceModel.getPriceModelValue()).doubleValue();
                 //售价只有MAI2DI才展示
                 if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
@@ -635,8 +635,9 @@ public class TBXHotelUtilPromotion {
                 }
                 ratePrice = new InventoryPriceIncrement(price,1);
                 ratePrice.setDate(roomDate);
+                ratePrice.setQuota(roomNum);
                 ratePriceList.add(ratePrice);
-                inventoryList.add(inventory);
+               /* inventoryList.add(inventory);*/
             }
             inventoryPrice.setInventory_price(ratePriceList);
             inventoryPriceIncrementObj.setData(inventoryPrice);
@@ -649,16 +650,16 @@ public class TBXHotelUtilPromotion {
             req.setRateInventoryPriceMap("["+obj2json+"]");
             XhotelRatesIncrementResponse rsp = client.execute(req, otaInfoRefDto.getSessionKey());
 
-            inventoryRateIncrement.setRoomQuota(inventoryList);
+           /* inventoryRateIncrement.setRoomQuota(inventoryList);
             String inventoryJson = JacksonUtil.obj2json(rateIncrementList);
             log.info("================================及时推送库存==============================");
             log.info(inventoryJson);
 
             XhotelRoomsIncrementRequest req1 = new XhotelRoomsIncrementRequest();
             req1.setRoomQuotaMap(inventoryJson);
-            XhotelRoomsIncrementResponse rsp1 = client.execute(req1, otaInfoRefDto.getSessionKey());
-            if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) || CollectionUtils.isEmpty(rsp1.getGids())){
-                throw  new TomsRuntimeException(rsp.getMsg()+" "+rsp1.getMsg());
+            XhotelRoomsIncrementResponse rsp1 = client.execute(req1, otaInfoRefDto.getSessionKey());*/
+            if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) ){
+                throw  new TomsRuntimeException(rsp.getMsg());
             }
         }
     }
