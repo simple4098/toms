@@ -1762,6 +1762,13 @@ public class OrderService implements IOrderService {
             logger.info("淘宝信用住更新订单状态，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
             JSONObject jsonObject = JSONObject.fromObject(response);
             if (null != jsonObject && null != jsonObject.get("xhotel_order_alipayface_update_response")) {
+                //更新toms本地订单状态
+                if (hotelOrderStatus.getOptType() == 8) {
+                    //取消订单同步数据库
+                    order.setReason("pms取消订单");
+                    order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                    this.orderDao.updateOrderStatusAndReason(order);
+                }
                 result.setSuccess(true);
                 result.setMessage("更新订单状态成功");
             } else {
@@ -1791,6 +1798,12 @@ public class OrderService implements IOrderService {
             logger.info("淘宝信用住结账，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
             JSONObject jsonObject = JSONObject.fromObject(response);
             if (null != jsonObject && null != jsonObject.get("xhotel_order_alipayface_settle_response")) {
+                //淘宝信用住结账成功后需要更新本地订单状态
+                order.setOrderStatus(OrderStatus.ACCEPT);
+                order.setFeeStatus(FeeStatus.PAID);
+                order.setPayment(hotelOrderPay.getTotalRoomFee());
+                order.setOmsOrderCode(hotelOrderPay.getOmsOrderCode());
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
                 result.setSuccess(true);
                 result.setMessage("淘宝信用住结账成功");
             } else {

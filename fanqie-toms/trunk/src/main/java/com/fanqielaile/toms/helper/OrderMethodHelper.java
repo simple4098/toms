@@ -66,7 +66,6 @@ public class OrderMethodHelper {
         order.setHomeAmount(Integer.parseInt(element.elementText("RoomNum")));
         order.setLiveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckIn")));
         order.setLeaveTime(new SimpleDateFormat("yyyy-MM-dd").parse(element.elementText("CheckOut")));
-        order.setPrepayPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
         order.setOrderTime(new Date());
         order.setOTAHotelId(element.elementText("TaoBaoHotelId"));
         order.setOTARatePlanId(element.elementText("TaoBaoRatePlanId"));
@@ -77,10 +76,13 @@ public class OrderMethodHelper {
         order.setComment(element.elementText("Comment"));
         if (element.elementText("PaymentType").equals("1")) {
             order.setPaymentType(PaymentType.PREPAID);
+            order.setPrepayPrice(new BigDecimal(element.elementText("TotalPrice")).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UP));
         } else if (element.elementText("PaymentType").equals("5")) {
             order.setPaymentType(PaymentType.NOW_PAY);
+            order.setPrepayPrice(BigDecimal.valueOf(0));
         } else {
             order.setPaymentType(PaymentType.CREDIT);
+            order.setPrepayPrice(BigDecimal.valueOf(0));
         }
         order.setGuestMobile(element.elementText("ContactTel"));
         order.setFeeStatus(FeeStatus.NOT_PAY);
