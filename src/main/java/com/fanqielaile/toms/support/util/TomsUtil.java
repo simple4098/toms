@@ -406,7 +406,7 @@ public class TomsUtil {
     public static List<RoomDetail> buildRoomDetail(Integer roomTypeId) {
         List<RoomDetail> list = new ArrayList<>();
         RoomDetail roomDetail = null;
-        for (int i=0;i<60;i++){
+        for (int i=0;i<61;i++){
             roomDetail = new RoomDetail();
             roomDetail.setRoomNum(0);
             roomDetail.setRoomDate(DateUtil.format(DateUtil.addDay(new Date(), i), "yyyy-MM-dd"));
