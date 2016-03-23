@@ -88,6 +88,7 @@ public class OTAManageController extends BaseController {
                             if ((Boolean) map.get("status")) {
                                 result.setResultCode("0");
                                 result.setMessage(order.getId());
+                                result.setOrderId(order.getId());
                             } else {
                                 result.setResultCode("-102");
                                 result.setMessage(String.valueOf(map.get("message")));

@@ -309,9 +309,14 @@ public class OrderService implements IOrderService {
         Map<String, Object> result = new HashMap<>();
         logger.info("取消订单传入xml=》" + xmlStr);
         //解析取消订单的xml
-        String orderId = XmlDeal.getOrder(xmlStr).getId();
+        Order order1 = XmlDeal.getOrder(xmlStr);
         //验证此订单是否存在
-        Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        Order order = new Order();
+        if (StringUtils.isNotEmpty(order1.getId())) {
+            order = orderDao.selectOrderByIdAndChannelSource(order1.getId(), channelSource);
+        } else {
+            order = orderDao.selectOrderByChannelOrderCodeAndSource(order1);
+        }
         logger.info("取消订单号为orderCode=" + order.getChannelOrderCode());
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CANCEL_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "取消订单传入参数"));
         if (null == order) {
@@ -755,9 +760,14 @@ public class OrderService implements IOrderService {
         logger.info("查询订单状态传入参数=>" + xmlStr);
         Map<String, String> result = new HashMap<>();
         //解析查询订单状态
-        String orderId = XmlDeal.getOrder(xmlStr).getId();
+        Order order1 = XmlDeal.getOrder(xmlStr);
         //验证此订单是否存在
-        Order order = orderDao.selectOrderByIdAndChannelSource(orderId, channelSource);
+        Order order = new Order();
+        if (StringUtils.isNotEmpty(order1.getId())) {
+            order = orderDao.selectOrderByIdAndChannelSource(order1.getId(), channelSource);
+        } else {
+            order = orderDao.selectOrderByChannelOrderCodeAndSource(order1);
+        }
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "查询订单状态"));
         logger.info("查询订单状态订单单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
@@ -1554,7 +1564,7 @@ public class OrderService implements IOrderService {
         //解析oms推送订单状态
         Order orderByOmsPush = XmlDeal.getOrderByOmsPush(pushXml);
         //oms订单成功.查询本地是否存在此单
-        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderByOmsPush);
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderByOmsPush.getChannelOrderCode(), orderByOmsPush.getOmsOrderCode());
         if (null != order) {
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), "TB");
             //1.判断订单状态是否正常
@@ -1726,6 +1736,7 @@ public class OrderService implements IOrderService {
                         } else {
                             inventoryRate.setPrice(d.getPrice().doubleValue());
                         }
+                        inventoryRate.setPrice(inventoryRate.getPrice() * 100);
                         inventoryRate.setDate(DateUtil.format(d.getDay(), "yyyy-MM-dd"));
                         inventoryRate.setQuota(d.getRoomNum());
                         inventoryRates.add(inventoryRate);
@@ -1748,10 +1759,7 @@ public class OrderService implements IOrderService {
     @Override
     public JsonModel pushHotelOrderStatus(HotelOrderStatus hotelOrderStatus) throws Exception {
         JsonModel result = new JsonModel();
-        Order orderParam = new Order();
-        orderParam.setChannelOrderCode(hotelOrderStatus.getTid());
-        orderParam.setOmsOrderCode(hotelOrderStatus.getOmsOrderCode());
-        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderParam);
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(hotelOrderStatus.getTid(), hotelOrderStatus.getOmsOrderCode());
         if (null != order) {
             //如果不为空，调用淘宝酒店更新接口
             hotelOrderStatus.setOutId(order.getId());
@@ -1785,10 +1793,7 @@ public class OrderService implements IOrderService {
     @Override
     public JsonModel dealOrderPay(HotelOrderPay hotelOrderPay) throws Exception {
         JsonModel result = new JsonModel();
-        Order orderParam = new Order();
-        orderParam.setChannelOrderCode(hotelOrderPay.getTid());
-        orderParam.setOmsOrderCode(hotelOrderPay.getOmsOrderCode());
-        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(orderParam);
+        Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(hotelOrderPay.getTid(), hotelOrderPay.getOmsOrderCode());
         if (null != order) {
             hotelOrderPay.setOutId(order.getId());
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());

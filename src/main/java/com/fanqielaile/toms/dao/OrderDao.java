@@ -90,10 +90,10 @@ public interface OrderDao {
     /**
      * 根据oms订单号和渠道订单号查询订单
      *
-     * @param orderByOmsPush
+     * @param channelOrderCode
      * @return
      */
-    Order selectOrderByOmsOrderCodeAndChannelSourceCode(@Param("order") Order orderByOmsPush);
+    Order selectOrderByOmsOrderCodeAndChannelSourceCode(@Param("channelOrderCode") String channelOrderCode, @Param("omsOrderCode") String omsOrderCode);
 
     /**
      * 不分页查询

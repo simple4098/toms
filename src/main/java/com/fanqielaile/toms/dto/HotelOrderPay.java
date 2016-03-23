@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class HotelOrderPay {
     //客人实际离店时间
-    private Date chekOut;
+    private String checkOut;
     //此金额是否保存担保金额
-    private int containGuarantee;
+    private Integer containGuarantee;
     //每日房价
     private String dailyPriceInfo;
     //备注
@@ -31,14 +31,15 @@ public class HotelOrderPay {
     private BigDecimal totalRoomFee;
     //外部订单号
     private String outId;
+
     private List<RoomSettleInfo> roomSettleInfoList;
 
-    public Date getChekOut() {
-        return chekOut;
+    public String getCheckOut() {
+        return checkOut;
     }
 
-    public void setChekOut(Date chekOut) {
-        this.chekOut = chekOut;
+    public void setCheckOut(String checkOut) {
+        this.checkOut = checkOut;
     }
 
     public int getContainGuarantee() {

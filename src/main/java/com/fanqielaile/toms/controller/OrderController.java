@@ -28,12 +28,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -435,16 +437,20 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/hotel_order_status")
     @ResponseBody
-    public void hotelOrderStatus(Model model, HotelOrderStatus hotelOrderStatus) {
+    public Map<String, Object> hotelOrderStatusMethod(HotelOrderStatus hotelOrderStatus) {
+        Map<String, Object> result = new HashMap<>();
         logger.info("同步订单状态oms传入参数" + JacksonUtil.obj2json(hotelOrderStatus));
         try {
             JsonModel jsonModel = this.orderService.pushHotelOrderStatus(hotelOrderStatus);
-            model.addAttribute("status", jsonModel.isSuccess() ? 200 : 500);
-            model.addAttribute("message", jsonModel.getMessage());
+            result.put("status", jsonModel.isSuccess() ? 200 : 500);
+            result.put("message", jsonModel.getMessage());
         } catch (Exception e) {
             logger.info("淘宝信用住，系统处理异常" + JacksonUtil.obj2json(hotelOrderStatus));
+            result.put("status", 500);
+            result.put("message", "系统异常");
         }
-
+        logger.info("淘宝信用住，同步订单状态返回值：" + result.toString());
+        return result;
     }
 
     /**
@@ -452,15 +458,20 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/hotel_order_pay")
     @ResponseBody
-    public void hotelOrderPay(Model model, HotelOrderPay hotelOrderPay) {
+    public Map<String, Object> hotelOrderPayMethod(HotelOrderPay hotelOrderPay) {
+        Map<String, Object> result = new HashMap<>();
         logger.info("淘宝信用住结账传入参数:" + JacksonUtil.obj2json(hotelOrderPay));
         try {
             JsonModel jsonModel = this.orderService.dealOrderPay(hotelOrderPay);
-            model.addAttribute("status", jsonModel.isSuccess() ? 200 : 500);
-            model.addAttribute("message", jsonModel.getMessage());
+            result.put("status", jsonModel.isSuccess() ? 200 : 500);
+            result.put("message", jsonModel.getMessage());
         } catch (Exception e) {
             logger.info("淘宝信用住，系统处理异常" + JacksonUtil.obj2json(hotelOrderPay));
+            result.put("status", 500);
+            result.put("message", "系统异常");
         }
+        logger.info("淘宝信用住，结账返回值：" + result.toString());
+        return result;
     }
 
 }

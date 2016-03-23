@@ -75,6 +75,7 @@ public class XmlDeal {
         order.setId(element.elementText("OrderId"));
         //获取到淘宝订单号
         String taoBaoOrderId = element.elementText("TaoBaoOrderId");
+        order.setChannelSource(ChannelSource.TAOBAO);
         order.setChannelOrderCode(taoBaoOrderId);
         //获取支付宝交易号
         String alipayTradeNo = element.elementText("AlipayTradeNo");
