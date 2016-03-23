@@ -330,11 +330,11 @@ public class TBXHotelUtilPromotion {
      * @param infoRefDto
      */
     public static Long ratePlanUpdate(OtaInfoRefDto infoRefDto,RoomTypeInfo r) throws Exception {
-        String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
         XhotelRateplanUpdateRequest req=new XhotelRateplanUpdateRequest();
-        req.setName(ratePlanAdd);
         if (TBType.CREDIT.equals(infoRefDto.getTbType())){
+            String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "credit.tb.ratePlanName");
+            req.setName(ratePlanAdd);
             req.setRateplanCode(r.getRatePlanCode());
             //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
             req.setPaymentType(6l);
@@ -343,6 +343,8 @@ public class TBXHotelUtilPromotion {
             /*req.setBreakfastCount(Long.valueOf(r.getRatePlanConfig().getBreakfastCount()));
             req.setCancelPolicy(JacksonUtil.obj2json(r.getRatePlanConfig().getCancelPolicy()));*/
         }else {
+            String ratePlanAdd = PropertiesUtil.readFile("/data.properties", "tb.ratePlanAdd");
+            req.setName(ratePlanAdd);
             req.setRateplanCode(String.valueOf(r.getRoomTypeId()));
             //支付类型，只支持：1：预付5：现付6: 信用住。其中5,6两种类型需要申请权限
             req.setPaymentType(1L);
