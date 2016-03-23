@@ -649,7 +649,7 @@ public class TBXHotelUtilPromotion {
 
             TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
             XhotelRatesIncrementRequest req = new XhotelRatesIncrementRequest();
-            req.setRateInventoryPriceMap("["+obj2json+"]");
+            req.setRateInventoryPriceMap("[" + obj2json + "]");
             XhotelRatesIncrementResponse rsp = client.execute(req, otaInfoRefDto.getSessionKey());
 
            /* inventoryRateIncrement.setRoomQuota(inventoryList);
@@ -691,12 +691,20 @@ public class TBXHotelUtilPromotion {
         XhotelOrderAlipayfaceUpdateRequest req = new XhotelOrderAlipayfaceUpdateRequest();
         req.setTid(Long.valueOf(hotelOrderStatus.getTid()));
         req.setOptType(Long.valueOf(hotelOrderStatus.getOptType()));
-        req.setReasonType(Long.valueOf(hotelOrderStatus.getReasonType()));
+        if (StringUtils.isNotEmpty(hotelOrderStatus.getReasonType())) {
+            req.setReasonType(Long.valueOf(hotelOrderStatus.getReasonType()));
+        } else {
+            req.setReasonType(null);
+        }
         req.setReasonText(hotelOrderStatus.getReasonText());
         req.setOutRoomNumber(hotelOrderStatus.getOutRoomNumber());
-        req.setCheckinDate(DateUtil.format(hotelOrderStatus.getCheckinDate(), "yyyy-MM-dd"));
-        req.setCheckoutDate(DateUtil.format(hotelOrderStatus.getCheckoutDate(), "yyyy-MM-dd"));
-        req.setRooms(Long.valueOf(hotelOrderStatus.getRooms()));
+        req.setCheckinDate(hotelOrderStatus.getCheckinDate());
+        req.setCheckoutDate(hotelOrderStatus.getCheckoutDate());
+        if (StringUtils.isNotEmpty(hotelOrderStatus.getRooms() + "")) {
+            req.setRooms(Long.valueOf(hotelOrderStatus.getRooms()));
+        } else {
+            req.setRooms(null);
+        }
         req.setOutId(hotelOrderStatus.getOutId());
         XhotelOrderAlipayfaceUpdateResponse rsp = client.execute(req, company.getSessionKey());
         return rsp.getBody();
@@ -718,11 +726,11 @@ public class TBXHotelUtilPromotion {
         req.setOtherFee(hotelOrderPay.getOtherFee().longValue());
         req.setTotalRoomFee(hotelOrderPay.getTotalRoomFee().longValue());
         req.setDailyPriceInfo(hotelOrderPay.getDailyPriceInfo());
-        req.setCheckOut(DateUtil.parse(DateUtil.format(hotelOrderPay.getChekOut(), "yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss"));
+        req.setCheckOut(DateUtil.parse(hotelOrderPay.getCheckOut(), "yyyy-MM-dd HH:mm:ss"));
         req.setTid(Long.valueOf(hotelOrderPay.getTid()));
         req.setOtherFeeDetail(hotelOrderPay.getOtherFeeDetail());
         List<XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo> listRoomSettleInfo = new ArrayList<>();
-        if (ArrayUtils.isNotEmpty(hotelOrderPay.getRoomSettleInfoList().toArray())) {
+        if (null != hotelOrderPay.getRoomSettleInfoList() && ArrayUtils.isNotEmpty(hotelOrderPay.getRoomSettleInfoList().toArray())) {
             for (RoomSettleInfo roomSettleInfo : hotelOrderPay.getRoomSettleInfoList()) {
                 XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo objRoomSettleInfo = new XhotelOrderAlipayfaceSettleRequest.RoomSettleInfo();
                 objRoomSettleInfo.setRoomNo(roomSettleInfo.getRoomNo());
@@ -736,7 +744,6 @@ public class TBXHotelUtilPromotion {
                 listRoomSettleInfo.add(objRoomSettleInfo);
             }
         }
-
         req.setRoomSettleInfoList(listRoomSettleInfo);
         req.setContainGuarantee(Long.valueOf(hotelOrderPay.getContainGuarantee()));
         XhotelOrderAlipayfaceSettleResponse rsp = client.execute(req, company.getSessionKey());

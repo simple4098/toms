@@ -66,6 +66,8 @@ public class Result {
                 "message='" + message + '\'' +
                 ", resultCode='" + resultCode + '\'' +
                 ", status='" + status + '\'' +
+                ", taoBaoOrderId='" + taoBaoOrderId + '\'' +
+                ", orderId='" + orderId + '\'' +
                 '}';
     }
 }

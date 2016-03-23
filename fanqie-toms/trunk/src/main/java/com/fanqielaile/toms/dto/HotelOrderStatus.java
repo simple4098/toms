@@ -12,9 +12,9 @@ public class HotelOrderStatus {
     //淘宝订单号
     private String tid;
     //实际入住时间
-    private Date checkinDate;
+    private String checkinDate;
     //实际离店时间
-    private Date checkoutDate;
+    private String checkoutDate;
     //操作类型
     private Integer optType;
     //入住房间号
@@ -60,19 +60,19 @@ public class HotelOrderStatus {
         this.tid = tid;
     }
 
-    public Date getCheckinDate() {
+    public String getCheckinDate() {
         return checkinDate;
     }
 
-    public void setCheckinDate(Date checkinDate) {
+    public void setCheckinDate(String checkinDate) {
         this.checkinDate = checkinDate;
     }
 
-    public Date getCheckoutDate() {
+    public String getCheckoutDate() {
         return checkoutDate;
     }
 
-    public void setCheckoutDate(Date checkoutDate) {
+    public void setCheckoutDate(String checkoutDate) {
         this.checkoutDate = checkoutDate;
     }
 
