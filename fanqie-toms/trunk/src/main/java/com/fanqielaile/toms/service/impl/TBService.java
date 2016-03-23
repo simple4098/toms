@@ -196,8 +196,8 @@ public class TBService implements ITPService {
                         otaBangInnRoomDao.saveBangInnRoom(innRoomDto);
                     }
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
-                    //商品
-                    TBXHotelUtilPromotion.roomUpdate(r,otaInfo, RoomSwitchCalStatus.SJ);
+                    //商品上架
+                    TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.isSj() ? RoomSwitchCalStatus.SJ : RoomSwitchCalStatus.XJ);
                     //Long gid = TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.getStatus());
                     //创建酒店rp
                     if (TBType.CREDIT.equals(otaInfo.getTbType())){
