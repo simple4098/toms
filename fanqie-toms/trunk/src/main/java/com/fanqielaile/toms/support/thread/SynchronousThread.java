@@ -74,6 +74,7 @@ public class SynchronousThread extends Thread {
                             try {
                                 service.updateOrAddHotel(tbParam, o);
                             } catch (Exception e) {
+                                e.printStackTrace();
                                 log.error("EventHelperTask异常,", e);
                             }
                         }
