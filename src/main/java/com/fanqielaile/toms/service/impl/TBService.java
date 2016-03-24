@@ -84,6 +84,7 @@ public class TBService implements ITPService {
         tpHolder.validate(company,tbParam.getInnId(),otaInfo.getOtaInfoId());
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId()!=null?tbParam.getAccountId():tbParam.getAccountIdDi(), CommonApi.INN_INFO);
+        log.info("inn url:"+inn_info);
         XHotel xHotel = null;
         OtaPriceModelDto otaPriceModel = null;
         OtaInnOtaDto otaInnOta = null;
