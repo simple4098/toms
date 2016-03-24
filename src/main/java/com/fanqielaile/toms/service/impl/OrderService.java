@@ -654,12 +654,12 @@ public class OrderService implements IOrderService {
             }
         }
         //获取入住人信息
-        if (ArrayUtils.isEmpty(order.getOrderGuestses().toArray())) {
+        if (null == order.getOrderGuestses() || ArrayUtils.isEmpty(order.getOrderGuestses().toArray())) {
             List<OrderGuests> orderGuestses = this.orderGuestsDao.selectOrderGuestByOrderId(order.getId());
             order.setOrderGuestses(orderGuestses);
         }
         //获取每日房价信息
-        if (ArrayUtils.isEmpty(order.getDailyInfoses().toArray())) {
+        if (null == order.getDailyInfoses() || ArrayUtils.isEmpty(order.getDailyInfoses().toArray())) {
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(order.getId());
             order.setDailyInfoses(dailyInfoses);
         }
