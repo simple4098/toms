@@ -818,6 +818,7 @@ public class OrderService implements IOrderService {
             //判断订单是否为信用住
             if (PaymentType.CREDIT.equals(order.getPaymentType())) {
                 result.put("taobaoOrderId", order.getChannelOrderCode());
+                result.put("orderId", order.getId());
             }
         }
        /* businLog.setDescr(logStr);

@@ -141,6 +141,9 @@ public class OTAManageController extends BaseController {
                             if (StringUtils.isNotEmpty(orderStatus.get("taobaoOrderId"))) {
                                 result.setTaoBaoOrderId(orderStatus.get("taobaoOrderId"));
                             }
+                            if (StringUtils.isNotEmpty(orderStatus.get("orderId"))) {
+                                result.setOrderId(orderStatus.get("orderId"));
+                            }
                         } else if (rootElementString.equals(OrderMethod.OrderRefundRQ.name())) {
                             Map<String, String> map = orderService.dealPayBackMethod(xmlStr, ChannelSource.TAOBAO);
                             result.setMessage(map.get("message"));
