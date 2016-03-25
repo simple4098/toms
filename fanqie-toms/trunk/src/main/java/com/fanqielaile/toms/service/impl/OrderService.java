@@ -677,6 +677,13 @@ public class OrderService implements IOrderService {
     private JsonModel pushSuccessToTB(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
         OrderStatus beforeOrderStatus = order.getOrderStatus();
+        if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            //同步成功后在修改数据库
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            order.setFeeStatus(FeeStatus.PAID);
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            return new JsonModel(true, "付款成功");
+        }
         //更新淘宝订单状态
         String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
         logger.info("淘宝更新订单返回值=>" + result);
