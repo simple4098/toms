@@ -188,6 +188,11 @@ public class TBService implements ITPService {
         if (!CollectionUtils.isEmpty(list)){
             for (RoomTypeInfo r:list){
                 log.info("========开始推客栈房型【"+r.getRoomTypeName()+"["+r.getRoomTypeId()+"]"+"】==============");
+                if (TBType.CREDIT.equals(otaInfo.getTbType())){
+                    if (r.getRatePlanConfig()==null || StringUtils.isEmpty(r.getRatePlanCode())){
+                        continue;
+                    }
+                }
                 XRoomType xRoomType = TBXHotelUtilPromotion.addRoomType(tbParam.getInnId(), r, otaInfo);
                 log.info("updateOrAddRoom xRoomType:" + xRoomType);
                 if (xRoomType!=null){
