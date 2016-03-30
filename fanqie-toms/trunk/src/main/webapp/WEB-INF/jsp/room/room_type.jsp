@@ -10,8 +10,6 @@
     <title>房态房量</title>
     <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
     <link href="<c:url value='/assets/css/pages.css'/>" rel="stylesheet"/>
-    <script src="<c:url value='/js/select2.full.js'/>"></script>
-
 </head>
 <div >
     <div class="select-area">
@@ -103,14 +101,108 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal hand-order-form" id="hand-order-form" role="form">
-                    <input type="hidden" class="account-id" name="bangInnId"/>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> 渠道订单号
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" data-tips="渠道订单号" autocomplete="off" value="" placeholder="渠道订单号" class="ipt"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>客人姓名
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="text" data-tips="请填写客人姓名" autocomplete="off" value="" placeholder="请填写客人姓名" class="ipt"/>
+                        </div>
+                        <label class="col-sm-2 control-label no-padding-right"> <span class="red">*</span>手机号
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" data-tips="请填写客人联系方式" autocomplete="off" value="" placeholder="请填写客人联系方式" class="ipt"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>入住时间
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="text" data-tips="请选择入住日期" autocomplete="off" value="" placeholder="请选择入住日期" class="ipt"/>
+                            <p class="check-time"><a>今日入住</a><a>明日入住</a></p>
+                        </div>
+                        <label class="col-sm-2 control-label no-padding-right"> <span class="red">*</span>离店时间</label>
+                        <div class="col-sm-4">
+                            <input type="text" data-tips="请选择离店日期" autocomplete="off" value="" placeholder="请选择离店日期" class="ipt"/>
+                            <p class="check-time"><a>住1晚</a><a>住2晚</a><a>住3晚</a></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>房型及房间数量
+                        </label>
+                        <div class="col-sm-9">
+                            <div class="mgb-10 room-operate">
+                                <select>
+                                    <option>请选择房型</option>
+                                </select>
+                                <input type="text" placeholder="房间数量">
+                                <a class="reduce-icon">-</a>
+                                <a class="plus-icon">+</a>
+                            </div>
+                            <div class="mgb-10 room-operate">
+                                <select>
+                                    <option>请选择房型</option>
+                                </select>
+                                <input type="text" placeholder="房间数量">
+                                <a class="reduce-icon">-</a>
+                                <a class="plus-icon">+</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>其它消费
+                        </label>
+                        <div class="col-sm-9">
+                            <div class="mgb-10 col-sm-12">
+                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
+                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
+                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
+                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
+                            </div>
+                            <div class="mgb-10 col-sm-12">
+                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
+                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
+                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
+                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
+                            </div>
+                            <div class="mgb-10 col-sm-12 room-operate">
+                                <select style="margin-left:45px;">
+                                    <option>请选择消费项目</option>
+                                </select>
+                                <input type="text" placeholder="填写消费数量">
+                                <a class="reduce-icon">-</a>
+                                <a class="plus-icon">+</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> 订单总销售额
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" data-tips="订单总销售额" autocomplete="off" value="" placeholder="订单总销售额" class="ipt"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> 备注
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" data-tips="备注" autocomplete="off" value="" placeholder="备注" class="ipt"/>
+                        </div>
+                    </div>
+                    <%--<input type="hidden" class="account-id" name="bangInnId"/>
                     <input type="hidden" class="tag-id" name="tagId"/>
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
                     <input type="hidden" class="mai-account" name="maiAccount"/>
-                    <input type="hidden" class="room_type_name" name="orderRoomTypeName">
+                    <input type="hidden" class="room_type_name" name="orderRoomTypeName">--%>
 
-                    <div class="form-group">
+                   <%-- <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-11"> 渠道订单号
                         </label>
 
@@ -252,7 +344,7 @@
                         </div>
                     </div>
 
-                    <div class="space-4"></div>
+                    <div class="space-4"></div>--%>
 
                 </form>
                 <div class="tips" style="color: red"></div>
@@ -286,8 +378,3 @@
 <script src="<c:url value='/assets/js/room-type.js'/>"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".js-example-basic-single").select2();
-    });
-</script>

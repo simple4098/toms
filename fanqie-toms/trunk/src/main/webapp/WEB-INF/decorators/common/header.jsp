@@ -13,8 +13,11 @@
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
 %>
 <link rel="stylesheet" href="<%=basePath%>/assets/css/pages.css"/>
+<link rel="stylesheet" type="text/css" href="<%=basePath%>/css/news-center.css">
+
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
 <script src="<%=basePath%>/assets/layer/layer.js"></script>
+<script src="<%=basePath%>/assets/js/avalon.js"></script>
 <div class="navbar navbar-default" style="height: 10px" id="navbar">
     <script type="text/javascript">
         try {
