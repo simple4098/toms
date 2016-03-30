@@ -54,6 +54,16 @@
                <div class="space-4"></div>
                 <div class="space-4"></div>
                 <div class="form-group">
+                   <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly"> vendor_id </label>
+                   <div class="col-sm-9">
+                       <input type="text" class="col-xs-10 col-sm-5 ace "  name="vendorId"
+                              value="${data.vendorId}"/>
+                       <span class="help-tel col-xs-12 col-sm-7"></span>
+                   </div>
+               </div>
+               <div class="space-4"></div>
+                <div class="space-4"></div>
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly"> 开关 </label>
                     <div class="col-sm-9">
                         <input type="radio"  name="status" value="1" <c:if test="${data.status==1}">checked</c:if>> ON

@@ -21,6 +21,8 @@
                                 <th>appKey</th>
                                 <th>appSecret</th>
                                 <th>sessionKey</th>
+                                <th>vendorId</th>
+                                <th>开关</th>
                                 <th class="hidden-480">修改</th>
                             </tr>
                             </thead>
@@ -34,6 +36,8 @@
                                         <td>${d.appKey}</td>
                                         <td>${d.appSecret}</td>
                                         <td>${d.sessionKey}</td>
+                                        <td>${d.status==1?"开":"关"}</td>
+                                        <td>${d.vendorId}</td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
                                                 <a class="green" href="<c:url value="/system/find_company_ota_info?otaInfoRefId=${d.id}&companyId=${companyId}"/>">
