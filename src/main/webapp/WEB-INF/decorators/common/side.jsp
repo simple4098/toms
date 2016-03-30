@@ -12,7 +12,7 @@
 <c:set var="url"
        value='${requestScope["org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"]}'
        scope="request"/>
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar ms-controller" id="sidebar" ms-controller="newsCenter">
             <script type="text/javascript">
                 try {
                     ace.settings.check('sidebar', 'fixed')
@@ -236,14 +236,50 @@
                         </toms:authorize>
                     </ul>
                 </li>
+                <li
+                        <c:if test="${fn:contains(url, '/notice/find_notices')}">class="active"</c:if> >
+                    <a href="<c:url value="/notice/find_notices"/>" class="dropdown-toggle">
+                        <i class="icon-edit"></i>
+                        <span class="menu-text"> 个性化功能 </span>
+                    </a>
+                </li>
             </ul>
+            <div class="news-center">
+                <a class="dropdown-toggle" href="#" ms-click="showDialogFun">
+                    <i class="icon-envelope">
+                        <span class="badge badge-success">{{UnreadNewsAcount}}</span>
+                    </i>
+
+                </a>
+            </div>
             <!-- /.nav-list -->
 
             <%--<div class="sidebar-collapse" id="sidebar-collapse">--%>
             <%--<i class="icon-double-angle-left" data-icon1="icon-double-angle-left"--%>
             <%--data-icon2="icon-double-angle-right"></i>--%>
             <%--</div>--%>
-
+            <div class="news-center-dialog" ms-css-display="displayDiv">
+                <div class="top">
+                    <h3>消息<a class="fr pack-up" ms-click="packUp">收起</a></h3>
+                </div>
+                <div class="center">
+                    <ul>
+                        <li>
+                            <h4><i class="no-read"></i>XX客栈改价提醒<span class="fr">2016-03-10 15:30</span></h4>
+                            <p>
+                                大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了！（时间范围：2016.04.01~2016.05.30）
+                            </p>
+                        </li>
+                        <li>
+                            <h4><i class="no-read"></i>XX客栈改价提醒<span class="fr">2016-03-10 15:30</span></h4>
+                            <p>
+                                大床房、标准间、豪华房改价了！（时间范围：2016.04.01~2016.05.30）
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bottom"></div>
+            </div>
             <script type="text/javascript">
                 try {
                     ace.settings.check('sidebar', 'collapsed')
@@ -265,3 +301,7 @@
         $('li[data-name="li-parent-3"]').remove();
     }
 </script>
+<script src="<c:url value='/js/news-center.js'/>"></script>
+
+<%--新增权限--%>
+
