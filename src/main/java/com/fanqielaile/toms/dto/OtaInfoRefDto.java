@@ -38,6 +38,16 @@ public class OtaInfoRefDto extends Domain {
     //合作方编码
     private String userId;
     private int status;
+    //系统上名称 可以为null
+    private String vendorId;
+
+    public String getVendorId() {
+        return vendorId;
+    }
+
+    public void setVendorId(String vendorId) {
+        this.vendorId = vendorId;
+    }
 
     public int getStatus() {
         return status;

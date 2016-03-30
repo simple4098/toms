@@ -6,10 +6,19 @@ package com.fanqielaile.toms.dto;
  * @data : 2015/6/24
  * @version: v1.0.0
  */
-public class InventoryPriceIncrementObj{
+public class InventoryPriceIncrementObj {
     private String out_rid;
     private String rateplan_code;
+    private String vendor;
     private InventoryPrice data;
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
 
     public InventoryPrice getData() {
         return data;

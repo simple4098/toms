@@ -35,6 +35,7 @@
             <result column="updated_date" property="updatedDate"/>
              <result column="user_id" property="userId"/>
              <result column="status" property="status"/>
+             <result column="vendor_id" property="vendorId"/>
         </resultMap>
 
        <select id="selectAllOtaByCompany" parameterType="java.lang.String" resultMap="otaInfoRefId">
@@ -109,7 +110,7 @@
     </update>
 
     <update id="updateOtaInfo" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" >
-        update otainfo_company_ref set appkey=#{appKey},appsecret=#{appSecret} ,sessionkey=#{sessionKey} ,status=#{status} where id ='${id}'
+        update otainfo_company_ref set appkey=#{appKey},appsecret=#{appSecret} ,sessionkey=#{sessionKey} ,status=#{status},vendor_id=#{vendorId} where id ='${id}'
     </update>
 
     <select id="selectOtaByAppKey" parameterType="com.fanqielaile.toms.dto.OtaInfoRefDto" resultType="java.lang.String">
