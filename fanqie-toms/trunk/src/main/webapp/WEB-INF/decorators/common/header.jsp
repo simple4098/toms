@@ -17,7 +17,6 @@
 
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
 <script src="<%=basePath%>/assets/layer/layer.js"></script>
-<script src="<%=basePath%>/assets/js/avalon.js"></script>
 <div class="navbar navbar-default" style="height: 10px" id="navbar">
     <script type="text/javascript">
         try {

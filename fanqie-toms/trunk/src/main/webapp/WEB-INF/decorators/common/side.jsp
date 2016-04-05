@@ -12,7 +12,7 @@
 <c:set var="url"
        value='${requestScope["org.springframework.web.servlet.HandlerMapping.pathWithinHandlerMapping"]}'
        scope="request"/>
-        <div class="sidebar ms-controller" id="sidebar" ms-controller="newsCenter">
+        <div class="sidebar" id="sidebar">
             <script type="text/javascript">
                 try {
                     ace.settings.check('sidebar', 'fixed')
@@ -245,9 +245,9 @@
                 </li>
             </ul>
             <div class="news-center">
-                <a class="dropdown-toggle" href="#" ms-click="showDialogFun">
+                <a class="dropdown-toggle" href="#" id="showNewsList">
                     <i class="icon-envelope">
-                        <span class="badge badge-success">{{UnreadNewsAcount}}</span>
+                        <span class="badge badge-success" id="newsAccount">0</span>
                     </i>
 
                 </a>
@@ -258,13 +258,13 @@
             <%--<i class="icon-double-angle-left" data-icon1="icon-double-angle-left"--%>
             <%--data-icon2="icon-double-angle-right"></i>--%>
             <%--</div>--%>
-            <div class="news-center-dialog" ms-css-display="displayDiv">
+            <div class="news-center-dialog" id="newsCenter">
                 <div class="top">
-                    <h3>消息<a class="fr pack-up" ms-click="packUp">收起</a></h3>
+                    <h3>消息<a class="fr pack-up" id="packUp">收起</a></h3>
                 </div>
                 <div class="center">
-                    <ul>
-                        <li>
+                    <ul id="newsList">
+                        <%--<li>
                             <h4><i class="no-read"></i>XX客栈改价提醒<span class="fr">2016-03-10 15:30</span></h4>
                             <p>
                                 大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了大床房、标准间、豪华房改价了！（时间范围：2016.04.01~2016.05.30）
@@ -275,7 +275,7 @@
                             <p>
                                 大床房、标准间、豪华房改价了！（时间范围：2016.04.01~2016.05.30）
                             </p>
-                        </li>
+                        </li>--%>
                     </ul>
                 </div>
                 <div class="bottom"></div>
