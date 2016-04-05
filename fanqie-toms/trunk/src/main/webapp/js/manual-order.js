@@ -18,8 +18,8 @@ $(function(){
         $twoNight = $("#twoNight"),
         $threeNight= $("#threeNight"),
         $guestMobile = $("#guestMobile"),
-        $selectRoomType = $("#selectRoomType"),
-        $roomNumber = $("#roomNumber"),
+        $selectRoomType = $(".selectRoomType"),
+        $roomNumber = $(".roomNumber"),
         $plus = $(".plus-icon"),
         $reduce = $(".reduce-icon"),
         $number = $(".number"),
@@ -28,15 +28,16 @@ $(function(){
         $guestName = $("#guestName"),
         $otherPaynumber = $("#otherPaynumber"),
         $comment = $("#comment"),
-        $roomTypeNumPlus = $("#roomTypeNumPlus"),
-        $roomTypeNumReduce = $("#roomTypeNumReduce"),
+        $roomTypeNumPlus = $(".plus-icon"),
+        $roomTypeNumReduce = $(".reduce-icon"),
         $payNumberReduce = $("#payNumberReduce"),
         $payNumberPlug = $("#payNumberPlug"),
         $bangInnId = $("#bangInnId"),
         $channelOrderCode = $("#channelOrderCode"),
         $payment = $("#payment"),
         bangInnId = $('#kz_item-r').val(),//客栈Id
-        maiAccount;//卖价或者底价
+        maiAccount,//卖价或者底价
+        roomTypedata = [] //存放房型数据
     $.each($("input[name='maiAccount']"),function() {
         if($(this).is(":checked"))
         {
@@ -46,7 +47,7 @@ $(function(){
     $manualOrder.on("click",function() {
         //清空数据
         $("#otherList,#notNeedList").html("")
-        $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,#roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
+        $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
         $selectRoomType.html("<option>请选择房型</option>")
         //请求其它消费数据
         var data = {
@@ -154,34 +155,40 @@ $(function(){
             alert("请先选择入住时间！")
         }
     })
-    $selectRoomType.on("change",function() {
-        var url = $("#roomNumUrl").attr("data-url")
-        var json = {
-            bangInnId : $('#kz_item-r').val(),
-            leaveTimeString : $leaveTimeString.val(),
-            liveTimeString : $liveTimeString.val(),
-            maiAccount : maiAccount,
-            roomTypeId : $("#selectRoomType").attr("data-roomtypeid")
-        }
-        var maxRoomNumber;
-        $.ajax({
-            type:'GET',
-            data: json,
-            url:url,
-            dataType:'html',
-            success:function(rs){
-                rs = $.parseJSON(rs)
-                if( rs.data) {
-                    maxRoomNumber = rs.data
-                    $roomNumber.val(1)
-                    numberPlugReduce($roomTypeNumPlus,$roomTypeNumReduce,$roomNumber,maxRoomNumber);
-                }
-            },
-            error: function() {
-                alert("获取该房型最大房量失败，请重试！")
+    selectRoomTypeChange($selectRoomType.eq(0),0)
+    function selectRoomTypeChange($selectRoomType,i) {
+        $("#roomOperate").off().on("change",$selectRoomType,function() {
+            var url = $("#roomNumUrl").attr("data-url")
+            $roomTypeNumPlus = $(".plus-icon")
+            $roomTypeNumReduce = $(".reduce-icon")
+            $roomNumber = $(".roomNumber")
+            var json = {
+                bangInnId : $('#kz_item-r').val(),
+                leaveTimeString : $leaveTimeString.val(),
+                liveTimeString : $liveTimeString.val(),
+                maiAccount : maiAccount,
+                roomTypeId : $(this).find("option:selected").attr("data-roomtypeid")
             }
+            var maxRoomNumber;
+            $.ajax({
+                type:'GET',
+                data: json,
+                url:url,
+                dataType:'html',
+                success:function(rs){
+                    rs = $.parseJSON(rs)
+                    if( rs.data) {
+                        maxRoomNumber = rs.data
+                        $roomNumber.eq(i).val(1)
+                        numberPlugReduce($roomTypeNumPlus.eq(i),$roomTypeNumReduce.eq(i),$roomNumber.eq(i),maxRoomNumber);
+                    }
+                },
+                error: function() {
+                    alert("获取该房型最大房量失败，请重试！")
+                }
+            })
         })
-    })
+    }
     $("#otherList").on("blur",".number",function() {
         if(!isPInt($(this).val())){
            alert("请输入正整数！")
@@ -191,6 +198,29 @@ $(function(){
         if(!isPInt($(this).val())){
             alert("请输入正整数！")
         }
+    })
+    $("#addRoomType").on("click",function() {
+        var selectRoomType  = $selectRoomType.eq($(".room-type-operate").length-1)
+        if(selectRoomType.find("option:selected").attr("data-roomtypeid")==undefined){
+            alert("请先选择房型再继续新增房型！")
+            return;
+        }
+        if(selectRoomType.find("option").length == 2) {
+            alert("所有房型已被选择！")
+            return
+        }
+        var html = $(".room-type-operate:last").html()
+        $(".add-room-type").before("<div class='mgb-10 room-operate room-type-operate'>"+html+"</div>")
+        $selectRoomType = $(".selectRoomType")
+        var i = $(".room-type-operate").length-1
+        selectRoomTypeChange($selectRoomType.eq(i),i)
+        $.each($(".selectRoomType:last").find("option"),function() {
+            if($(this).attr("data-roomtypeid") !== undefined) {
+                if($(this).attr("data-roomtypeid") == $selectRoomType.eq(i-1).find("option:selected").attr("data-roomtypeid")) {
+                    $(this).remove();
+                }
+            }
+        })
     })
     function isPInt(str) {//判断是否为正整数
         var g = /^[1-9]*[1-9][0-9]*$/;
@@ -231,12 +261,19 @@ $(function(){
             alert("离店时间必填！")
             return;
         }
-        if(!$roomNumber.val()) {
-            alert("房间数量必填！")
+        var Lool = false
+        $.each($roomNumber,function() {
+            if(!$(this).val()) {
+                alert("房间数量必填！")
+                Lool = true;
+                return false;
+            }
+        })
+        if(Lool) {
             return;
         }
         $number = $(".number")
-        var Lool = false
+
         $.each($number,function(){
             if(!$(this).val()) {
                 alert("消费数量必填！")
@@ -256,10 +293,20 @@ $(function(){
             alert("请选择房型！")
             return;
         }
-        var roomTypeList = [{
-            roomTypeId : $selectRoomType.attr("roomtypeid"),
-            roomTypeName : $selectRoomType.val()
-        }]
+        var roomTypeList = [];
+        $.each($(".room-type-operate"),function(key,val) {
+            var json = {}
+            var homeAmount = "roomTypeList"+"["+key+"]"+".homeAmount",
+                roomTypeId = "roomTypeList"+"["+key+"]"+".roomTypeId",
+                roomTypeName = "roomTypeList"+"["+key+"]"+".roomTypeName",
+                $selectedObj = $(this).find(".selectRoomType").find("option:checked"),
+                $roomNumber = $(this).find(".roomNumber")
+            json[homeAmount] = $roomNumber.val()
+            json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
+            json[roomTypeName] = $selectedObj.val()
+            roomTypeList.push(json)
+        })
+        console.log(roomTypeList)
         //请求保存接口传递参数
         var json = {
             bangInnId : $('#kz_item-r').val(),
@@ -297,24 +344,23 @@ $(function(){
             liveTimeString : $liveTimeString.val(),
             maiAccount : maiAccount
         }
-        var data = []
         $.ajax({
             type:'GET',
             data: json,
             url:url,
             dataType:'html',
             success:function(rs){
-               rs = $.parseJSON(rs)
+                rs = $.parseJSON(rs)
                 if(rs.data && rs.data.length==0){
                     alert("获取房型数据为空，请重新选择时间段！")
                     return
                 }
-               if( rs.data && rs.data.length ) {
-                   data = rs.data;
-                   $.each(data,function() {
-                       $selectRoomType.append("<option data-roomTypeId="+this.roomTypeId+">"+this.roomTypeName+"</option>")
-                   })
-               }
+                if( rs.data && rs.data.length ) {
+                    roomTypedata = rs.data;
+                    $.each(roomTypedata,function() {
+                        $selectRoomType.append("<option data-roomTypeId="+this.roomTypeId+">"+this.roomTypeName+"</option>")
+                    })
+                }
 
             },
             error: function() {
