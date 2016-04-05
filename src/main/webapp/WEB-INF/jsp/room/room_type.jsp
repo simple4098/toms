@@ -9,7 +9,9 @@
     <meta charset="utf-8">
     <title>房态房量</title>
     <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
+    <link rel="stylesheet" href="<%=basePath%>/assets/css/select2.min.css"/>
     <link href="<c:url value='/assets/css/pages.css'/>" rel="stylesheet"/>
+    <script src="<c:url value='/js/select2.full.js'/>"></script>
 </head>
 <div >
     <div class="select-area">
@@ -31,7 +33,7 @@
         </form>
     </div>
     <div class="btn-box clearfix">
-        <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled>手动下单</button>
+        <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled id="manualOrder">手动下单</button>
     </div>
     <c:set value="${roomType.list}" var="list"/>
     <div class="room-status-box" id="roomTypeContainerId">
@@ -105,32 +107,32 @@
                         <label class="col-sm-3 control-label no-padding-right"> 渠道订单号
                         </label>
                         <div class="col-sm-9">
-                            <input type="text" data-tips="渠道订单号" autocomplete="off" value="" placeholder="渠道订单号" class="ipt"/>
+                            <input type="text" id="channelOrderCode" placeholder="渠道订单号" class="ipt"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>客人姓名
                         </label>
                         <div class="col-sm-3">
-                            <input type="text" data-tips="请填写客人姓名" autocomplete="off" value="" placeholder="请填写客人姓名" class="ipt"/>
+                            <input type="text" id="guestName" placeholder="请填写客人姓名" class="ipt"/>
                         </div>
                         <label class="col-sm-2 control-label no-padding-right"> <span class="red">*</span>手机号
                         </label>
                         <div class="col-sm-4">
-                            <input type="text" data-tips="请填写客人联系方式" autocomplete="off" value="" placeholder="请填写客人联系方式" class="ipt"/>
+                            <input type="text" id="guestMobile" placeholder="请填写客人联系方式" class="ipt"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>入住时间
                         </label>
                         <div class="col-sm-3">
-                            <input type="text" data-tips="请选择入住日期" autocomplete="off" value="" placeholder="请选择入住日期" class="ipt"/>
-                            <p class="check-time"><a>今日入住</a><a>明日入住</a></p>
+                            <input type="text"  id="liveTimeString" placeholder="请选择入住日期" class="ipt"/>
+                            <p class="check-time"><a id="todayCheckin">今日入住</a><a id="tomarowCheckin">明日入住</a></p>
                         </div>
                         <label class="col-sm-2 control-label no-padding-right"> <span class="red">*</span>离店时间</label>
                         <div class="col-sm-4">
-                            <input type="text" data-tips="请选择离店日期" autocomplete="off" value="" placeholder="请选择离店日期" class="ipt"/>
-                            <p class="check-time"><a>住1晚</a><a>住2晚</a><a>住3晚</a></p>
+                            <input type="text" id="leaveTimeString" placeholder="请选择离店日期" class="ipt"/>
+                            <p class="check-time"><a id="oneNight">住1晚</a><a id="twoNight">住2晚</a><a id="threeNight">住3晚</a></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -138,20 +140,12 @@
                         </label>
                         <div class="col-sm-9">
                             <div class="mgb-10 room-operate">
-                                <select>
+                                <select id="selectRoomType">
                                     <option>请选择房型</option>
                                 </select>
-                                <input type="text" placeholder="房间数量">
-                                <a class="reduce-icon">-</a>
-                                <a class="plus-icon">+</a>
-                            </div>
-                            <div class="mgb-10 room-operate">
-                                <select>
-                                    <option>请选择房型</option>
-                                </select>
-                                <input type="text" placeholder="房间数量">
-                                <a class="reduce-icon">-</a>
-                                <a class="plus-icon">+</a>
+                                <input type="text" placeholder="房间数量" id="roomNumber" readonly>
+                                <a class="reduce-icon" id="roomTypeNumReduce">-</a>
+                                <a class="plus-icon" id="roomTypeNumPlus">+</a>
                             </div>
                         </div>
                     </div>
@@ -159,25 +153,19 @@
                         <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>其它消费
                         </label>
                         <div class="col-sm-9">
-                            <div class="mgb-10 col-sm-12">
-                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
+                            <div class="mgb-10 col-sm-12" id="otherList">
+                                <%--<label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
                                 <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
                                 <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
-                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
-                            </div>
-                            <div class="mgb-10 col-sm-12">
-                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
-                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
-                                <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
-                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>
+                                <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>--%>
                             </div>
                             <div class="mgb-10 col-sm-12 room-operate">
-                                <select style="margin-left:45px;">
+                                <select style="margin-left:45px;" id="notNeedList">
                                     <option>请选择消费项目</option>
                                 </select>
-                                <input type="text" placeholder="填写消费数量">
-                                <a class="reduce-icon">-</a>
-                                <a class="plus-icon">+</a>
+                                <input type="text" placeholder="填写消费数量" id="otherPaynumber">
+                                <a class="reduce-icon" id="payNumberReduce">-</a>
+                                <a class="plus-icon" id="payNumberPlug">+</a>
                             </div>
                         </div>
                     </div>
@@ -185,22 +173,22 @@
                         <label class="col-sm-3 control-label no-padding-right"> 订单总销售额
                         </label>
                         <div class="col-sm-9">
-                            <input type="text" data-tips="订单总销售额" autocomplete="off" value="" placeholder="订单总销售额" class="ipt"/>
+                            <input type="text" id="payment" placeholder="订单总销售额" class="ipt"/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> 备注
                         </label>
                         <div class="col-sm-9">
-                            <input type="text" data-tips="备注" autocomplete="off" value="" placeholder="备注" class="ipt"/>
+                            <input type="text" id="comment" placeholder="备注" class="ipt"/>
                         </div>
                     </div>
-                    <%--<input type="hidden" class="account-id" name="bangInnId"/>
+                    <input type="hidden" class="account-id" name="bangInnId"/>
                     <input type="hidden" class="tag-id" name="tagId"/>
                     <input type="hidden" class="type-name" name="roomTypeName"/>
                     <input type="hidden" class="max-num" value=""/>
                     <input type="hidden" class="mai-account" name="maiAccount"/>
-                    <input type="hidden" class="room_type_name" name="orderRoomTypeName">--%>
+                    <input type="hidden" class="room_type_name" name="orderRoomTypeName">
 
                    <%-- <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="form-field-11"> 渠道订单号
@@ -355,7 +343,7 @@
                             取消
                         </button>
                         &nbsp; &nbsp; &nbsp;
-                        <button class="btn btn-info btn-hand-make-order" id="submitBtn"
+                        <button class="btn btn-info btn-hand-make-order" id="saveManualOrder"
                                 data-url="<c:url value="/order/hand_make_order.json"/>" type="button">
                             <i class="icon-ok bigger-110"></i>
                             确认
@@ -378,3 +366,9 @@
 <script src="<c:url value='/assets/js/room-type.js'/>"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+<script src="<c:url value='/js/manual-order.js'/>"></script>
+<script>
+    $(document).ready(function () {
+        $(".js-example-basic-single").select2();
+    });
+</script>
