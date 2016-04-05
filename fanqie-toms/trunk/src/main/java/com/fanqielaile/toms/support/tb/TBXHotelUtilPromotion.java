@@ -50,7 +50,7 @@ public class TBXHotelUtilPromotion {
      * 酒店更新 XhotelUpdateRequest 封装
      * @param innDto 客栈信息
      */
-    public static XhotelUpdateRequest xhotelUpdateRequest(InnDto innDto){
+    public static XhotelUpdateRequest xhotelUpdateRequest(InnDto innDto,OtaTaoBaoArea andArea){
         XhotelUpdateRequest req=new XhotelUpdateRequest();
         req.setOuterId(innDto.getInnId());
         req.setName(innDto.getBrandName());
@@ -61,6 +61,9 @@ public class TBXHotelUtilPromotion {
         req.setPics(TPServiceUtil.obtPics(innDto.getImgList()));
         //设施
         req.setHotelFacilities(TPServiceUtil.obtHotelFacilities(innDto.getFacilitiesMap()));
+        if (andArea!=null){
+            req.setCity(!StringUtils.isEmpty(andArea.getCityCode()) ? Long.valueOf(andArea.getCityCode()) : 110100);
+        }
         return  req;
     }
 
@@ -69,11 +72,12 @@ public class TBXHotelUtilPromotion {
      * @param infoRefDto 渠道信息
      * @param innDto 客栈信息
      */
-    public static XHotel hotelUpdate(OtaInfoRefDto infoRefDto,InnDto innDto)   {
+    public static XHotel hotelUpdate(OtaInfoRefDto infoRefDto,InnDto innDto,OtaTaoBaoArea andArea)   {
         TaobaoClient client=new DefaultTaobaoClient(CommonApi.TB_URL, infoRefDto.getAppKey(), infoRefDto.getAppSecret());
-        XhotelUpdateRequest req = xhotelUpdateRequest(innDto);
+        XhotelUpdateRequest req = xhotelUpdateRequest(innDto,andArea);
         if (StringUtils.isNotEmpty(infoRefDto.getVendorId())){
             req.setVendor(infoRefDto.getVendorId());
+            log.info("hotelAdd companyCode"+infoRefDto.getCompanyCode()+"酒店request:"+JacksonUtil.obj2json(req));
         }
         try {
             XhotelUpdateResponse response = client.execute(req , infoRefDto.getSessionKey());
@@ -104,6 +108,7 @@ public class TBXHotelUtilPromotion {
             req.setPics(TPServiceUtil.obtPics(innDto.getImgList()));
             if (StringUtils.isNotEmpty(otaInfoRefDto.getVendorId())){
                 req.setVendor(otaInfoRefDto.getVendorId());
+                log.info("taoBaoArea json:"+andArea!=null?JacksonUtil.obj2json(andArea):" 区域为null");
             }
             //客栈设施
             req.setHotelFacilities(TPServiceUtil.obtHotelFacilities(innDto.getFacilitiesMap()));
@@ -116,10 +121,12 @@ public class TBXHotelUtilPromotion {
             }
             req.setAddress(innDto.getAddr());
             try {
+                String obj2json = JacksonUtil.obj2json(req);
+                log.info("hotelAdd companyCode"+otaInfoRefDto.getCompanyCode()+"酒店request:"+obj2json);
                 XhotelAddResponse response = client.execute(req , otaInfoRefDto.getSessionKey());
                 //存在
                 if (TomsConstants.HOTEL_EXIST.equals(response.getSubCode())) {
-                    return   hotelUpdate(otaInfoRefDto,innDto);
+                    return   hotelUpdate(otaInfoRefDto,innDto,andArea);
                 }
                 log.info("hotelAdd:" +response.getXhotel());
                 return response.getXhotel();
@@ -127,7 +134,7 @@ public class TBXHotelUtilPromotion {
                 log.error(e.getMessage());
             }
         }else {
-            return   hotelUpdate(otaInfoRefDto,innDto);
+            return   hotelUpdate(otaInfoRefDto,innDto,andArea);
         }
 
         return null;
