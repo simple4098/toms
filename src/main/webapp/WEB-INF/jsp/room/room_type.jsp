@@ -138,14 +138,17 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>房型及房间数量
                         </label>
-                        <div class="col-sm-9">
-                            <div class="mgb-10 room-operate">
-                                <select id="selectRoomType">
+                        <div class="col-sm-9" id="roomOperate">
+                            <div class="mgb-10 room-operate room-type-operate">
+                                <select class="selectRoomType">
                                     <option>请选择房型</option>
                                 </select>
-                                <input type="text" placeholder="房间数量" id="roomNumber" readonly>
-                                <a class="reduce-icon" id="roomTypeNumReduce">-</a>
-                                <a class="plus-icon" id="roomTypeNumPlus">+</a>
+                                <input type="text" placeholder="房间数量" class="roomNumber" readonly>
+                                <a class="reduce-icon" class="roomTypeNumReduce">-</a>
+                                <a class="plus-icon" class="roomTypeNumPlus">+</a>
+                            </div>
+                            <div class="mgb-10 add-room-type">
+                                <a id="addRoomType" class="btn">新增房型</a>
                             </div>
                         </div>
                     </div>
