@@ -74,6 +74,7 @@ public class OtaInfoService implements IOtaInfoService {
             Company company = companyDao.selectCompanyById(companyId);
             OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
             infoRefDto.setCommissionPercentDto(commission);
+            infoRefDto.setCompanyCode(company.getCompanyCode());
             return infoRefDto;
         }
         return null;

@@ -236,13 +236,14 @@
                         </toms:authorize>
                     </ul>
                 </li>
-                <li
-                        <c:if test="${fn:contains(url, '/notice/find_notices')}">class="active"</c:if> >
-                    <a href="<c:url value="/notice/find_notices"/>" class="dropdown-toggle">
-                        <i class="icon-edit"></i>
-                        <span class="menu-text"> 个性化功能 </span>
-                    </a>
-                </li>
+                <toms:authorize uri="/personality/function">
+                    <li <c:if test="${fn:contains(url, '/personality/')}">class="active"</c:if>>
+                        <a href="<c:url value='/personality/function'/>">
+                            <i class="icon-text-width"></i>
+                            <span class="menu-text"> 个性功能 </span>
+                        </a>
+                    </li>
+                </toms:authorize>
             </ul>
             <div class="news-center">
                 <a class="dropdown-toggle" href="#" id="showNewsList">

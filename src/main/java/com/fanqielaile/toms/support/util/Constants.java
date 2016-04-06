@@ -9,6 +9,8 @@ public class Constants {
     //toms 客栈上下架类型
     public static final String INN_UP_DOWN="proxy_inn_onshelf";
     public static final String OMS_RATE_PLAN_CODE="RP001";
+    public static final String ICON_OFF="<i class=\"icon-coffee\">";
+    public static final String ICON_ON="<i class=\"icon-coffee ON\">";
     public static final String CREDIT="creditInn";
     public static final String REDIS="TOMS_INN_UP_DOWN";
     public static final int tp_count=14;
