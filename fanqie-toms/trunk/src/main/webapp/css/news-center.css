@@ -133,9 +133,6 @@ a:hover, a:focus,a {
     cursor: pointer;
 }
 /*个性化设置*/
-.qita-xiaofei-guanli {
-    display : none;
-}
 .manual-order h4,
 .qita-xiaofei-guanli h4 {
     padding: 10px 0;
