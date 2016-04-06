@@ -35,6 +35,7 @@ $(function(){
         $bangInnId = $("#bangInnId"),
         $channelOrderCode = $("#channelOrderCode"),
         $payment = $("#payment"),
+        $saveManualOrder = $("#saveManualOrder"),
         bangInnId = $('#kz_item-r').val(),//客栈Id
         maiAccount,//卖价或者底价
         roomTypedata = [] //存放房型数据
@@ -49,6 +50,9 @@ $(function(){
         $("#otherList,#notNeedList").html("")
         $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
         $selectRoomType.html("<option>请选择房型</option>")
+        /*if($(".room-type-operate").length){
+
+        }*/
         //请求其它消费数据
         var data = {
             "otherList" : [{
@@ -243,7 +247,7 @@ $(function(){
 
         })
     }
-    $("#saveManualOrder").on("click",function() {
+    $saveManualOrder.on("click",function() {
         if(!$guestName.val()) {
             alert("客人姓名必填！")
             return;
@@ -293,20 +297,21 @@ $(function(){
             alert("请选择房型！")
             return;
         }
-        var roomTypeList = [];
+        var dailyInfoses = [];
         $.each($(".room-type-operate"),function(key,val) {
             var json = {}
-            var homeAmount = "roomTypeList"+"["+key+"]"+".homeAmount",
-                roomTypeId = "roomTypeList"+"["+key+"]"+".roomTypeId",
-                roomTypeName = "roomTypeList"+"["+key+"]"+".roomTypeName",
+            var homeAmount = "dailyInfoses"+"["+key+"]"+".homeAmount",
+                roomTypeId = "dailyInfoses"+"["+key+"]"+".roomTypeId",
+                roomTypeName = "dailyInfoses"+"["+key+"]"+".roomTypeName",
                 $selectedObj = $(this).find(".selectRoomType").find("option:checked"),
                 $roomNumber = $(this).find(".roomNumber")
             json[homeAmount] = $roomNumber.val()
             json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
             json[roomTypeName] = $selectedObj.val()
-            roomTypeList.push(json)
+            dailyInfoses.push(json)
         })
-        console.log(roomTypeList)
+        console.log(dailyInfoses)
+
         //请求保存接口传递参数
         var json = {
             bangInnId : $('#kz_item-r').val(),
@@ -318,9 +323,25 @@ $(function(){
             liveTimeString : $liveTimeString.val(),
             maiAccount : maiAccount,
             payment : $payment.val(),
-            roomTypeList : roomTypeList
+            dailyInfoses : dailyInfoses
         }
         //请求保存接口
+        var url = $saveManualOrder.attr("data-url");
+        $.ajax({
+            type:'POST',
+            data: json,
+            url:url,
+            dataType:'html',
+            success:function(rs){
+                if(rs && rs.status) {
+                    alert("手动下单成功！")
+                }
+            },
+            error: function() {
+                alert("手动下单失败，请重试！")
+            }
+        })
+
     })
     function formatDate(date) {
         var year = date.getFullYear();
