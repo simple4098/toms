@@ -37,6 +37,36 @@ public class DailyInfos extends Domain {
     private Integer roomNum;
     //是否包含加减价
     private Integer weatherAdd = 0;
+    //房型id
+    private String roomTypeId;
+    //房型名称
+    private String roomTypeName;
+    //房间数量
+    private Integer roomTypeNums;
+
+    public String getRoomTypeId() {
+        return roomTypeId;
+    }
+
+    public void setRoomTypeId(String roomTypeId) {
+        this.roomTypeId = roomTypeId;
+    }
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
+    }
+
+    public Integer getRoomTypeNums() {
+        return roomTypeNums;
+    }
+
+    public void setRoomTypeNums(Integer roomTypeNums) {
+        this.roomTypeNums = roomTypeNums;
+    }
 
     public BigDecimal getBasicPrice() {
         return basicPrice;
@@ -80,8 +110,11 @@ public class DailyInfos extends Domain {
 
     public String getDayDesc() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(getDay());
-        return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(new DateTime(getDay()).getDayOfWeek());
+        if (null != getDay()) {
+            calendar.setTime(getDay());
+            return DateUtil.formatDateToString(getDay(), "yyyy-MM-dd") + " " + DcUtil.dayOfWeek(new DateTime(getDay()).getDayOfWeek());
+        }
+        return dayDesc;
     }
 
     public void setDayDesc(String dayDesc) {

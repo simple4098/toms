@@ -319,7 +319,7 @@ $(function(){
         $.each($(".room-type-operate"),function(key,val) {
             $selectedObj = $(this).find(".selectRoomType").find("option:checked")
             $roomNumber = $(this).find(".roomNumber")
-            homeAmount = "dailyInfoses"+"["+key+"]"+".homeAmount"
+            homeAmount = "dailyInfoses" + "[" + key + "]" + ".roomTypeNums"
             roomTypeId = "dailyInfoses"+"["+key+"]"+".roomTypeId"
             roomTypeName = "dailyInfoses"+"["+key+"]"+".roomTypeName"
             json[homeAmount] = $roomNumber.val()
@@ -335,7 +335,7 @@ $(function(){
             url:url,
             dataType:'html',
             success:function(rs){
-                if(rs && rs.status) {
+                if (rs || rs.status) {
                     alert("手动下单成功！")
                 }
             },

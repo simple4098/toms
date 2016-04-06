@@ -334,4 +334,13 @@ public interface IOrderService {
      * @return
      */
     JsonModel dealOrderPay(HotelOrderPay hotelOrderPay) throws Exception;
+
+    /**
+     * 多房型下单
+     *
+     * @param order
+     * @param userInfo
+     * @return
+     */
+    Map<String, Object> dealHandMakeOrderRoomTypes(Order order, UserInfo userInfo) throws Exception;
 }

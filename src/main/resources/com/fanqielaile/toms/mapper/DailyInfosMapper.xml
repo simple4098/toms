@@ -10,16 +10,23 @@
         <result column="break_fast_type" property="breakfastType"/>
         <result column="break_fast_num" property="breakfastNum"/>
         <result property="weatherAdd" column="weather_add"/>
+        <result column="room_type_id" property="roomTypeId"/>
+        <result column="room_type_name" property="roomTypeName"/>
+        <result column="room_type_nums" property="roomTypeNums"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add,basic_price
+        id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add,basic_price,room_type_id,
+        room_type_name,room_type_nums
     </sql>
     <insert id="insertDailyInfos" parameterType="com.fanqielaile.toms.model.Order">
         INSERT INTO
-        ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add,basic_price)
+        ota_daily_infos(id,day,price,created_date,order_id,break_fast_type,break_fast_num,weather_add,basic_price,
+        room_type_id,room_type_name,room_type_nums
+        )
         VALUES
         <foreach collection="dailyInfoses" item="d" separator=",">
-            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakfastType},#{d.breakfastNum},#{d.weatherAdd},#{d.basicPrice})
+            (#{d.uuid},#{d.day},#{d.price},now(),#{d.orderId},#{d.breakfastType},#{d.breakfastNum},#{d.weatherAdd},
+            #{d.basicPrice},#{d.roomTypeId},#{d.roomTypeName},#{d.roomTypeNums})
         </foreach>
     </insert>
     <select id="selectDailyInfoByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">
