@@ -310,8 +310,6 @@ $(function(){
             json[roomTypeName] = $selectedObj.val()
             dailyInfoses.push(json)
         })
-        console.log(dailyInfoses)
-
         //请求保存接口传递参数
         var json = {
             bangInnId : $('#kz_item-r').val(),
