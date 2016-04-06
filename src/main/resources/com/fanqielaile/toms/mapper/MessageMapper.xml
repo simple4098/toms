@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.MessageDao">
+ 	<resultMap id="BaseResultMap" type="com.fanqielaile.toms.dto.xl.ChangePriceMessageDto">
+        <id column="id" property="id"/>
+        <result column="inn_id" property="innId"/>
+        <result column="inn_name" property="innName"/>
+        <result column="create_date" property="createDate"/>
+        <result column="read" property="status"/>
+        <result column="message" property="context"/>
+ 	</resultMap>
+ 	
+ 	<sql id="Base_Column_List">
+      	cpm.id, cpm.inn_id, cpm.inn_name, cpm.create_date,cpm.read,cpm.message
+ 	</sql>
+ 	
+ 	<sql id="getChangePriceMessage">
+    	select 
+    		<include refid="Base_Column_List"></include>
+    	from bang_inn bi
+    	inner join 	inn_change_price_msg cpm on bi.inn_id = cpm.inn_id
+    	<where>
+    		bi.company_id = #{companyId}
+    		and bi.deleted = 0 
+    		<if test="from != null">
+    			<if test="to != null">
+    				and cpm.create_date &gt; #{from}::timestamp and cpm.create_date &lt;= #{to}::timestamp
+    			</if>
+    		</if>
+    		<if test="status != null">
+    			and cpm.read = #{status}
+    		</if>
+    	</where>
+    </sql>   
+    
+    <select id="getChangePriceMessageCount" parameterType="com.fanqielaile.toms.model.MessageParam" resultType="Integer">
+    	select count(*)
+    	from(
+    		<include refid="getChangePriceMessage"></include>
+    	) m
+    </select>
+    
+    <select id="getChangePriceMessageList" parameterType="com.fanqielaile.toms.model.MessageParam" resultMap="BaseResultMap">
+    	<include refid="getChangePriceMessage"></include>
+    </select>
+    
+    <update id="setChangPriceMsgStatus" parameterType="com.fanqielaile.toms.model.MessageParam">
+    	update inn_change_price_msg
+    	set read=#{status}
+    	where inn_id in(
+    		select inn_id 
+    		from bang_inn
+    		where company_id = #{companyId}
+    			and deleted = 0  
+    	)
+    </update>
+    
+    <update id="setChangPriceMsgStatusById" parameterType="java.util.List">
+    	<if test="list.size()>0">
+	    	update inn_change_price_msg
+	    	set read='t' 
+	    	where id in(
+	    		 <foreach collection="list" item="message" separator=",">
+	    		 		#{message.id}
+	    		 </foreach>
+	    	)
+    	</if>
+    </update>
+    
+    <insert id="insertChangPriceMsg" parameterType="com.fanqielaile.toms.dto.xl.ChangePriceMessageDto">
+    	insert into inn_change_price_msg(
+    		id,
+    		inn_id,
+    		inn_name,
+    		create_date,
+    		read,
+    		message
+    	) 
+    	values(
+    		#{id,jdbcType=VARCHAR},
+    		#{innId,jdbcType=NUMERIC},
+    		#{innName,jdbcType=VARCHAR},
+    		now(),
+    		#{status},
+    		#{context,jdbcType=VARCHAR}
+    	)
+    </insert>
+</mapper>
