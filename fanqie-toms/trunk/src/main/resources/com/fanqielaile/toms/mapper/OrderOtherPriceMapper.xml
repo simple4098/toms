@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.OrderOtherPriceDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.OrderOtherPrice">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="order_id" property="orderId"/>
+        <result column="other_consumer_info_id" property="otherConsumerInfoId"/>
+        <result column="leven" property="leven"/>
+        <result column="price_name" property="priceName"/>
+        <result column="price" property="price"/>
+        <result column="consumer_project_name" property="consumerProjectName"/>
+        <result column="nums" property="nums"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, created_date,order_id,other_consumer_info_id,leven,price_name,price,nums,consumer_project_name
+    </sql>
+
+    <insert id="insertOrderOtherPrice" parameterType="com.fanqielaile.toms.model.OrderOtherPrice">
+        INSERT INTO
+        order_other_price(id,created_date,order_id,other_consumer_info_id,leven,price_name,price,nums,consumer_project_name)
+        VALUES
+        (#{id},#{createdDate},#{orderId},#{otherConsumerInfoId},#{leven},#{priceName},#{price},#{nums},#{consumerProjectName})
+    </insert>
+
+</mapper>

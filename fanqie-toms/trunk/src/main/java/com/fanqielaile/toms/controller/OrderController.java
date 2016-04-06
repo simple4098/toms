@@ -260,7 +260,10 @@ public class OrderController extends BaseController {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
             order.setId(order.getUuid());
-            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
+            //单房型手动下单
+//            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
+            //多方手动下单
+            Map<String, Object> result = this.orderService.dealHandMakeOrderRoomTypes(order, userInfo);
             model.addAttribute("status", result.get("status"));
             model.addAttribute("message", result.get("message"));
         } else {

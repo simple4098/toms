@@ -719,7 +719,11 @@ public class Order extends Domain {
         //如果是信用住，付款金额=付款金额
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
-        omsOrder.setRoomTypeNum(order.getHomeAmount());
+        if (ChannelSource.HAND_ORDER.equals(order.getChannelSource())) {
+            omsOrder.setRoomTypeNum(1);
+        } else {
+            omsOrder.setRoomTypeNum(order.getHomeAmount());
+        }
         if (PaymentType.CREDIT.equals(order.getPaymentType())) {
             //信用住
             omsOrder.setPaidAmount(order.getPrepayPrice());
@@ -740,8 +744,8 @@ public class Order extends Domain {
                 childOrder.setBookRoomPrice(dailyInfos.getPrice());
                 childOrder.setCheckInAt(new SimpleDateFormat("yyyy-MM-dd").format(dailyInfos.getDay()));
                 childOrder.setCheckOutAt(new SimpleDateFormat("yyyy-MM-dd").format(DateUtil.addDay(dailyInfos.getDay(), 1)));
-                childOrder.setRoomTypeId(order.getRoomTypeId());
-                childOrder.setRoomTypeName(order.getRoomTypeName());
+                childOrder.setRoomTypeId(dailyInfos.getRoomTypeId());
+                childOrder.setRoomTypeName(dailyInfos.getRoomTypeName());
                 //设置价格计划id，oms的价格计划code
                 childOrder.setRatePlanCode(order.getOTARateCode());
                 childOrders.add(childOrder);
@@ -779,6 +783,61 @@ public class Order extends Domain {
     }
 
     /**
+     * 多房型手动下单
+     * @param order
+     * @param roomTypeInfoDto
+     * @return
+     */
+    public static Order makeHandOrderByRoomTypes(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        Order handOrder = new Order();
+        handOrder.setId(order.getId());
+        handOrder.setAccountId(order.getAccountId());
+        handOrder.setChannelSource(ChannelSource.HAND_ORDER);
+        if (StringUtils.isNotEmpty(order.getChannelOrderCode())) {
+            handOrder.setChannelOrderCode(order.getChannelOrderCode());
+        } else {
+            handOrder.setChannelOrderCode(OrderMethodHelper.getOrderCode());
+        }
+        //手动下单将渠道订单code跟order_code设置为相同
+        handOrder.setOrderCode(handOrder.getChannelOrderCode());
+        handOrder.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
+        handOrder.setInnId(order.getInnId());
+        handOrder.setGuestName(order.getGuestName());
+        handOrder.setHomeAmount(order.getHomeAmount());
+        handOrder.setLiveTime(order.getLiveTime());
+        handOrder.setLeaveTime(order.getLeaveTime());
+        //设置价格比例
+        handOrder.setPercent(order.getPercent());
+        //设置价格模式
+        handOrder.setUsedPriceModel(order.getUsedPriceModel());
+        handOrder.setTotalPrice(getTotalPriceByRoomTypes(order, roomTypeInfoDto));
+        handOrder.setBasicTotalPrice(handOrder.getTotalPrice());
+        //设置成本价，总价*（1-比例）
+        if (UsedPriceModel.MAI.equals(order.getUsedPriceModel())) {
+            handOrder.setCostPrice(handOrder.getTotalPrice().multiply((new BigDecimal(1).subtract(order.getPercent()))));
+        } else {
+            handOrder.setCostPrice(handOrder.getTotalPrice());
+        }
+        //TODO 设置预付，成本
+        handOrder.setPrepayPrice(order.getPayment());
+        handOrder.setPayment(order.getPayment());
+        handOrder.setOrderTime(new Date());
+        handOrder.setCurrency(CurrencyCode.CNY);
+        handOrder.setPaymentType(PaymentType.PREPAID);
+        handOrder.setGuestMobile(order.getGuestMobile());
+        handOrder.setFeeStatus(FeeStatus.PAID);
+        handOrder.setComment(order.getComment());
+        handOrder.setCompanyId(order.getCompanyId());
+        //设置房型名称
+        handOrder.setOrderInnName(order.getOrderInnName());
+        //每日信息
+        handOrder.setDailyInfoses(getDailyInfosRoomTypes(order, roomTypeInfoDto));
+        //入住人信息
+        handOrder.setOrderGuestses(getOrderGuest(order));
+        return handOrder;
+    }
+
+    /**
      * 处理手动下单传递的参数
      *
      * @param order
@@ -800,7 +859,8 @@ public class Order extends Domain {
         handOrder.setInnId(order.getInnId());
         handOrder.setGuestName(order.getGuestName());
         handOrder.setRoomTypeId(order.getRoomTypeId());
-        handOrder.setHomeAmount(order.getHomeAmount());
+        //手动下单自动拆单，默认为1
+        handOrder.setHomeAmount(1);
         handOrder.setLiveTime(order.getLiveTime());
         handOrder.setLeaveTime(order.getLeaveTime());
         //设置价格比例
@@ -859,6 +919,99 @@ public class Order extends Domain {
             }
         }
         return result.multiply(new BigDecimal(order.getHomeAmount()));
+    }
+
+    //设置订单总价:多房型下单
+    private static BigDecimal getTotalPriceByRoomTypes(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        BigDecimal result = BigDecimal.ZERO;
+        if (null != roomTypeInfoDto) {
+            List<RoomStatusDetail> roomTypeInfoResult = getRoomStatusDetails(order, roomTypeInfoDto);
+            if (null != roomTypeInfoResult && ArrayUtils.isNotEmpty(roomTypeInfoResult.toArray())) {
+                for (RoomStatusDetail r : roomTypeInfoResult) {
+                    if (ArrayUtils.isNotEmpty(r.getRoomDetail().toArray())) {
+                        for (RoomDetail roomDetail : r.getRoomDetail()) {
+                            if (null != order.getDailyInfoses() && ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+                                for (DailyInfos d : order.getDailyInfoses()) {
+                                    if (r.getRoomTypeId().toString().equals(d.getRoomTypeId())) {
+                                        result = result.add(new BigDecimal(Double.toString(roomDetail.getRoomPrice())).multiply(BigDecimal.valueOf(d.getRoomTypeNums())));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 获取订单日期中的价格
+     * @param order
+     * @param roomTypeInfoDto
+     * @return
+     */
+    private static List<RoomStatusDetail> getRoomStatusDetails(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        List<RoomStatusDetail> roomTypeInfoResult = new ArrayList<>();
+        if (null != roomTypeInfoDto.getRoomStatus() && ArrayUtils.isNotEmpty(roomTypeInfoDto.getRoomStatus().toArray())) {
+            List<RoomStatusDetail> roomStatus = roomTypeInfoDto.getRoomStatus();
+            if (ArrayUtils.isNotEmpty(roomStatus.toArray())) {
+                if (null != order.getDailyInfoses() && ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+                    for (DailyInfos d : order.getDailyInfoses()) {
+                        for (RoomStatusDetail statusDetail : roomStatus) {
+                            if (statusDetail.getRoomTypeId().toString().equals(d.getRoomTypeId())) {
+                                roomTypeInfoResult.add(statusDetail);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return roomTypeInfoResult;
+    }
+
+    /**
+     * 设置每日价格信息:多房型下单
+     *
+     * @param order
+     * @return
+     */
+    public static List<DailyInfos> getDailyInfosRoomTypes(Order order, RoomTypeInfoDto roomTypeInfoDto) {
+        List<DailyInfos> dailyInfoses = new ArrayList<>();
+        if (null != order.getLiveTime() && null != order.getLeaveTime()) {
+            //获取选中房型的房价信息
+            List<RoomStatusDetail> roomTypeInfoResult = getRoomStatusDetails(order, roomTypeInfoDto);
+            //创建订单中选中入住日期的每日房价
+            if (null != roomTypeInfoResult && ArrayUtils.isNotEmpty(roomTypeInfoResult.toArray())) {
+                for (RoomStatusDetail r : roomTypeInfoResult) {
+                    if (ArrayUtils.isNotEmpty(r.getRoomDetail().toArray())) {
+                        for (RoomDetail roomDetail : r.getRoomDetail()) {
+                            //拆分订单
+                            if (null != order.getDailyInfoses() && ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+                                for (DailyInfos d1 : order.getDailyInfoses()) {
+                                    if (d1.getRoomTypeId().equals(r.getRoomTypeId().toString())) {
+                                        for (int i = 0; i < d1.getRoomTypeNums(); i++) {
+                                            DailyInfos dailyInfos = new DailyInfos();
+                                            dailyInfos.setOrderId(order.getId());
+                                            dailyInfos.setDay(DateUtil.parse(roomDetail.getRoomDate(), "yyyy-MM-dd"));
+                                            dailyInfos.setPrice(new BigDecimal(Double.toString(roomDetail.getRoomPrice())));
+                                            dailyInfos.setBasicPrice(dailyInfos.getPrice());
+                                            dailyInfos.setCreatedDate(new Date());
+                                            dailyInfos.setRoomTypeId(r.getRoomTypeId().toString());
+                                            dailyInfos.setRoomTypeName(r.getRoomTypeName());
+                                            dailyInfos.setRoomTypeNums(d1.getRoomTypeNums());
+                                            dailyInfoses.add(dailyInfos);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return dailyInfoses;
     }
 
     /**
@@ -960,6 +1113,23 @@ public class Order extends Domain {
             }
         }
         order.setExceptionOrderList(exceptionOrders);
+        return order;
+    }
+
+    /**
+     * 转换每日价格信息
+     *
+     * @param order
+     * @return
+     */
+    public Order dealDailyInfosMethod(Order order) {
+        if (null != order.getDailyInfoses() && ArrayUtils.isNotEmpty(order.getDailyInfoses().toArray())) {
+            for (DailyInfos d : order.getDailyInfoses()) {
+                d.setRoomTypeId(order.getRoomTypeId());
+                d.setRoomTypeNums(order.getHomeAmount());
+                d.setRoomTypeName(order.getOrderRoomTypeName());
+            }
+        }
         return order;
     }
 }
