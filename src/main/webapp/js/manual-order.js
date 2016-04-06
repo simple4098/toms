@@ -38,7 +38,7 @@ $(function(){
         $saveManualOrder = $("#saveManualOrder"),
         bangInnId = $('#kz_item-r').val(),//客栈Id
         maiAccount,//卖价或者底价
-        roomTypedata = [] //存放房型数据
+        roomTypedata = [] //存放房型数据,
     $.each($("input[name='maiAccount']"),function() {
         if($(this).is(":checked"))
         {
@@ -167,7 +167,12 @@ $(function(){
     })
     selectRoomTypeChange($selectRoomType.eq(0),0)
     function selectRoomTypeChange($selectRoomType,i) {
+        var oldRoomtypeid
+        $("#roomOperate").off().on("click",$selectRoomType,function() {
+            oldRoomtypeid = $selectRoomType.find("option:selected").attr("data-roomtypeid")
+        })
         $("#roomOperate").off().on("change",$selectRoomType,function() {
+            var newRoomtypeid = $selectRoomType.find("option:selected").attr("data-roomtypeid")
             var url = $("#roomNumUrl").attr("data-url")
             $roomTypeNumPlus = $(".plus-icon")
             $roomTypeNumReduce = $(".reduce-icon")
@@ -303,6 +308,15 @@ $(function(){
             alert("请选择房型！")
             return;
         }
+        if(!$payment.val()) {
+            alert("订单总销售额必填！")
+            return;
+        }
+        if(!isPInt($payment.val())){//验证是否为正整数
+            alert("请输入正整数！")
+            Lool = true;
+            return false;
+        }
         var homeAmount,roomTypeId,roomTypeName;
         //请求保存接口传递参数
         var json = {
@@ -314,7 +328,7 @@ $(function(){
             leaveTimeString : $leaveTimeString.val(),
             liveTimeString : $liveTimeString.val(),
             maiAccount : maiAccount,
-            payment : $payment.val(),
+            payment : $payment.val()
         }
         $.each($(".room-type-operate"),function(key,val) {
             $selectedObj = $(this).find(".selectRoomType").find("option:checked")
