@@ -18,8 +18,8 @@
         <result column="price" property="price"/>
         <result column="parent_id" property="parentId"/>
         <result column="deleted" property="deleted"/>
-        <result column="created_date" property="createdDate"/>
-        <result column="updated_date" property="updatedDate"/>
+       <!-- <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>-->
         <result column="status" property="status"/>
     </resultMap>
 
@@ -48,6 +48,9 @@
 
             and o."level"=2 and o.parent_id=#{parentId}
         </if>
+    </select>
+    <select id="selectConsumerInfoById"  resultMap="consumerInfoId">
+        select o.* from other_consumer_info o where o.deleted=0  and id=#{id}
     </select>
 
     <select id="selectChildOtherConsumerInfo"  resultMap="consumerInfoId">

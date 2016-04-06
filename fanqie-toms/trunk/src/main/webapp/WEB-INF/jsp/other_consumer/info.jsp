@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/openChannerl.css'/>">
-    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/news-center.css'/>">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/css/news-center.css'/>">
 </head>
 <body>
 <div class="container ms-controller" ms-controller="otherPayManage">
@@ -40,7 +40,7 @@
                         <li class="col-sm-2 items-title">
                             <dl>
                                 <dd>${d.consumerProjectName}</dd>
-                                <dd><a ms-click="editPayItemFun">编辑</a><a data-toggle="modal" data-target="#deletePayItems">删除</a></dd>
+                                <dd><a ms-click="editPayItemFun" data-url="<c:url value='/personality/editView.json'/>?consumerInfoId=${d.id}">编辑</a><a data-toggle="modal" data-target="#deletePayItems">删除</a></dd>
                             </dl>
                         </li>
                         <c:if test="${!empty d.otherList}">
@@ -57,34 +57,6 @@
                         </c:if>
                      </ul>
                     </c:forEach>
-
-                <%--<ul class="opened-con-ul">
-                    <li class="col-sm-2 items-title">
-                        <dl>
-                            <dd>门票</dd>
-                            <dd><a ms-click="editPayItemFun">编辑</a><a data-toggle="modal" data-target="#deletePayItems">删除</a></dd>
-                        </dl>
-                    </li>
-                    <li class="col-sm-10 items-detail">
-                        <dl>
-                            <dd>全票</dd>
-                            <dd>100</dd>
-                        </dl>
-                        <dl>
-                            <dd>全票</dd>
-                            <dd>100</dd>
-                        </dl>
-                        <dl>
-                            <dd>全票</dd>
-                            <dd>100</dd>
-                        </dl>
-                        <dl>
-                            <dd>全票</dd>
-                            <dd>100</dd>
-                        </dl>
-
-                    </li>
-                </ul>--%>
             </div>
         </div>
     </div>
@@ -133,7 +105,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem">
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/>>
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -168,7 +140,7 @@
                         </div>
                         <div class="form-group" ms-repeat="eidtPayItem.otherList">
                             <div class="col-sm-4">
-                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.consumerProjectName"/>
+                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.priceName"/>
                             </div>
                             <div class="col-sm-4">
                                 <input type="text" data-tips="请填写正整数 " autocomplete="off" value="" placeholder="请填写正整数 " class="ipt" ms-duplex="el.price"/>
@@ -187,7 +159,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem">
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/> ">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
