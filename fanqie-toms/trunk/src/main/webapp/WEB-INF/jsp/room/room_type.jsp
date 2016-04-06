@@ -146,6 +146,7 @@
                                 <input type="text" placeholder="房间数量" class="roomNumber" readonly>
                                 <a class="reduce-icon" class="roomTypeNumReduce">-</a>
                                 <a class="plus-icon" class="roomTypeNumPlus">+</a>
+                                <a class="remove-room-type">移除房型</a>
                             </div>
                             <div class="mgb-10 add-room-type">
                                 <a id="addRoomType" class="btn">新增房型</a>
@@ -173,7 +174,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right"> 订单总销售额
+                        <label class="col-sm-3 control-label no-padding-right"><span class="red">*</span> 订单总销售额
                         </label>
                         <div class="col-sm-9">
                             <input type="text" id="payment" placeholder="订单总销售额" class="ipt"/>

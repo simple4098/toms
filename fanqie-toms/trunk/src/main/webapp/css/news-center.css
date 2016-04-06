@@ -132,6 +132,16 @@ a:hover, a:focus,a {
     margin: 0 5px;
     cursor: pointer;
 }
+.remove-room-type {
+    background: #6FB3E0;
+    color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.remove-room-type:hover {
+    color: #fff;
+}
 /*个性化设置*/
 .manual-order h4,
 .qita-xiaofei-guanli h4 {
