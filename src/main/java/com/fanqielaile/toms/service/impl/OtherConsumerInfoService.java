@@ -5,6 +5,7 @@ import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
 import com.fanqielaile.toms.model.OtherConsumerFunction;
 import com.fanqielaile.toms.model.OtherConsumerInfo;
 import com.fanqielaile.toms.service.IOtherConsumerInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,15 +27,20 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
     private IOtherConsumerInfoDao otherConsumerInfoDao;
 
     @Override
-    public List<OtherConsumerInfoDto> findOtherConsumerInfo(String companyId) {
+    public List<OtherConsumerInfoDto> findOtherConsumerInfo(String companyId,String consumerInfoId) {
         List<OtherConsumerInfoDto> list = new ArrayList<>();
-        List<OtherConsumerInfo> consumerInfos = otherConsumerInfoDao.selectConsumerInfo(companyId, null);
+        List<OtherConsumerInfoDto> consumerInfos = null;
+        if (StringUtils.isNotEmpty(consumerInfoId)){
+            consumerInfos = otherConsumerInfoDao.selectConsumerInfoById(consumerInfoId);
+        }else {
+            consumerInfos = otherConsumerInfoDao.selectConsumerInfo(companyId, null);
+        }
         if (!CollectionUtils.isEmpty(consumerInfos)){
             OtherConsumerInfoDto consumerInfoDto = null;
-            for (OtherConsumerInfo info:consumerInfos){
+            for (OtherConsumerInfoDto info:consumerInfos){
                 consumerInfoDto = new OtherConsumerInfoDto();
                 BeanUtils.copyProperties(info, consumerInfoDto);
-                List<OtherConsumerInfo> infos = otherConsumerInfoDao.selectConsumerInfo(companyId, info.getId());
+                List<OtherConsumerInfoDto> infos = otherConsumerInfoDao.selectConsumerInfo(companyId, info.getId());
                 consumerInfoDto.setOtherList(infos);
                 list.add(consumerInfoDto);
             }

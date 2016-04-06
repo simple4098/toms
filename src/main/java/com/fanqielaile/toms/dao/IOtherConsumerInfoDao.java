@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
 import com.fanqielaile.toms.model.OtherConsumerFunction;
 import com.fanqielaile.toms.model.OtherConsumerInfo;
 import org.apache.ibatis.annotations.Param;
@@ -32,5 +33,10 @@ public interface IOtherConsumerInfoDao {
      * @param companyId 公司id
      * @param parentId 父id
      */
-    List<OtherConsumerInfo> selectConsumerInfo(@Param("companyId") String companyId,@Param("parentId") String parentId);
+    List<OtherConsumerInfoDto> selectConsumerInfo(@Param("companyId") String companyId,@Param("parentId") String parentId);
+
+    /**
+     * @param id ConsumerInfo id
+     */
+    List<OtherConsumerInfoDto> selectConsumerInfoById(@Param("id") String id);
 }

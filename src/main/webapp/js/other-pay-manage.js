@@ -37,6 +37,7 @@ var vm = avalon.define({
         $("#addPayItems").modal("show");
     },
     addPriceType : function(type) {
+
         var json = {
             "consumerProjectName": "",
             "priceName": "",
@@ -44,15 +45,35 @@ var vm = avalon.define({
             "status": false
         };
         if(type=='add') {
+            if(vm.addOtherPayItem.otherList.length>4) {
+                return;
+            }
             vm.addOtherPayItem.otherList.push(json)
         }else if(type == 'edit'){
+            if(vm.eidtPayItem.otherList.length>4) {
+                return;
+            }
             vm.eidtPayItem.otherList.push(json)
         }
 
     },
     saveOtherPayItem : function() {
         var addOtherPayItem = vm.addOtherPayItem.$model;
-        vm.saveValid(addOtherPayItem)
+        vm.saveValid(addOtherPayItem);
+        var json = JSON.stringify(eidtPayItem);
+        var url = $(this).attr("data-url");
+        $.ajax({
+            url:url+"?json="+json,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.data)
+            },
+            error: function () {
+                layer.msg('系统错误');
+            }
+        })
+        //todo
     },
     saveValid : function(otherPayItem) {
         if(!otherPayItem.consumerProjectName){
@@ -61,8 +82,8 @@ var vm = avalon.define({
         }
         var isValid = false;
         $.each(otherPayItem.otherList,function(){
-            if(!this.consumerProjectName || !this.price){
-                alert("新增价格类型不能为空！")
+            if(!this.price){
+                alert("价格不能为空！")
                 isValid = true;
                 return false;
             }
@@ -80,25 +101,19 @@ var vm = avalon.define({
         $('#editPayItems').modal('hide');
     },
     editPayItemFun : function() {
-        vm.eidtPayItem = {
-            "consumerProjectName":"门票",
-            "consumerFunId": "",
-            "parentId" : "",
-            "otherList" : [
-                {
-                    "consumerProjectName": "全票",
-                    "priceName": "",
-                    "price": "100",
-                    "status": false
-                },
-                {
-                    "consumerProjectName": "半票",
-                    "priceName": "",
-                    "price": "50",
-                    "status": true
-                }
-            ]
-        }
+        var url = $(this).attr("data-url");
+        $.ajax({
+            url: url,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+              console.log(data.data)
+                vm.eidtPayItem = data.data;
+            },
+            error: function () {
+                layer.msg('系统错误');
+            }
+        })
         $("#editPayItems").modal('show');
     },
     saveEditPayItem : function() {
@@ -108,6 +123,21 @@ var vm = avalon.define({
           return;
         }
         vm.saveValid(eidtPayItem);
+        console.log(eidtPayItem);
+        var json = JSON.stringify(eidtPayItem);
+        var url = $(this).attr("data-url");
+        $.ajax({
+            url:url+"?json="+json,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.data)
+            },
+            error: function () {
+                layer.msg('系统错误');
+            }
+        })
+        //todo
     }
 })
 avalon.scan();
