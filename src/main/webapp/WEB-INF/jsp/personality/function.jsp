@@ -18,7 +18,7 @@
 
 </head>
 <body>
-<div class="ms-controller" ms-controller="otherPayManage">
+<div>
   <toms:authorizeConsumer uri="/personality/otherConsumer"/>
  </div>
   <script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
