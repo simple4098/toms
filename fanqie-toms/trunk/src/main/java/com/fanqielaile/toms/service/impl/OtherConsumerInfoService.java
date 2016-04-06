@@ -56,4 +56,9 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
         }
         return false;
     }
+
+    @Override
+    public void saveOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans) {
+
+    }
 }
