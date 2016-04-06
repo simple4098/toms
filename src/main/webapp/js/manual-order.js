@@ -51,9 +51,12 @@ $(function(){
         $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
         $selectRoomType.html("<option>请选择房型</option>")
         if($(".room-type-operate").length!==1){
+            var len = $(".room-type-operate").length-1
             $.each($(".room-type-operate"),function(key,val) {
-                /*if() [}]
-                $(this).remove()*/
+                if(key==len) {
+                    return false
+                }
+                $(this).remove()
             })
         }
         //请求其它消费数据
@@ -322,7 +325,6 @@ $(function(){
             json[homeAmount] = $roomNumber.val()
             json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
             json[roomTypeName] = $selectedObj.val()
-
         })
 
         //请求保存接口
@@ -382,7 +384,6 @@ $(function(){
                         $selectRoomType.append("<option data-roomTypeId="+this.roomTypeId+">"+this.roomTypeName+"</option>")
                     })
                 }
-
             },
             error: function() {
                 alert("获取房型数据失败，请重试！")
