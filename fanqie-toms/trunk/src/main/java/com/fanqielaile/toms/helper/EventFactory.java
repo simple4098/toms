@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.xl.ChangePriceMessageDto;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.service.IXlMessageService;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.slf4j.Logger;
@@ -32,6 +34,8 @@ public class EventFactory {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private IOtaInfoService otaInfoService;
+    @Autowired
+    private IXlMessageService xlMessageService;
 
     public void pushEvent(JSONObject jsonObject){
         String bizType = jsonObject.getString("bizType");
@@ -57,6 +61,11 @@ public class EventFactory {
                     log.error("信用住异常",e);
                 }
             }
+        }
+        if (Constants.OMS_MESPRICE_TYPE.equals(bizType)){
+            log.info("=====监听到改价消息==================参数："+content);
+            ChangePriceMessageDto message=xlMessageService.initChangePriceMessageParam(content);
+            xlMessageService.insertChangPriceMsg(message);
         }
     }
 }

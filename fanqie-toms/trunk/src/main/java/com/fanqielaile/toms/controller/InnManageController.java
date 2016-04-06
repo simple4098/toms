@@ -224,3 +224,4 @@ public class InnManageController extends BaseController {
         }
     }
 }
+

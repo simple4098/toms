@@ -12,6 +12,7 @@ public class Constants {
     public static final String ICON_OFF="<i class=\"icon-coffee\">";
     public static final String ICON_ON="<i class=\"icon-coffee ON\">";
     public static final String CREDIT="creditInn";
+	public static final String OMS_MESPRICE_TYPE="PRICE_AUDIT";//改价消息
     public static final String REDIS="TOMS_INN_UP_DOWN";
     public static final int tp_count=14;
     //返回json状态
