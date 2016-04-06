@@ -50,9 +50,12 @@ $(function(){
         $("#otherList,#notNeedList").html("")
         $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
         $selectRoomType.html("<option>请选择房型</option>")
-        /*if($(".room-type-operate").length){
-
-        }*/
+        if($(".room-type-operate").length!==1){
+            $.each($(".room-type-operate"),function(key,val) {
+                /*if() [}]
+                $(this).remove()*/
+            })
+        }
         //请求其它消费数据
         var data = {
             "otherList" : [{
@@ -297,19 +300,7 @@ $(function(){
             alert("请选择房型！")
             return;
         }
-        var dailyInfoses = [];
-        $.each($(".room-type-operate"),function(key,val) {
-            var json = {}
-            var homeAmount = "dailyInfoses"+"["+key+"]"+".homeAmount",
-                roomTypeId = "dailyInfoses"+"["+key+"]"+".roomTypeId",
-                roomTypeName = "dailyInfoses"+"["+key+"]"+".roomTypeName",
-                $selectedObj = $(this).find(".selectRoomType").find("option:checked"),
-                $roomNumber = $(this).find(".roomNumber")
-            json[homeAmount] = $roomNumber.val()
-            json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
-            json[roomTypeName] = $selectedObj.val()
-            dailyInfoses.push(json)
-        })
+        var homeAmount,roomTypeId,roomTypeName;
         //请求保存接口传递参数
         var json = {
             bangInnId : $('#kz_item-r').val(),
@@ -321,8 +312,19 @@ $(function(){
             liveTimeString : $liveTimeString.val(),
             maiAccount : maiAccount,
             payment : $payment.val(),
-            dailyInfoses : dailyInfoses
         }
+        $.each($(".room-type-operate"),function(key,val) {
+            $selectedObj = $(this).find(".selectRoomType").find("option:checked")
+            $roomNumber = $(this).find(".roomNumber")
+            homeAmount = "dailyInfoses"+"["+key+"]"+".homeAmount"
+            roomTypeId = "dailyInfoses"+"["+key+"]"+".roomTypeId"
+            roomTypeName = "dailyInfoses"+"["+key+"]"+".roomTypeName"
+            json[homeAmount] = $roomNumber.val()
+            json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
+            json[roomTypeName] = $selectedObj.val()
+
+        })
+
         //请求保存接口
         var url = $saveManualOrder.attr("data-url");
         $.ajax({
