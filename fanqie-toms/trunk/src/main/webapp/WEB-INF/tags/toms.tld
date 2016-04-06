@@ -59,6 +59,16 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    <tag>
+        <name>authorizeConsumer</name>
+        <tag-class>com.fanqielaile.toms.support.tag.AuthorizeTagConsumer</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>uri</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
 
     <tag>
         <name>currencyCode</name>

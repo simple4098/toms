@@ -1,0 +1,218 @@
+.ms-controller {
+    visibility: hidden;
+    display: none;
+}
+.form-actions {
+    margin: 0;
+}
+h1, h2, h3,h4, h5, h6,p {
+    text-align:left;
+}
+h1, h2, h3,h4, h5, h6,ul, ol,p {
+    margin: 0;
+}
+dl, dt, dd, ul, ol, li {
+    list-style: none;
+    margin:0;
+    padding:0
+}
+a:hover, a:focus,a {
+    text-decoration: none !important;
+}
+.fl {
+    float:left;
+}
+.fr {
+    float: right;
+}
+.mgb-10 {
+    margin-bottom: 10px;
+}
+.form-group {
+    width: 100%;
+    display: table;
+}
+.widget-toolbar {
+    float: none;
+}
+/*消息中心*/
+.news-center .dropdown-toggle{
+    position: fixed;
+    bottom: 15px;
+    left: 150px;
+}
+.news-center .icon-envelope {
+    position: relative;
+    font-size: 24px;
+}
+.news-center .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+}
+.news-center-dialog {
+    display: none;
+    position: fixed;
+    left: 190px;
+    bottom: 0;
+    width: 500px;
+    border: 1px solid #ccc;
+    border-left: none;
+    z-index: 99;
+    background: #fff;
+}
+.news-center-dialog .top,
+.news-center-dialog .center,
+.news-center-dialog .bottom {
+    padding: 10px;
+}
+.news-center-dialog .top {
+    border-bottom: 1px solid #ccc;
+}
+.news-center-dialog .center {
+    max-height: 520px;
+    overflow-y: auto;
+}
+.news-center-dialog .center li {
+    position: relative;
+    padding: 15px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+.news-center-dialog .no-read {
+    width: 10px;
+    height: 10px;
+    background: red;
+    display: inline-block;
+    border-radius: 50%;
+    position: absolute;
+    left: 4px;
+    top: 17px;
+}
+.pack-up {
+    cursor: pointer;
+}
+/*手动下单*/
+.ftfl-content .modal-dialog {
+    width: 750px;
+}
+.ftfl-content .ipt {
+    width: 100%;
+}
+.ftfl-content .check-time {
+    padding-top: 10px;
+}
+.ftfl-content .check-time a {
+    cursor: pointer;
+    padding: 5px;
+}
+.reduce-icon,
+.plus-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;background: #6FB3E0;
+    display: inline-block;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    margin: 0 5px;
+    cursor: pointer;
+}
+/*个性化设置*/
+.qita-xiaofei-guanli {
+    display : block;
+}
+.manual-order h4,
+.qita-xiaofei-guanli h4 {
+    padding: 10px 0;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+}
+.manual-order-icon ul li {
+    display: inline-block;
+    padding: 10px;
+    border: 2px solid #ccc;
+    margin: 10px;
+    cursor: pointer;
+    float: left;
+}
+.manual-order-icon ul li:hover {
+    border: 2px solid #428bca;
+}
+.gongneng-icon {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+.manual-order-icon dd {
+    text-align: center;
+}
+.other-pay-manage {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+.gongneng-icon .icon-coffee {
+    font-size: 50px;
+    color: #ccc;
+}
+.qita-xiaofei-guanli h4 {
+    height: 45px;
+    line-height: 45px;
+    border-bottom: none;
+    display: inline-table;
+    width: 100%;
+}
+.unopened-con-p {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.opened-content p {
+    padding: 10px 0;
+}
+.items-detail {
+    padding: 5px;
+    border-left: 1px solid #ccc;
+}
+.items-detail dl,
+.items-title dl{
+    display: inline-block;
+}
+.items-detail dl {
+    padding: 5px 11px;
+    border-right: 1px dashed #ccc;
+    margin-bottom: 10px;
+}
+.items-title dl {
+    text-align: center;
+    padding: 10px;
+}
+.items-detail dl dd,
+.items-title dl dd {
+    line-height: 36px;
+    font-size: 28px;
+}
+.items-detail dl dd {
+    color: #999;
+}
+.items-title dl dd a {
+    font-size: 14px;
+    padding: 10px;
+    cursor: pointer;
+}
+.opened-con-ul {
+    display: inline-block;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.add-price-type {
+    margin-left: 14px;
+}
+.error {
+    color: red;
+    text-align: center;
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.IOtherConsumerInfoDao">
+
+    <resultMap id="consumerFunctionId" type="com.fanqielaile.toms.model.OtherConsumerFunction">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="consumerInfoId" type="com.fanqielaile.toms.dto.OtherConsumerInfoDto">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="consumer_fun_id" property="consumerFunId"/>
+        <result column="level" property="level"/>
+        <result column="consumer_project_name" property="consumerProjectName"/>
+        <result column="price_name" property="priceName"/>
+        <result column="price" property="price"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+
+    <insert id="insertConsumerFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">
+        insert into other_consumer_function(id,company_id,deleted,created_date,updated_date,status)
+        values (#{id},#{companyId},0,now(),now(),#{status})
+    </insert>
+
+    <update id="updateFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">
+        update other_consumer_function set status=#{status},updated_date=now() where id= #{id}
+    </update>
+
+    <select id="selectFunction" resultMap="consumerFunctionId" >
+        SELECT  * from other_consumer_function where deleted=0 and company_id = #{companyId} limit 1
+    </select>
+
+
+
+    <select id="selectConsumerInfo"  resultMap="consumerInfoId">
+        select o.* from other_consumer_info o where o.deleted=0  and company_id=#{companyId}
+        <if test="parentId==null || parentId==''">
+            and o."level"=1
+        </if>
+        <if test="parentId!=null and parentId!=''">
+
+            and o."level"=2 and o.parent_id=#{parentId}
+        </if>
+    </select>
+
+    <select id="selectChildOtherConsumerInfo"  resultMap="consumerInfoId">
+        select o.* from other_consumer_info o where o.deleted=0 and o."level"=2 and company_id=#{companyId} and o.parent_id=#{parentId};
+    </select>
+
+
+</mapper>
