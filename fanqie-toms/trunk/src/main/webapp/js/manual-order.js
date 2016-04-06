@@ -106,51 +106,6 @@ $(function(){
             }
         })
     })
-    function removeRoomType(obj) {
-        //$("#roomOperate").on("click",".remove-room-type",function() {
-            //alert(7)
-            obj.on("click",function() {
-                if($(".room-type-operate").length!==1){
-                    var obj = $(this).prevAll(".selectRoomType").find("option:checked")
-                    var roomtypeid = obj.attr("data-roomtypeid")
-                    var val = obj.val()
-                    $(this).parent().remove();
-                    var Lool = false
-                    $.each($(".selectRoomType").find("option"),function() {
-                        if(roomtypeid == $(this).attr("data-roomtypeid")) {
-                            Lool = true
-                        }
-                    })
-                    if(!Lool) {
-                        $.each($(".selectRoomType"),function(){
-                            $(this).append("<option data-roomtypeid="+roomtypeid+">"+val+"</option>")
-                        })
-                    }
-                }
-            })
-            /*if($(".room-type-operate").length!==1){
-             var obj = $(this).prevAll().find(".selectRoomType").find("option:checked")
-             var roomtypeid = obj.attr("data-roomtypeid")
-             var val = obj.val()
-             $(this).parents().find(".room-type-operate").remove();
-             $.each($(".selectRoomType"),function() {
-             $(this).append("<option data-roomtypeid="+roomtypeid+">"+val+"</option>")
-             })
-             }*/
-        //})
-    }
-   /* $("#roomOperate").on("click",".remove-room-type",function() {
-        alert(7)
-        /!*if($(".room-type-operate").length!==1){
-            var obj = $(this).prevAll().find(".selectRoomType").find("option:checked")
-            var roomtypeid = obj.attr("data-roomtypeid")
-            var val = obj.val()
-            $(this).parents().find(".room-type-operate").remove();
-            $.each($(".selectRoomType"),function() {
-                $(this).append("<option data-roomtypeid="+roomtypeid+">"+val+"</option>")
-            })
-        }*!/
-    })*/
     $liveTimeString.datepicker({
         onClose : function( selectedDate ) {
             $leaveTimeString.datepicker("option","minDate", selectedDate)
@@ -249,6 +204,27 @@ $(function(){
                     alert("获取该房型最大房量失败，请重试！")
                 }
             })
+        })
+    }
+    function removeRoomType(obj) {
+        obj.on("click",function() {
+            if($(".room-type-operate").length!==1){
+                var obj = $(this).prevAll(".selectRoomType").find("option:checked")
+                var roomtypeid = obj.attr("data-roomtypeid")
+                var val = obj.val()
+                $(this).parent().remove();
+                var Lool = false
+                $.each($(".selectRoomType").find("option"),function() {
+                    if(roomtypeid == $(this).attr("data-roomtypeid")) {
+                        Lool = true
+                    }
+                })
+                if(!Lool) {
+                    $.each($(".selectRoomType"),function(){
+                        $(this).append("<option data-roomtypeid="+roomtypeid+">"+val+"</option>")
+                    })
+                }
+            }
         })
     }
     $("#otherList").on("blur",".number",function() {
