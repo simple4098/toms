@@ -26,7 +26,7 @@
 
     <insert id="insertConsumerFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">
         insert into other_consumer_function(id,company_id,deleted,created_date,updated_date,status)
-        values (#{id},#{companyId},0,now(),now(),#{status})
+        values (#{uuid},#{companyId},0,now(),now(),#{status})
     </insert>
 
     <update id="updateFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">

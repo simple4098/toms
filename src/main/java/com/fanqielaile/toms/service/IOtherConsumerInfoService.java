@@ -53,5 +53,12 @@ public interface IOtherConsumerInfoService {
      * @param companyId 公司id
      */
     OtherConsumerInfoDto findChildOtherConsumerInfo(String companyId);
+
+    /**
+     * 更新公司个性化功能状态
+     * @param companyId 公司id
+     * @param status 状态
+     */
+    void updateFunction(String companyId, String status);
 }
 

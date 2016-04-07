@@ -146,4 +146,18 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
         }
         return otherConsumerInfoDto;
     }
+
+    @Override
+    public void updateFunction(String companyId, String status) {
+        OtherConsumerFunction otherConsumerFunction = otherConsumerInfoDao.selectFunction(companyId);
+        if (otherConsumerFunction!=null){
+            otherConsumerFunction.setStatus(Boolean.valueOf(status));
+            otherConsumerInfoDao.updateFunction(otherConsumerFunction);
+        }else {
+            otherConsumerFunction = new OtherConsumerFunction();
+            otherConsumerFunction.setStatus(Boolean.valueOf(status));
+            otherConsumerFunction.setCompanyId(companyId);
+            otherConsumerInfoDao.insertConsumerFunction(otherConsumerFunction);
+        }
+    }
 }

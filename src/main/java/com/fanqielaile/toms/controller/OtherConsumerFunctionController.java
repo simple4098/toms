@@ -2,7 +2,6 @@ package com.fanqielaile.toms.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
@@ -10,7 +9,6 @@ import com.fanqielaile.toms.service.IOtherConsumerInfoService;
 import com.fanqielaile.toms.support.tag.AuthorizeTagConsumer;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +21,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,7 +47,9 @@ public class OtherConsumerFunctionController  extends BaseController {
         boolean b = authorizeTagConsumer.isAllow(contextPath, "/personality/otherConsumer", "GEI", authentication);
         if (b && currentUser!=null){
             List<OtherConsumerInfoDto> otherConsumerList = otherConsumerInfoService.findOtherConsumerInfo(currentUser.getCompanyId(),null);
+            boolean function = otherConsumerInfoService.findOtherConsumerFunction(currentUser.getCompanyId());
             model.addAttribute(Constants.DATA,otherConsumerList);
+            model.addAttribute(Constants.STATUS,function);
         }else {
             return "/other_consumer/info_error";
         }
@@ -114,11 +113,33 @@ public class OtherConsumerFunctionController  extends BaseController {
         UserInfo currentUser = getCurrentUser();
         JsonModel jsonModel = new JsonModel();
         try {
-            OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoService.findChildOtherConsumerInfo(currentUser.getCompanyId());
-            jsonModel.put(Constants.DATA, otherConsumerInfoDto);
-            jsonModel.put(Constants.STATUS, Constants.SUCCESS200);
+            boolean otherConsumerFunction = otherConsumerInfoService.findOtherConsumerFunction(currentUser.getCompanyId());
+            if (otherConsumerFunction){
+                OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoService.findChildOtherConsumerInfo(currentUser.getCompanyId());
+                jsonModel.put(Constants.DATA, otherConsumerInfoDto);
+                jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+            }else {
+                jsonModel.put(Constants.STATUS, Constants.ERROR);
+            }
         } catch (Exception e) {
             log.error("删除其他消费异常",e);
+            jsonModel.put(Constants.STATUS, Constants.ERROR400);
+            jsonModel.put(Constants.MESSAGE, e);
+        }
+
+        return  jsonModel;
+    }
+
+    @RequestMapping("/updateFunction")
+    @ResponseBody
+    public Object updateFunction(String status){
+        UserInfo currentUser = getCurrentUser();
+        JsonModel jsonModel = new JsonModel();
+        try {
+            otherConsumerInfoService.updateFunction(currentUser.getCompanyId(), status);
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        } catch (Exception e) {
+            log.error("修改其他消费状态异常",e);
             jsonModel.put(Constants.STATUS, Constants.ERROR400);
             jsonModel.put(Constants.MESSAGE, e);
         }
