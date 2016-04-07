@@ -897,9 +897,12 @@ public class OrderService implements IOrderService {
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             for (OrderParamDto orderDto : orderDtos) {
+                List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
+                List<DailyInfos> dailyInfosArrayList = new ArrayList<>();
+                dailyInfosArrayList.addAll(dailyInfoses);
+                orderDto.setDailyInfoses(dailyInfosArrayList);
                 //设置总价和每日价格
                 if (null != orderDto.getAddPrice()) {
-                    List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
                     BigDecimal addTatalPirce = BigDecimal.ZERO;
                     if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                         for (DailyInfos dailyInfos : dailyInfoses) {
