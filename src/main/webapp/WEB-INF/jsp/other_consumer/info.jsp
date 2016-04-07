@@ -18,13 +18,8 @@
 <body>
 <div class="container ms-controller" ms-controller="otherPayManage">
     <div class="qita-xiaofei-guanli">
-        <h4>其它消费管理
-            <div class="widget-toolbar no-border">
-                <label ms-click="divDisplayIsopenedFun">
-                    <input type="checkbox" class="ace ace-switch ace-switch-3">
-                    <span class="lbl"></span>
-                </label>
-            </div>
+        <h4 style="position:relative">
+            其它消费管理 <input id="onoffButton" type="button" class="off_button" title="点击开启">
             <a class="fr btn btn-primary" onclick="history.go(-1)">返回</a>
         </h4>
         <div class="unopened-content">

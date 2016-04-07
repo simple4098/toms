@@ -235,3 +235,17 @@ a:hover, a:focus,a {
     color: red;
     text-align: center;
 }
+input[type=button].off_button,
+input[type=button].on_button {
+    width: 72px;
+    height: 21px;
+    background: url(../images/off_on_button.png) no-repeat 0 0;
+    border: 0;
+    position: absolute;
+    left: 120px;
+    top: 20px;
+    cursor: pointer;
+}
+input[type=button].off_button {
+    background: url(../images/off_on_button.png) no-repeat 0 -25px;
+}
