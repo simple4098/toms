@@ -1,8 +1,10 @@
 $(function(){
     var CONST = {
         TIME : 60*1000,//轮循时间
-        ROWS : 1
+        ROWS : 5//分页每页显示条数
     }
+    var currentPage = 1,
+        Pages = 1;
     Date.prototype.Format = function (fmt) { //author: meizz
         var o = {
             "M+": this.getMonth() + 1, //月份
@@ -46,12 +48,30 @@ $(function(){
     }
     $(".pagination").on("click","li",function() {
         var index = $(this).index()
-        currentPageTab(index)
-        $(".pagination li").find("a").removeClass('currentacitve')
-        $(this).find("a").addClass('currentacitve');
+        if($(".pagination li").length==2) {
+            return;
+        }
+        var len = $(".pagination li").length-1
+        if(index == 0){
+            if(currentPage<=1){
+                return;
+            }
+            currentPageTab(currentPage-1)
+            //currentPage = currentPage-1
+
+        } else if (index == Pages+1){
+            if(currentPage>=Pages) {
+                return;
+            }
+            currentPageTab(currentPage+1)
+            //currentPage = currentPage+1
+        } else {
+            currentPageTab(index)
+        }
     })
     function newsCenterFun(data) {
         var url = $("#newsCenterUrl").attr("data-url")
+        currentPage = data.page;
         $("#newsList").html("")
         $.ajax({
             type:'GET',
@@ -69,13 +89,14 @@ $(function(){
                             $("#newsList").append("<li><h4>"+this.innName+"改价提醒<span class='fr'>"+this.createDate+"</span></h4>"+"<p>"+this.context+"</p></li>")
                         }
                     })
-                    var pages = Math.ceil(newsData.pagination.pageCount/newsData.pagination.rows)
+                    var pages = Math.ceil(newsData.pagination.rowsCount/newsData.pagination.rows)
+                    Pages = pages;
                     $(".pagination").html("<li id='Previous'><a>&laquo;</a></li><li id='Next'><a>&raquo;</a></li>")
                     for(var i=0;i<pages;i++) {
-                        if(i==0) {
-                            $("#Next").before("<li><a  class='currentacitve' onclick=currentPageTab("+(i+1)+")>"+(i+1)+"</a>")
+                        if(i==currentPage-1) {
+                            $("#Next").before("<li class='active'><a>"+(i+1)+"</a></li>")
                         } else {
-                            $("#Next").before("<li><a onclick=currentPageTab("+(i+1)+")>"+(i+1)+"</a>")
+                            $("#Next").before("<li><a>"+(i+1)+"</a></li>")
                         }
 
                     }
@@ -113,7 +134,7 @@ $(function(){
                     alert("查询某一时间段的未读改价消息数量失败！")
                 }
             })
-    },5000)
+    },CONST.TIME)
     $(".click-read-new-message a").on("click",function() {
         var data = {
             page : 1,
