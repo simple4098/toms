@@ -7,12 +7,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>其他消费</title>
-    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/normalize.css'/>">
+    <%--<link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/normalize.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/bootstrap.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/font-awesome.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
-    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/openChannerl.css'/>">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/openChannerl.css'/>">--%>
+    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/css/news-center.css'/>">
 </head>
 <body>
@@ -26,7 +28,7 @@
             <p class="unopened-con-p">开启该功能后，在手动下单时可以记录除房费以外的其他消费信息；该订单其他消费信息只有分销商自己能看到记录，客栈方依然只能接收到房间消费信息！
             </p>
         </div>
-        <div class="notopened-content" ms-css-display="divDisplayIsopened[0]">ssssss</div>
+        <div class="notopened-content" ms-css-display="divDisplayIsopened[0]"></div>
         <div class="opened-content"  ms-css-display="divDisplayIsopened[1]">
             <p><a class="btn btn-primary" ms-click="addOtherPayItemFun">+新增其它消费项目</a></p>
             <div>
@@ -193,9 +195,11 @@
         </div>
     </div></div>
 <script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
-<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
 <script src="<c:url value='/assets/js/avalon.js'/>"></script>
 <script src="<c:url value='/js/other-pay-manage.js'/>"></script>
+<%--<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
+
+--%>
 <script >
     $('.btn-hand-make-order-delete').bind("click",function(){
         var url = $("#data-url-id").val();
