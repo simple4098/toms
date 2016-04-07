@@ -108,4 +108,22 @@ public class OtherConsumerFunctionController  extends BaseController {
         return  jsonModel;
     }
 
+    @RequestMapping("/manual")
+    @ResponseBody
+    public Object manual(){
+        UserInfo currentUser = getCurrentUser();
+        JsonModel jsonModel = new JsonModel();
+        try {
+            OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoService.findChildOtherConsumerInfo(currentUser.getCompanyId());
+            jsonModel.put(Constants.DATA, otherConsumerInfoDto);
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS200);
+        } catch (Exception e) {
+            log.error("删除其他消费异常",e);
+            jsonModel.put(Constants.STATUS, Constants.ERROR400);
+            jsonModel.put(Constants.MESSAGE, e);
+        }
+
+        return  jsonModel;
+    }
+
 }

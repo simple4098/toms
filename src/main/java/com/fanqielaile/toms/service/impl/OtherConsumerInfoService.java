@@ -43,8 +43,13 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
             for (OtherConsumerInfoDto info:consumerInfos){
                 consumerInfoDto = new OtherConsumerInfoDto();
                 BeanUtils.copyProperties(info, consumerInfoDto);
-                List<OtherConsumerInfoDto> infos = otherConsumerInfoDao.selectConsumerInfo(companyId, info.getId());
-                consumerInfoDto.setOtherList(infos);
+                List<OtherConsumerInfoDto> infoDtoList = otherConsumerInfoDao.selectConsumerInfo(companyId, info.getId());
+                if (!CollectionUtils.isEmpty(infoDtoList)){
+                    for (OtherConsumerInfoDto infoDto:infoDtoList){
+                        infoDto.setConsumerProjectName(info.getConsumerProjectName());
+                    }
+                }
+                consumerInfoDto.setOtherList(infoDtoList);
                 list.add(consumerInfoDto);
             }
         }
@@ -120,5 +125,25 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
     @Override
     public void deleteOtherConsumerInfo(String consumerInfoId) throws Exception {
         otherConsumerInfoDao.deleteOtherConsumerInfo(consumerInfoId);
+    }
+
+    @Override
+    public OtherConsumerInfoDto findChildOtherConsumerInfo(String companyId) {
+        OtherConsumerInfoDto otherConsumerInfoDto = new OtherConsumerInfoDto();
+        List<OtherConsumerInfoDto> list = new ArrayList<>();
+        List<OtherConsumerInfoDto> consumerInfos  = otherConsumerInfoDao.selectConsumerInfo(companyId, null);
+        if (!CollectionUtils.isEmpty(consumerInfos)){
+            for (OtherConsumerInfoDto info:consumerInfos){
+                List<OtherConsumerInfoDto> infoDtoList = otherConsumerInfoDao.selectConsumerInfo(companyId, info.getId());
+                if (!CollectionUtils.isEmpty(infoDtoList)){
+                    for (OtherConsumerInfoDto infoDto:infoDtoList){
+                        infoDto.setConsumerProjectName(info.getConsumerProjectName());
+                    }
+                }
+                otherConsumerInfoDto.setOtherList(infoDtoList);
+                list.add(otherConsumerInfoDto);
+            }
+        }
+        return otherConsumerInfoDto;
     }
 }

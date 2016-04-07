@@ -163,7 +163,7 @@
                                 <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
                                 <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>--%>
                             </div>
-                            <div class="mgb-10 col-sm-12 room-operate">
+                            <div class="mgb-10 col-sm-12 room-operate" id="notNeedListId">
                                 <select style="margin-left:45px;" id="notNeedList">
                                     <option>请选择消费项目</option>
                                 </select>
