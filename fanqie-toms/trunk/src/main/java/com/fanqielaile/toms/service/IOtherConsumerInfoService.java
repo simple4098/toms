@@ -47,5 +47,11 @@ public interface IOtherConsumerInfoService {
      * @throws Exception
      */
     void deleteOtherConsumerInfo(String consumerInfoId) throws Exception;
+
+    /**
+     * 查询所有的子节点消费项目
+     * @param companyId 公司id
+     */
+    OtherConsumerInfoDto findChildOtherConsumerInfo(String companyId);
 }
 

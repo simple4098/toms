@@ -59,8 +59,28 @@ $(function(){
                 $(this).remove()
             })
         }
+        $.ajax({
+            url:'/personality/manual.json',
+            dataType:'json',
+            type:'get',
+            success:function(dataV){
+                if(dataV.status==200){
+                    $.each(dataV.data.otherList,function(){
+                        if(this.status==CONST.IDNEED.NEED){
+                            $otherList.append("<label class='col-sm-3 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-3'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
+                        }else {
+                            //$("#notNeedListId").remove();
+                            $notNeedList.append("<option>"+this.priceName+"</option>")
+                        }
+
+                    })
+                }
+            },error:function(data){
+
+            }
+        })
         //请求其它消费数据
-        var data = {
+        /*var data = {
             "otherList" : [{
                 "consumerProjectName":"门票",
                 "priceName": "全价",
@@ -97,14 +117,8 @@ $(function(){
                 "price": 30,
                 "status": true
             }]
-        }
-        $.each(data.otherList,function(){
-            if(this.status==CONST.IDNEED.NEED){
-                $otherList.append("<label class='col-sm-3 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-3'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
-            }else {
-                $notNeedList.append("<option>"+this.priceName+"</option>")
-            }
-        })
+        }*/
+
     })
     $liveTimeString.datepicker({
         onClose : function( selectedDate ) {
@@ -374,10 +388,8 @@ $(function(){
             url:url,
             dataType:'html',
             success:function(rs){
-                if (rs.status) {
-                    alert("手动下单成功！");
-                } else {
-                    alert("手动下单失败！");
+                if (rs || rs.status) {
+                    alert("手动下单成功！")
                 }
             },
             error: function() {
