@@ -37,3 +37,31 @@ ALTER TABLE "public"."other_consumer_function" ADD PRIMARY KEY ("id");
 
 CREATE INDEX "other_consumer_info_company_id_parent_id_idx" ON "public"."other_consumer_info" USING btree (company_id, parent_id);
 ALTER TABLE "public"."other_consumer_info" ADD PRIMARY KEY ("id");
+
+
+--改价消息记录表
+drop table if exists inn_change_price_msg;
+CREATE TABLE "public"."inn_change_price_msg" (
+"id" varchar(64) NOT NULL,
+"inn_id" int4 NOT NULL,
+"inn_name" varchar(64) NOT NULL,
+"create_date" timestamp NOT NULL,
+"update_date" timestamp,
+"read" bool NOT NULL,
+"message" varchar(255) NOT NULL,
+PRIMARY KEY ("id")
+)
+WITH (OIDS=FALSE)
+;
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."inn_id" IS '客栈id';
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."inn_name" IS '客栈名称';
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."create_date" IS '记录创建时间';
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."read" IS '是否已读，t为已读';
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."message" IS '消息内容';
+
+CREATE INDEX "created_at_index_key" ON "public"."inn_change_price_msg" USING btree ("create_date");
