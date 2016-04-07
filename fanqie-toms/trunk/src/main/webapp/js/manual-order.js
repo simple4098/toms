@@ -64,16 +64,24 @@ $(function(){
             dataType:'json',
             type:'get',
             success:function(dataV){
+                var notNeed=[];
                 if(dataV.status==200){
                     $.each(dataV.data.otherList,function(){
                         if(this.status==CONST.IDNEED.NEED){
                             $otherList.append("<label class='col-sm-3 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-3'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
                         }else {
                             //$("#notNeedListId").remove();
-                            $notNeedList.append("<option>"+this.priceName+"</option>")
+                            notNeed.push("<option>"+this.priceName+"</option>")
                         }
 
                     })
+                    if(notNeed.length==0){
+                        $("#notNeedListId").remove();
+                    }else{
+                        for (var i=0; i<notNeed.length; i++){
+                            $notNeedList.append(notNeed[i]);
+                        }
+                    }
                 }
             },error:function(data){
 
