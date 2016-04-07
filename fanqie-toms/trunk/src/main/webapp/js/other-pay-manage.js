@@ -24,7 +24,6 @@ var vm = avalon.define({
         }else {
             status = "true";
         }
-        //todo ajax
         $.ajax({
             url:url+"?status="+status,
             type:'get',
