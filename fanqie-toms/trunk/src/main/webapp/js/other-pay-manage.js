@@ -1,23 +1,50 @@
 var vm = avalon.define({
     $id : "otherPayManage",
     divDisplayIsopened : ['block','none'],
-    isopenStatus : false,
     addOtherPayItem : {},
     eidtPayItem : {},
     init : function() {
+        var status = $("#onoffButton").attr("data-status");
+        if(status=="true") {
+            vm.divDisplayIsopened = ['none','block']
+        }else {
+            vm.divDisplayIsopened = ['block','none']
 
+        }
     },
     divDisplayFun : function() {
        // vm.divDisplay = ['none','block']
     },
     divDisplayIsopenedFun : function() {
-        if(!vm.isopenStatus) {
-            vm.divDisplayIsopened = ['none','block']
+        var $onOffButton = $("#onoffButton");
+        var url = $onOffButton.attr("data-url");
+        var status = $onOffButton.attr("data-status");
+        if(status=="true") {
+            status = "false";
         }else {
-            vm.divDisplayIsopened = ['block','none']
+            status = "true";
         }
-        vm.isopenStatus = !vm.isopenStatus;
+        //todo ajax
+        $.ajax({
+            url:url+"?status="+status,
+            type:'get',
+            dataType:'json',
+            success:function(data){
+                if(data.status){
+                    $onOffButton.attr("data-status",status);
+                    if(status=="true"){
+                        vm.divDisplayIsopened = ['none','block']
+                        $onOffButton.attr("class",'on_button');
+                    }else{
+                        vm.divDisplayIsopened = ['block','none']
+                        $onOffButton.attr("class",'off_button');
 
+                    }
+                }
+            },error:function(data){
+
+            }
+        })
     },
     addOtherPayItemFun : function() {
         vm.addOtherPayItem = {};
@@ -154,4 +181,4 @@ var vm = avalon.define({
         })
     }
 })
-avalon.scan();
+vm.init()

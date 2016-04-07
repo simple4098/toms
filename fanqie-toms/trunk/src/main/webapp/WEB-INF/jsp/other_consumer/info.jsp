@@ -19,7 +19,7 @@
 <div class="container ms-controller" ms-controller="otherPayManage">
     <div class="qita-xiaofei-guanli">
         <h4 style="position:relative">
-            其它消费管理 <input id="onoffButton" type="button" class="off_button" title="点击开启">
+            其它消费管理 <input id="onoffButton" type="button" data-url="<c:url value="/personality/updateFunction.json"/>" data-status="${status}" <c:if test="${!status}"> class="off_button"</c:if><c:if test="${status}"> class="on_button"</c:if> title="点击开启" ms-click="divDisplayIsopenedFun">
             <a class="fr btn btn-primary" onclick="history.go(-1)">返回</a>
         </h4>
         <div class="unopened-content">
