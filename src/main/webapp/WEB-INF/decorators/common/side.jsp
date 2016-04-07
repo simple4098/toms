@@ -19,8 +19,12 @@
                 } catch (e) {
                 }
             </script>
-            <!-- #sidebar-shortcuts -->
+            <input type="hidden" class="room-type-url" id="newsCenterUrl" data-url="<c:url value="/message/query_change_price_list.json"/>"/>
+            <input type="hidden" class="room-type-url" id="queryNotReadCountUrl" data-url="<c:url value="/message/query_not_read_count.json"/>"/>
+            <input type="hidden" class="room-type-url" id="queryChangeMessageUrl" data-url="<c:url value="/message/query_change_price_message.json"/>"/>
 
+        <%--/message/query_change_price_message.json--%>
+            <!-- #sidebar-shortcuts -->
             <ul class="nav nav-list ul-parent">
                 <li <c:if test="${fn:contains(url, '/system/login_success')}">class="active"</c:if>>
                     <a href="<c:url value="/system/login_success"/>">
@@ -259,11 +263,15 @@
             <%--<i class="icon-double-angle-left" data-icon1="icon-double-angle-left"--%>
             <%--data-icon2="icon-double-angle-right"></i>--%>
             <%--</div>--%>
+            <audio src="<c:url value='/voice/mp.mp3'/>" id="MP">
+                Your browser does not support the audio element.
+            </audio>
             <div class="news-center-dialog" id="newsCenter">
                 <div class="top">
                     <h3>消息<a class="fr pack-up" id="packUp">收起</a></h3>
                 </div>
                 <div class="center">
+                    <p class="click-read-new-message"><a>有新的改价消息，点击查看。</a></p>
                     <ul id="newsList">
                         <%--<li>
                             <h4><i class="no-read"></i>XX客栈改价提醒<span class="fr">2016-03-10 15:30</span></h4>
@@ -279,7 +287,20 @@
                         </li>--%>
                     </ul>
                 </div>
-                <div class="bottom"></div>
+                <div class="bottom">
+                    <ul class="pagination">
+                        <li id="Previous">
+                            <a href="#" aria-label="Previous">
+                                &laquo;
+                            </a>
+                        </li>
+                        <li id="Next">
+                            <a href="#" aria-label="Next">
+                                &raquo;
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <script type="text/javascript">
                 try {

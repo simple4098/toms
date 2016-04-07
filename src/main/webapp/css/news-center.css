@@ -42,6 +42,7 @@ a:hover, a:focus,a {
     float: none;
 }
 /*消息中心*/
+
 .news-center .dropdown-toggle{
     position: fixed;
     bottom: 15px;
@@ -68,9 +69,11 @@ a:hover, a:focus,a {
     background: #fff;
 }
 .news-center-dialog .top,
-.news-center-dialog .center,
-.news-center-dialog .bottom {
+.news-center-dialog .center {
     padding: 10px;
+}
+.news-center-dialog .bottom {
+    text-align: center;
 }
 .news-center-dialog .center {
     max-height: 520px;
@@ -101,6 +104,22 @@ a:hover, a:focus,a {
 }
 .pack-up {
     cursor: pointer;
+}
+.click-read-new-message {
+    text-align:center;
+    margin:5px;
+}
+.click-read-new-message a {
+    cursor:pointer;
+}
+.pagination li {
+    cursor: pointer;
+}
+.pagination .currentacitve {
+    background-color: #6faed9;
+    border-color: #6faed9;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 /*手动下单*/
 .ftfl-content .modal-dialog {
