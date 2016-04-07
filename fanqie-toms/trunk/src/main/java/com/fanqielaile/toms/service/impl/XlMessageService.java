@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fanqie.util.JacksonUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.fanqielaile.toms.dao.MessageDao;
 import com.fanqielaile.toms.dto.xl.ChangePriceMessageDto;
 import com.fanqielaile.toms.model.MessageParam;
@@ -60,7 +60,11 @@ public class XlMessageService implements IXlMessageService {
 	@Override
 	public ChangePriceMessageDto initChangePriceMessageParam(String jsonStr) {
 		// TODO Auto-generated method stub
-		ChangePriceMessageDto message=JacksonUtil.json2obj(jsonStr, ChangePriceMessageDto.class);
+		JSONObject jsonObject=JSONObject.parseObject(jsonStr);
+		ChangePriceMessageDto message = new ChangePriceMessageDto();
+		message.setInnId(jsonObject.getInteger("innId"));
+		message.setInnName(jsonObject.getString("innName"));
+		message.setContext(jsonObject.getString("context"));
 		message.setStatus(false);
 		message.setId(UUID.randomUUID().toString());
 		return message;

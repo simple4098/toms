@@ -33,13 +33,13 @@ public class MsgConsumer implements MsgEventListener {
     public MsgConsumer(String systemName) {
         this.systemName = systemName;
         log.info("=============start listener===================");
-//        MsgEventPublisher.getInstance().addListener(this, MessageType.SYS_EVENT, systemName);
+        MsgEventPublisher.getInstance().addListener(this, MessageType.SYS_EVENT, systemName);
     }
 
     @Override
     public void onEvent(MsgEvent msgEvent) {
         JSONObject jsonObject = JSON.parseObject(msgEvent.getSource().toString());
-        //eventFactory.pushEvent(jsonObject);
+        eventFactory.pushEvent(jsonObject);
     }
 
     public void setSystemName(String systemName) {
