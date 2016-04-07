@@ -53,3 +53,6 @@ COMMENT ON COLUMN "public"."order_other_price"."consumer_project_name" IS 'å…¶ä»
 
 
 
+ALTER TABLE "public"."order_other_price"
+DROP COLUMN "leven";
+

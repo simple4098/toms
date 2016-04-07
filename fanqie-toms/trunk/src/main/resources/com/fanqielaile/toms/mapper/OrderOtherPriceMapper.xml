@@ -23,4 +23,13 @@
         (#{id},#{createdDate},#{orderId},#{otherConsumerInfoId},#{leven},#{priceName},#{price},#{nums},#{consumerProjectName})
     </insert>
 
+    <insert id="insertIntoOrderOtherPrice" parameterType="com.fanqielaile.toms.model.Order">
+        INSERT INTO
+        order_other_price(id,created_date,order_id,other_consumer_info_id,leven,price_name,price,nums,consumer_project_name)
+        VALUES
+        <foreach collection="orderOtherPriceList" item="d" separator=",">
+            (#{d.uuid},now(),#{d.orderId},#{d.orderId},#{d.otherConsumerInfoId},#{d.leven},#{d.priceName},
+            #{d.price},#{d.nums},#{d.consumerProjectName})
+        </foreach>
+    </insert>
 </mapper>

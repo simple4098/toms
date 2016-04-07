@@ -33,6 +33,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -108,6 +109,8 @@ public class OrderService implements IOrderService {
     private IJointWisdomInnRoomDao jointWisdomInnRoomDao;
     @Resource
     private ExceptionOrderDao exceptionOrderDao;
+    @Resource
+    private OrderOtherPriceDao orderOtherPriceDao;
 
 
     @Override
@@ -1134,6 +1137,10 @@ public class OrderService implements IOrderService {
             this.dailyInfosDao.insertDailyInfos(hangOrder);
             //创建入住人信息
             this.orderGuestsDao.insertOrderGuests(hangOrder);
+            //保存订单其他消费
+            if (null != hangOrder.getOrderOtherPriceList() && CollectionUtils.isNotEmpty(hangOrder.getOrderOtherPriceList())) {
+                this.orderOtherPriceDao.insertIntoOrderOtherPrice(hangOrder);
+            }
             MessageCenterUtils.sendWeiXin("手动下单，调用oms下单接口异常，订单号为：" + order.getChannelOrderCode());
             result.put("status", false);
             result.put("message", "同步oms失败");
@@ -1167,6 +1174,10 @@ public class OrderService implements IOrderService {
         this.dailyInfosDao.insertDailyInfos(hangOrder);
         //创建入住人信息
         this.orderGuestsDao.insertOrderGuests(hangOrder);
+        //保存订单其他消费
+        if (null != hangOrder.getOrderOtherPriceList() && CollectionUtils.isNotEmpty(hangOrder.getOrderOtherPriceList())) {
+            this.orderOtherPriceDao.insertIntoOrderOtherPrice(hangOrder);
+        }
         return result;
     }
 

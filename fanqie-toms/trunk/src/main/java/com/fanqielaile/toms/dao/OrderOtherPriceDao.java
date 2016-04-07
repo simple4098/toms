@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OrderOtherPrice;
 
 /**
@@ -12,4 +13,11 @@ public interface OrderOtherPriceDao {
      * @param orderOtherPrice
      */
     void insertOrderOtherPrice(OrderOtherPrice orderOtherPrice);
+
+    /**
+     * 保存订单其他消费
+     *
+     * @param order
+     */
+    void insertIntoOrderOtherPrice(Order order);
 }
