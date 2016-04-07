@@ -374,8 +374,10 @@ $(function(){
             url:url,
             dataType:'html',
             success:function(rs){
-                if (rs || rs.status) {
-                    alert("手动下单成功！")
+                if (rs.status) {
+                    alert("手动下单成功！");
+                } else {
+                    alert("手动下单失败！");
                 }
             },
             error: function() {

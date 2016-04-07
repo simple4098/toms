@@ -162,6 +162,16 @@ public class Order extends Domain {
     private List<ExceptionOrder> exceptionOrderList;
     //ota订单状态
     private OtaOrderStatus otaOrderStatus;
+    //其他消费
+    private List<OrderOtherPrice> orderOtherPriceList;
+
+    public List<OrderOtherPrice> getOrderOtherPriceList() {
+        return orderOtherPriceList;
+    }
+
+    public void setOrderOtherPriceList(List<OrderOtherPrice> orderOtherPriceList) {
+        this.orderOtherPriceList = orderOtherPriceList;
+    }
 
     public OtaOrderStatus getOtaOrderStatus() {
         return otaOrderStatus;
@@ -834,6 +844,8 @@ public class Order extends Domain {
         handOrder.setDailyInfoses(getDailyInfosRoomTypes(order, roomTypeInfoDto));
         //入住人信息
         handOrder.setOrderGuestses(getOrderGuest(order));
+        //订单其他消费
+        handOrder.setOrderOtherPriceList(order.getOrderOtherPriceList());
         return handOrder;
     }
 
