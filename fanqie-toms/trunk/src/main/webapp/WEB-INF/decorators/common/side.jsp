@@ -294,6 +294,7 @@
                                 &laquo;
                             </a>
                         </li>
+
                         <li id="Next">
                             <a href="#" aria-label="Next">
                                 &raquo;
