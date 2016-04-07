@@ -1,6 +1,8 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
+import com.fanqielaile.toms.model.Result;
+import com.fanqielaile.toms.model.UserInfo;
 
 import java.util.List;
 
@@ -26,9 +28,24 @@ public interface IOtherConsumerInfoService {
     boolean findOtherConsumerFunction(String companyId);
 
     /**
-     *
-     * @param priceRecordJsonBeans  新增、编辑
+     * 新增其他消费
+     * @param priceRecordJsonBeans 其他消费项目
+     * @param currentUser 当前用户
      */
-    void saveOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans);
+    Result saveOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans,UserInfo currentUser);
+
+    /**
+     * 更新
+     * @param priceRecordJsonBeans 其他消费项目
+     * @param currentUser 当前用户
+     */
+    void updateOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans, UserInfo currentUser);
+
+    /**
+     * 删除其他消费
+     * @param consumerInfoId 其他消费id， 并且删除掉下面的子节点
+     * @throws Exception
+     */
+    void deleteOtherConsumerInfo(String consumerInfoId) throws Exception;
 }
 

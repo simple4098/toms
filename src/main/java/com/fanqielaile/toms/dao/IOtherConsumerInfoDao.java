@@ -39,4 +39,13 @@ public interface IOtherConsumerInfoDao {
      * @param id ConsumerInfo id
      */
     List<OtherConsumerInfoDto> selectConsumerInfoById(@Param("id") String id);
+
+    void updateOtherConsumerInfo(OtherConsumerInfoDto otherConsumerInfoDto);
+
+    void saveConsumerInfo(OtherConsumerInfoDto otherConsumerInfoDto);
+
+    void removeConsumerInfoByParentId(@Param("parentId") String parentId);
+
+
+    void deleteOtherConsumerInfo(@Param("consumerInfoId")String consumerInfoId);
 }

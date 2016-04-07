@@ -4,12 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
+import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOtherConsumerInfoService;
 import com.fanqielaile.toms.support.tag.AuthorizeTagConsumer;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/personality")
 public class OtherConsumerFunctionController  extends BaseController {
+    private static  final Logger log = Logger.getLogger(OtherConsumerFunctionController.class);
     @Resource
     private IOtherConsumerInfoService otherConsumerInfoService;
 
@@ -69,14 +72,39 @@ public class OtherConsumerFunctionController  extends BaseController {
 
     @RequestMapping("/updateConsumerInfo")
     @ResponseBody
-    public Object updateView(Model model,String json){
+    public Object updateView(String json){
         JsonModel jsonModel = new JsonModel();
         UserInfo currentUser = getCurrentUser();
         OtherConsumerInfoDto priceRecordJsonBeans =  JSON.parseObject(json, new TypeReference<OtherConsumerInfoDto>() {});
-        otherConsumerInfoService.saveOtherConsumerInfo(priceRecordJsonBeans);
-//        List<OtherConsumerInfoDto> list = JacksonUtil.json2list(json, OtherConsumerInfoDto.class);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        otherConsumerInfoService.updateOtherConsumerInfo(priceRecordJsonBeans, currentUser);
         jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        return  jsonModel;
+    }
+    @RequestMapping("/addConsumerInfo")
+    @ResponseBody
+    public Object addConsumerInfo(String json){
+        JsonModel jsonModel = new JsonModel();
+        UserInfo currentUser = getCurrentUser();
+        OtherConsumerInfoDto priceRecordJsonBeans =  JSON.parseObject(json, new TypeReference<OtherConsumerInfoDto>() {});
+        priceRecordJsonBeans.setCompanyId(currentUser.getCompanyId());
+        Result result = otherConsumerInfoService.saveOtherConsumerInfo(priceRecordJsonBeans, currentUser);
+        jsonModel.put(Constants.STATUS, result.getStatus());
+        jsonModel.put(Constants.MESSAGE, result.getMessage());
+        return  jsonModel;
+    }
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Object delete(String consumerInfoId){
+        JsonModel jsonModel = new JsonModel();
+        try {
+            otherConsumerInfoService.deleteOtherConsumerInfo(consumerInfoId);
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS200);
+        } catch (Exception e) {
+            log.error("删除其他消费异常",e);
+            jsonModel.put(Constants.STATUS, Constants.ERROR400);
+            jsonModel.put(Constants.MESSAGE, e);
+        }
+
         return  jsonModel;
     }
 
