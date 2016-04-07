@@ -199,8 +199,25 @@
                                         <td>${d.feeStatus.text}</td>
                                         <td>${d.innName}</td>
                                         <td>${d.guestName}</td>
+                                        <c:if test="${d.channelSource != 'HAND_ORDER'}">
                                         <td>${d.roomTypeName}</td>
                                         <td>${d.homeAmount}</td>
+                                        </c:if>
+                                        <c:if test="${d.channelSource == 'HAND_ORDER'}">
+                                            <td>
+                                                <c:if test="${not empty d.dailyInfoses}">
+                                                    <c:forEach items="${d.dailyInfoses}" var="dd">
+                                                        ${dd.roomTypeName}<br>
+                                                    </c:forEach>
+                                                </c:if>
+                                            </td>
+                                            <td><c:if test="${not empty d.dailyInfoses}">
+                                                <c:forEach items="${d.dailyInfoses}" var="dd">
+                                                    ${dd.roomTypeNums}<br>
+                                                </c:forEach>
+                                            </c:if>
+                                            </td>
+                                        </c:if>
                                         <td class="hidden-240"><fmt:formatDate value="${d.liveTime}"
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>

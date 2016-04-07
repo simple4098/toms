@@ -898,9 +898,7 @@ public class OrderService implements IOrderService {
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             for (OrderParamDto orderDto : orderDtos) {
                 List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
-                List<DailyInfos> dailyInfosArrayList = new ArrayList<>();
-                dailyInfosArrayList.addAll(dailyInfoses);
-                orderDto.setDailyInfoses(dailyInfosArrayList);
+                orderDto.setDailyInfoses(dailyInfoses);
                 //设置总价和每日价格
                 if (null != orderDto.getAddPrice()) {
                     BigDecimal addTatalPirce = BigDecimal.ZERO;
