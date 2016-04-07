@@ -59,43 +59,52 @@ var vm = avalon.define({
     },
     saveOtherPayItem : function() {
         var addOtherPayItem = vm.addOtherPayItem.$model;
-        vm.saveValid(addOtherPayItem);
-        var json = JSON.stringify(eidtPayItem);
+        if(!vm.saveValid(addOtherPayItem)){
+            return;
+        }
+        var json = JSON.stringify(addOtherPayItem);
         var url = $(this).attr("data-url");
         $.ajax({
             url:url+"?json="+json,
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                console.log(data.data)
+                console.log(data.data);
+                if(data.status){
+                    window.location.href='/personality/otherConsumer';
+                }else{
+                    layer.msg(data.message);
+                }
             },
             error: function () {
                 layer.msg('系统错误');
             }
         })
-        //todo
     },
     saveValid : function(otherPayItem) {
-        if(!otherPayItem.consumerProjectName){
-            alert("消费项目名称不能为空！")
-            return;
+        if(!otherPayItem.consumerProjectName || otherPayItem.consumerProjectName.length>5){
+            layer.alert("消费项目名称不能为空,并且长度最大为5个字符!")
+            return false;
         }
         var isValid = false;
         $.each(otherPayItem.otherList,function(){
             if(!this.price){
-                alert("价格不能为空！")
+                layer.alert("价格不能为空!")
                 isValid = true;
                 return false;
             }
-            var re = /^[0-9]*[1-9][0-9]*$/;
+            var re = /^\d{1,4}$/;
             if(!re.test(this.price)){
-                alert("价格请填写正整数1");
+                layer.alert("价格请填写不大于4位的正整数!");
                 isValid = true;
                 return false;
             }
         })
         if(isValid){
-            return;
+            return false;
+        }
+        if(!isValid){
+            return true;
         }
         $('#addPayItems').modal('hide');
         $('#editPayItems').modal('hide');
@@ -117,27 +126,32 @@ var vm = avalon.define({
         $("#editPayItems").modal('show');
     },
     saveEditPayItem : function() {
-        var eidtPayItem = vm.eidtPayItem.$model;
+        var editPayItem = vm.eidtPayItem.$model;
         if(vm.eidtPayItem.otherList.length==0){
           alert("消费项目至少为一条！")
           return;
         }
-        vm.saveValid(eidtPayItem);
-        console.log(eidtPayItem);
-        var json = JSON.stringify(eidtPayItem);
+        if(!vm.saveValid(editPayItem)){
+            return;
+        }
+        console.log(editPayItem);
+        var json = JSON.stringify(editPayItem);
         var url = $(this).attr("data-url");
         $.ajax({
             url:url+"?json="+json,
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                console.log(data.data)
+                if(data.status){
+                    window.location.href='/personality/otherConsumer';
+                }else{
+                    layer.msg(data.message);
+                }
             },
             error: function () {
                 layer.msg('系统错误');
             }
         })
-        //todo
     }
 })
 avalon.scan();

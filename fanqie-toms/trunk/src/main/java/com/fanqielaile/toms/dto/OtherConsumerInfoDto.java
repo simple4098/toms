@@ -4,6 +4,7 @@ import com.fanqielaile.toms.model.OtherConsumerInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DESC :
@@ -32,6 +33,9 @@ public class OtherConsumerInfoDto  {
     //父id
     private String parentId;
     private int deleted;
+    private String modifierId;
+    private String creatorId;
+    private String uuid = UUID.randomUUID().toString();
     private List<OtherConsumerInfoDto> otherList;
 
     public int getDeleted() {
@@ -120,5 +124,29 @@ public class OtherConsumerInfoDto  {
 
     public void setOtherList(List<OtherConsumerInfoDto> otherList) {
         this.otherList = otherList;
+    }
+
+    public String getModifierId() {
+        return modifierId;
+    }
+
+    public void setModifierId(String modifierId) {
+        this.modifierId = modifierId;
+    }
+
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

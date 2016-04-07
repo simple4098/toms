@@ -57,5 +57,22 @@
         select o.* from other_consumer_info o where o.deleted=0 and o."level"=2 and company_id=#{companyId} and o.parent_id=#{parentId};
     </select>
 
+    <update id="updateOtherConsumerInfo" parameterType="com.fanqielaile.toms.dto.OtherConsumerInfoDto">
+         update other_consumer_info set consumer_project_name=#{consumerProjectName},price_name=#{priceName},price=#{price},status=#{status},updated_date=now(),modifier_id=#{modifierId},deleted=0 where id= #{id}
+    </update>
+
+    <update id="removeConsumerInfoByParentId" >
+         update other_consumer_info set deleted=1 where parent_id= #{parentId}
+    </update>
+
+    <insert id="saveConsumerInfo" parameterType="com.fanqielaile.toms.dto.OtherConsumerInfoDto">
+        insert into other_consumer_info(id,company_id,deleted,created_date,updated_date,status,consumer_fun_id,level,consumer_project_name,price_name,price,parent_id,creator_id)
+        values (#{uuid},#{companyId},0,now(),now(),#{status},#{consumerFunId},#{level},#{consumerProjectName},#{priceName},#{price},#{parentId},#{creatorId})
+    </insert>
+
+    <delete id="deleteOtherConsumerInfo">
+        update other_consumer_info set deleted=1 where id=#{consumerInfoId} or parent_id=#{consumerInfoId}
+    </delete>
+
 
 </mapper>

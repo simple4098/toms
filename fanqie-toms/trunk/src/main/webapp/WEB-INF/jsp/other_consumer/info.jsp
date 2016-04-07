@@ -40,7 +40,7 @@
                         <li class="col-sm-2 items-title">
                             <dl>
                                 <dd>${d.consumerProjectName}</dd>
-                                <dd><a ms-click="editPayItemFun" data-url="<c:url value='/personality/editView.json'/>?consumerInfoId=${d.id}">编辑</a><a data-toggle="modal" data-target="#deletePayItems">删除</a></dd>
+                                <dd><a ms-click="editPayItemFun" data-url="<c:url value='/personality/editView.json'/>?consumerInfoId=${d.id}">编辑</a><a data-toggle="modal" class="consumer-delete" data-url="<c:url value='/personality/delete.json'/>?consumerInfoId=${d.id}" data-target="#deletePayItems">删除</a></dd>
                             </dl>
                         </li>
                         <c:if test="${!empty d.otherList}">
@@ -74,7 +74,7 @@
                             <label class="col-sm-4 control-label no-padding-right"> 消费项目名称
                             </label>
                             <div class="col-sm-8">
-                                <input type="text" data-tips="如：“车票”、“门票” " autocomplete="off" value="" placeholder="如：“车票”、“门票” " class="ipt" ms-duplex="addOtherPayItem.consumerProjectName"/>
+                                <input type="text" data-tips="如：“车票”、“门票” " autocomplete="off" value="" maxlength="5" placeholder="如：“车票”、“门票” " class="ipt" ms-duplex="addOtherPayItem.consumerProjectName"/>
                             </div>
                         </div>
                         <div class="form-group">
@@ -87,10 +87,10 @@
                         </div>
                         <div class="form-group" ms-repeat="addOtherPayItem.otherList">
                             <div class="col-sm-4">
-                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.consumerProjectName"/>
+                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" maxlength="5" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.priceName"/>
                             </div>
                             <div class="col-sm-4">
-                                <input type="text" data-tips="请填写正整数 " autocomplete="off" value="" placeholder="请填写正整数 " class="ipt" ms-duplex="el.price"/>
+                                <input type="text" data-tips="请填写正整数 " autocomplete="off" value="" maxlength="4" placeholder="请填写正整数 " class="ipt" ms-duplex="el.price"/>
                             </div>
                             <div class="col-sm-4">
                                 <input type="checkbox" ms-duplex-checked="el.status"/>
@@ -105,7 +105,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/>>
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem" data-url="<c:url value="/personality/addConsumerInfo.json"/>">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -140,10 +140,10 @@
                         </div>
                         <div class="form-group" ms-repeat="eidtPayItem.otherList">
                             <div class="col-sm-4">
-                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.priceName"/>
+                                <input type="text" data-tips="如：“全票”、“会员价” " autocomplete="off" value="" maxlength="5" placeholder="如：“全票”、“会员价” " class="ipt" ms-duplex="el.priceName"/>
                             </div>
                             <div class="col-sm-4">
-                                <input type="text" data-tips="请填写正整数 " autocomplete="off" value="" placeholder="请填写正整数 " class="ipt" ms-duplex="el.price"/>
+                                <input type="text" data-tips="请填写正整数 " autocomplete="off" value="" maxlength="4" placeholder="请填写正整数 " class="ipt" ms-duplex="el.price"/>
                             </div>
                             <div class="col-sm-4">
                                 <input type="checkbox" ms-duplex-checked="el.status"/>
@@ -159,7 +159,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/> ">
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/>">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -174,8 +174,9 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">新增消费项目</h4>
+                        <h4 class="modal-title">删除消费项目</h4>
                     </div>
+                    <input type="hidden" id="data-url-id" value="">
                     <div class="modal-body">
                         您确定要删除该消费项目吗？
                     </div>
@@ -186,7 +187,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button">
+                            <button class="btn btn-info btn-hand-make-order  btn-hand-make-order-delete" type="button">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -200,5 +201,34 @@
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
 <script src="<c:url value='/assets/js/avalon.js'/>"></script>
 <script src="<c:url value='/js/other-pay-manage.js'/>"></script>
+<script >
+    $('.btn-hand-make-order-delete').bind("click",function(){
+        var url = $("#data-url-id").val();
+        $.ajax({
+            url: url,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                if(data.status==200){
+                    window.location.href='/personality/otherConsumer';
+                }else{
+                    layer.msg(data.message);
+                }
+
+            },
+            error: function () {
+                layer.msg('系统错误');
+            }
+        })
+
+
+    });
+
+    $('.consumer-delete').bind("click",function(){
+        var url = $(this).attr("data-url");
+        $("#data-url-id").val(url);
+
+    })
+</script>
 </body>
 </html>
