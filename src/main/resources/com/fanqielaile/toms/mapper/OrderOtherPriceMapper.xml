@@ -6,7 +6,6 @@
         <result column="created_date" property="createdDate"/>
         <result column="order_id" property="orderId"/>
         <result column="other_consumer_info_id" property="otherConsumerInfoId"/>
-        <result column="leven" property="leven"/>
         <result column="price_name" property="priceName"/>
         <result column="price" property="price"/>
         <result column="consumer_project_name" property="consumerProjectName"/>
@@ -18,17 +17,17 @@
 
     <insert id="insertOrderOtherPrice" parameterType="com.fanqielaile.toms.model.OrderOtherPrice">
         INSERT INTO
-        order_other_price(id,created_date,order_id,other_consumer_info_id,leven,price_name,price,nums,consumer_project_name)
+        order_other_price(id,created_date,order_id,other_consumer_info_id,price_name,price,nums,consumer_project_name)
         VALUES
-        (#{id},#{createdDate},#{orderId},#{otherConsumerInfoId},#{leven},#{priceName},#{price},#{nums},#{consumerProjectName})
+        (#{id},#{createdDate},#{orderId},#{otherConsumerInfoId},#{priceName},#{price},#{nums},#{consumerProjectName})
     </insert>
 
     <insert id="insertIntoOrderOtherPrice" parameterType="com.fanqielaile.toms.model.Order">
         INSERT INTO
-        order_other_price(id,created_date,order_id,other_consumer_info_id,leven,price_name,price,nums,consumer_project_name)
+        order_other_price(id,created_date,order_id,other_consumer_info_id,price_name,price,nums,consumer_project_name)
         VALUES
         <foreach collection="orderOtherPriceList" item="d" separator=",">
-            (#{d.uuid},now(),#{d.orderId},#{d.orderId},#{d.otherConsumerInfoId},#{d.leven},#{d.priceName},
+            (#{d.uuid},now(),#{d.orderId},#{d.otherConsumerInfoId},#{d.priceName},
             #{d.price},#{d.nums},#{d.consumerProjectName})
         </foreach>
     </insert>

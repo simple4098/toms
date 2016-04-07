@@ -14,6 +14,7 @@ import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
@@ -845,8 +846,23 @@ public class Order extends Domain {
         //入住人信息
         handOrder.setOrderGuestses(getOrderGuest(order));
         //订单其他消费
-        handOrder.setOrderOtherPriceList(order.getOrderOtherPriceList());
+        handOrder.setOrderOtherPriceList(getOrderOtherPrice(order));
         return handOrder;
+    }
+
+    /**
+     * 得到订单其他消费
+     *
+     * @param order
+     * @return
+     */
+    private static List<OrderOtherPrice> getOrderOtherPrice(Order order) {
+        if (null != order.getOrderOtherPriceList() && CollectionUtils.isNotEmpty(order.getOrderOtherPriceList())) {
+            for (OrderOtherPrice o : order.getOrderOtherPriceList()) {
+                o.setOrderId(order.getId());
+            }
+        }
+        return order.getOrderOtherPriceList();
     }
 
     /**
