@@ -38,7 +38,8 @@ $(function(){
         $saveManualOrder = $("#saveManualOrder"),
         bangInnId = $('#kz_item-r').val(),//客栈Id
         maiAccount,//卖价或者底价
-        roomTypedata = [] //存放房型数据,
+        roomTypedata = [], //存放房型数据,
+        otherList = []
     $.each($("input[name='maiAccount']"),function() {
         if($(this).is(":checked"))
         {
@@ -67,6 +68,7 @@ $(function(){
                 var notNeed=[];
                 if(dataV.status){
                     var data = dataV.data.otherList;
+                    otherList = data;
                     if(data){
                         $.each(data,function(){
                             if(this.status==CONST.IDNEED.NEED){
@@ -195,10 +197,6 @@ $(function(){
     selectRoomTypeChange($selectRoomType.eq(0),0)
     removeRoomType($(".remove-room-type").eq(0))
     function selectRoomTypeChange($selectRoomType,i) {
-       /* var oldRoomtypeid
-        $("#roomOperate").off().on("click",$selectRoomType,function() {
-            oldRoomtypeid = $selectRoomType.find("option:selected").attr("data-roomtypeid")
-        })*/
         $("#roomOperate").off().on("change",$selectRoomType,function() {
             var newRoomtypeid = $selectRoomType.find("option:selected").attr("data-roomtypeid")
             var url = $("#roomNumUrl").attr("data-url")
@@ -392,6 +390,20 @@ $(function(){
             json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
             json[roomTypeName] = $selectedObj.val()
         })
+        $.each(otherList,function(key,val) {
+            val.nums = $(".number").eq(key).val()
+            consumerProjectName = "orderOtherPriceList"+ "[" + key + "]" + ".consumerProjectName"
+            nums = "orderOtherPriceList"+ "[" + key + "]" + ".nums"
+            price = "orderOtherPriceList"+ "[" + key + "]" + ".price"
+            priceName = "orderOtherPriceList"+ "[" + key + "]" + ".priceName"
+            otherConsumerInfoId = "orderOtherPriceList"+ "[" + key + "]" + ".otherConsumerInfoId"
+            json[consumerProjectName] = val.consumerProjectName
+            json[nums] = val.nums
+            json[price] = val.price
+            json[priceName] = val.priceName
+            json[otherConsumerInfoId] = val.id
+        })
+
 
         //请求保存接口
         var url = $saveManualOrder.attr("data-url");
@@ -403,6 +415,10 @@ $(function(){
             success:function(rs){
                 if (rs || rs.status) {
                     alert("手动下单成功！")
+                    var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
+                    var maiAccount = $(".maiAccount:checked").val();
+                    var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
+                    homeGetRoomType(postData)
                 }
             },
             error: function() {
@@ -464,6 +480,24 @@ $(function(){
             alert("请输入正确的手机号码！")
             return;
         }
+    }
+    function homeGetRoomType(postData){
+        var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
+        $.ajax({
+            type:'POST',
+            data:postData,
+            url:url,
+            dataType:'html',
+            success:function(data){
+                $("#roomTypeContainerId").empty();
+                if (data.indexOf("没有") == -1) {
+                    $('.hand-btn').attr('disabled', false);
+                } else {
+                    $('.hand-btn').attr('disabled', true);
+                }
+                $("#roomTypeContainerId").html(data);
+            }
+        })
     }
     // 验证手机号
     $guestMobile.blur(function () {
