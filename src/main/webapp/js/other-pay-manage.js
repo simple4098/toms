@@ -60,7 +60,11 @@ var vm = avalon.define({
                     "status": false
                 }]
         }
-        $("#addPayItems").modal("show");
+        if($('.opened-con-ul').length>=5){
+            layer.msg("最多只能新增5条消费项目");
+        }else{
+            $("#addPayItems").modal("show");
+        }
     },
     addPriceType : function(type) {
 
@@ -95,8 +99,8 @@ var vm = avalon.define({
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                if(data.status){
-                    window.location.href='/personality/otherConsumer';
+                if(data.status==200){
+                    window.location.href='/personality/info/otherConsumer';
                 }else{
                     layer.msg(data.message);
                 }
@@ -113,6 +117,11 @@ var vm = avalon.define({
         }
         var isValid = false;
         $.each(otherPayItem.otherList,function(){
+            if(!this.priceName || this.priceName.length>5){
+                layer.alert("价格名称不能为空,并且不能超过5个字符!")
+                isValid = true;
+                return false;
+            }
             if(!this.price){
                 layer.alert("价格不能为空!")
                 isValid = true;
@@ -166,7 +175,7 @@ var vm = avalon.define({
             dataType: 'json',
             success: function (data) {
                 if(data.status){
-                    window.location.href='/personality/otherConsumer';
+                    window.location.href='/personality/info/otherConsumer';
                 }else{
                     layer.msg(data.message);
                 }

@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
@@ -30,7 +31,7 @@ import java.util.List;
  * @version: v1.0.0
  */
 @Controller
-@RequestMapping("/personality")
+@RequestMapping("/personality/info")
 public class OtherConsumerFunctionController  extends BaseController {
     private static  final Logger log = Logger.getLogger(OtherConsumerFunctionController.class);
     @Resource
@@ -39,7 +40,7 @@ public class OtherConsumerFunctionController  extends BaseController {
     @RequestMapping("/otherConsumer")
     public String orderExport(Model model){
         UserInfo currentUser = getCurrentUser();
-        WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+        /*WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
         ServletContext context = webApplicationContext.getServletContext();
         String contextPath = context.getContextPath();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -52,7 +53,11 @@ public class OtherConsumerFunctionController  extends BaseController {
             model.addAttribute(Constants.STATUS,function);
         }else {
             return "/other_consumer/info_error";
-        }
+        }*/
+        List<OtherConsumerInfoDto> otherConsumerList = otherConsumerInfoService.findOtherConsumerInfo(currentUser.getCompanyId(),null);
+        boolean function = otherConsumerInfoService.findOtherConsumerFunction(currentUser.getCompanyId());
+        model.addAttribute(Constants.DATA,otherConsumerList);
+        model.addAttribute(Constants.STATUS,function);
         return "/other_consumer/info";
     }
 
@@ -62,10 +67,12 @@ public class OtherConsumerFunctionController  extends BaseController {
         JsonModel jsonModel = new JsonModel();
         UserInfo currentUser = getCurrentUser();
         List<OtherConsumerInfoDto> otherConsumerList = otherConsumerInfoService.findOtherConsumerInfo(currentUser.getCompanyId(),consumerInfoId);
-        model.addAttribute(Constants.DATA,otherConsumerList);
-        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
-        jsonModel.put(Constants.DATA, otherConsumerList.get(0));
-        jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        if (!CollectionUtils.isEmpty(otherConsumerList)){
+            jsonModel.put(Constants.DATA, otherConsumerList.get(0));
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        }else {
+            jsonModel.put(Constants.STATUS, Constants.ERROR);
+        }
         return  jsonModel;
     }
 
@@ -75,8 +82,15 @@ public class OtherConsumerFunctionController  extends BaseController {
         JsonModel jsonModel = new JsonModel();
         UserInfo currentUser = getCurrentUser();
         OtherConsumerInfoDto priceRecordJsonBeans =  JSON.parseObject(json, new TypeReference<OtherConsumerInfoDto>() {});
-        otherConsumerInfoService.updateOtherConsumerInfo(priceRecordJsonBeans, currentUser);
-        jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        try {
+            otherConsumerInfoService.updateOtherConsumerInfo(priceRecordJsonBeans, currentUser);
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        } catch (Exception e) {
+            log.error("异常",e);
+            jsonModel.put(Constants.STATUS, Constants.ERROR);
+            jsonModel.put(Constants.MESSAGE, e.getMessage());
+        }
+
         return  jsonModel;
     }
     @RequestMapping("/addConsumerInfo")

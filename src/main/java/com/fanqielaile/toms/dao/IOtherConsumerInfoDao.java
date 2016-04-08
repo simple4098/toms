@@ -46,6 +46,17 @@ public interface IOtherConsumerInfoDao {
 
     void removeConsumerInfoByParentId(@Param("parentId") String parentId);
 
-
+    /**
+     * 删除其他消费的项目
+     * @param consumerInfoId  其他消费的项目id
+     */
     void deleteOtherConsumerInfo(@Param("consumerInfoId")String consumerInfoId);
+
+    /**
+     * 更新项目名称查询
+     * @param companyId 公司id
+     * @param consumerProjectName 项目名称
+     */
+    OtherConsumerInfoDto selectConsumerInfoByProjectName(@Param("companyId")String companyId, @Param("consumerProjectName")String consumerProjectName);
+    OtherConsumerInfoDto selectConsumerInfoByPriceName(@Param("companyId")String companyId, @Param("priceName")String priceName);
 }
