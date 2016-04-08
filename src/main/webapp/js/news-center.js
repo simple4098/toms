@@ -57,14 +57,11 @@ $(function(){
                 return;
             }
             currentPageTab(currentPage-1)
-            //currentPage = currentPage-1
-
         } else if (index == Pages+1){
             if(currentPage>=Pages) {
                 return;
             }
             currentPageTab(currentPage+1)
-            //currentPage = currentPage+1
         } else {
             currentPageTab(index)
         }
