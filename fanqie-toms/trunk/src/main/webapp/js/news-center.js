@@ -1,7 +1,7 @@
 $(function(){
     var CONST = {
         TIME : 60*1000,//轮循时间
-        ROWS : 5//分页每页显示条数
+        ROWS : 10//分页每页显示条数
     }
     var currentPage = 1,
         Pages = 1;
