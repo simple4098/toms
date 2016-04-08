@@ -60,8 +60,9 @@ $(function(){
                 $(this).remove()
             })
         }
+        var url = $("#manualUrl").attr("data-url");
         $.ajax({
-            url:'/personality/manual.json',
+            url:url,
             dataType:'json',
             type:'get',
             success:function(dataV){
@@ -88,7 +89,7 @@ $(function(){
                         }
                     }
                 }else{
-                    $("#notNeedListId").remove();
+                    $("#notNeedListIdDev").remove();
                 }
             },error:function(data){
 

@@ -14,7 +14,7 @@
 </head>
 <body>
 <div>
-  <toms:authorizeConsumer uri="/personality/otherConsumer"/>
+  <toms:authorizeConsumer uri="/personality/info/otherConsumer"/>
  </div>
 </body>
 </html>

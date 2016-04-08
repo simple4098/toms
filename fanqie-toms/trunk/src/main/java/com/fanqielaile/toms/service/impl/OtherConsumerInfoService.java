@@ -7,6 +7,7 @@ import com.fanqielaile.toms.model.OtherConsumerInfo;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOtherConsumerInfoService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -73,13 +74,25 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
         priceRecordJsonBeans.setModifierId(currentUser.getId());
         OtherConsumerFunction otherConsumerFunction = otherConsumerInfoDao.selectFunction(currentUser.getCompanyId());
         List<OtherConsumerInfoDto> list = otherConsumerInfoDao.selectConsumerInfo(priceRecordJsonBeans.getCompanyId(), null);
-        if (CollectionUtils.isEmpty(list) || (!CollectionUtils.isEmpty(list) && list.size()<=5)){
+        if (CollectionUtils.isEmpty(list) || (!CollectionUtils.isEmpty(list) && list.size()<5)){
             priceRecordJsonBeans.setConsumerFunId(otherConsumerFunction.getId());
             priceRecordJsonBeans.setLevel(1);
+            OtherConsumerInfoDto consumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByProjectName(currentUser.getCompanyId(),priceRecordJsonBeans.getConsumerProjectName());
+            if (consumerInfoDto!=null){
+                result.setStatus(Constants.ERROR400);
+                result.setMessage("项目名称不能相同");
+                return result;
+            }
             otherConsumerInfoDao.saveConsumerInfo(priceRecordJsonBeans);
             List<OtherConsumerInfoDto> otherList = priceRecordJsonBeans.getOtherList();
             if (!CollectionUtils.isEmpty(otherList) && otherList.size()<=5) {
                 for (OtherConsumerInfoDto dto : otherList) {
+                    OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName());
+                    if (otherConsumerInfoDto!=null){
+                        result.setStatus(Constants.ERROR400);
+                        result.setMessage("价格名称不能相同");
+                        return result;
+                    }
                     dto.setConsumerFunId(otherConsumerFunction.getId());
                     dto.setParentId(priceRecordJsonBeans.getUuid());
                     dto.setLevel(2);
@@ -100,11 +113,15 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
     }
 
     @Override
-    public void updateOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans, UserInfo currentUser) {
+    public void updateOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans, UserInfo currentUser)throws Exception {
         priceRecordJsonBeans.setCompanyId(currentUser.getCompanyId());
         priceRecordJsonBeans.setCreatorId(currentUser.getId());
         priceRecordJsonBeans.setModifierId(currentUser.getId());
         OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoDao.selectConsumerInfoById(priceRecordJsonBeans.getId()).get(0);
+        OtherConsumerInfoDto projectName = otherConsumerInfoDao.selectConsumerInfoByProjectName(currentUser.getCompanyId(),priceRecordJsonBeans.getConsumerProjectName());
+        if (projectName!=null && !projectName.getId().equals(priceRecordJsonBeans.getId())){
+            throw  new TomsRuntimeException("项目名称不能相同!");
+        }
         otherConsumerInfoDao.updateOtherConsumerInfo(priceRecordJsonBeans);
         otherConsumerInfoDao.removeConsumerInfoByParentId(priceRecordJsonBeans.getId());
         List<OtherConsumerInfoDto> otherList = priceRecordJsonBeans.getOtherList();
@@ -112,6 +129,10 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
             if (StringUtils.isNotEmpty(dto.getId())){
                 otherConsumerInfoDao.updateOtherConsumerInfo(dto);
             }else {
+                OtherConsumerInfoDto consumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName());
+                if (consumerInfoDto!=null){
+                    throw  new TomsRuntimeException("价格名称不能相同");
+                }
                 dto.setParentId(priceRecordJsonBeans.getId());
                 dto.setLevel(2);
                 dto.setConsumerFunId(otherConsumerInfoDto.getConsumerFunId());

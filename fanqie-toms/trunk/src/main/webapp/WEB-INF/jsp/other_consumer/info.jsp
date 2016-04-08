@@ -21,7 +21,7 @@
 <div class="container ms-controller" ms-controller="otherPayManage">
     <div class="qita-xiaofei-guanli">
         <h4 style="position:relative">
-            其它消费管理 <input id="onoffButton" type="button" data-url="<c:url value="/personality/updateFunction.json"/>" data-status="${status}" <c:if test="${!status}"> class="off_button"</c:if><c:if test="${status}"> class="on_button"</c:if> title="点击开启" ms-click="divDisplayIsopenedFun">
+            其它消费管理 <input id="onoffButton" type="button" data-url="<c:url value="/personality/info/updateFunction.json"/>" data-status="${status}" <c:if test="${!status}"> class="off_button"</c:if><c:if test="${status}"> class="on_button"</c:if> title="点击开启" ms-click="divDisplayIsopenedFun">
             <a class="fr btn btn-primary" onclick="history.go(-1)">返回</a>
         </h4>
         <div class="unopened-content">
@@ -37,7 +37,7 @@
                         <li class="col-sm-2 items-title">
                             <dl>
                                 <dd>${d.consumerProjectName}</dd>
-                                <dd><a ms-click="editPayItemFun" data-url="<c:url value='/personality/editView.json'/>?consumerInfoId=${d.id}">编辑</a><a data-toggle="modal" class="consumer-delete" data-url="<c:url value='/personality/delete.json'/>?consumerInfoId=${d.id}" data-target="#deletePayItems">删除</a></dd>
+                                <dd><a ms-click="editPayItemFun" data-url="<c:url value='/personality/info/editView.json'/>?consumerInfoId=${d.id}">编辑</a><a data-toggle="modal" class="consumer-delete" data-url="<c:url value='/personality/info/delete.json'/>?consumerInfoId=${d.id}" data-target="#deletePayItems">删除</a></dd>
                             </dl>
                         </li>
                         <c:if test="${!empty d.otherList}">
@@ -102,7 +102,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem" data-url="<c:url value="/personality/addConsumerInfo.json"/>">
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveOtherPayItem" id="saveOtherPayItem" data-url="<c:url value="/personality/info/addConsumerInfo.json"/>">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -156,7 +156,7 @@
                                 取消
                             </button>
                             &nbsp; &nbsp; &nbsp;
-                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem" data-url="<c:url value="/personality/updateConsumerInfo.json"/>">
+                            <button class="btn btn-info btn-hand-make-order" type="button" ms-click="saveEditPayItem" data-url="<c:url value="/personality/info/updateConsumerInfo.json"/>">
                                 <i class="icon-ok bigger-110"></i>
                                 确认
                             </button>
@@ -209,7 +209,7 @@
             dataType: 'json',
             success: function (data) {
                 if(data.status==200){
-                    window.location.href='/personality/otherConsumer';
+                    window.location.href='/personality/info/otherConsumer';
                 }else{
                     layer.msg(data.message);
                 }

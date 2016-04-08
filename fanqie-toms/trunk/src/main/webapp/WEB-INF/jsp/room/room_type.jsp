@@ -22,7 +22,7 @@
                    data-url="<c:url value="/order/find_room_num.json"/>"/>
             <input type="hidden" id="dataUrlId" data-url="<c:url value="/oms/ajax/obtRoomType"/>">
             <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
-            <input type="hidden" class="room-type-url" id="manualUrl" data-url="<c:url value="/personality/manual.json"/>"/>
+            <input type="hidden" class="room-type-url" id="manualUrl" data-url="<c:url value="/personality/info/manual.json"/>"/>
             <select class="form-control" id="kz-tags-r"></select>
             <select class="form-control js-example-basic-single" id="kz_item-r"></select>
             <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
@@ -154,7 +154,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="notNeedListIdDev">
                         <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>其它消费
                         </label>
                         <div class="col-sm-9">

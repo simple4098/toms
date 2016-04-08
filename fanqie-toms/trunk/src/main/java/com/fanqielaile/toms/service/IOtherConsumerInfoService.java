@@ -39,7 +39,7 @@ public interface IOtherConsumerInfoService {
      * @param priceRecordJsonBeans 其他消费项目
      * @param currentUser 当前用户
      */
-    void updateOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans, UserInfo currentUser);
+    void updateOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans, UserInfo currentUser)throws Exception;
 
     /**
      * 删除其他消费
