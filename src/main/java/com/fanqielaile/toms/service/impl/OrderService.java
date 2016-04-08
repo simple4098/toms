@@ -950,6 +950,17 @@ public class OrderService implements IOrderService {
         if (null != orderParamDto) {
 
             List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderParamDto.getId());
+            //设置房型名称
+            String roomTypeName = "";
+            if (null != dailyInfoses && ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
+                for (DailyInfos d : dailyInfoses) {
+                    if (!roomTypeName.contains(d.getRoomTypeName())) {
+                        roomTypeName += d.getRoomTypeName() + "、";
+                    }
+                }
+            }
+            orderParamDto.setRoomTypeName(roomTypeName);
+            orderParamDto.setOrderRoomTypeName(roomTypeName);
             //价格策略
             if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
                 if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
