@@ -95,7 +95,6 @@ var vm = avalon.define({
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                console.log(data.data);
                 if(data.status){
                     window.location.href='/personality/otherConsumer';
                 }else{
@@ -142,7 +141,6 @@ var vm = avalon.define({
             type: 'get',
             dataType: 'json',
             success: function (data) {
-              console.log(data.data)
                 vm.eidtPayItem = data.data;
             },
             error: function () {
@@ -160,7 +158,6 @@ var vm = avalon.define({
         if(!vm.saveValid(editPayItem)){
             return;
         }
-        console.log(editPayItem);
         var json = JSON.stringify(editPayItem);
         var url = $(this).attr("data-url");
         $.ajax({
