@@ -19,9 +19,9 @@
                 } catch (e) {
                 }
             </script>
-            <input type="hidden" class="room-type-url" id="newsCenterUrl" data-url="<c:url value="/message/query_change_price_list.json"/>"/>
-            <input type="hidden" class="room-type-url" id="queryNotReadCountUrl" data-url="<c:url value="/message/query_not_read_count.json"/>"/>
-            <input type="hidden" class="room-type-url" id="queryChangeMessageUrl" data-url="<c:url value="/message/query_change_price_message.json"/>"/>
+            <input type="hidden" class="room-type-url" id="newsCenterUrl" <toms:authorize uri="/message/*"> data-url="<c:url value="/message/query_change_price_list.json"/>" </toms:authorize>/>
+            <input type="hidden" class="room-type-url" id="queryNotReadCountUrl" <toms:authorize uri="/message/*">  data-url="<c:url value="/message/query_not_read_count.json"/>"</toms:authorize>/>
+            <input type="hidden" class="room-type-url" id="queryChangeMessageUrl"  <toms:authorize uri="/message/*">  data-url="<c:url value="/message/query_change_price_message.json"/>"</toms:authorize>/>
 
         <%--/message/query_change_price_message.json--%>
             <!-- #sidebar-shortcuts -->
@@ -249,14 +249,16 @@
                     </li>
                 </toms:authorize>
             </ul>
-            <div class="news-center">
-                <a class="dropdown-toggle" href="#" id="showNewsList">
-                    <i class="icon-envelope">
-                        <span class="badge badge-success" id="newsAccount">0</span>
-                    </i>
+            <toms:authorize uri="/message/*">
+                <div class="news-center">
+                    <a class="dropdown-toggle" href="#" id="showNewsList">
+                        <i class="icon-envelope">
+                            <span class="badge badge-success" id="newsAccount">0</span>
+                        </i>
 
-                </a>
-            </div>
+                    </a>
+                </div>
+            </toms:authorize>
             <!-- /.nav-list -->
 
             <%--<div class="sidebar-collapse" id="sidebar-collapse">--%>

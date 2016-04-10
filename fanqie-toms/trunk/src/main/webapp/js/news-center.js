@@ -24,20 +24,23 @@ $(function(){
         queryChangeMessageUrl = $("#queryChangeMessageUrl").attr("data-url")
     queryNotReadCount()
     function queryNotReadCount() {
-        $.ajax({
-            type:'GET',
-            url:queryNotReadCountUrl,
-            dataType:'html',
-            success:function(rs){
-                rs = $.parseJSON(rs);
-                if(rs && rs.count && rs.status==200) {
-                    $("#newsAccount").html(rs.count)
+        if(queryNotReadCountUrl){
+            $.ajax({
+                type:'GET',
+                url:queryNotReadCountUrl,
+                dataType:'html',
+                success:function(rs){
+                    rs = $.parseJSON(rs);
+                    if(rs && rs.count && rs.status==200) {
+                        $("#newsAccount").html(rs.count)
+                    }
+                },
+                error: function() {
+                    alert("查询所有的未读改价消息数量失败！")
                 }
-            },
-            error: function() {
-                alert("查询所有的未读改价消息数量失败！")
-            }
-        })
+            })
+        }
+
     }
     function currentPageTab(i) {
         var data = {
@@ -70,42 +73,46 @@ $(function(){
         var url = $("#newsCenterUrl").attr("data-url")
         currentPage = data.page;
         $("#newsList").html("")
-        $.ajax({
-            type:'GET',
-            data: data,
-            url:url,
-            dataType:'html',
-            success:function(rs){
-                rs = $.parseJSON(rs);
-                if(rs && rs.data && rs.pagination && rs.data.length) {
-                    var newsData =  rs;
-                    $.each(newsData.data,function(){
-                        if(!this.status){
-                            $("#newsList").append("<li><h4><i class='no-read'></i>"+this.innName+"改价提醒<span class='fr'>"+this.createDate+"</span></h4>"+"<p>"+this.context+"</p></li>")
-                        }else{
-                            $("#newsList").append("<li><h4>"+this.innName+"改价提醒<span class='fr'>"+this.createDate+"</span></h4>"+"<p>"+this.context+"</p></li>")
-                        }
-                    })
-                    var pages = Math.ceil(newsData.pagination.rowsCount/newsData.pagination.rows)
-                    Pages = pages;
-                    $(".pagination").html("<li id='Previous'><a>&laquo;</a></li><li id='Next'><a>&raquo;</a></li>")
-                    for(var i=0;i<pages;i++) {
-                        if(i==currentPage-1) {
-                            $("#Next").before("<li class='active'><a>"+(i+1)+"</a></li>")
-                        } else {
-                            $("#Next").before("<li><a>"+(i+1)+"</a></li>")
-                        }
+        if(url){
+            $.ajax({
+                type:'GET',
+                data: data,
+                url:url,
+                dataType:'html',
+                success:function(rs){
+                    rs = $.parseJSON(rs);
+                    if(rs && rs.data && rs.pagination && rs.data.length) {
+                        var newsData =  rs;
+                        $.each(newsData.data,function(){
+                            if(!this.status){
+                                $("#newsList").append("<li><h4><i class='no-read'></i>"+this.innName+"改价提醒<span class='fr'>"+this.createDate+"</span></h4>"+"<p>"+this.context+"</p></li>")
+                            }else{
+                                $("#newsList").append("<li><h4>"+this.innName+"改价提醒<span class='fr'>"+this.createDate+"</span></h4>"+"<p>"+this.context+"</p></li>")
+                            }
+                        })
+                        var pages = Math.ceil(newsData.pagination.rowsCount/newsData.pagination.rows)
+                        Pages = pages;
+                        $(".pagination").html("<li id='Previous'><a>&laquo;</a></li><li id='Next'><a>&raquo;</a></li>")
+                        for(var i=0;i<pages;i++) {
+                            if(i==currentPage-1) {
+                                $("#Next").before("<li class='active'><a>"+(i+1)+"</a></li>")
+                            } else {
+                                $("#Next").before("<li><a>"+(i+1)+"</a></li>")
+                            }
 
+                        }
+                        $("#newsCenter").show();
                     }
-                    $("#newsCenter").show();
+                },
+                error: function() {
+                    alert("获取消息列表失败，请重试！")
                 }
-            },
-            error: function() {
-                alert("获取消息列表失败，请重试！")
-            }
-        })
+            })
+        }
+
     }
-    setInterval(function(){
+    if(queryChangeMessageUrl){
+        setInterval(function(){
             data = {
                 from : new Date().Format("yyyy-MM-dd hh:mm:ss"),
                 to : new Date((new Date().setMinutes(new Date().getMinutes() -1, new Date().getSeconds(), 0))).Format("yyyy-MM-dd hh:mm:ss")
@@ -131,7 +138,9 @@ $(function(){
                     alert("查询某一时间段的未读改价消息数量失败！")
                 }
             })
-    },CONST.TIME)
+        },CONST.TIME)
+    }
+
     $(".click-read-new-message a").on("click",function() {
         var data = {
             page : 1,
@@ -151,19 +160,22 @@ $(function(){
     })
     $("#packUp").on("click",function(){
         $("#newsCenter").hide();
-        $.ajax({
-            type:'GET',
-            url:queryNotReadCountUrl,
-            dataType:'html',
-            success:function(rs){
-                rs = $.parseJSON(rs);
-                if(rs && rs.count && rs.status==200) {
-                    $("#newsAccount").html(rs.count)
+        if(queryNotReadCountUrl){
+            $.ajax({
+                type:'GET',
+                url:queryNotReadCountUrl,
+                dataType:'html',
+                success:function(rs){
+                    rs = $.parseJSON(rs);
+                    if(rs && rs.count && rs.status==200) {
+                        $("#newsAccount").html(rs.count)
+                    }
+                },
+                error: function() {
+                    alert("查询所有的未读改价消息数量失败！")
                 }
-            },
-            error: function() {
-                alert("查询所有的未读改价消息数量失败！")
-            }
-        })
+            })
+        }
+
     })
 })
