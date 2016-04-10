@@ -58,5 +58,5 @@ public interface IOtherConsumerInfoDao {
      * @param consumerProjectName 项目名称
      */
     OtherConsumerInfoDto selectConsumerInfoByProjectName(@Param("companyId")String companyId, @Param("consumerProjectName")String consumerProjectName);
-    OtherConsumerInfoDto selectConsumerInfoByPriceName(@Param("companyId")String companyId, @Param("priceName")String priceName);
+    OtherConsumerInfoDto selectConsumerInfoByPriceName(@Param("companyId")String companyId, @Param("priceName")String priceName,@Param("parentId")String parentId);
 }

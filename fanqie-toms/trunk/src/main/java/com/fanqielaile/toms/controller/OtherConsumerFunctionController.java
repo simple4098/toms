@@ -100,9 +100,13 @@ public class OtherConsumerFunctionController  extends BaseController {
         UserInfo currentUser = getCurrentUser();
         OtherConsumerInfoDto priceRecordJsonBeans =  JSON.parseObject(json, new TypeReference<OtherConsumerInfoDto>() {});
         priceRecordJsonBeans.setCompanyId(currentUser.getCompanyId());
-        Result result = otherConsumerInfoService.saveOtherConsumerInfo(priceRecordJsonBeans, currentUser);
-        jsonModel.put(Constants.STATUS, result.getStatus());
-        jsonModel.put(Constants.MESSAGE, result.getMessage());
+        try {
+            otherConsumerInfoService.saveOtherConsumerInfo(priceRecordJsonBeans, currentUser);
+            jsonModel.put(Constants.STATUS, Constants.SUCCESS);
+        } catch (Exception e) {
+            jsonModel.put(Constants.STATUS, Constants.ERROR);
+            jsonModel.put(Constants.MESSAGE, e.getMessage());
+        }
         return  jsonModel;
     }
     @RequestMapping("/delete")

@@ -99,7 +99,7 @@ var vm = avalon.define({
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                if(data.status==200){
+                if(data.status){
                     window.location.href='/personality/info/otherConsumer';
                 }else{
                     layer.msg(data.message);

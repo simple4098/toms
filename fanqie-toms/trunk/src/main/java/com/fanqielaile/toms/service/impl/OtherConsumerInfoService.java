@@ -3,19 +3,18 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqielaile.toms.dao.IOtherConsumerInfoDao;
 import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
 import com.fanqielaile.toms.model.OtherConsumerFunction;
-import com.fanqielaile.toms.model.OtherConsumerInfo;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOtherConsumerInfoService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
     }
 
     @Override
-    public Result saveOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans,UserInfo currentUser) {
+    public void saveOtherConsumerInfo(OtherConsumerInfoDto priceRecordJsonBeans,UserInfo currentUser)throws Exception {
         Result result = new Result();
         priceRecordJsonBeans.setCompanyId(currentUser.getCompanyId());
         priceRecordJsonBeans.setCreatorId(currentUser.getId());
@@ -79,19 +78,15 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
             priceRecordJsonBeans.setLevel(1);
             OtherConsumerInfoDto consumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByProjectName(currentUser.getCompanyId(),priceRecordJsonBeans.getConsumerProjectName());
             if (consumerInfoDto!=null){
-                result.setStatus(Constants.ERROR400);
-                result.setMessage("项目名称不能相同");
-                return result;
+                throw  new TomsRuntimeException("项目名称不能相同");
             }
             otherConsumerInfoDao.saveConsumerInfo(priceRecordJsonBeans);
             List<OtherConsumerInfoDto> otherList = priceRecordJsonBeans.getOtherList();
             if (!CollectionUtils.isEmpty(otherList) && otherList.size()<=5) {
                 for (OtherConsumerInfoDto dto : otherList) {
-                    OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName());
+                    OtherConsumerInfoDto otherConsumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName(),priceRecordJsonBeans.getUuid());
                     if (otherConsumerInfoDto!=null){
-                        result.setStatus(Constants.ERROR400);
-                        result.setMessage("价格名称不能相同");
-                        return result;
+                        throw  new TomsRuntimeException("价格名称不能相同");
                     }
                     dto.setConsumerFunId(otherConsumerFunction.getId());
                     dto.setParentId(priceRecordJsonBeans.getUuid());
@@ -101,15 +96,11 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
                 }
                 result.setStatus(Constants.SUCCESS200);
             }else {
-                result.setStatus(Constants.ERROR400);
-                result.setMessage("不能超过5个其他消费");
-                return result;
+                throw  new TomsRuntimeException("不能超过5个消费价格类型");
             }
         }else {
-            result.setStatus(Constants.ERROR400);
-            result.setMessage("不能新增,已经存在5个其他消费");
+            throw  new TomsRuntimeException("不能超过5个消费项目");
         }
-        return result;
     }
 
     @Override
@@ -125,11 +116,15 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
         otherConsumerInfoDao.updateOtherConsumerInfo(priceRecordJsonBeans);
         otherConsumerInfoDao.removeConsumerInfoByParentId(priceRecordJsonBeans.getId());
         List<OtherConsumerInfoDto> otherList = priceRecordJsonBeans.getOtherList();
+        boolean b = TomsUtil.otherConsumer(otherList);
+        if (!b){
+            throw  new TomsRuntimeException("价格名称不能相同");
+        }
         for (OtherConsumerInfoDto dto:otherList){
+            OtherConsumerInfoDto consumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName(),priceRecordJsonBeans.getId());
             if (StringUtils.isNotEmpty(dto.getId())){
                 otherConsumerInfoDao.updateOtherConsumerInfo(dto);
             }else {
-                OtherConsumerInfoDto consumerInfoDto = otherConsumerInfoDao.selectConsumerInfoByPriceName(currentUser.getCompanyId(), dto.getPriceName());
                 if (consumerInfoDto!=null){
                     throw  new TomsRuntimeException("价格名称不能相同");
                 }

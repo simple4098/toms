@@ -447,4 +447,21 @@ public class TomsUtil {
         }
         return null;
     }
+
+    /**
+     * 如果
+     * @param otherList
+     * @return
+     */
+    public static boolean otherConsumer(List<OtherConsumerInfoDto> otherList) {
+
+        Set<String> set = new HashSet<>();
+        for (OtherConsumerInfoDto infoDto:otherList){
+            set.add(infoDto.getPriceName());
+        }
+        if (set.size()==otherList.size()){
+            return true;
+        }
+        return false;
+    }
 }
