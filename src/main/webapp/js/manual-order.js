@@ -92,7 +92,7 @@ $(function(){
                     $("#notNeedListIdDev").remove();
                 }
             },error:function(data){
-
+                $("#notNeedListIdDev").remove();
             }
         })
         //请求其它消费数据

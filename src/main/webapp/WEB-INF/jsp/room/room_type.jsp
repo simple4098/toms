@@ -363,9 +363,9 @@
         </div>
     </div>
 </div>
-<script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>
-<script src="<c:url value='/assets/layer/layer.js'/>"></script>
-<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
+<%--<script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>--%>
+<%--<script src="<c:url value='/assets/layer/layer.js'/>"></script>
+<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>--%>
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
 <script src="<c:url value='/assets/js/tomato.min.js'/>"></script>
 <script src="<c:url value='/assets/js/room-type.js'/>"></script>

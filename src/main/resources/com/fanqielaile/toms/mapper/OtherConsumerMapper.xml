@@ -54,10 +54,10 @@
     </select>
 
     <select id="selectConsumerInfoByProjectName"  resultMap="consumerInfoId">
-        select o.* from other_consumer_info o where o.deleted=0  and company_id=#{companyId} and consumer_project_name = #{consumerProjectName}
+        select o.* from other_consumer_info o where o.deleted=0  and company_id=#{companyId} and  o."level"=1  and consumer_project_name = #{consumerProjectName}
     </select>
     <select id="selectConsumerInfoByPriceName"  resultMap="consumerInfoId">
-        select o.* from other_consumer_info o where o.deleted=0  and company_id=#{companyId} and price_name = #{priceName}
+        select o.* from other_consumer_info o where o.deleted=0  and company_id=#{companyId} and  o."level"=2  and price_name = #{priceName} and parent_id=#{parentId} limit 1
     </select>
 
     <select id="selectChildOtherConsumerInfo"  resultMap="consumerInfoId">
