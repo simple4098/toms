@@ -156,9 +156,10 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
                         infoDto.setConsumerProjectName(info.getConsumerProjectName());
                     }
                 }
-                otherConsumerInfoDto.setOtherList(infoDtoList);
-                list.add(otherConsumerInfoDto);
+
+                list.addAll(infoDtoList);
             }
+            otherConsumerInfoDto.setOtherList(list);
         }
         return otherConsumerInfoDto;
     }
