@@ -144,8 +144,8 @@
                                 <select class="selectRoomType">
                                     <option>请选择房型</option>
                                 </select>
-                                <input type="text" placeholder="房间数量" class="roomNumber" readonly>
                                 <a class="reduce-icon" class="roomTypeNumReduce">-</a>
+                                <input type="text" placeholder="房间数量" class="roomNumber" readonly>
                                 <a class="plus-icon" class="roomTypeNumPlus">+</a>
                                 <a class="remove-room-type">移除房型</a>
                             </div>
@@ -168,8 +168,8 @@
                                 <select style="margin-left:45px;" id="notNeedList">
                                     <option>请选择消费项目</option>
                                 </select>
-                                <input type="text" placeholder="填写消费数量" id="otherPaynumber">
                                 <a class="reduce-icon" id="payNumberReduce">-</a>
+                                <input type="text" placeholder="填写消费数量" id="otherPaynumber">
                                 <a class="plus-icon" id="payNumberPlug">+</a>
                             </div>
                         </div>
