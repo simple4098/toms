@@ -30,6 +30,8 @@ public class XlMessageService implements IXlMessageService {
 	public Integer getNoReadMessage(MessageParam param,UserInfo user) {
 		// TODO Auto-generated method stub
 		param.setCompanyId(user.getCompanyId());
+		param.setDataPermission(user.getDataPermission());
+		param.setUserId(user.getId());
 		param.setStatus(false);
 		return messageDao.getChangePriceMessageCount(param);
 	}
@@ -39,6 +41,8 @@ public class XlMessageService implements IXlMessageService {
 	public List<ChangePriceMessageDto> getChangePriceList(MessageParam param,UserInfo user, PageBounds pageBounds) {
 		// TODO Auto-generated method stub
 		param.setCompanyId(user.getCompanyId());
+		param.setDataPermission(user.getDataPermission());
+		param.setUserId(user.getId());
 		return messageDao.getChangePriceMessageList(param,pageBounds);
 	}
 
@@ -46,6 +50,8 @@ public class XlMessageService implements IXlMessageService {
 	public void setChangPriceMsgStatus(MessageParam param, UserInfo user) {
 		// TODO Auto-generated method stub
 		param.setCompanyId(user.getCompanyId());
+		param.setDataPermission(user.getDataPermission());
+		param.setUserId(user.getId());
 		param.setStatus(true);
 		messageDao.setChangPriceMsgStatus(param);
 		return ;
