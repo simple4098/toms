@@ -22,7 +22,7 @@
             <input type="hidden" class="room-type-url" id="newsCenterUrl" <toms:authorize uri="/message/*"> data-url="<c:url value="/message/query_change_price_list.json"/>" </toms:authorize>/>
             <input type="hidden" class="room-type-url" id="queryNotReadCountUrl" <toms:authorize uri="/message/*">  data-url="<c:url value="/message/query_not_read_count.json"/>"</toms:authorize>/>
             <input type="hidden" class="room-type-url" id="queryChangeMessageUrl"  <toms:authorize uri="/message/*">  data-url="<c:url value="/message/query_change_price_message.json"/>"</toms:authorize>/>
-
+            <input type="hidden" class="room-type-url" id="changeMessageStatus"  <toms:authorize uri="/message/*">  data-url="<c:url value="/message/change_message_status.json"/>"</toms:authorize>/>
         <%--/message/query_change_price_message.json--%>
             <!-- #sidebar-shortcuts -->
             <ul class="nav nav-list ul-parent">
@@ -290,19 +290,21 @@
                     </ul>
                 </div>
                 <div class="bottom">
-                    <ul class="pagination">
-                        <li id="Previous">
-                            <a href="#" aria-label="Previous">
-                                &laquo;
-                            </a>
-                        </li>
+                    <div id="pagination">
+                        <ul class="pagination">
+                            <li id="Previous">
+                                <a href="#" aria-label="Previous">
+                                    &laquo;
+                                </a>
+                            </li>
 
-                        <li id="Next">
-                            <a href="#" aria-label="Next">
-                                &raquo;
-                            </a>
-                        </li>
-                    </ul>
+                            <li id="Next">
+                                <a href="#" aria-label="Next">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <script type="text/javascript">
