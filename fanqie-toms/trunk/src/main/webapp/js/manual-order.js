@@ -73,7 +73,7 @@ $(function(){
                     if(data){
                         $.each(data,function(){
                             if(this.status==CONST.IDNEED.NEED){
-                                $otherList.append("<label class='col-sm-3 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-3'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
+                                $otherList.append("<label class='col-sm-6 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-6'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
                             }else {
                                 //$("#notNeedListId").remove();
                                 notNeed.push("<option>"+this.consumerProjectName+"("+this.priceName+")</option>")
