@@ -107,7 +107,13 @@
         <result column="interface_send_id" property="interFaceSendID"/>
         <result column="basic_total_price" property="basicTotalPrice"/>
         <result column="oms_order_code" property="omsOrderCode"/>
+        <collection property="orderOtherPriceList" column="id" ofType="com.fanqielaile.toms.model.OrderOtherPrice"
+                    select="getOrderOtherPrice"/>
     </resultMap>
+    <select id="getOrderOtherPrice" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
+        SELECT id as id,order_id as orderId,other_consumer_info_id as otherConsumerInfoId,price_name as priceName,price as price,nums as nums,consumer_project_name as consumerProjectName FROM
+        order_other_price where order_id=#{id}
+    </select>
     <sql id="Base_Column_List">
         id, creator_id, created_date,
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,live_time,leave_time,
