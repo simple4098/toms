@@ -87,8 +87,14 @@ public class OTAManageController extends BaseController {
                             Order order = (Order) map.get("data");
                             if ((Boolean) map.get("status")) {
                                 result.setResultCode("0");
-                                result.setMessage(order.getId());
-                                result.setOrderId(order.getId());
+                                //判断淘宝更新时间是否打开，如果打开返回订单号，如果未打开不返回订单号
+                                if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
+                                    result.setMessage(order.getId());//预付订单号
+                                    result.setOrderId(order.getId());//信用住订单号
+                                } else {
+                                    result.setMessage("");
+                                    result.setOrderId(order.getId());
+                                }
                             } else {
                                 result.setResultCode("-102");
                                 result.setMessage(String.valueOf(map.get("message")));
@@ -205,7 +211,14 @@ public class OTAManageController extends BaseController {
                             Order order = (Order) map.get("data");
                             if ((Boolean) map.get("status")) {
                                 result.setResultCode("0");
-                                result.setMessage(order.getId());
+                                //判断淘宝更新时间是否打开，如果打开返回订单号，如果未打开不返回订单号
+                                if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
+                                    result.setMessage(order.getId());//预付订单号
+                                    result.setOrderId(order.getId());//信用住订单号
+                                } else {
+                                    result.setMessage("");
+                                    result.setOrderId(order.getId());
+                                }
                             } else {
                                 result.setResultCode("-102");
                                 result.setMessage(String.valueOf(map.get("message")));
