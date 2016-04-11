@@ -687,21 +687,26 @@ public class OrderService implements IOrderService {
             this.orderDao.updateOrderStatusAndFeeStatus(order);
             return new JsonModel(true, "付款成功");
         }
-        //更新淘宝订单状态
-        String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
-        logger.info("淘宝更新订单返回值=>" + result);
-        if (null != result && result.equals("success")) {
-            //同步成功后在修改数据库
-            order.setOrderStatus(OrderStatus.ACCEPT);
-            order.setFeeStatus(FeeStatus.PAID);
-            this.orderDao.updateOrderStatusAndFeeStatus(order);
-            //记录操作日志
-            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
-            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toString(), result, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
-            return new JsonModel(true, "付款成功");
+        //更新淘宝订单状态,判断淘宝是否开启更新时间
+        //同步成功后在修改数据库
+        order.setOrderStatus(OrderStatus.ACCEPT);
+        order.setFeeStatus(FeeStatus.PAID);
+        this.orderDao.updateOrderStatusAndFeeStatus(order);
+        //记录操作日志
+        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toString(), null, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
+        if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
+            String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
+            logger.info("淘宝更新订单返回值=>" + result);
+            if (null != result && result.equals("success")) {
+                return new JsonModel(true, "付款成功");
+            } else {
+                return new JsonModel(false, "调用淘宝更新接口出错");
+            }
         } else {
-            return new JsonModel(false, "调用淘宝更新接口出错");
+            return new JsonModel(true, "付款成功");
         }
+
     }
 
     /**
@@ -714,7 +719,7 @@ public class OrderService implements IOrderService {
      */
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         this.orderDao.updateOrderStatusAndFeeStatus(order);
-        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource()) && ResourceBundleUtil.getBoolean("taobao.time.open")) {
             logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
             String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
             logger.info("淘宝取消订单接口返回值=>" + result);
@@ -736,7 +741,7 @@ public class OrderService implements IOrderService {
         } else if (ChannelSource.ZH.equals(order.getChannelSource())) {
             return new JsonModel(false, "OMS系统异常，创建订单失败");
         }
-        return null;
+        return new JsonModel(false, "OMS系统异常");
     }
 
     /**
@@ -772,12 +777,7 @@ public class OrderService implements IOrderService {
         //解析查询订单状态
         Order order1 = XmlDeal.getOrder(xmlStr);
         //验证此订单是否存在
-        Order order = new Order();
-        if (StringUtils.isNotEmpty(order1.getId())) {
-            order = orderDao.selectOrderByIdAndChannelSource(order1.getId(), channelSource);
-        } else {
-            order = orderDao.selectOrderByChannelOrderCodeAndSource(order1);
-        }
+        Order order = orderDao.selectOrderByChannelOrderCodeAndSource(order1);
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "查询订单状态"));
         logger.info("查询订单状态订单单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
@@ -823,7 +823,15 @@ public class OrderService implements IOrderService {
             } else {
                 throw new TomsRuntimeException("OMS内部错误");
             }
-            result.put("message", order.getId());
+            if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
+                result.put("message", order.getId());
+            } else {
+                if (StringUtils.isNotEmpty(order.getOmsOrderCode())) {
+                    result.put("message", order.getId());
+                } else {
+                    result.put("message", "");
+                }
+            }
             result.put("code", "0");
             //判断订单是否为信用住
             if (PaymentType.CREDIT.equals(order.getPaymentType())) {
@@ -1330,7 +1338,11 @@ public class OrderService implements IOrderService {
                                 if (0 != roomDetail.getRoomNum()) {
                                     roomTypeInfoDto.setRoomTypeId(roomStatusDetail.getRoomTypeId() + "");
                                     roomTypeInfoDto.setRoomTypeName(roomStatusDetail.getRoomTypeName());
-                                    roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
+                                    if (null != roomTypeInfoDto.getMaxRoomNum() && roomTypeInfoDto.getMaxRoomNum() > roomDetail.getRoomNum()) {
+                                        roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
+                                    } else if (null == roomTypeInfoDto.getMaxRoomNum()) {
+                                        roomTypeInfoDto.setMaxRoomNum(roomDetail.getRoomNum());
+                                    }
                                 }
                                 if (0 == roomDetail.getRoomNum() || StringUtils.isEmpty(roomDetail.getRoomNum() + "")) {
                                     roomTypeInfoDto = new RoomTypeInfoDto();
