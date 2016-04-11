@@ -437,13 +437,22 @@ $(function(){
         })
     }
     function ValidTelNum() {
-        var isPhone = /^([0-9]{3,4}-)?[0-9]{7,8}$/;
-        var isMob = /^((\+?86)|(\(\+86\)))?(13[012356789][0-9]{8}|15[012356789][0-9]{8}|18[02356789][0-9]{8}|147[0-9]{8}|1349[0-9]{7})$/;
         var value = $guestMobile.val().trim();
-        if (!(isMob.test(value) || isPhone.test(value))) {
+        if (!(isTel(value))) {
             alert("请输入正确的手机号码！")
             return;
         }
+    }
+    function isPhone(str) {
+        var reg = /^0\d{2,3}-?\d{7,8}$/;
+        return reg.test(str);
+    }
+    function isMobile(str) {
+        var reg = /^(13|14|15|18|17)[0-9]{9}$/;
+        return reg.test(str);
+    }
+    function isTel(tel) {
+        return isMobile(tel) ||isPhone(tel)
     }
     function homeGetRoomType(postData){
         var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
