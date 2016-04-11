@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.fanqie.xc</groupId>
             <artifactId>cx-1.2</artifactId>
-            <version>1.9.3-SNAPSHOT</version>
+            <version>1.9.2-SNAPSHOT</version>
         </dependency>
         <!--众荟依赖-->
         <dependency>
