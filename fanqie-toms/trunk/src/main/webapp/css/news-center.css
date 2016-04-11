@@ -222,7 +222,7 @@ a:hover, a:focus,a {
     display: inline-block;
 }
 .items-detail dl {
-    padding: 5px 11px;
+    padding: 5px 20px;
     border-right: 1px dashed #ccc;
     margin-bottom: 10px;
 }
@@ -237,6 +237,12 @@ a:hover, a:focus,a {
 }
 .items-detail dl dd {
     color: #999;
+    position: relative;
+}
+.items-detail dd span {
+    position: absolute;
+    left: -28px;
+    color: #61A401;
 }
 .items-title dl dd a {
     font-size: 14px;

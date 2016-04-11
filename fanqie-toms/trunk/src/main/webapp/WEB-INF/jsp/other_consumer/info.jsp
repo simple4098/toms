@@ -45,7 +45,7 @@
                         </c:if>
                         <c:forEach items="${d.otherList}" var="info">
                             <dl>
-                                <dd>${info.priceName}</dd>
+                                <dd><c:if test="${info.status}"><span>√</span></c:if> ${info.priceName}</dd>
                                 <dd>${info.price}</dd>
                             </dl>
                         </c:forEach>
