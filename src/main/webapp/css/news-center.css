@@ -161,6 +161,9 @@ a:hover, a:focus,a {
 .remove-room-type:hover {
     color: #fff;
 }
+.selectRoomType {
+    width: 180px;
+}
 /*个性化设置*/
 .manual-order h4,
 .qita-xiaofei-guanli h4 {
