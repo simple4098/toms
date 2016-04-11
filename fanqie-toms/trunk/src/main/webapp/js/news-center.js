@@ -160,6 +160,7 @@ $(function(){
     })
     $("#packUp").on("click",function(){
         $("#newsCenter").hide();
+        $("#newsAccount").html(0)
         if(queryNotReadCountUrl){
             $.ajax({
                 type:'GET',
