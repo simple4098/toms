@@ -1,6 +1,6 @@
 $(function(){
     var CONST = {
-        TIME : 60*1000,//轮循时间
+        TIME : 1000*60,//轮循时间
         ROWS : 10//分页每页显示条数
     }
     var currentPage = 1,
@@ -49,12 +49,12 @@ $(function(){
         }
         newsCenterFun(data)
     }
-    $(".pagination").on("click","li",function() {
+    $("#pagination .pagination").on("click","li",function() {
         var index = $(this).index()
-        if($(".pagination li").length==2) {
+        if($("#pagination .pagination li").length==2) {
             return;
         }
-        var len = $(".pagination li").length-1
+        var len = $("#pagination .pagination li").length-1
         if(index == 0){
             if(currentPage<=1){
                 return;
@@ -92,7 +92,7 @@ $(function(){
                         })
                         var pages = Math.ceil(newsData.pagination.rowsCount/newsData.pagination.rows)
                         Pages = pages;
-                        $(".pagination").html("<li id='Previous'><a>&laquo;</a></li><li id='Next'><a>&raquo;</a></li>")
+                        $("#pagination .pagination").html("<li id='Previous'><a>&laquo;</a></li><li id='Next'><a>&raquo;</a></li>")
                         for(var i=0;i<pages;i++) {
                             if(i==currentPage-1) {
                                 $("#Next").before("<li class='active'><a>"+(i+1)+"</a></li>")
@@ -159,24 +159,21 @@ $(function(){
         newsCenterFun(data)
     })
     $("#packUp").on("click",function(){
+        var changeMessageStatusUrl = $("#changeMessageStatus").attr("data-url")
         $("#newsCenter").hide();
         $("#newsAccount").html(0)
-        if(queryNotReadCountUrl){
-            $.ajax({
-                type:'GET',
-                url:queryNotReadCountUrl,
-                dataType:'html',
-                success:function(rs){
-                    rs = $.parseJSON(rs);
-                    if(rs && rs.count && rs.status==200) {
-                        $("#newsAccount").html(rs.count)
-                    }
-                },
-                error: function() {
-                    alert("查询所有的未读改价消息数量失败！")
+        $.ajax({
+            type:'GET',
+            url:changeMessageStatusUrl,
+            dataType:'html',
+            success:function(rs){
+                if(!rs.status==200) {
+                    alert("将消息置为已读失败")
                 }
-            })
-        }
-
+            },
+            error: function() {
+                alert("将消息置为已读失败")
+            }
+        })
     })
 })
