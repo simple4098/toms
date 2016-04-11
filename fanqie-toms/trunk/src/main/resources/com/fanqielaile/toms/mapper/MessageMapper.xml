@@ -30,6 +30,9 @@
     		<if test="status != null">
     			and cpm.read = #{status}
     		</if>
+    		<if test="dataPermission == 0">
+    			and bi.user_id = #{userId}
+    		</if>
     	</where>
     </sql>   
     
@@ -49,9 +52,12 @@
     	set read=#{status}
     	where inn_id in(
     		select inn_id 
-    		from bang_inn
+    		from bang_inn bi
     		where company_id = #{companyId}
     			and deleted = 0  
+    			<if test="dataPermission == 0">
+    				and user_id = #{userId}
+    			</if>
     	)
     </update>
     

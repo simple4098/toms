@@ -11,8 +11,12 @@ public class MessageParam {
 	private String to;
 	//消息所属公司的id
 	private String companyId;
-	//消息状态，1为已读，0为未读
+	//消息状态，true为已读，false为未读
 	private Boolean status;
+	//数据权限
+	private Integer dataPermission;
+	//用户id
+	private String userId;
 	
 	public String getFrom() {
 		return from;
@@ -37,5 +41,17 @@ public class MessageParam {
 	}
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+	public Integer getDataPermission() {
+		return dataPermission;
+	}
+	public void setDataPermission(Integer dataPermission) {
+		this.dataPermission = dataPermission;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }
