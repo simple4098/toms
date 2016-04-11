@@ -76,7 +76,7 @@ $(function(){
                                 $otherList.append("<label class='col-sm-6 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-6'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
                             }else {
                                 //$("#notNeedListId").remove();
-                                notNeed.push("<option>"+this.consumerProjectName+"("+this.priceName+")</option>")
+                                notNeed.push("<option data-consumerProjectName="+this.consumerProjectName+" data-priceName="+this.priceName+" data-price="+this.price+" data-id="+this.id+">"+this.consumerProjectName+"("+this.priceName+")></option>")
                             }
 
                         })
@@ -351,21 +351,33 @@ $(function(){
             json[roomTypeId] = $selectedObj.attr("data-roomtypeid")
             json[roomTypeName] = $selectedObj.val()
         })
+        var i = 0;
         $.each(otherList,function(key,val) {
             val.nums = $(".number").eq(key).val()
-            consumerProjectName = "orderOtherPriceList"+ "[" + key + "]" + ".consumerProjectName"
-            nums = "orderOtherPriceList"+ "[" + key + "]" + ".nums"
-            price = "orderOtherPriceList"+ "[" + key + "]" + ".price"
-            priceName = "orderOtherPriceList"+ "[" + key + "]" + ".priceName"
-            otherConsumerInfoId = "orderOtherPriceList"+ "[" + key + "]" + ".otherConsumerInfoId"
-            json[consumerProjectName] = val.consumerProjectName
-            json[nums] = val.nums
-            json[price] = val.price
-            json[priceName] = val.priceName
-            json[otherConsumerInfoId] = val.id
+            if(val.status) {
+                consumerProjectName = "orderOtherPriceList"+ "[" + i + "]" + ".consumerProjectName"
+                nums = "orderOtherPriceList"+ "[" + i + "]" + ".nums"
+                price = "orderOtherPriceList"+ "[" + i + "]" + ".price"
+                priceName = "orderOtherPriceList"+ "[" + i + "]" + ".priceName"
+                otherConsumerInfoId = "orderOtherPriceList"+ "[" + i + "]" + ".otherConsumerInfoId"
+                json[consumerProjectName] = val.consumerProjectName
+                json[nums] = $('.number').eq(i).val()
+                json[price] = val.price
+                json[priceName] = val.priceName
+                json[otherConsumerInfoId] = val.id
+                i++
+            }
         })
-
-
+        var consumerProjectName = "orderOtherPriceList"+ "[" + i + "]" + ".consumerProjectName",
+        nums = "orderOtherPriceList"+ "[" + i + "]" + ".nums",
+        price = "orderOtherPriceList"+ "[" + i + "]" + ".price",
+        priceName = "orderOtherPriceList"+ "[" + i + "]" + ".priceName",
+        otherConsumerInfoId = "orderOtherPriceList"+ "[" + i + "]" + ".otherConsumerInfoId"
+        json[consumerProjectName] = $("#notNeedList").find("option:selected").attr("data-consumerprojectname")
+        json[nums] = $("#otherPaynumber").val()
+        json[price] = $("#notNeedList").find("option:selected").attr("data-price")
+        json[priceName] = $("#notNeedList").find("option:selected").attr("data-pricename")
+        json[otherConsumerInfoId] =  $("#notNeedList").find("option:selected").attr("data-id")
         //请求保存接口
         var url = $saveManualOrder.attr("data-url");
         $.ajax({
