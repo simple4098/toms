@@ -374,15 +374,16 @@ $(function(){
             url:url,
             dataType:'html',
             success:function(rs){
-                if (rs || rs.status) {
+                rs = $.parseJSON(rs)
+                if (rs && rs.status) {
                     $('#hangOrder').modal('hide');
-                    alert("手动下单成功！")
+                    alert(rs.message)
                     var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
                     var maiAccount = $(".maiAccount:checked").val();
                     var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
                     homeGetRoomType(postData)
                 }else {
-                    alert("手动下单失败，请重试！")
+                    alert(rs.message)
                 }
             },
             error: function() {
