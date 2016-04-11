@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 public class MsgConsumer implements MsgEventListener {
 
     private static  final Logger log = LoggerFactory.getLogger(MsgConsumer.class);
-    @Autowired
-    private StringRedisTemplate redisTemplate;
     private String systemName;
     @Autowired
     private EventFactory eventFactory;
