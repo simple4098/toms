@@ -114,8 +114,8 @@ $(function(){
     if(queryChangeMessageUrl){
         setInterval(function(){
             data = {
-                from : new Date().Format("yyyy-MM-dd hh:mm:ss"),
-                to : new Date((new Date().setMinutes(new Date().getMinutes() -1, new Date().getSeconds(), 0))).Format("yyyy-MM-dd hh:mm:ss")
+                from : new Date((new Date().setMinutes(new Date().getMinutes() -1, new Date().getSeconds(), 0))).Format("yyyy-MM-dd hh:mm:ss"),
+                to : new Date().Format("yyyy-MM-dd hh:mm:ss")
             }
             $.ajax({
                 type:'GET',
