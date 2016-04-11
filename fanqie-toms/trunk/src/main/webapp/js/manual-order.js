@@ -95,46 +95,6 @@ $(function(){
                 $("#notNeedListIdDev").remove();
             }
         })
-        //请求其它消费数据
-        /*var data = {
-            "otherList" : [{
-                "consumerProjectName":"门票",
-                "priceName": "全价",
-                "price": 100,
-                "status": true
-            },
-            {
-                "consumerProjectName":"车票",
-                "priceName": "可乐",
-                "price": 50,
-                "status": false
-            },
-            {
-                "consumerProjectName":"门票",
-                "priceName": "半价",
-                "price": 30,
-                "status": true
-            },
-            {
-                "consumerProjectName":"车票",
-                "priceName": "咖啡",
-                "price": 20,
-                "status": false
-            },
-            {
-                "consumerProjectName":"门票",
-                "priceName": "矿泉水",
-                "price": 50,
-                "status": false
-            },
-            {
-                "consumerProjectName":"车票",
-                "priceName": "半价",
-                "price": 30,
-                "status": true
-            }]
-        }*/
-
     })
     $liveTimeString.datepicker({
         onClose : function( selectedDate ) {
@@ -415,11 +375,14 @@ $(function(){
             dataType:'html',
             success:function(rs){
                 if (rs || rs.status) {
+                    $('#hangOrder').modal('hide');
                     alert("手动下单成功！")
                     var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
                     var maiAccount = $(".maiAccount:checked").val();
                     var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
                     homeGetRoomType(postData)
+                }else {
+                    alert("手动下单失败，请重试！")
                 }
             },
             error: function() {
