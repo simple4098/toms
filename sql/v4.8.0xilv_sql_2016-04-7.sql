@@ -67,4 +67,6 @@ COMMENT ON COLUMN "public"."inn_change_price_msg"."message" IS '消息内容';
 
 COMMENT ON COLUMN "public"."inn_change_price_msg"."company_type" IS '所属公司类型';
 
-CREATE INDEX "created_at_index_key" ON "public"."inn_change_price_msg" USING btree ("create_date");
+CREATE INDEX "created_at_index_key" ON "public"."inn_change_price_msg" USING btree ("create_date" "pg_catalog"."timestamp_ops" DESC NULLS LAST);
+
+CREATE INDEX "msg_inn_id_index_key" ON "public"."inn_change_price_msg" USING btree ("inn_id");
