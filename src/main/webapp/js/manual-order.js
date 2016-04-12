@@ -184,7 +184,7 @@ $(function(){
                 bangInnId : $('#kz_item-r').val(),
                 leaveTimeString : $leaveTimeString.val(),
                 liveTimeString : $liveTimeString.val(),
-                maiAccount : maiAccount,
+                maiAccount: $(".maiAccount:checked").val(),
                 roomTypeId : $(this).find("option:selected").attr("data-roomtypeid")
             }
             var maxRoomNumber;
@@ -464,7 +464,7 @@ $(function(){
             bangInnId : $('#kz_item-r').val(),
             leaveTimeString : $leaveTimeString.val(),
             liveTimeString : $liveTimeString.val(),
-            maiAccount : maiAccount
+            maiAccount: $(".maiAccount:checked").val()
         }
         $.ajax({
             type:'GET',
