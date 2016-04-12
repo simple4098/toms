@@ -90,6 +90,8 @@
                      </if>
                      <if test="userName != null and userName != ''">
                             user_name = #{userName},
+                     </if><if test="companyType != null and companyType != ''">
+                            company_type = #{companyType},
                      </if>
               </trim>
               where deleted = 0 and id = #{id}

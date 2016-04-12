@@ -4,8 +4,10 @@ import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.UserType;
 import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.helper.PermissionHelper;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.Permission;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IPermissionService;
 import com.fanqielaile.toms.service.IUserInfoService;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -42,6 +44,8 @@ public class UserController extends BaseController {
     private IUserInfoService userInfoService;
     @Resource
     private IPermissionService permissionService;
+    @Resource
+    private ICompanyService companyService;
 
     /**
      * 查询当前登陆用户所在公司的权限
@@ -91,9 +95,12 @@ public class UserController extends BaseController {
     public Model createUser(Model model, @Valid UserInfo userInfo, BindingResult bindingResult, String permissionIds) {
         try {
             if (StringUtils.isNotEmpty(permissionIds)) {
-                userInfo.setCompanyId(getCurrentUser().getCompanyId());
+                String companyId = getCurrentUser().getCompanyId();
+                userInfo.setCompanyId(companyId);
+                Company company = companyService.findCompanyByid(companyId);
                 //设置普通员工角色，超级管理员采用初始化
                 userInfo.setUserType(UserType.PUBLIC);
+                userInfo.setCompanyType(company.getCompanyType());
                 userInfoService.createUserInfo(userInfo, PermissionHelper.dealPermissionString(permissionIds));
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             }
@@ -156,6 +163,9 @@ public class UserController extends BaseController {
     @RequestMapping("update_user")
     public String updateUser(Model model, UserInfo userInfo) {
         try {
+            Company company = companyService.findCompanyByid(getCurrentUser().getCompanyId());
+            //设置普通员工角色，超级管理员采用初始化
+            userInfo.setCompanyType(company.getCompanyType());
             this.userInfoService.modifyUserInfo(userInfo);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.MESSAGE, "修改成功");
