@@ -49,6 +49,9 @@ $(function(){
         }
         newsCenterFun(data)
     }
+    $(".news-center-dialog .center").scroll(function(e){
+        e.stopPropagation()
+    })
     $("#pagination .pagination").on("click","li",function() {
         var index = $(this).index()
         if($("#pagination .pagination li").length==2) {
@@ -68,6 +71,7 @@ $(function(){
         } else {
             currentPageTab(index)
         }
+        setReaded()
     })
     function newsCenterFun(data) {
         var url = $("#newsCenterUrl").attr("data-url")
@@ -159,8 +163,11 @@ $(function(){
         newsCenterFun(data)
     })
     $("#packUp").on("click",function(){
-        var changeMessageStatusUrl = $("#changeMessageStatus").attr("data-url")
         $("#newsCenter").hide();
+        setReaded();
+    })
+    function setReaded() {
+        var changeMessageStatusUrl = $("#changeMessageStatus").attr("data-url")
         $("#newsAccount").html(0)
         $.ajax({
             type:'GET',
@@ -175,5 +182,5 @@ $(function(){
                 alert("将消息置为已读失败")
             }
         })
-    })
+    }
 })
