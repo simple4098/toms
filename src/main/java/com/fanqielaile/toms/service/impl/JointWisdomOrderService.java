@@ -213,7 +213,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
                     }
                     roomRate.setRates(rateList);
                     Total total = new Total();
-                    total.setCurrencyCode("CNY");
+                    total.setCurrencyCode("RMB");
                     total.setAmountBeforeTax(String.valueOf(totalPrice));
                     total.setAmountAfterTax(String.valueOf(totalPrice));
                     roomRate.setTotal(total);
