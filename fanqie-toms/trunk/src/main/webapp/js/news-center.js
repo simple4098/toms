@@ -49,9 +49,6 @@ $(function(){
         }
         newsCenterFun(data)
     }
-    $(".news-center-dialog .center").scroll(function(e){
-        e.stopPropagation()
-    })
     $("#pagination .pagination").on("click","li",function() {
         var index = $(this).index()
         if($("#pagination .pagination li").length==2) {

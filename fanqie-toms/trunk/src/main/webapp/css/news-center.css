@@ -1,3 +1,6 @@
+body,.main-content {
+    min-height: initial;
+}
 .ms-controller {
     visibility: hidden;
     display: none;
