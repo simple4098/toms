@@ -164,13 +164,23 @@
                                 <label class="col-sm-3 control-label no-padding-right"> <span class="red">*</span>门票（全票）</label>
                                 <div class="col-sm-3"><input type="text" data-tips="填写消费数量" autocomplete="off" value="" placeholder="填写消费数量" class="ipt"></div>--%>
                             </div>
-                            <div class="mgb-10 col-sm-12 room-operate" id="notNeedListId">
-                                <select style="margin-left:45px;" id="notNeedList">
-                                    <option>请选择消费项目</option>
-                                </select>
-                                <a class="reduce-icon" id="payNumberReduce">-</a>
-                                <input type="text" placeholder="填写消费数量" id="otherPaynumber">
-                                <a class="plus-icon" id="payNumberPlug">+</a>
+                            <div class="mgb-10 col-sm-12 room-operate notNeedListId">
+                                <div class="col-sm-12 select-other-pay">
+                                    <div class="col-sm-6">
+                                        <select style="margin-left:45px;" class="notNeedList">
+                                            <option>请选择消费项目</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <a class="reduce-icon">-</a>
+                                        <input type="text" placeholder="填写消费数量" id="otherPaynumber" class="other-pay-number">
+                                        <a class="plus-icon">+</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px;margin-left: 80px" id="addOtherPayItem">
+                                <a class="btn">新增其它消费项目</a>
                             </div>
                         </div>
                     </div>

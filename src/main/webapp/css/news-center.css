@@ -164,6 +164,12 @@ a:hover, a:focus,a {
 .selectRoomType {
     width: 180px;
 }
+.other-pay-number,#otherList .number {
+    width: 100px;
+}
+.select-other-pay {
+    margin: 5px 0;
+}
 /*个性化设置*/
 .manual-order h4,
 .qita-xiaofei-guanli h4 {
