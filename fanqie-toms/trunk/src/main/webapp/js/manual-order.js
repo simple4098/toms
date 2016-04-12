@@ -86,6 +86,7 @@ $(function(){
                     if(notNeed.length==0){
                         $(".notNeedListId").remove();
                     }else{
+                        $notNeedList.eq(0).append("<option>请选择消费项目</option>")
                         for (var i=0; i<notNeed.length; i++){
                             $notNeedList.eq(0).append(notNeed[i]);
                         }
@@ -255,6 +256,10 @@ $(function(){
         })
     })
     $("#addOtherPayItem").on("click","a",function() {
+        if($(".select-other-pay:last").find("option:selected").attr("data-id")==undefined) {
+            alert("请选择消费项目后再进行添加！")
+            return;
+        }
         if(!$(".other-pay-number:last").val()) {
             alert("请填写数量后再新增其它消费项目！")
             return
@@ -268,6 +273,7 @@ $(function(){
                 $(this).remove()
             }
         })
+        $(".select-other-pay:last select").prepend("<option>请选择消费项目</option>")
         numberPlugReduce($(".notNeedListId .plus-icon:last"),$(".notNeedListId .reduce-icon:last"),$(".other-pay-number:last"))
     })
     function isPInt(str) {//判断是否为正整数
