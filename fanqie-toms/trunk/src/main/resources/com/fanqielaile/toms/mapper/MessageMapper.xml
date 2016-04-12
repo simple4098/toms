@@ -63,7 +63,7 @@
     				and bi.user_id = #{userId}
     			</if>
     			<if test="companyType != null">
-    				and c.companyType = #{companyType}
+    				and c.company_type = #{companyType}
     			</if>
     	)
     </update>
