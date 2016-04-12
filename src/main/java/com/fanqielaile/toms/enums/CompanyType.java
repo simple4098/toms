@@ -7,7 +7,7 @@ package com.fanqielaile.toms.enums;
  * @version: v1.0.0
  */
 public enum CompanyType {
-    OPEN("线下专有"),SALE("番茄代销");
+    OPEN("线下专有"),SALE("番茄代销"),CREDIT("信用住");
     private String desc;
 
     CompanyType(String desc) {
