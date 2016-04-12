@@ -48,8 +48,16 @@ $(function(){
     })
     $manualOrder.on("click",function() {
         //清空数据
+        $('#hangOrder').modal('show');
         $("#otherList,.notNeedList").html("")
         $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
+        var html = $(".select-other-pay")
+        var len = $(".select-other-pay").length
+        if( len > 1){
+            for(var i=1;i<=len;i++) {
+                $(".select-other-pay").eq(1).remove()
+            }
+        }
         $selectRoomType.html("<option>请选择房型</option>")
         if($(".room-type-operate").length!==1){
             var len = $(".room-type-operate").length-1
@@ -78,7 +86,6 @@ $(function(){
                                 numberPlugReduce($("#notNeedListIdDev .plus-icon").eq(i),$("#notNeedListIdDev .reduce-icon").eq(i),$("#notNeedListIdDev .number").eq(i))
                                 i++
                             }else {
-                                //$("#notNeedListId").remove();
                                 notNeed.push("<option data-consumerProjectName="+this.consumerProjectName+" data-priceName="+this.priceName+" data-price="+this.price+" data-id="+this.id+">"+this.consumerProjectName+"("+this.priceName+")></option>")
                             }
                         })
@@ -366,7 +373,7 @@ $(function(){
             guestName : $guestName.val(),
             leaveTimeString : $leaveTimeString.val(),
             liveTimeString : $liveTimeString.val(),
-            maiAccount : maiAccount,
+            maiAccount : $(".maiAccount:checked").val(),
             payment : $payment.val()
         }
         $.each($(".room-type-operate"),function(key,val) {
