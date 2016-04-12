@@ -12,6 +12,7 @@ public class ChangePriceMessageDto {
 	private Date createDate;//创建记录的时间
 	private Boolean status;//是否已读，false为未读，true为已读
 	private String context;//消息内容
+	private String companyType;//所属公司类型
 	
 	public String getId() {
 		return id;
@@ -48,5 +49,11 @@ public class ChangePriceMessageDto {
 	}
 	public void setContext(String context) {
 		this.context = context;
+	}
+	public String getCompanyType() {
+		return companyType;
+	}
+	public void setCompanyType(String companyType) {
+		this.companyType = companyType;
 	}
 }

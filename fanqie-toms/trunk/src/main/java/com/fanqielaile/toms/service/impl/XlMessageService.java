@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.fanqielaile.toms.dao.MessageDao;
 import com.fanqielaile.toms.dto.xl.ChangePriceMessageDto;
+import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.MessageParam;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.ICompanyService;
 import com.fanqielaile.toms.service.IXlMessageService;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 /**
@@ -24,6 +26,8 @@ public class XlMessageService implements IXlMessageService {
 	
 	@Resource
 	MessageDao messageDao;
+	@Resource
+	ICompanyService companyService;
 
 	@Override
 	@Transactional(isolation = Isolation.READ_COMMITTED)
@@ -33,6 +37,7 @@ public class XlMessageService implements IXlMessageService {
 		param.setDataPermission(user.getDataPermission());
 		param.setUserId(user.getId());
 		param.setStatus(false);
+		param.setCompanyType(user.getCompanyType().name());
 		return messageDao.getChangePriceMessageCount(param);
 	}
 
@@ -43,6 +48,7 @@ public class XlMessageService implements IXlMessageService {
 		param.setCompanyId(user.getCompanyId());
 		param.setDataPermission(user.getDataPermission());
 		param.setUserId(user.getId());
+		param.setCompanyType(user.getCompanyType().name());
 		return messageDao.getChangePriceMessageList(param,pageBounds);
 	}
 
@@ -53,6 +59,7 @@ public class XlMessageService implements IXlMessageService {
 		param.setDataPermission(user.getDataPermission());
 		param.setUserId(user.getId());
 		param.setStatus(true);
+		param.setCompanyType(user.getCompanyType().name());
 		messageDao.setChangPriceMsgStatus(param);
 		return ;
 	}
@@ -71,6 +78,11 @@ public class XlMessageService implements IXlMessageService {
 		message.setInnId(jsonObject.getInteger("innId"));
 		message.setInnName(jsonObject.getString("innName"));
 		message.setContext(jsonObject.getString("context"));
+		if(jsonObject.getString("userCode").equals("DX") || jsonObject.getString("userCode").equals("XYZ")){
+			message.setCompanyType("SALE");
+		}else if(jsonObject.getString("userCode").equals("KFPT")){
+			message.setCompanyType("OPEN");
+		}
 		message.setStatus(false);
 		message.setId(UUID.randomUUID().toString());
 		return message;
