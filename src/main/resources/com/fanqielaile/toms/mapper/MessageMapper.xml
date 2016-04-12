@@ -33,6 +33,9 @@
     		<if test="dataPermission == 0">
     			and bi.user_id = #{userId}
     		</if>
+    		<if test="companyType != null">
+    			and cpm.company_type = #{companyType}
+    		</if>
     	</where>
     </sql>   
     
@@ -53,10 +56,14 @@
     	where inn_id in(
     		select inn_id 
     		from bang_inn bi
-    		where company_id = #{companyId}
-    			and deleted = 0  
+    		inner join company c on c.id = bi.company_id 
+    		where bi.company_id = #{companyId}
+    			and bi.deleted = 0  
     			<if test="dataPermission == 0">
-    				and user_id = #{userId}
+    				and bi.user_id = #{userId}
+    			</if>
+    			<if test="companyType != null">
+    				and c.companyType = #{companyType}
     			</if>
     	)
     </update>
@@ -80,7 +87,8 @@
     		inn_name,
     		create_date,
     		read,
-    		message
+    		message,
+    		company_type
     	) 
     	values(
     		#{id,jdbcType=VARCHAR},
@@ -88,7 +96,8 @@
     		#{innName,jdbcType=VARCHAR},
     		now(),
     		#{status},
-    		#{context,jdbcType=VARCHAR}
+    		#{context,jdbcType=VARCHAR},
+    		#{companyType,jdbcType=VARCHAR}
     	)
     </insert>
 </mapper>

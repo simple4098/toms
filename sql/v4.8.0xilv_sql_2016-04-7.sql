@@ -49,6 +49,7 @@ CREATE TABLE "public"."inn_change_price_msg" (
 "update_date" timestamp,
 "read" bool NOT NULL,
 "message" varchar(255) NOT NULL,
+"company_type" varchar(8),
 PRIMARY KEY ("id")
 )
 WITH (OIDS=FALSE)
@@ -63,5 +64,7 @@ COMMENT ON COLUMN "public"."inn_change_price_msg"."create_date" IS '记录创建
 COMMENT ON COLUMN "public"."inn_change_price_msg"."read" IS '是否已读，t为已读';
 
 COMMENT ON COLUMN "public"."inn_change_price_msg"."message" IS '消息内容';
+
+COMMENT ON COLUMN "public"."inn_change_price_msg"."company_type" IS '所属公司类型';
 
 CREATE INDEX "created_at_index_key" ON "public"."inn_change_price_msg" USING btree ("create_date");

@@ -11,6 +11,8 @@ public class MessageParam {
 	private String to;
 	//消息所属公司的id
 	private String companyId;
+	//消息所属的公司类型
+	private String companyType;
 	//消息状态，true为已读，false为未读
 	private Boolean status;
 	//数据权限
@@ -53,5 +55,11 @@ public class MessageParam {
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	public String getCompanyType() {
+		return companyType;
+	}
+	public void setCompanyType(String companyType) {
+		this.companyType = companyType;
 	}
 }
