@@ -12,6 +12,7 @@ import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.OrderLogDec;
 import com.fanqielaile.toms.enums.OrderMethod;
+import com.fanqielaile.toms.enums.PaymentType;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.Result;
@@ -90,9 +91,10 @@ public class OTAManageController extends BaseController {
                                 //判断淘宝更新时间是否打开，如果打开返回订单号，如果未打开不返回订单号
                                 if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
                                     result.setMessage(order.getId());//预付订单号
-                                    result.setOrderId(order.getId());//信用住订单号
                                 } else {
                                     result.setMessage("");
+                                }
+                                if (PaymentType.CREDIT.equals(order.getPaymentType())) {
                                     result.setOrderId(order.getId());
                                 }
                             } else {
@@ -214,9 +216,10 @@ public class OTAManageController extends BaseController {
                                 //判断淘宝更新时间是否打开，如果打开返回订单号，如果未打开不返回订单号
                                 if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
                                     result.setMessage(order.getId());//预付订单号
-                                    result.setOrderId(order.getId());//信用住订单号
                                 } else {
                                     result.setMessage("");
+                                }
+                                if (PaymentType.CREDIT.equals(order.getPaymentType())) {
                                     result.setOrderId(order.getId());
                                 }
                             } else {
