@@ -391,7 +391,7 @@ public class OrderService implements IOrderService {
 //        businLogClient.save(businLog);
 
             //获取订单号，判断订单是否存在
-            Order order = this.orderDao.selectOrderByIdAndChannelSource(orderXml.getId(), channelSource);
+            Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(orderXml);
             logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "付款通知传递参数"));
             //付款金额
