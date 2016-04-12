@@ -75,13 +75,18 @@ public class XlMessageService implements IXlMessageService {
 		// TODO Auto-generated method stub
 		JSONObject jsonObject=JSONObject.parseObject(jsonStr);
 		ChangePriceMessageDto message = new ChangePriceMessageDto();
+		String userCode = jsonObject.getString("userCode");
 		message.setInnId(jsonObject.getInteger("innId"));
 		message.setInnName(jsonObject.getString("innName"));
 		message.setContext(jsonObject.getString("context"));
-		if(jsonObject.getString("userCode").equals("DX") || jsonObject.getString("userCode").equals("XYZ")){
-			message.setCompanyType("SALE");
-		}else if(jsonObject.getString("userCode").equals("KFPT")){
-			message.setCompanyType("OPEN");
+		switch(userCode){
+			case "DX": message.setCompanyType("SALE");
+			break;
+			case "KFPT": message.setCompanyType("OPEN");
+			break;
+			case "XYZ": message.setCompanyType("CREDIT");
+			break;
+			default: break;
 		}
 		message.setStatus(false);
 		message.setId(UUID.randomUUID().toString());
