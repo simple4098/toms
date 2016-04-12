@@ -24,7 +24,7 @@ $(function(){
         $reduce = $(".reduce-icon"),
         $number = $(".number"),
         $otherList = $("#otherList"),
-        $notNeedList = $("#notNeedList"),
+        $notNeedList = $(".notNeedList"),
         $guestName = $("#guestName"),
         $otherPaynumber = $("#otherPaynumber"),
         $comment = $("#comment"),
@@ -48,7 +48,7 @@ $(function(){
     })
     $manualOrder.on("click",function() {
         //清空数据
-        $("#otherList,#notNeedList").html("")
+        $("#otherList,.notNeedList").html("")
         $("#channelOrderCode,#guestName,#guestMobile,#liveTimeString,#leaveTimeString,.roomNumber,.number,#otherPaynumber,#payment,#comment").val("")
         $selectRoomType.html("<option>请选择房型</option>")
         if($(".room-type-operate").length!==1){
@@ -67,26 +67,30 @@ $(function(){
             type:'get',
             success:function(dataV){
                 var notNeed=[];
+                var i=0;
                 if(dataV.status){
                     var data = dataV.data.otherList;
                     otherList = data;
                     if(data){
                         $.each(data,function(){
                             if(this.status==CONST.IDNEED.NEED){
-                                $otherList.append("<label class='col-sm-6 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-6'><input type='text' placeholder='填写消费数量' class='ipt number'></div>")
+                                $otherList.append("<label class='col-sm-6 control-label no-padding-right'><span class='red'>*</span>"+this.consumerProjectName+"("+this.priceName+")</label><div class='col-sm-6'><a class='reduce-icon'>-</a><input type='text' placeholder='填写消费数量' class='ipt number'> <a class='plus-icon'>+</a></div>")
+                                numberPlugReduce($("#notNeedListIdDev .plus-icon").eq(i),$("#notNeedListIdDev .reduce-icon").eq(i),$("#notNeedListIdDev .number").eq(i))
+                                i++
                             }else {
                                 //$("#notNeedListId").remove();
                                 notNeed.push("<option data-consumerProjectName="+this.consumerProjectName+" data-priceName="+this.priceName+" data-price="+this.price+" data-id="+this.id+">"+this.consumerProjectName+"("+this.priceName+")></option>")
                             }
-
                         })
                     }
                     if(notNeed.length==0){
-                        $("#notNeedListId").remove();
+                        $(".notNeedListId").remove();
                     }else{
                         for (var i=0; i<notNeed.length; i++){
-                            $notNeedList.append(notNeed[i]);
+                            $notNeedList.eq(0).append(notNeed[i]);
                         }
+
+
                     }
                 }else{
                     $("#notNeedListIdDev").remove();
@@ -155,6 +159,9 @@ $(function(){
             alert("请先选择入住时间！")
         }
     })
+    if($(".notNeedListId .reduce-icon:first")) {
+        numberPlugReduce($(".notNeedListId .plus-icon:first"),$(".notNeedListId .reduce-icon:first"),$(".other-pay-number:first"))
+    }
     selectRoomTypeChange($selectRoomType.eq(0),0)
     removeRoomType($(".remove-room-type").eq(0))
     function selectRoomTypeChange($selectRoomType,i) {
@@ -239,7 +246,6 @@ $(function(){
         var i = $(".room-type-operate").length-1
         selectRoomTypeChange($selectRoomType.eq(i),i)
         removeRoomType($(".remove-room-type").eq(i))
-        //removeRoomType($(".remove-room-type").eq(i),i)
         $.each($(".selectRoomType:last").find("option"),function() {
             if($(this).attr("data-roomtypeid") !== undefined) {
                 if($(this).attr("data-roomtypeid") == $selectRoomType.eq(i-1).find("option:selected").attr("data-roomtypeid")) {
@@ -247,6 +253,22 @@ $(function(){
                 }
             }
         })
+    })
+    $("#addOtherPayItem").on("click","a",function() {
+        if(!$(".other-pay-number:last").val()) {
+            alert("请填写数量后再新增其它消费项目！")
+            return
+        }
+        var html = $(".select-other-pay:last").html();
+        $(".notNeedListId").append("<div class='col-sm-12 select-other-pay'>"+html+"</div>")
+        var len = $(".select-other-pay").length;
+        var id = $(".select-other-pay").eq(len-2).find("option:selected").attr("data-id");
+        $.each($(".select-other-pay:last select").find("option"),function(key,val) {
+            if($(this).attr("data-id")==id) {
+                $(this).remove()
+            }
+        })
+        numberPlugReduce($(".notNeedListId .plus-icon:last"),$(".notNeedListId .reduce-icon:last"),$(".other-pay-number:last"))
     })
     function isPInt(str) {//判断是否为正整数
         var g = /^[1-9]*[1-9][0-9]*$/;
@@ -261,7 +283,7 @@ $(function(){
             obj.val(parseInt(obj.val())+1)
         })
         $reduce.off().on("click",function() {
-            if(parseInt(obj.val())<=0 || obj.val()==""){
+            if(parseInt(obj.val())<=1 || obj.val()==""){
                 return false
             }else{
                 obj.val(parseInt(obj.val())-1)
@@ -368,16 +390,18 @@ $(function(){
                 i++
             }
         })
-        var consumerProjectName = "orderOtherPriceList"+ "[" + i + "]" + ".consumerProjectName",
-        nums = "orderOtherPriceList"+ "[" + i + "]" + ".nums",
-        price = "orderOtherPriceList"+ "[" + i + "]" + ".price",
-        priceName = "orderOtherPriceList"+ "[" + i + "]" + ".priceName",
-        otherConsumerInfoId = "orderOtherPriceList"+ "[" + i + "]" + ".otherConsumerInfoId"
-        json[consumerProjectName] = $("#notNeedList").find("option:selected").attr("data-consumerprojectname")
-        json[nums] = $("#otherPaynumber").val()
-        json[price] = $("#notNeedList").find("option:selected").attr("data-price")
-        json[priceName] = $("#notNeedList").find("option:selected").attr("data-pricename")
-        json[otherConsumerInfoId] =  $("#notNeedList").find("option:selected").attr("data-id")
+        $.each($(".select-other-pay"),function(key,val){
+            var consumerProjectName = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".consumerProjectName",
+                nums = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".nums",
+                price = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".price",
+                priceName = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".priceName",
+                otherConsumerInfoId = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".otherConsumerInfoId"
+            json[consumerProjectName] = $(this).find("option:selected").attr("data-consumerprojectname")
+            json[nums] = $(this).find(".other-pay-number").val()
+            json[price] = $(this).find("option:selected").attr("data-price")
+            json[priceName] = $(this).find("option:selected").attr("data-pricename")
+            json[otherConsumerInfoId] =  $(this).find("option:selected").attr("data-id")
+        })
         //请求保存接口
         var url = $saveManualOrder.attr("data-url");
         $.ajax({
