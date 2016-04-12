@@ -397,6 +397,9 @@ $(function(){
             }
         })
         $.each($(".select-other-pay"),function(key,val){
+            if($(this).find(".notNeedList").find("option:selected").attr("data-id")==undefined) {
+                return
+            }
             var consumerProjectName = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".consumerProjectName",
                 nums = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".nums",
                 price = "orderOtherPriceList"+ "[" + (i + parseInt(key)) + "]" + ".price",
