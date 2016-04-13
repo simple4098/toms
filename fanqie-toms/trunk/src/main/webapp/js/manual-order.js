@@ -89,6 +89,8 @@ $(function(){
                                 notNeed.push("<option data-consumerProjectName="+this.consumerProjectName+" data-priceName="+this.priceName+" data-price="+this.price+" data-id="+this.id+">"+this.consumerProjectName+"("+this.priceName+")></option>")
                             }
                         })
+                    }else{
+                        $("#notNeedListIdDev").remove();
                     }
                     if(notNeed.length==0){
                         $(".notNeedListId").remove();
