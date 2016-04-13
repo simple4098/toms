@@ -391,22 +391,24 @@ $(function(){
             json[roomTypeName] = $selectedObj.val()
         })
         var i = 0;
-        $.each(otherList,function(key,val) {
-            val.nums = $(".number").eq(key).val()
-            if(val.status) {
-                consumerProjectName = "orderOtherPriceList"+ "[" + i + "]" + ".consumerProjectName"
-                nums = "orderOtherPriceList"+ "[" + i + "]" + ".nums"
-                price = "orderOtherPriceList"+ "[" + i + "]" + ".price"
-                priceName = "orderOtherPriceList"+ "[" + i + "]" + ".priceName"
-                otherConsumerInfoId = "orderOtherPriceList"+ "[" + i + "]" + ".otherConsumerInfoId"
-                json[consumerProjectName] = val.consumerProjectName
-                json[nums] = $('.number').eq(i).val()
-                json[price] = val.price
-                json[priceName] = val.priceName
-                json[otherConsumerInfoId] = val.id
-                i++
-            }
-        })
+        if(otherList!=null && otherList.length>0) {
+            $.each(otherList, function (key, val) {
+                val.nums = $(".number").eq(key).val()
+                if (val.status) {
+                    consumerProjectName = "orderOtherPriceList" + "[" + i + "]" + ".consumerProjectName"
+                    nums = "orderOtherPriceList" + "[" + i + "]" + ".nums"
+                    price = "orderOtherPriceList" + "[" + i + "]" + ".price"
+                    priceName = "orderOtherPriceList" + "[" + i + "]" + ".priceName"
+                    otherConsumerInfoId = "orderOtherPriceList" + "[" + i + "]" + ".otherConsumerInfoId"
+                    json[consumerProjectName] = val.consumerProjectName
+                    json[nums] = $('.number').eq(i).val()
+                    json[price] = val.price
+                    json[priceName] = val.priceName
+                    json[otherConsumerInfoId] = val.id
+                    i++
+                }
+            })
+        }
         $.each($(".select-other-pay"),function(key,val){
             if($(this).find(".notNeedList").find("option:selected").attr("data-id")==undefined) {
                 return
