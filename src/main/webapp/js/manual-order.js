@@ -212,19 +212,21 @@ $(function(){
             if($(".room-type-operate").length!==1){
                 var obj = $(this).prevAll(".selectRoomType").find("option:checked")
                 var roomtypeid = obj.attr("data-roomtypeid")
-                var val = obj.val()
-                $(this).parent().remove();
-                var Lool = false
-                $.each($(".selectRoomType").find("option"),function() {
-                    if(roomtypeid == $(this).attr("data-roomtypeid")) {
-                        Lool = true
+                $.each($(".selectRoomType"),function(akey,aval) {
+                    var Lool = false
+                    $.each($(aval).find("option"),function(bkey,bval) {
+                        if(roomtypeid == $(bval).attr("data-roomtypeid")) {
+                             Lool = false
+                             return false;
+                        }else {
+                            Lool = true;
+                        }
+                    })
+                    if(Lool) {
+                        $(aval).append("<option data-roomtypeid="+roomtypeid+">"+obj.val()+"</option>")
                     }
                 })
-                if(!Lool) {
-                    $.each($(".selectRoomType"),function(){
-                        $(this).append("<option data-roomtypeid="+roomtypeid+">"+val+"</option>")
-                    })
-                }
+                $(this).parent().remove();
             }
         })
     }
