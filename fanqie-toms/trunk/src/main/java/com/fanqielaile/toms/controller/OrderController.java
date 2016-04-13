@@ -87,8 +87,8 @@ public class OrderController extends BaseController {
             model.addAttribute("pageDecorator", pageDecorator);
             //分转查询条件
             model.addAttribute("order", orderParamDto.getOrderByDealTime(orderParamDto));
-            OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
-            model.addAttribute("orderPrice", paramDto);
+            /*OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
+            model.addAttribute("orderPrice", paramDto);*/
             //渠道来源
             List<Order> orders = this.orderService.findOrderChancelSource(currentUser.getCompanyId());
             model.addAttribute("orderSource", orders);
