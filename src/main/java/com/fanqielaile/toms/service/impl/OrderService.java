@@ -384,7 +384,7 @@ public class OrderService implements IOrderService {
 //    @Log(descr = "付款成功回调")
     public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
         Order orderXml = XmlDeal.getOrder(xmlStr);
-        try {
+
             //日志
             String logStr = "付款成功回调传递参数" + xmlStr;
 //        businLog.setDescr(logStr);
@@ -399,14 +399,21 @@ public class OrderService implements IOrderService {
             //支付宝付款码
             order.setAlipayTradeNo(orderXml.getAlipayTradeNo());
             //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType(order.getCompanyId(), OtaType.TB.name());
+        //查询当前酒店以什么模式发布
+        OtaInnOtaDto otaInnOtaDto = null;
+
+        OtaInfoRefDto otaInfo = null;
+
+        try {
+            otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
             OrderConfig orderConfig = new OrderConfig(otaInfo.getOtaInfoId(), order.getCompanyId(), Integer.valueOf(order.getInnId()));
             OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
             if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
                 //自动下单
                 //设置订单状态为：接受
                 order.setOrderStatus(OrderStatus.ACCEPT);
-                return payBackDealMethod(order, new UserInfo(), OtaType.TB.name());
+                return payBackDealMethod(order, new UserInfo(), otaInfo.getOtaType().name());
             } else {
                 OrderStatus beforeOrderStatus = order.getOrderStatus();
                 //手动下单,手动下单修改订单状态为待处理
@@ -420,6 +427,9 @@ public class OrderService implements IOrderService {
                 return new JsonModel(true, "付款成功");
             }
         } catch (Exception e) {
+            order.setOrderStatus(OrderStatus.REFUSE);
+            order.setFeeStatus(FeeStatus.PAID);
+            dealCancelOrder(order, new UserInfo(), otaInfo);
             MessageCenterUtils.sendWeiXin("付款异常：渠道：" + channelSource + " 订单号为：" + orderXml.getChannelOrderCode());
             return new JsonModel(false, "系统内部错误");
         }
@@ -687,26 +697,21 @@ public class OrderService implements IOrderService {
             this.orderDao.updateOrderStatusAndFeeStatus(order);
             return new JsonModel(true, "付款成功");
         }
-        //更新淘宝订单状态,判断淘宝是否开启更新时间
-        //同步成功后在修改数据库
-        order.setOrderStatus(OrderStatus.ACCEPT);
-        order.setFeeStatus(FeeStatus.PAID);
-        this.orderDao.updateOrderStatusAndFeeStatus(order);
-        //记录操作日志
-        this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
-        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toString(), null, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
-        if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
-            String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
-            logger.info("淘宝更新订单返回值=>" + result);
-            if (null != result && result.equals("success")) {
-                return new JsonModel(true, "付款成功");
-            } else {
-                return new JsonModel(false, "调用淘宝更新接口出错");
-            }
-        } else {
+        //更新淘宝订单状态
+        String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 2L);
+        logger.info("淘宝更新订单返回值=>" + result);
+        if (null != result && result.equals("success")) {
+            //同步成功后在修改数据库
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            order.setFeeStatus(FeeStatus.PAID);
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            //记录操作日志
+            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), OrderStatus.ACCEPT, order.getOrderStatus(), "淘宝付款成功", currentUser.getId()));
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toString(), result, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
             return new JsonModel(true, "付款成功");
+        } else {
+            return new JsonModel(false, "调用淘宝更新接口出错");
         }
-
     }
 
     /**
@@ -719,7 +724,7 @@ public class OrderService implements IOrderService {
      */
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         this.orderDao.updateOrderStatusAndFeeStatus(order);
-        if (ChannelSource.TAOBAO.equals(order.getChannelSource()) && ResourceBundleUtil.getBoolean("taobao.time.open")) {
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
             String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
             logger.info("淘宝取消订单接口返回值=>" + result);
@@ -781,7 +786,8 @@ public class OrderService implements IOrderService {
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "查询订单状态"));
         logger.info("查询订单状态订单单号为orderCode=" + order.getChannelOrderCode());
         if (null == order) {
-            result.put("status", "-302");
+            result.put("code", "-302");
+            result.put("status", "100");
             result.put("message", "订单不存在");
             return result;
         }
@@ -823,22 +829,24 @@ public class OrderService implements IOrderService {
             } else {
                 throw new TomsRuntimeException("OMS内部错误");
             }
-            if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
-                result.put("message", order.getId());
+            result.put("message", order.getId());
+            /*if (ResourceBundleUtil.getBoolean("taobao.time.open")) {
             } else {
                 if (StringUtils.isNotEmpty(order.getOmsOrderCode())) {
                     result.put("message", order.getId());
                 } else {
                     result.put("message", "");
                 }
-            }
+            }*/
             result.put("code", "0");
-            //判断订单是否为信用住
-            if (PaymentType.CREDIT.equals(order.getPaymentType())) {
-                result.put("taobaoOrderId", order.getChannelOrderCode());
-                result.put("orderId", order.getId());
-            }
         }
+        //判断订单是否为信用住
+        /*if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+            result.put("taobaoOrderId", order.getChannelOrderCode());
+            result.put("orderId", order.getId());
+        }*/
+        result.put("taobaoOrderId", order.getChannelOrderCode());
+        result.put("orderId", order.getId());
        /* businLog.setDescr(logStr);
         businLogClient.save(businLog);*/
         return result;
