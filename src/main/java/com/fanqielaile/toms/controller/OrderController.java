@@ -119,9 +119,9 @@ public class OrderController extends BaseController {
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
             //分转查询条件
-            model.addAttribute("order", orderParamDto);
+           /* model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
-            model.addAttribute("orderPrice", paramDto);
+            model.addAttribute("orderPrice", paramDto);*/
         } catch (Exception e) {
             logger.error("查询未处理订单列表失败", e);
             throw new TomsRuntimeException("查询未处理订单列表失败");
@@ -149,9 +149,9 @@ public class OrderController extends BaseController {
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
             //分转查询条件
-            model.addAttribute("order", orderParamDto);
+           /* model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
-            model.addAttribute("orderPrice", paramDto);
+            model.addAttribute("orderPrice", paramDto);*/
         } catch (Exception e) {
             logger.error("查询退款订单列表失败", e);
             throw new TomsRuntimeException("查询退款订单列表失败");
