@@ -10,6 +10,8 @@ public class UserInfoDto extends UserInfo {
     private String companyName;
     //是否有管理的客栈
     private boolean isHaveInn;
+    //查看订单时是否被选择
+    private boolean selected;
 
     public boolean getIsHaveInn() {
         return isHaveInn;
@@ -26,4 +28,12 @@ public class UserInfoDto extends UserInfo {
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
 }

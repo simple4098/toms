@@ -114,6 +114,8 @@ public class Order extends Domain {
     private String orderCode;
     //公司ID
     private String companyId;
+    //下单操作人
+    private String userId;
     //tag-id
     private String tagId;
     //客人邮箱
@@ -165,7 +167,9 @@ public class Order extends Domain {
     private OtaOrderStatus otaOrderStatus;
     //其他消费
     private List<OrderOtherPrice> orderOtherPriceList;
-
+    //操作人
+    private String operator;
+    
     public List<OrderOtherPrice> getOrderOtherPriceList() {
         return orderOtherPriceList;
     }
@@ -839,6 +843,7 @@ public class Order extends Domain {
         handOrder.setFeeStatus(FeeStatus.PAID);
         handOrder.setComment(order.getComment());
         handOrder.setCompanyId(order.getCompanyId());
+        handOrder.setUserId(order.getUserId());
         //设置房型名称
         handOrder.setOrderInnName(order.getOrderInnName());
         //每日信息
@@ -1160,4 +1165,20 @@ public class Order extends Domain {
         }
         return order;
     }
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
 }

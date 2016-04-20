@@ -3,6 +3,7 @@ package com.fanqielaile.toms.model;
 import com.fanqie.core.Domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by wangdayin on 2016/3/30.
@@ -23,7 +24,11 @@ public class OrderOtherPrice extends Domain {
     private BigDecimal price;
     //数量
     private int nums;
-
+    //其他消费总成本
+    private BigDecimal totalCost;
+    //其他费用名称组成的列表
+    private List<String> priceNameList;
+    
     public String getConsumerProjectName() {
         return consumerProjectName;
     }
@@ -79,4 +84,20 @@ public class OrderOtherPrice extends Domain {
     public void setNums(int nums) {
         this.nums = nums;
     }
+
+	public BigDecimal getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(BigDecimal totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public List<String> getPriceNameList() {
+		return priceNameList;
+	}
+
+	public void setPriceNameList(List<String> priceNameList) {
+		this.priceNameList = priceNameList;
+	}
 }
