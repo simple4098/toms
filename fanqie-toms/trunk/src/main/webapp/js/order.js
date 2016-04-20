@@ -1,9 +1,55 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-
+$("#startDate").val(formatDate(new Date(),"1"))
+$("#endDate").val(formatDate(new Date())) //1代表显示日期的1号
+function formatDate(date,oneday) {
+    var year = date.getFullYear();
+    var mouth = date.getMonth()+1;
+    var day = date.getDate();
+    if(parseInt(mouth)<10) {
+        mouth="0"+mouth;
+    }
+    if(parseInt(day+1)<10) {
+        day="0"+day;
+    }
+    if(oneday) {
+        day = "01"
+    }
+    var Date = year+"-"+mouth+'-'+day;
+    return Date;
+}
+$("#selectOperator").on("focus",function() {
+     $("#operatorList").show();
+})
+/*$("#selectOperator").on("blur",function() {
+    $("#operatorList").hide();
+})*/
 $('.close-btn').click(function () {
     window.location.reload();
+})
+$("#enterOperators").on("click",function() {
+    var operator = [],
+        str = ''
+    $.each($("input[name='name']"),function() {
+        var json = {
+            userId	: "",
+            userName : ""
+        }
+        if($(this).is(":checked")) {
+           json.selected = true;
+            if(str) {
+                str+=(","+$(this).next().html())
+            }else {
+                str+=$(this).next().html()
+            }
+
+        }else {
+           json.selected = false;
+        }
+        $("#selectOperator").val(str)
+    })
+    $("#operatorList").hide();
 })
 //分页方法
 function page(page) {
@@ -14,16 +60,39 @@ function page(page) {
  * 查询
  */
 $('.btn-search').on('click', function () {
-    var beginDate = $('.begin-date').val();
-    var endDate = $('.end-date').val();
-    var searchType = $('.search-type').val();
-    if (beginDate == null || beginDate == '' || endDate == null || endDate == '' || searchType == null || searchType == '') {
+    //var beginDate = $('.begin-date').val();
+    //var endDate = $('.end-date').val();
+    //var searchType = $('.search-type').val();
+    /*if (beginDate == null || beginDate == '' || endDate == null || endDate == '' || searchType == null || searchType == '') {
         $('.begin-date').val(null);
         $('.end-date').val(null);
         $('.search-type').val(null);
-    }
+    }*/
     $('.search-form').submit();
 })
+/*var url = $("findOrders").attr("data-url")
+var json = {
+    pageId : $("#pageId").val(),
+    searchType : $("input[name='searchType']").val(),
+    beginDate : $("input[name='beginDate']").val(),
+    endDate : $("input[name='endDate']").val(),
+    channelSource : $("input[name='channelSource']").val(),
+    orderStatus : $("input[name='orderStatus']").val(),
+    channelOrderCode : $("input[name='channelOrderCode']").val()
+}
+$.ajax({
+    type:'post',
+    data: json,
+    url:url,
+    dataType:'html',
+    success:function(rs){
+       // rs = $.parseJSON(rs)
+
+    },
+    error: function() {
+        //alert("获取房型数据失败，请重试！")
+    }
+})*/
 //渠道来源，订单状态联动
 $('.channel-source,.order-status').change(function () {
     $('#channelSource').val($('.channel-source').val());
@@ -55,23 +124,41 @@ $('.btn-order').on('click', function () {
                 $('.inn-name').html("客栈名称:" + data.order.innName);
                 $('.guest-name').html("客人姓名:" + data.order.guestName);
                 $('.guest-mobile').html("客人手机号码：" + data.order.guestMobile);
-                $('.room-type').html("预定房型：" + data.order.roomTypeName);
+                //$('.room-type').html("预定房型：" + data.order.roomTypeName);
+                var tatalPrice = ""
                 if (data.order.channelSource == 'HAND_ORDER') {
-                    $('.order-total').html("订单总额:" + data.order.prepayPrice);
+                    tatalPrice =  data.order.prepayPrice;
                 } else {
-                    $('.order-total').html("订单总额:" + data.order.totalPrice);
+                    tatalPrice =  data.order.totalPrice;
                 }
-
-                $('.order-pre').html("预付金额:" + data.order.prepayPrice);
-                var infoTime, priceInfo;
-                if (data.order.dailyInfoses != null) {
-                    for (var i = 0; i < data.order.dailyInfoses.length; i++) {
-                        infoTime = infoTime + '<td class="del">' + data.order.dailyInfoses[i].dayDesc + '</td>';
-                        priceInfo = priceInfo + '<td class="del">' + "成：" + data.order.dailyInfoses[i].costPrice + '<br/>售：' + data.order.dailyInfoses[i].price + '</td>'
+                $("#orderPrice").html(tatalPrice+"/"+data.order.prepayPrice)
+                $("#profit").html(data.profit);
+                $("#operator").html(data.operator);
+                $("#costPrice").html(data.order.costPrice)
+                data.otherTotalCost = [
+                    {
+                        consumerProjectName : "门票",
+                        totalCost : 501
+                    },
+                    {
+                        consumerProjectName : "车票",
+                        totalCost : 51
                     }
+                ]
+                $.each(data.otherTotalCost,function() {
+                    $("#otherTotalCost").append("<dd>"+this.consumerProjectName+"总成本："+this.totalCost)
+                })
+                $.each(data.order.dailyInfoses,function() {
+                    $("#roomTypesInfo").append("<ul class='room-types-info'><li>房型："+this.roomTypeName+"</li><li>日期："+this.dayDesc+"</li><li><dl><dd>成："+this.costPrice+"<dd>售："+this.price+"</dd></dl></li></ul>")
+                })
+                if(data.order.orderOtherPriceList.length) {
+                    $("#orderOtherPriceList").show()
+                    $.each(data.order.orderOtherPriceList,function() {
+                        $("#orderOtherPriceList").append("<ul class='room-types-info'><li>"+this.consumerProjectName+this.priceName+"</li><li><dl><dd>单价："+this.price+"<dd>数量："+this.nums+"</dd></dl></li></ul>")
+                    })
+                }else {
+                    $("#orderOtherPriceList").hide();
                 }
-                $('.daily-info-time').append(infoTime);
-                $('.daily-price').append(priceInfo);
                 if (data.order.channelSource == "HAND_ORDER" && data.order.orderStatus == "CONFIM_AND_ORDER") {
                     $('.btn-cancel-order').attr('disabled', false);
                 } else {
