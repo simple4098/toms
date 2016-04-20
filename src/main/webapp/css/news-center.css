@@ -79,7 +79,7 @@ a:hover, a:focus,a {
     text-align: center;
 }
 .news-center-dialog .center {
-    max-height: 520px;
+    max-height: 320px;
     overflow-y: auto;
 }
 .news-center-dialog .top {
@@ -285,4 +285,95 @@ input[type=button].on_button {
 }
 input[type=button].off_button {
     background: url(../images/off_on_button.png) no-repeat 0 -25px;
+}
+/*订单管理*/
+.query-list {
+    float: left;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.query-list div {
+    float: left;
+    margin-right: 10px;
+}
+.select-operator {
+    position: relative;
+}
+.select-operator ul {
+    position: absolute;
+    left: 85px;
+    width: 157px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    display: none;
+}
+.select-operator ul li {
+    height: 30px;
+    line-height: 30px;
+    border-bottom: 1px solid #ccc;
+}
+.select-operator ul li label {
+    padding-left: 20px;
+}
+.enteroperator {
+    width: 156px;
+    height: 100%;
+    line-height: 30px;
+    display: inline-block;
+    background: #ccc;
+    text-align: center;
+    cursor: pointer;
+}
+.room-types-info {
+    width: 150px;
+    border: 1px solid #000;
+    border-bottom: none;
+    float: left;
+    margin: 0 10px 10px 0
+}
+.room-types-info li {
+    border-bottom: 1px solid #000;
+    padding: 2px;
+}
+.search-form {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+.query-btn {
+    position: absolute;
+    left: 750px;
+    top: 30px;
+}
+.query-btn button {
+    margin-right: 15px;
+}
+.channel-source,
+.select-hotel {
+    width: 145px;
+}
+.yingyehuizong {
+    display: table;
+    width: 100%;
+    margin-top: 10px;
+}
+.yingyehuizong > li {
+    display: table-cell;
+    border:1px solid #ccc;
+    border-right: none;
+    text-align: center;
+    padding-top: 10px;
+    vertical-align: middle;
+    background: #F9F9F9;
+}
+.yingyehuizong > li:last-child {
+    border: 1px solid #ccc;
+}
+.other-items {
+    display: table;
+}
+.other-items li {
+    display: table-cell;
+    padding: 10px 20px;
 }

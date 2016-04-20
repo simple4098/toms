@@ -25,9 +25,9 @@
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
-
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
+    <input id="findOrders" type="hidden" data-url="<c:url value="/order/find_orders"/>"/>
     <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_orders"/>" method="post">
         <input type="hidden" class="pageId" id="pageId" name="page"/>
         <input type="hidden" name="searchType" value="${order.searchType}"/>
@@ -71,7 +71,7 @@
                         <input type="hidden" name="channelSource" id="channelSource" value="${order.channelSource}"/>
                         <input type="hidden" name="orderStatus" id="orderStatus" value="${order.orderStatus}"/>
 
-                        <div>
+                        <div style="margin-top:10px">
                             日期选择：
                             <select name="searchType" class="search-type">
                                 <option
@@ -87,16 +87,51 @@
                                         value="leave_time">离店日期
                                 </option>
                             </select>
-                            <input class="begin-date" type="text" placeholder="开始时间" name="beginDate"
+                            <input id="startDate" class="begin-date" type="text" placeholder="开始时间" name="beginDate"
                                    value="${order.beginDate}"/>
-                            至 <input class="end-date" type="text"
+                            至 <input id="endDate" class="end-date" type="text"
                                      value="${order.endDate}" name="endDate"
                                      placeholder="截止时间"/>
                             关键字：<input type="text" value="${order.channelOrderCode}" class="keyword"
                                        name="channelOrderCode"
-                                       placeholder="渠道订单号"/>
-                            <button type="submit" class="btn-info btn-search">查询</button>
+                                       placeholder="渠道订单号" id=""/>
+                        </div>
+                        <div class="query-list">
+                            <div>
+                                渠道来源选择：
+                                <select name="channelSource" class="channel-source">
+                                    <option value="">渠道来源</option>
 
+                                    <c:if test="${not empty orderSource}">
+                                        <c:forEach items="${orderSource}" var="sor">
+                                            <option
+                                                    <c:if test="${sor.channelSource == order.channelSource}">selected</c:if>
+                                                    value="${sor.channelSource}">${sor.channelSource.text}</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </select>
+                            </div>
+                            <div>
+                                酒店选择：
+                                <select class="select-hotel">
+                                    <option>请选择酒店</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                             <div class="select-operator">
+                                 操作人选择：
+                                 <input type="text" id="selectOperator" autocomplete="off">
+                                 <ul id="operatorList">
+                                     <li><label><input type="checkbox" name="name"><span>张三</span></label></li>
+                                     <li><label><input type="checkbox" name="name"><span>李四</span></label></li>
+                                     <li><label><input type="checkbox" name="name"><span>五五</span></label></li>
+                                     <li id="enterOperators"><label class="enteroperator"><a>确认</a></label></li>
+                                 </ul>
+                             </div>
+                        </div>
+                        <div class="query-btn">
+                            <button type="submit" class="btn-info btn-search">查询</button>
                             <button type="button" style="float: right" class="btn-success btn-export-form">导出订单</button>
                         </div>
                     </form>
@@ -109,36 +144,73 @@
                         <input type="hidden" name="beginDate" class="begin-date-form">
                         <input type="hidden" name="endDate" class="end-date-form">
                     </form>
-                    <%-- <div class="table-header">
-                         所有筛选条件下，共有 <span
-                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.acceptOrder}</span>
-                         个已接受订单，总价共 <span
-                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.allTotalPrice}</span>
-                         元，
-                         预付金额共 <span
-                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.allPrePrice}</span>
-                         元，成本价共 <span
-                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.allCostPrice}</span>
-                         元，
-                         OTA佣金共 <span
-                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.allPayPrice}</span>
-                         元
-                     </div>--%>
+                    <div class="form-group">
+                        <h3>营业汇总</h3>
+                        <div>
+                            <ul class="yingyehuizong">
+                                <li>
+                                    <dl>
+                                        <dd>间夜数</dd>
+                                        <dd>302</dd>
+                                    </dl>
+                                </li>
+                                <li>
+                                    <dl>
+                                        <dd>总营业额</dd>
+                                        <dd>3202</dd>
+                                    </dl>
+                                </li>
+                                <li>
+                                    <dl>
+                                        <dd>房费成本</dd>
+                                        <dd>3022</dd>
+                                    </dl>
+                                </li>
+                                <li>
+                                    <dl>
+                                        <dd>其它消费项目</dd>
+                                        <dd>
+                                            <ul class="other-items">
+                                                <li>
+                                                    <dl>
+                                                        <dd>&nbsp;</dd>
+                                                        <dd>成本</dd>
+                                                        <dd>数量</dd>
+                                                    </dl>
+                                                </li>
+                                                <li>
+                                                    <dl>
+                                                        <dd>门票</dd>
+                                                        <dd>45200</dd>
+                                                        <dd>23</dd>
+                                                    </dl>
+                                                </li>
+                                                <li>
+                                                    <dl>
+                                                        <dd>车票</dd>
+                                                        <dd>5200</dd>
+                                                        <dd>33</dd>
+                                                    </dl>
+                                                </li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </li>
+                                <li>
+                                    <dl>
+                                        <dd>利</dd>
+                                        <dd>30222</dd>
+                                    </dl>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
                             <thead style="font-size: 14px;">
                             <tr>
                                 <th>
-                                    <select name="channelSource" class="channel-source">
-                                        <option value="">渠道来源</option>
-                                        <c:if test="${not empty orderSource}">
-                                            <c:forEach items="${orderSource}" var="sor">
-                                                <option
-                                                        <c:if test="${sor.channelSource == order.channelSource}">selected</c:if>
-                                                        value="${sor.channelSource}">${sor.channelSource.text}</option>
-                                            </c:forEach>
-                                        </c:if>
-                                    </select>
+                                    渠道来源
                                 </th>
                                 <th>渠道订单号</th>
                                 <th>
@@ -267,7 +339,7 @@
 <!-- Modal -->
 <%--操作弹出层--%>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width: 710px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close close-btn" data-dismiss="modal" aria-label="Close"><span
@@ -279,22 +351,32 @@
 
             <div class="modal-body">
                 <div>
-                    <label class="order-status"></label><br/>
-                    <label class="inn-name"></label><br/>
-                    <label class="guest-name"></label><br/>
-                    <label class="guest-mobile"></label><br/>
-                    <label class="room-type"></label><br/>
-                    <table border="1">
-                        <thead>房价：</thead>
-                        <tbody>
-                        <tr class="daily-info-time"></tr>
-                        <tr class="daily-price"></tr>
-                        </tbody>
-                    </table>
-                    <br/>
-                    <label class="order-total">订单总额：</label><br/>
-                    <label class="order-pre">预付金额：</label><br/>
-                    <label>操作人：系统</label><br/>
+                    <div class="form-group" style="border-bottom: 1px solid #ccc">
+                        <label class="order-status col-sm-6"></label>
+                        <label class="inn-name col-sm-6"></label>
+                        <label class="guest-name col-sm-6"></label>
+                        <label class="guest-mobile col-sm-6"></label>
+                    </div>
+                    <h4 style="margin-bottom:10px">预订房型及单价</h4>
+                    <div style="border-bottom:1px solid #ccc" id="roomTypesInfo" class="form-group"></div>
+                    <div class="form-group" style="border-bottom:1px solid #ccc" id="orderOtherPriceList">
+                        <h4 style="margin-bottom:10px">其它消费项目</h4>
+                    </div>
+                    <div>
+                        <ul class='room-types-info'>
+                            <li>总成本</li>
+                            <li>
+                                <dl id="otherTotalCost">
+                                    <dd>房费总成本:<span id="costPrice"></span></dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label>订单总价/预付金额:<span id="orderPrice"></span></label><br>
+                        <label>利润：<span id="profit"></span></label><br>
+                        <label>操作人：<span id="operator"></span></label><br/>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
