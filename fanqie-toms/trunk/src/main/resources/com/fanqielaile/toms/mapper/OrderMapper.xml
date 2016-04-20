@@ -108,12 +108,22 @@
         <result column="interface_send_id" property="interFaceSendID"/>
         <result column="basic_total_price" property="basicTotalPrice"/>
         <result column="oms_order_code" property="omsOrderCode"/>
+        <result column="user_name" property="operator"/>
         <collection property="orderOtherPriceList" column="id" ofType="com.fanqielaile.toms.model.OrderOtherPrice"
                     select="getOrderOtherPrice"/>
+    </resultMap>
+    <resultMap type="com.fanqielaile.toms.model.OrderOtherPrice" id="orderOtherType">
+    	<result column="consumer_project_name" property="consumerProjectName"/>
+    	<collection property="priceNameList" column="consumerProjectName" ofType="java.lang.String" select="getOtherPriceSubtype"></collection>
     </resultMap>
     <select id="getOrderOtherPrice" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
         SELECT id as id,order_id as orderId,other_consumer_info_id as otherConsumerInfoId,price_name as priceName,price as price,nums as nums,consumer_project_name as consumerProjectName FROM
         order_other_price where order_id=#{id}
+    </select>
+    <select id="getOtherPriceSubtype" resultType="java.lang.String">
+        SELECT price_name
+        FROM order_other_price 
+        where consumer_project_name=#{consumerProjectName}
     </select>
     <sql id="Base_Column_List">
         id, creator_id, created_date,
@@ -127,13 +137,13 @@
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,
         live_time,leave_time,total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,
         currency,payment_type,guest_mobile,OTA_rate_code,fee_status,order_code,company_id,payment,guest_email,special_requirement,reserved_item,fc_bed_type,percent,used_price_model,
-        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id)
+        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id,user_id)
         VALUES
         (#{id},#{creatorId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{channelSource},#{channelOrderCode},#{orderStatus},#{innId},#{guestName},#{roomTypeId},#{homeAmount},
         #{liveTime},#{leaveTime},#{totalPrice},#{prepayPrice},#{costPrice},#{OTAPrice},#{orderTime},#{comment},#{OTARoomTypeId},#{OTAHotelId},#{OTARatePlanId},#{OTAGid},#{eariestArriveTime},
         #{lastestArriveTime},#{currency},#{paymentType},#{guestMobile},#{OTARateCode},#{feeStatus},#{orderCode},#{companyId},#{payment},#{guestEmail},#{specialRequirement},
         #{reservedItem},#{fcBedType},#{percent},#{usedPriceModel},#{addPrice},#{basicTotalPrice},#{partnerCode},#{omsOrderCode},#{orderInnName},
-        #{orderRoomTypeName},#{person},#{interFaceSendID})
+        #{orderRoomTypeName},#{person},#{interFaceSendID},#{userId})
     </insert>
     <select id="selectOrderByChannelSourceAndOrderId" resultMap="BaseResultsMap">
         SELECT
@@ -159,8 +169,9 @@
         ,alipay_trade_no = #{alipayTradeNo},updated_date = now() where deleted = 0 and id=#{id}
     </update>
     <select id="selectOrderByNoPage" resultMap="OrderDtoResults">
-        SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
+        SELECT oto.*,bi.inn_name as inn_name,ui.user_name from ota_toms_order oto
         LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
+        LEFT JOIN user_info ui on oto.user_id = ui.id and ui.deleted = 0
         <where>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
                 AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
@@ -174,6 +185,9 @@
             <if test="order.orderStatus != null and order.orderStatus != ''">
                 and oto.order_status = '${order.orderStatus}'
             </if>
+             <if test="order.innName != null and order.innName != '' and order.innName != '暂无'">
+                and bi.inn_name='${order.innName}'
+            </if>
             <if test="order.channelSource != null and order.channelSource != ''">
                 and oto.channel_source = '${order.channelSource}'
             </if>
@@ -181,15 +195,29 @@
                 and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
             </if>
             <if test="order.channelOrderCode != null and order.channelOrderCode != ''">
-                and oto.channel_order_code = '${order.channelOrderCode}'
+                and (oto.channel_order_code = '${order.channelOrderCode}'
+                or oto.guest_mobile = '${order.channelOrderCode}')
+            </if>
+            <if test="order.operators != null and order.operators.size != 0">
+           		and oto.user_id in
+            	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
+            		<if test="op.selected == true">
+                		'${op.userId}'
+                	</if>
+                </foreach>
             </if>
         </where>
         ORDER BY oto.order_time DESC
     </select>
     <select id="selectOrderByPage" resultMap="OrderDtoResults">
-        SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
+        SELECT oto.*,bi.inn_name as inn_name,ui.user_name from ota_toms_order oto
         LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
-        <where>
+        LEFT JOIN user_info ui on oto.user_id = ui.id and ui.deleted = 0
+        <include refid="selectOrderFilter"></include>
+        ORDER BY oto.order_time DESC
+    </select>
+    <sql id="selectOrderFilter">
+    	<where>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
                 AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
             </if>
@@ -202,6 +230,9 @@
             <if test="order.orderStatus != null and order.orderStatus != ''">
                 and oto.order_status = '${order.orderStatus}'
             </if>
+            <if test="order.innName != null and order.innName != '' and order.innName != '暂无'">
+                and bi.inn_name='${order.innName}'
+            </if>
             <if test="order.channelSource != null and order.channelSource != ''">
                 and oto.channel_source = '${order.channelSource}'
             </if>
@@ -209,10 +240,61 @@
                 and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
             </if>
             <if test="order.channelOrderCode != null and order.channelOrderCode != ''">
-                and oto.channel_order_code = '${order.channelOrderCode}'
+                and (oto.channel_order_code = '${order.channelOrderCode}'
+                or oto.guest_mobile = '${order.channelOrderCode}')
+            </if>
+            <if test="order.operators != null and order.operators.size != 0">
+           		and oto.user_id in
+            	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
+            		<if test="op.selected == true">
+                		'${op.userId}'
+                	</if>
+                </foreach>
             </if>
         </where>
-        ORDER BY oto.order_time DESC
+    </sql>
+    <select id="statisticsOrderData" resultType="com.fanqielaile.toms.dto.OrderStatisticsDto">
+       SELECT
+			sum(date_part('day', oto.leave_time - oto.live_time)) as orderNightNumber,
+			sum(oto.prepay_price) as totalPrice,
+			sum(oto.cost_price) as totalCostPrice
+		FROM
+			ota_toms_order oto
+		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
+			AND oto.company_id = bi.company_id
+        <include refid="selectOrderFilter"></include>
+    </select>
+    <select id="statisticsOtherConsumer" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
+        SELECT
+			oci.consumer_project_name as consumerProjectName,
+			sum(oop.price*oop.nums) as totalCost,
+			sum(oop.nums) as nums
+		FROM
+			ota_toms_order oto
+		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
+			AND oto.company_id = bi.company_id
+		LEFT JOIN order_other_price oop ON oto."id" = oop.order_id
+		LEFT JOIN other_consumer_info oci ON oop.other_consumer_info_id = oci.id
+        <include refid="selectOrderFilter"></include>
+        GROUP BY oop.other_consumer_info_id,oci.consumer_project_name
+    </select>
+    <select id="selectOrderOtherPriceType" resultMap="orderOtherType">
+        SELECT
+			oop.consumer_project_name as consumerProjectName
+		FROM
+			ota_toms_order oto
+		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
+			AND oto.company_id = bi.company_id
+		LEFT JOIN order_other_price oop ON oto."id" = oop.order_id
+        <include refid="selectOrderFilter"></include>
+        GROUP BY oop.consumer_project_name
+    </select>
+    
+    <select id="statisticsOrderOtherPrice" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
+    	SELECT other_consumer_info_id as otherConsumerInfoId,sum(nums*price) as totalCost,consumer_project_name as consumerProjectName 
+    	FROM order_other_price 
+    	where order_id=#{id}
+    	group by otherConsumerInfoId,consumerProjectName
     </select>
     <select id="selectOrders" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
@@ -233,9 +315,10 @@
     </select>
 
     <select id="selectOrderById" parameterType="java.lang.String" resultMap="OrderDtoResults">
-        SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto
+        SELECT oto.*,bi.inn_name as inn_name,ui.user_name from ota_toms_order oto
         LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
         LEFT JOIN company c on bi.company_id = c.id
+        left join user_info ui on oto.user_id = ui.id
         <where>
             <if test="id != null and id != ''">
                 and oto.id=#{id}

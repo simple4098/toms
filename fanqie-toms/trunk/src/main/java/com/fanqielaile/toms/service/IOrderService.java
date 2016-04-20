@@ -7,6 +7,7 @@ import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
 import com.fanqielaile.toms.dto.fc.GetOrderStatusResponse;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.OrderOtherPrice;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
@@ -17,6 +18,7 @@ import org.dom4j.DocumentException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -343,4 +345,39 @@ public interface IOrderService {
      * @return
      */
     Map<String, Object> dealHandMakeOrderRoomTypes(Order order, UserInfo userInfo) throws Exception;
+
+    /**
+     * 获取下单人的相关信息并存入orderParamDto中
+     *
+     * @param orderParamDto
+     */
+	void searchOperatorsInfo(OrderParamDto orderParamDto) throws Exception;
+
+	/**
+     * 统计订单数据
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+	OrderStatisticsDto statisticsOrder(String companyId, OrderParamDto orderParamDto);
+
+	/**
+     * 设置查询订单属性
+     * @param orderParamDto
+     */
+	void initFindOrderParam(OrderParamDto orderParamDto);
+	
+	/**
+     * 根据订单id,统计该订单其他消费的成本
+     * @param id
+     * @return
+     */
+	List<OrderOtherPrice> statisticsOrderOtherPrice(String id);
+
+	/**
+     * 根据订单房价信息和其他消费信息统计利润
+     * @param id
+     * @return
+     */
+	BigDecimal countOrderProfit(OrderParamDto order, List<OrderOtherPrice> otherTotalCost);
 }

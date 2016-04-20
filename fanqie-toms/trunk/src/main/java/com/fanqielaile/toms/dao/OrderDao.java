@@ -1,8 +1,11 @@
 package com.fanqielaile.toms.dao;
 
 import com.fanqielaile.toms.dto.OrderParamDto;
+import com.fanqielaile.toms.dto.OrderStatisticsDto;
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.OrderOtherPrice;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
@@ -50,6 +53,7 @@ public interface OrderDao {
      * @param companyId
      * @param pageBounds
      * @param orderParamDto
+     * @param operator 
      * @return
      */
     List<OrderParamDto> selectOrderByPage(@Param("companyId") String companyId, PageBounds pageBounds, @Param("order") OrderParamDto orderParamDto);
@@ -112,4 +116,42 @@ public interface OrderDao {
      * @return
      */
     List<Order> selectAllExceptionOrder(PageBounds pageBounds);
+
+    /**
+     * 统计订单相关数据
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+	OrderStatisticsDto statisticsOrderData(@Param("companyId") String companyId, @Param("order") OrderParamDto orderParamDto);
+
+	 /**
+     * 统计其他消费订单数据
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+	List<OrderOtherPrice> statisticsOtherConsumer(@Param("companyId") String companyId, @Param("order") OrderParamDto orderParamDto);
+	
+	/**
+     * 统计某订单的其他消费数据
+     * @param id
+     * @return
+     */
+	List<OrderOtherPrice> statisticsOrderOtherPrice(@Param("id") String id);
+
+	/**
+     * 统计订单相关的其他消费项目名
+     * @param companyId
+     * @param orderParamDto
+     * @return
+     */
+	List<OrderOtherPrice> selectOrderOtherPriceType(@Param("companyId") String companyId, @Param("order") OrderParamDto orderParamDto);
+	
+	/**
+     * 统计订单相关的其他消费项目子项目名
+     * @param consumerProjectName
+     * @return
+     */
+	List<String> getOtherPriceSubtype(String consumerProjectName);
 }

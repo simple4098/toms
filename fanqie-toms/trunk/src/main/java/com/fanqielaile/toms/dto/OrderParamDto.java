@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +38,8 @@ public class OrderParamDto extends Order {
     private String orderStatusDesc;
     //订单状态字符串
     private String orderStatusString;
+    //订单操作人下拉列表框相关
+    private List<UserInfoDto> operators;
 
     public String getOrderStatusString() {
         return orderStatusString;
@@ -166,14 +169,24 @@ public class OrderParamDto extends Order {
         map.put("roomTypeName", getRoomTypeName());
         map.put("homeAmount", getHomeAmount());
         map.put("liveLeaveDate", DateUtil.format(getLiveTime(), "yyyy-MM-dd") + "/" + DateUtil.format(getLeaveTime(), "yyyy-MM-dd"));
-        if (ChannelSource.HAND_ORDER.equals(getChannelSource())) {
-            map.put("totalPrice", getPrepayPrice());
-        } else {
-            map.put("totalPrice", getTotalPrice());
-        }
+//        if (ChannelSource.HAND_ORDER.equals(getChannelSource())) {
+//            map.put("totalPrice", getPrepayPrice());
+//        } else {
+//            map.put("totalPrice", getTotalPrice());
+//        }
         map.put("prepayPrice", getPrepayPrice());
         map.put("costPrice", getCostPrice());
+        map.put("operator", getOperator());
+        map.put("profit", null);
         map.put("orderTime", DateUtil.format(getOrderTime(), "yyyy-MM-dd HH:mm:ss"));
         return map;
     }
+
+	public List<UserInfoDto> getOperators() {
+		return operators;
+	}
+
+	public void setOperators(List<UserInfoDto> operators) {
+		this.operators = operators;
+	}
 }

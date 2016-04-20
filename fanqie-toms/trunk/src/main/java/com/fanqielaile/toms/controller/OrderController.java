@@ -6,23 +6,30 @@ import com.fanqie.util.Pagination;
 import com.fanqielaile.toms.dto.HotelOrderPay;
 import com.fanqielaile.toms.dto.HotelOrderStatus;
 import com.fanqielaile.toms.dto.OrderParamDto;
+import com.fanqielaile.toms.dto.OrderStatisticsDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
+import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
+import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.OrderOtherPrice;
 import com.fanqielaile.toms.model.UserInfo;
+import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.taobao.api.ApiException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -35,6 +42,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +59,9 @@ public class OrderController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(SystemController.class);
     @Resource
     private IOrderService orderService;
-
+    @Resource
+    private IBangInnService bangInnService;
+    
 
     /**
      * 订单导出功能
@@ -60,6 +72,7 @@ public class OrderController extends BaseController {
         try {
             this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response);
         } catch (Exception e) {
+        	e.printStackTrace();
             logger.info("导出订单列表出错" + e);
         }
     }
@@ -74,11 +87,14 @@ public class OrderController extends BaseController {
     public String findOrder(Model model, @RequestParam(defaultValue = "1", required = false) int page, OrderParamDto orderParamDto) {
         try {
             UserInfo currentUser = getCurrentUser();
-            //已处理订单
-            orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
+            //初始化查询已处理订单属性
+        	orderService.initFindOrderParam(orderParamDto);
             List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
+            //对订单相关数据进行统计
+            OrderStatisticsDto orderStatisticsDto = orderService.statisticsOrder(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.DATA, orderParamDtos);
+            model.addAttribute("count", orderStatisticsDto);
             //封装分页信息
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             Pagination pagination = PaginationHelper.toPagination(paginator);
@@ -92,6 +108,12 @@ public class OrderController extends BaseController {
             //渠道来源
             List<Order> orders = this.orderService.findOrderChancelSource(currentUser.getCompanyId());
             model.addAttribute("orderSource", orders);
+            //操作人相关
+            orderService.searchOperatorsInfo(orderParamDto);
+            model.addAttribute("operators", orderParamDto.getOperators());
+            //酒店相关
+			List<BangInn> inns = bangInnService.findBangInnByCompanyId(orderParamDto.getCompanyId());
+			model.addAttribute("inns", inns);
         } catch (Exception e) {
             logger.error("查询订单列表失败", e);
             throw new TomsRuntimeException("查询订单列表失败");
@@ -169,9 +191,14 @@ public class OrderController extends BaseController {
     public void findOrderById(Model model, String id) {
         try {
             OrderParamDto order = this.orderService.findOrderById(id);
+            //统计该订单的其他消费成本
+            List<OrderOtherPrice> otherTotalCost = orderService.statisticsOrderOtherPrice(id);
+            BigDecimal profit = orderService.countOrderProfit(order, otherTotalCost);
             if (order != null) {
+            	model.addAttribute("profit", profit);
                 model.addAttribute(Constants.STATUS, Constants.SUCCESS);
                 model.addAttribute("order", order);
+                model.addAttribute("otherTotalCost", otherTotalCost);
             } else {
                 model.addAttribute(Constants.STATUS, Constants.ERROR);
                 model.addAttribute(Constants.MESSAGE, "没有此订单信息");
@@ -256,6 +283,7 @@ public class OrderController extends BaseController {
         //检查参数
         Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
         order.setCompanyId(getCurrentUser().getCompanyId());
+        order.setUserId(userInfo.getId());
         if (param) {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));

@@ -36,6 +36,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.util.DateUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -80,6 +81,8 @@ public class OrderService implements IOrderService {
     private IOtaBangInnRoomDao bangInnRoomDao;
     @Resource
     private IOtaInnOtaDao otaInnOtaDao;
+    @Resource
+    private UserInfoDao userInfoDao;
     /*@Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();*/
@@ -906,9 +909,6 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderParamDto> findOrderByPage(String companyId, PageBounds pageBounds, OrderParamDto orderParamDto) {
-        //处理查询时间
-        orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
-        orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
         List<OrderParamDto> orderDtos = orderDao.selectOrderByPage(companyId, pageBounds, orderParamDto);
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
@@ -1740,16 +1740,31 @@ public class OrderService implements IOrderService {
     @Override
     public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception {
         orderParamDto.setCompanyId(currentUser.getCompanyId());
+        //已处理订单
+        orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //处理查询时间
         orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
         orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
+        //营业汇总
+        OrderStatisticsDto orderStatisticsDto = statisticsOrder(currentUser.getCompanyId(), orderParamDto);
+        //订单其他消费类型汇总
+        List<OrderOtherPrice> orderOtherPrice = orderDao.selectOrderOtherPriceType(currentUser.getCompanyId(),orderParamDto);
+        if(!CollectionUtils.isEmpty(orderOtherPrice)){
+        	orderOtherPrice.remove(null);
+	        for(OrderOtherPrice price : orderOtherPrice){
+	        	price.setPriceNameList(orderDao.getOtherPriceSubtype(price.getConsumerProjectName()));
+	        }
+        }
+        //查询订单列表
         List<OrderParamDto> orderDtos = this.orderDao.selectOrderByNoPage(orderParamDto);
+        
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             for (OrderParamDto orderDto : orderDtos) {
+                List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
+                orderDto.setDailyInfoses(dailyInfoses);
                 //设置总价和每日价格
                 if (null != orderDto.getAddPrice()) {
-                    List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
                     BigDecimal addTatalPirce = BigDecimal.ZERO;
                     if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                         for (DailyInfos dailyInfos : dailyInfoses) {
@@ -1761,11 +1776,13 @@ public class OrderService implements IOrderService {
                     }
                     orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
                 }
+                
             }
         }
+        orderParamDto.getOrderByDealTime(orderParamDto);
         StringBuilder builder = new StringBuilder("订单列表_");
         builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
-        ExportExcelUtil.execlOrderExport(orderDtos, response, builder.toString());
+        ExportExcelUtil.execlOrderExport(orderParamDto, orderDtos, orderStatisticsDto, orderOtherPrice, response, builder.toString());
 
     }
 
@@ -1973,4 +1990,83 @@ public class OrderService implements IOrderService {
         }
         return result;
     }
+
+
+	@Override
+	public void searchOperatorsInfo(OrderParamDto orderParamDto) throws Exception {
+		List<UserInfoDto> operators;
+		if (orderParamDto.getOperators() == null) {
+			operators=userInfoDao.selectUserInfos(orderParamDto.getCompanyId());
+			orderParamDto.setOperators(operators);
+		} 
+	}
+
+
+	@Override
+	public OrderStatisticsDto statisticsOrder(String companyId, OrderParamDto orderParamDto) {
+		OrderStatisticsDto orderStatisticsDto = orderDao.statisticsOrderData(companyId, orderParamDto);
+		if(orderStatisticsDto == null ){
+			return null;
+		}
+		//对其他消费进行统计
+		orderStatisticsDto.setOtherConsumer(orderDao.statisticsOtherConsumer(companyId, orderParamDto));
+		//计算利润
+		BigDecimal countTotalCost = BigDecimal.ZERO;
+		if(orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0){
+			for (OrderOtherPrice item : orderStatisticsDto.getOtherConsumer()) {
+				if(item != null && item.getTotalCost() != null){
+					countTotalCost = countTotalCost.add(item.getTotalCost());
+				}
+			}
+			orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(countTotalCost).subtract(orderStatisticsDto.getTotalCostPrice()));
+		}else{
+			orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(orderStatisticsDto.getTotalCostPrice()));
+		}
+		return orderStatisticsDto;
+	}
+
+
+	@Override
+	public void initFindOrderParam(OrderParamDto orderParamDto) {
+		 //已处理订单
+        orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
+        //处理查询时间
+    	Date date = new Date();
+    	if(StringUtils.isEmpty(orderParamDto.getBeginDate()) || StringUtils.isEmpty(orderParamDto.getEndDate())){
+    		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM")+"-01"));
+    		orderParamDto.setEndDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM-dd")));
+    	}else{
+    		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
+    		orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
+        }		
+	}
+
+
+	@Override
+	public List<OrderOtherPrice> statisticsOrderOtherPrice(String id) {
+		return orderDao.statisticsOrderOtherPrice(id);
+	}
+
+
+	@Override
+	public BigDecimal countOrderProfit(OrderParamDto order, List<OrderOtherPrice> otherTotalCost) {
+		if(order == null){
+			return null;
+		}
+		BigDecimal costPrice = order.getCostPrice();
+		BigDecimal prepayPrice = order.getPrepayPrice();
+		BigDecimal profit;
+		if(otherTotalCost == null || otherTotalCost.size() == 0){
+			profit = prepayPrice.subtract(costPrice);
+		}else{
+			BigDecimal countOtherCost = BigDecimal.ZERO;
+			for(OrderOtherPrice item : otherTotalCost){
+				if(item.getTotalCost() != null){
+					countOtherCost = countOtherCost.add(item.getTotalCost());
+				}
+			}
+			profit = prepayPrice.subtract(countOtherCost).subtract(costPrice);
+		}
+		return profit;
+	}
 }
