@@ -457,8 +457,9 @@ public class TBXHotelUtilPromotion {
             log.info("价格和库存json:" + json);
         }
         try {
+            log.info("rateUpdate request"+JacksonUtil.obj2json(req));
             XhotelRateUpdateResponse response = client.execute(req , infoRefDto.getSessionKey());
-            log.info("rateUpdate:" +  response.getGidAndRpid());
+            log.info("rateUpdate response"+JacksonUtil.obj2json(response));
             return  response.getGidAndRpid();
         } catch (ApiException e) {
             log.error(e.getMessage());
@@ -644,8 +645,6 @@ public class TBXHotelUtilPromotion {
             InventoryPrice inventoryPrice = new InventoryPrice();
             InventoryPriceIncrement ratePrice = null;
             List<InventoryPriceIncrement> ratePriceList = new ArrayList<InventoryPriceIncrement>();
-           /* Inventory inventory = null;*/
-            /*List<Inventory>  inventoryList = new ArrayList<Inventory>();*/
             double price = 0;
             Double value = null;
             Date startDate = null;
@@ -682,23 +681,16 @@ public class TBXHotelUtilPromotion {
             inventoryPriceIncrementObj.setData(inventoryPrice);
             String obj2json = JacksonUtil.obj2json(inventoryPriceIncrementObj);
             log.info("================================及时推送价格==============================");
-            log.info("["+obj2json+"]");
-
             TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
             XhotelRatesIncrementRequest req = new XhotelRatesIncrementRequest();
             req.setRateInventoryPriceMap("[" + obj2json + "]");
+            log.info("rate.update request"+JacksonUtil.obj2json(req));
             XhotelRatesIncrementResponse rsp = client.execute(req, otaInfoRefDto.getSessionKey());
-
-           /* inventoryRateIncrement.setRoomQuota(inventoryList);
-            String inventoryJson = JacksonUtil.obj2json(rateIncrementList);
-            log.info("================================及时推送库存==============================");
-            log.info(inventoryJson);
-
-            XhotelRoomsIncrementRequest req1 = new XhotelRoomsIncrementRequest();
-            req1.setRoomQuotaMap(inventoryJson);
-            XhotelRoomsIncrementResponse rsp1 = client.execute(req1, otaInfoRefDto.getSessionKey());*/
+            log.info("rate.update response"+JacksonUtil.obj2json(rsp));
             if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) ){
                 throw  new TomsRuntimeException(rsp.getMsg());
+            }else {
+                log.info("更新成功"+rsp.getGidAndRpids());
             }
         }
     }
