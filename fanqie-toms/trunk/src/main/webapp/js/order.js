@@ -60,39 +60,8 @@ function page(page) {
  * 查询
  */
 $('.btn-search').on('click', function () {
-    //var beginDate = $('.begin-date').val();
-    //var endDate = $('.end-date').val();
-    //var searchType = $('.search-type').val();
-    /*if (beginDate == null || beginDate == '' || endDate == null || endDate == '' || searchType == null || searchType == '') {
-        $('.begin-date').val(null);
-        $('.end-date').val(null);
-        $('.search-type').val(null);
-    }*/
     $('.search-form').submit();
 })
-/*var url = $("findOrders").attr("data-url")
-var json = {
-    pageId : $("#pageId").val(),
-    searchType : $("input[name='searchType']").val(),
-    beginDate : $("input[name='beginDate']").val(),
-    endDate : $("input[name='endDate']").val(),
-    channelSource : $("input[name='channelSource']").val(),
-    orderStatus : $("input[name='orderStatus']").val(),
-    channelOrderCode : $("input[name='channelOrderCode']").val()
-}
-$.ajax({
-    type:'post',
-    data: json,
-    url:url,
-    dataType:'html',
-    success:function(rs){
-       // rs = $.parseJSON(rs)
-
-    },
-    error: function() {
-        //alert("获取房型数据失败，请重试！")
-    }
-})*/
 //渠道来源，订单状态联动
 $('.channel-source,.order-status').change(function () {
     $('#channelSource').val($('.channel-source').val());
@@ -135,19 +104,11 @@ $('.btn-order').on('click', function () {
                 $("#profit").html(data.profit);
                 $("#operator").html(data.operator);
                 $("#costPrice").html(data.order.costPrice)
-                data.otherTotalCost = [
-                    {
-                        consumerProjectName : "门票",
-                        totalCost : 501
-                    },
-                    {
-                        consumerProjectName : "车票",
-                        totalCost : 51
-                    }
-                ]
-                $.each(data.otherTotalCost,function() {
-                    $("#otherTotalCost").append("<dd>"+this.consumerProjectName+"总成本："+this.totalCost)
-                })
+                if(data.otherTotalCost && data.otherTotalCost.length) {
+                    $.each(data.otherTotalCost,function() {
+                        $("#otherTotalCost").append("<dd>"+this.consumerProjectName+"总成本："+this.totalCost)
+                    })
+                }
                 $.each(data.order.dailyInfoses,function() {
                     $("#roomTypesInfo").append("<ul class='room-types-info'><li>房型："+this.roomTypeName+"</li><li>日期："+this.dayDesc+"</li><li><dl><dd>成："+this.costPrice+"<dd>售："+this.price+"</dd></dl></li></ul>")
                 })
