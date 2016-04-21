@@ -30,25 +30,26 @@ $('.close-btn').click(function () {
 })
 $("#enterOperators").on("click",function() {
     var operator = [],
-        str = ''
-    $.each($("input[name='name']"),function() {
-        var json = {
-            userId	: "",
-            userName : ""
-        }
-        if($(this).is(":checked")) {
-           json.selected = true;
-            if(str) {
-                str+=(","+$(this).next().html())
-            }else {
-                str+=$(this).next().html()
-            }
-
-        }else {
-           json.selected = false;
-        }
-        $("#selectOperator").val(str)
-    })
+        str = '',
+//    $.each($("input[name='name']"),function(key,value) {
+//        var json = {
+//            userId	: $("input[name='userid']").eq(key).val(),
+//            userName : $(this).next().text()
+//        }
+//        if($(this).is(":checked")) {
+//           json.selected = true;
+//            if(str) {
+//                str+=(","+$(this).next().html())
+//            }else {
+//                str+=$(this).next().html()
+//            }
+//
+//        }else {
+//           json.selected = false;
+//        }
+//        $("#selectOperator").val(str);
+//        operator[key] = json;
+//    })
     $("#operatorList").hide();
 })
 //分页方法
