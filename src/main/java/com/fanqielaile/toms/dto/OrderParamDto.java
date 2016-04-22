@@ -177,7 +177,7 @@ public class OrderParamDto extends Order {
         map.put("prepayPrice", getPrepayPrice());
         map.put("costPrice", getCostPrice());
         map.put("operator", getOperator());
-        map.put("profit", null);
+        map.put("profit", getProfit());
         map.put("orderTime", DateUtil.format(getOrderTime(), "yyyy-MM-dd HH:mm:ss"));
         return map;
     }

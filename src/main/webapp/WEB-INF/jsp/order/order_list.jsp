@@ -36,6 +36,9 @@
         <input type="hidden" name="channelSource" class="channel-source-text" value="${order.channelSource}"/>
         <input type="hidden" name="orderStatus" class="order-status-text" value="${order.orderStatus}"/>
         <input type="hidden" name="channelOrderCode" class="channel-order-code" value="${order.channelOrderCode}"/>
+        <input type="hidden" name="operatorsJson"  class="operatorsJson-form" value="${operatorsJson}"/>
+        <input type="hidden" name="selectedOperators"  class="selectedOperators-form" value="${selectedOperators}"/>
+       	<input type="hidden" name="orderInnName" class="innName-form" value="${order.orderInnName }"/>
     </form>
     <div class="row">
         <div class="col-xs-12">
@@ -68,7 +71,6 @@
                     </div>
                     <form class="search-form" name="search-form" action="<c:url value="/order/find_orders"/>"
                           method="post">
-                        <input type="hidden" name="channelSource" id="channelSource" value="${order.channelSource}"/>
                         <input type="hidden" name="orderStatus" id="orderStatus" value="${order.orderStatus}"/>
 
                         <div style="margin-top:10px">
@@ -94,7 +96,7 @@
                                      placeholder="截止时间"/>
                             关键字：<input type="text" value="${order.channelOrderCode}" class="keyword"
                                        name="channelOrderCode"
-                                       placeholder="渠道订单号" id=""/>
+                                       placeholder="渠道订单号  手机号" id=""/>
                         </div>
                         <div class="query-list">
                             <div>
@@ -113,19 +115,29 @@
                             </div>
                             <div>
                                 酒店选择：
-                                <select class="select-hotel">
-                                    <option>请选择酒店</option>
-                                    <option>1</option>
-                                    <option>2</option>
+                                <select class="select-hotel" name="orderInnName">
+                                    <option value="">请选择酒店</option>
+                                    <c:if test="${not empty inns}">
+                                        <c:forEach items="${inns}" var="inn">
+                                            <option
+                                                    <c:if test="${inn.innName == order.orderInnName}">selected</c:if>
+                                                    value="${inn.innName}">${inn.innName}</option>
+                                        </c:forEach>
+                                    </c:if>
                                 </select>
                             </div>
                              <div class="select-operator">
                                  操作人选择：
-                                 <input type="text" id="selectOperator" autocomplete="off">
+                                 <input type="text" id="selectOperator" name="selectedOperators" value="${selectedOperators}" autocomplete="off">
                                  <ul id="operatorList">
-                                     <li><label><input type="checkbox" name="name"><span>张三</span></label></li>
-                                     <li><label><input type="checkbox" name="name"><span>李四</span></label></li>
-                                     <li><label><input type="checkbox" name="name"><span>五五</span></label></li>
+                                 <c:if test="${not empty operators }">
+	                                 	<c:forEach items="${operators}" var="op">
+	                                 		<li><label><input type="checkbox" <c:if test="${op.selected == true}"> checked</c:if> name="name"><span>${op.userName }</span><input type="hidden" name="userid" value="${op.userId}"></label></li>
+	                                 		
+	                                 	</c:forEach>
+	                                 	
+                                 </c:if>
+                                 	<li><input type="hidden" id="operatorsJson" name="operatorsJson" value="${operatorsJson}"/></li>
                                      <li id="enterOperators"><label class="enteroperator"><a>确认</a></label></li>
                                  </ul>
                              </div>
@@ -143,6 +155,9 @@
                         <input type="hidden" name="orderStatus" class="order-status-form">
                         <input type="hidden" name="beginDate" class="begin-date-form">
                         <input type="hidden" name="endDate" class="end-date-form">
+                        <input type="hidden" name="operatorsJson" class="operatorsJson-form"/>
+                        <input type="hidden" name="selectedOperators"  class="selectedOperators-form" >
+                        <input type="hidden" name="orderInnName" class="innName-form"/>
                     </form>
                     <div class="form-group">
                         <h3>营业汇总</h3>
@@ -151,22 +166,23 @@
                                 <li>
                                     <dl>
                                         <dd>间夜数</dd>
-                                        <dd>302</dd>
+                                        <dd>${count.orderNightNumber}</dd>
                                     </dl>
                                 </li>
                                 <li>
                                     <dl>
                                         <dd>总营业额</dd>
-                                        <dd>3202</dd>
+                                        <dd>${count.totalPrice}</dd>
                                     </dl>
                                 </li>
                                 <li>
                                     <dl>
                                         <dd>房费成本</dd>
-                                        <dd>3022</dd>
+                                        <dd>${count.totalCostPrice}</dd>
                                     </dl>
                                 </li>
-                                <li>
+                                <c:if test="${not empty count.otherConsumer}">
+                                	 <li>
                                     <dl>
                                         <dd>其它消费项目</dd>
                                         <dd>
@@ -178,28 +194,29 @@
                                                         <dd>数量</dd>
                                                     </dl>
                                                 </li>
+                                                <c:forEach items="${count.otherConsumer}" var="other">
                                                 <li>
                                                     <dl>
-                                                        <dd>门票</dd>
-                                                        <dd>45200</dd>
-                                                        <dd>23</dd>
+                                                        <c:if test="${empty other.consumerProjectName}">
+                                                        <dd>&nbsp;</dd>
+                                                        </c:if>
+                                                        <dd>${other.consumerProjectName}</dd>
+                                                        <dd>${other.totalCost}</dd>
+                                                        <dd>${other.nums}</dd>
                                                     </dl>
                                                 </li>
-                                                <li>
-                                                    <dl>
-                                                        <dd>车票</dd>
-                                                        <dd>5200</dd>
-                                                        <dd>33</dd>
-                                                    </dl>
-                                                </li>
+                                                </c:forEach>
+                                                
                                             </ul>
                                         </dd>
                                     </dl>
                                 </li>
+                                </c:if>
+                               
                                 <li>
                                     <dl>
                                         <dd>利</dd>
-                                        <dd>30222</dd>
+                                        <dd>${count.profit}</dd>
                                     </dl>
                                 </li>
                             </ul>
@@ -246,14 +263,14 @@
                                 <th>
                                     客栈名称
                                 </th>
-                                <th>客人姓名</th>
+                                <th>客人姓名<br>手机号</th>
                                 <th>房型</th>
                                 <th>房间数</th>
                                 <th class="hidden-240">住离日期</th>
-                                <th>总价</th>
-                                <th>预付金额</th>
-                                <th>成本价</th>
+                                <th>总价/预付金额</th>
+                                <th>成本</th>
                                 <th>下单时间</th>
+                                <th>操作人</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
@@ -270,7 +287,7 @@
                                         <td>${d.orderStatus.text}</td>
                                         <td>${d.feeStatus.text}</td>
                                         <td>${d.innName}</td>
-                                        <td>${d.guestName}</td>
+                                        <td>${d.guestName}<br>${d.guestMobile}</td>
                                         <c:if test="${d.channelSource != 'HAND_ORDER'}">
                                         <td>${d.roomTypeName}</td>
                                         <td>${d.homeAmount}</td>
@@ -285,7 +302,7 @@
                                             </td>
                                             <td><c:if test="${not empty d.dailyInfoses}">
                                                 <c:forEach items="${d.dailyInfoses}" var="dd">
-                                                    ${dd.roomTypeNums}<br>
+                                                    ${dd.roomTypeNums}<br><br>
                                                 </c:forEach>
                                             </c:if>
                                             </td>
@@ -300,10 +317,10 @@
                                             <c:if test="${d.channelSource != 'HAND_ORDER'}">
                                                 ${d.totalPrice}
                                             </c:if>
-                                        </td>
-                                        <td>${d.prepayPrice}</td>
+                                        /${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                                        <td>${d.operator}</td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
                                                 <button class="btn-order" type="button"

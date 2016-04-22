@@ -113,6 +113,7 @@
                     select="getOrderOtherPrice"/>
     </resultMap>
     <resultMap type="com.fanqielaile.toms.model.OrderOtherPrice" id="orderOtherType">
+    	<id column="other_consumer_info_id" property="id"/>
     	<result column="consumer_project_name" property="consumerProjectName"/>
     	<collection property="priceNameList" column="consumerProjectName" ofType="java.lang.String" select="getOtherPriceSubtype"></collection>
     </resultMap>
@@ -122,8 +123,50 @@
     </select>
     <select id="getOtherPriceSubtype" resultType="java.lang.String">
         SELECT price_name
-        FROM order_other_price 
-        where consumer_project_name=#{consumerProjectName}
+       FROM
+			ota_toms_order oto
+		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
+			AND oto.company_id = bi.company_id
+		LEFT JOIN order_other_price oop ON oto."id" = oop.order_id
+        <where>
+            <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
+                AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
+            </if>
+            <if test="order.orderStatusString != null and order.orderStatusString =='NOT_DEAL'">
+                AND oto.order_status ='NOT_DEAL'
+            </if>
+            <if test="order.companyId != null and order.companyId != ''">
+                and oto.company_id='${order.companyId}'
+            </if>
+            <if test="order.orderStatus != null and order.orderStatus != ''">
+                and oto.order_status = '${order.orderStatus}'
+            </if>
+             <if test="order.innName != null and order.innName != '' and order.innName != '暂无'">
+                and bi.inn_name='${order.innName}'
+            </if>
+            <if test="order.channelSource != null and order.channelSource != ''">
+                and oto.channel_source = '${order.channelSource}'
+            </if>
+            <if test="order.searchType != null and order.searchType != ''">
+                and oto.${order.searchType} BETWEEN '${order.beginDate}' and '${order.endDate}'
+            </if>
+            <if test="order.channelOrderCode != null and order.channelOrderCode != ''">
+                and (oto.channel_order_code = '${order.channelOrderCode}'
+                or oto.guest_mobile = '${order.channelOrderCode}')
+            </if>
+            <if test="order.operators != null and order.operators.size != 0">
+           		and oto.user_id in
+            	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
+            		<if test="op.selected == true">
+                		'${op.userId}'
+                	</if>
+                </foreach>
+            </if>
+            <if test="consumerProjectName != null">
+                and oop.consumer_project_name = '${consumerProjectName}'
+            </if>
+        </where>
+        group by price_name
     </select>
     <sql id="Base_Column_List">
         id, creator_id, created_date,
@@ -280,7 +323,7 @@
     </select>
     <select id="selectOrderOtherPriceType" resultMap="orderOtherType">
         SELECT
-			oop.consumer_project_name as consumerProjectName
+			oop.consumer_project_name
 		FROM
 			ota_toms_order oto
 		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
@@ -291,10 +334,10 @@
     </select>
     
     <select id="statisticsOrderOtherPrice" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
-    	SELECT other_consumer_info_id as otherConsumerInfoId,sum(nums*price) as totalCost,consumer_project_name as consumerProjectName 
+    	SELECT sum(nums*price) as totalCost,sum(nums) as nums,consumer_project_name as consumerProjectName 
     	FROM order_other_price 
     	where order_id=#{id}
-    	group by otherConsumerInfoId,consumerProjectName
+    	group by consumerProjectName
     </select>
     <select id="selectOrders" resultMap="OrderDtoResults">
         SELECT oto.*,bi.inn_name as inn_name from ota_toms_order oto

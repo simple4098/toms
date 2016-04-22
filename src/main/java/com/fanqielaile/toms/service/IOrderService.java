@@ -13,7 +13,11 @@ import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
+
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
+
 import org.dom4j.DocumentException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -364,8 +368,10 @@ public interface IOrderService {
 	/**
      * 设置查询订单属性
      * @param orderParamDto
+	 * @param currentUser 
+	 * @param operatorsJson 
      */
-	void initFindOrderParam(OrderParamDto orderParamDto);
+	void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsJson);
 	
 	/**
      * 根据订单id,统计该订单其他消费的成本

@@ -151,7 +151,8 @@ public interface OrderDao {
 	/**
      * 统计订单相关的其他消费项目子项目名
      * @param consumerProjectName
+	 * @param orderParamDto 
      * @return
      */
-	List<String> getOtherPriceSubtype(String consumerProjectName);
+	List<String> getOtherPriceSubtype(@Param("consumerProjectName") String consumerProjectName, @Param("order")OrderParamDto orderParamDto);
 }
