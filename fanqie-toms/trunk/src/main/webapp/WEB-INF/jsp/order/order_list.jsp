@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fs"%>
 <%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <%
     String path = request.getContextPath();
@@ -181,7 +182,7 @@
                                         <dd>${count.totalCostPrice}</dd>
                                     </dl>
                                 </li>
-                                <c:if test="${not empty count.otherConsumer}">
+                                <c:if test="${fs:length(count.otherConsumer)>0}">
                                 	 <li>
                                     <dl>
                                         <dd>其它消费项目</dd>
@@ -320,7 +321,7 @@
                                         /${d.prepayPrice}</td>
                                         <td>${d.costPrice}</td>
                                         <td><fmt:formatDate value="${d.orderTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                                        <td>${d.operator}</td>
+                                        <td><c:if test="${empty d.operator}">系统</c:if>${d.operator}</td>
                                         <td>
                                             <div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">
                                                 <button class="btn-order" type="button"

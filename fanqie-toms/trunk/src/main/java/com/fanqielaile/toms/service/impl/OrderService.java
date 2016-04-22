@@ -2017,7 +2017,9 @@ public class OrderService implements IOrderService {
 			return null;
 		}
 		//对其他消费进行统计
-		orderStatisticsDto.setOtherConsumer(orderDao.statisticsOtherConsumer(companyId, orderParamDto));
+		List<OrderOtherPrice> otherPrice = orderDao.statisticsOtherConsumer(companyId, orderParamDto);
+		otherPrice.remove(null);
+		orderStatisticsDto.setOtherConsumer(otherPrice);
 		//计算利润
 		BigDecimal countTotalCost = BigDecimal.ZERO;
 		if(orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0){
