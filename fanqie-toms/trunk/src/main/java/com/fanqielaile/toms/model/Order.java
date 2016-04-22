@@ -169,6 +169,10 @@ public class Order extends Domain {
     private List<OrderOtherPrice> orderOtherPriceList;
     //操作人
     private String operator;
+    //统计某订单的其他消费总成本
+    private List<OrderOtherPrice> otherTotalCost;
+    //某订单的利润
+    private BigDecimal profit;
     
     public List<OrderOtherPrice> getOrderOtherPriceList() {
         return orderOtherPriceList;
@@ -1180,5 +1184,21 @@ public class Order extends Domain {
 
 	public void setOperator(String operator) {
 		this.operator = operator;
+	}
+
+	public BigDecimal getProfit() {
+		return profit;
+	}
+
+	public void setProfit(BigDecimal profit) {
+		this.profit = profit;
+	}
+
+	public List<OrderOtherPrice> getOtherTotalCost() {
+		return otherTotalCost;
+	}
+
+	public void setOtherTotalCost(List<OrderOtherPrice> otherTotalCost) {
+		this.otherTotalCost = otherTotalCost;
 	}
 }

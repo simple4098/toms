@@ -1,8 +1,8 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-$("#startDate").val(formatDate(new Date(),"1"))
-$("#endDate").val(formatDate(new Date())) //1代表显示日期的1号
+//$("#startDate").val(formatDate(new Date(),"1"))
+//$("#endDate").val(formatDate(new Date())) //1代表显示日期的1号
 function formatDate(date,oneday) {
     var year = date.getFullYear();
     var mouth = date.getMonth()+1;
@@ -30,27 +30,30 @@ $('.close-btn').click(function () {
 })
 $("#enterOperators").on("click",function() {
     var operator = [],
-        str = '',
-//    $.each($("input[name='name']"),function(key,value) {
-//        var json = {
-//            userId	: $("input[name='userid']").eq(key).val(),
-//            userName : $(this).next().text()
-//        }
-//        if($(this).is(":checked")) {
-//           json.selected = true;
-//            if(str) {
-//                str+=(","+$(this).next().html())
-//            }else {
-//                str+=$(this).next().html()
-//            }
-//
-//        }else {
-//           json.selected = false;
-//        }
-//        $("#selectOperator").val(str);
-//        operator[key] = json;
-//    })
-    $("#operatorList").hide();
+        str = ''
+    $.each($("input[name='name']"),function(key,value) {
+        var json = {
+            userId	: $("input[name='userid']").eq(key).val(),
+            userName : $(this).next().text()
+        }
+        if($(this).is(":checked")) {
+           json.selected = true;
+            if(str) {
+                str+=(","+$(this).next().html())
+            }else {
+                str+=$(this).next().html()
+            }
+
+        }else {
+           json.selected = false;
+        }
+        $("#selectOperator").val(str);
+        operator[key] = json;
+    })
+     $("#operatorList").hide();
+    $("#operatorsJson").val(JSON.stringify(operator));
+//    alert($("#operatorsJson").val());
+   
 })
 //分页方法
 function page(page) {
@@ -64,7 +67,7 @@ $('.btn-search').on('click', function () {
     $('.search-form').submit();
 })
 //渠道来源，订单状态联动
-$('.channel-source,.order-status').change(function () {
+$('.order-status').change(function () {
     $('#channelSource').val($('.channel-source').val());
     $('#orderStatus').val($('.order-status').val());
     $('.channel-source-text').val($('.channel-source').val());
@@ -350,12 +353,18 @@ $('.btn-export-form').on('click', function () {
             var channelOrderCode = $('.keyword').val();
             var channelSource = $('.channel-source').val();
             var orderStatus = $('.order-status').val();
+            var operatorsJson = $('#operatorsJson').val();
+            var selectOperator = $('#selectOperator').val();
+            var innName = $('.select-hotel').val();
             $('.search-type-form').val(searchType);
             $('.channel-order-code-form').val(channelOrderCode);
             $('.channel-source-form').val(channelSource);
             $('.order-status-form').val(orderStatus);
             $('.begin-date-form').val(beginDateStr);
             $('.end-date-form').val(endDateStr);
+            $('.operatorsJson-form').val(operatorsJson);
+            $('.selectedOperators-form').val(selectOperator);
+            $('.innName-form').val(innName);
             var objForm = $('#export-order-form');
             objForm.submit();
         }

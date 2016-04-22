@@ -33,6 +33,8 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.taobao.api.ApiException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1752,7 +1754,7 @@ public class OrderService implements IOrderService {
         if(!CollectionUtils.isEmpty(orderOtherPrice)){
         	orderOtherPrice.remove(null);
 	        for(OrderOtherPrice price : orderOtherPrice){
-	        	price.setPriceNameList(orderDao.getOtherPriceSubtype(price.getConsumerProjectName()));
+	        	price.setPriceNameList(orderDao.getOtherPriceSubtype(price.getConsumerProjectName(),orderParamDto));
 	        }
         }
         //查询订单列表
@@ -1763,6 +1765,11 @@ public class OrderService implements IOrderService {
             for (OrderParamDto orderDto : orderDtos) {
                 List<DailyInfos> dailyInfoses = this.dailyInfosDao.selectDailyInfoByOrderId(orderDto.getId());
                 orderDto.setDailyInfoses(dailyInfoses);
+                //统计其他消费和利润
+                List<OrderOtherPrice> otherTotalCost = statisticsOrderOtherPrice(orderDto.getId());
+                BigDecimal profit = countOrderProfit(orderDto, otherTotalCost);
+                orderDto.setProfit(profit);
+                orderDto.setOtherTotalCost(otherTotalCost);
                 //设置总价和每日价格
                 if (null != orderDto.getAddPrice()) {
                     BigDecimal addTatalPirce = BigDecimal.ZERO;
@@ -1780,6 +1787,7 @@ public class OrderService implements IOrderService {
             }
         }
         orderParamDto.getOrderByDealTime(orderParamDto);
+        
         StringBuilder builder = new StringBuilder("订单列表_");
         builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
         ExportExcelUtil.execlOrderExport(orderParamDto, orderDtos, orderStatisticsDto, orderOtherPrice, response, builder.toString());
@@ -2026,15 +2034,26 @@ public class OrderService implements IOrderService {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void initFindOrderParam(OrderParamDto orderParamDto) {
+	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,  String operatorsString) {
 		 //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
+        //默认下单日期
+        if(orderParamDto.getSearchType() == null){
+            orderParamDto.setSearchType("order_time");
+        }
+        //设置公司
+        orderParamDto.setCompanyId(currentUser.getCompanyId());
+        //设置被选操作人
+        if(!StringUtils.isEmpty(operatorsString)){
+        	orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsString), UserInfoDto.class));
+        }
         //处理查询时间
     	Date date = new Date();
     	if(StringUtils.isEmpty(orderParamDto.getBeginDate()) || StringUtils.isEmpty(orderParamDto.getEndDate())){
     		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM")+"-01"));
-    		orderParamDto.setEndDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM-dd")));
+    		orderParamDto.setEndDate(TomsUtil.getDayEnd(DateUtils.format(date, "yyyy-MM-dd")));
     	}else{
     		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
     		orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
@@ -2069,4 +2088,6 @@ public class OrderService implements IOrderService {
 		}
 		return profit;
 	}
+
+
 }

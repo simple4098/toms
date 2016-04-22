@@ -6,11 +6,13 @@ import com.fanqielaile.toms.dto.OrderStatisticsDto;
 import com.fanqielaile.toms.dto.fc.FcInnImg;
 import com.fanqielaile.toms.dto.fc.FcInnInfoDto;
 import com.fanqielaile.toms.dto.fc.FcRoomTypeDtoInfo;
+import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.OrderOtherPrice;
 import com.fanqielaile.toms.model.fc.FcHotelInfo;
 import com.fanqielaile.toms.service.IOrderService;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -20,6 +22,7 @@ import org.apache.poi.hssf.util.Region;
 import org.apache.poi.util.ArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -40,8 +43,6 @@ import java.util.Map;
  */
 public class ExportExcelUtil {
     private static final Logger log = LoggerFactory.getLogger(ExportExcelUtil.class);
-    @Resource
-    private static IOrderService orderService;
     /**
      * 设置头信息
      *
@@ -194,16 +195,44 @@ public class ExportExcelUtil {
     @SuppressWarnings("deprecation")
 	public static void execlOrderExport(OrderParamDto orderParamDto, List<OrderParamDto> orderDtos, OrderStatisticsDto orderStatisticsDto, List<OrderOtherPrice> orderOtherPrice, HttpServletResponse response, String fileName) throws Exception {
     	//将其他消费类型和子类型与excle表中的列对应
-    	Map map = new HashMap<String, Integer>();
+    	Map<String, Integer> map = new HashMap<String, Integer>();
     	int i=0;
     	int j=5;
-    	int k=0;
     	int width=3;
-    	int listWidth=11;
-    	int[] priceSize = null; //记录其他消费项目的子项目长度
-    	if(orderOtherPrice != null && orderOtherPrice.size() != 0){
-    		priceSize = new int[orderOtherPrice.size()];
-    	}
+    	int listWidth=12;
+    	HSSFWorkbook workbook = new HSSFWorkbook();//建立工作空间
+        HSSFSheet sheet = workbook.createSheet("订单列表");// 创建sheet
+        HSSFCellStyle style = workbook.createCellStyle();
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        HSSFRow row = sheet.createRow(0);// 设置excel第一行
+//        createOneRow(width,row);
+        //判断所选条件是否有订单
+        if(orderStatisticsDto == null){
+        	 Region region = new Region((short)0,(short)0,(short)0,(short)10);
+             sheet.addMergedRegion(region);
+            
+             if(orderParamDto.getChannelSource() != null){
+            	 row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+orderParamDto.getChannelSource().getText()+"         酒店："+orderParamDto.getInnName());
+             }else{
+            	 row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+"暂无"+"         酒店："+orderParamDto.getInnName());
+             }
+             row = sheet.createRow(1);
+             region = new Region((short)1,(short)0,(short)1,(short)10);
+             sheet.addMergedRegion(region);
+             row.createCell(0).setCellValue("暂无订单数据");
+        	try {
+                log.info("--------------开始写excel数据-----------------");
+                workbook.write(response.getOutputStream());// 返回输出流
+                log.info("--------------结束写excel数据-----------------");
+            } catch (IOException e) {
+                log.info("--------------excel异常-----------------");
+                throw new Exception(e.getMessage());
+            } finally {
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            }
+        	return;
+        }
     	if(orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0){
     		int count=0;
 //    		List<OrderOtherPrice> list = new ArrayList<>();
@@ -212,51 +241,44 @@ public class ExportExcelUtil {
     			count++;
     		}
 //    		orderStatisticsDto.setOtherConsumer(list);
-    		width = 4 + count;
+    		if(count != 0){//有其他消费的列表宽度
+    			width = 4 + count;
+    		}
     	}
+    	
     	if(orderOtherPrice != null && orderOtherPrice.size() != 0){
 	    	for(OrderOtherPrice item : orderOtherPrice){
-	    		if(item != null && item.getPriceNameList() != null && item.getPriceNameList().size() != 0){
+	    		item.getPriceNameList().remove(null);
+	    		i = 0;
+	    		if(item.getPriceNameList().size() != 0){
 		    		for(String subType : item.getPriceNameList()){
 		    			map.put(item.getConsumerProjectName()+":"+subType, j+i);
 		    			i++;
 		    		}
-		    		priceSize[k] = item.getPriceNameList().size();
-		    		k++;
-		    		j = j + 2 + item.getPriceNameList().size();
+		    		map.put(item.getConsumerProjectName()+"合计", j+i);
+		    		j = j + 2 + i;
 		    	}
 	    	}
-	    	listWidth = listWidth + j;
+	    	listWidth = listWidth + j - 5;
 	    }
-    	HSSFWorkbook workbook = new HSSFWorkbook();//建立工作空间
-        HSSFSheet sheet = null;//建立sheet
-        sheet = workbook.createSheet("订单列表");// 创建sheet
-        HSSFCellStyle style = workbook.createCellStyle();
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-        HSSFRow row = sheet.createRow(0);// 设置excel第一行
-//        createOneRow(width,row);
-        Region region = new Region((short)0,(short)0,(short)0,(short)width);
+    	Region region = new Region((short)0,(short)0,(short)0,(short)width);
         sheet.addMergedRegion(region);
-        row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+orderParamDto.getChannelSource()+"         酒店："+orderParamDto.getInnName());
-        row = sheet.createRow(1);// 设置excel第2行
-//        createOneRow(width, row);
+        if(orderParamDto.getChannelSource() != null){
+       	 	row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+orderParamDto.getChannelSource().getText()+"         酒店："+orderParamDto.getInnName());
+        }else{
+       	 	row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+"暂无"+"         酒店："+orderParamDto.getInnName());
+        }        row = sheet.createRow(1);// 设置excel第2行
         region = new Region((short)1,(short)0,(short)1,(short)width);
         sheet.addMergedRegion(region);
         row.createCell(0).setCellValue("营业汇总");
-//        createRows(width,2,4,sheet);
         sheet.createRow(2);
         sheet.createRow(3);
         sheet.createRow(4);
         sheet.createRow(5);
-        region = new Region((short)2,(short)3,(short)2,(short)(width-1));
-        sheet.addMergedRegion(region);
         sheet.getRow(2).createCell(0).setCellValue("房间数");
         sheet.getRow(2).createCell(1).setCellValue("总营业额");
         sheet.getRow(2).createCell(2).setCellValue("房费成本");
-        sheet.getRow(2).createCell(3).setCellStyle(style);
-        sheet.getRow(2).createCell(3).setCellValue("其他消费");
         sheet.getRow(2).createCell(width).setCellValue("利润");
-        
         for(int m=0;m<=2;m++){
         	region = new Region((short)3,(short)m,(short)5,(short)m);
             sheet.addMergedRegion(region);
@@ -266,7 +288,11 @@ public class ExportExcelUtil {
         sheet.getRow(3).createCell(0).setCellValue(orderStatisticsDto.getOrderNightNumber());
         sheet.getRow(3).createCell(1).setCellValue(orderStatisticsDto.getTotalPrice()+"");
         sheet.getRow(3).createCell(2).setCellValue(orderStatisticsDto.getTotalCostPrice()+"");
-        if(width != 4){
+        if(width > 4){//有其他消费时
+        	region = new Region((short)2,(short)3,(short)2,(short)(width-1));
+            sheet.addMergedRegion(region);
+        	sheet.getRow(2).createCell(3).setCellStyle(style);
+            sheet.getRow(2).createCell(3).setCellValue("其他消费");
         	sheet.getRow(4).createCell(3).setCellValue("成本");
         	sheet.getRow(5).createCell(3).setCellValue("数量");
         	for(int m=4;m<width;m++){
@@ -283,7 +309,6 @@ public class ExportExcelUtil {
         String[] innDataMeta = {"id", "channelOrderCode", "orderStatus", "innName", "guestName", "roomTypeName", "homeAmount", "liveLeaveDate","costPrice", "prepayPrice","profit","operator","orderTime"};
         
         row = sheet.createRow(6);
-//        createOneRow(listWidth, row);
         region = new Region((short)6,(short)0,(short)6,(short)width);
         sheet.addMergedRegion(region);
         row.createCell(0).setCellValue("订单明细");
@@ -291,12 +316,11 @@ public class ExportExcelUtil {
         sheet.createRow(8);
         int otherPriceStart = 5;
         int subTypeIndex = 5;
-        boolean isMerger;
         
         for (int n = 0; n < 5; n++) {
         	region = new Region((short)7,(short)n,(short)8,(short)n);
             sheet.addMergedRegion(region);
-            row.createCell(n).setCellValue(innHeader[n]);// 设置单元格中表头
+            row.createCell(n).setCellValue(innHeader[n]);
         }
         if(orderOtherPrice != null && orderOtherPrice.size() != 0){
         	for(OrderOtherPrice item : orderOtherPrice){
@@ -323,21 +347,67 @@ public class ExportExcelUtil {
             row.createCell(n).setCellValue(innHeader[5+(n-otherPriceStart)]);// 设置单元格中表头
         }
         
-        int imgAll = 0;
-        int roomAll = 0;
-        int innIndex = 1;
+        int innIndex = 9;
+        int index = 1;//订单编号
         if (!CollectionUtils.isEmpty(orderDtos)) {
             for (OrderParamDto order : orderDtos) {
                 Map innMap = order.toMap();
-                HSSFRow row1 = null;
-                List<OrderOtherPrice> otherTotalCost = orderService.statisticsOrderOtherPrice(order.getId());
-                BigDecimal profit = orderService.countOrderProfit(order, otherTotalCost);
-                row1 = sheet.createRow(innIndex);// 设置下一行数据
-                for (int m = 0; m < innDataMeta.length; m++) {
-                    row1.createCell(m).setCellValue(innMap.get(innDataMeta[m]) + "");// 设置每一个单元格的信息
+//                order.getDailyInfoses().remove(null);
+                int count = order.getDailyInfoses().size();
+//                List<OrderOtherPrice> otherTotalCost = orderService.statisticsOrderOtherPrice(order.getId());
+//                BigDecimal profit = orderService.countOrderProfit(order, otherTotalCost);
+                row = sheet.createRow(innIndex);// 设置下一行数据
+                for(int m=1;m<count;m++){
+                	sheet.createRow(innIndex+m);
                 }
-                innIndex++;
-
+                for(int m=0;m<listWidth-7;m++){
+                	region = new Region((short)innIndex,(short)(m),(short)(innIndex+count-1),(short)(m));
+                    sheet.addMergedRegion(region);
+                }
+                for(int m=listWidth-5;m<=listWidth;m++){
+                	region = new Region((short)innIndex,(short)(m),(short)(innIndex+count-1),(short)(m));
+                    sheet.addMergedRegion(region);
+                }
+                row.createCell(0).setCellValue(index);
+                for (int m = 1; m < 5; m++) {
+                    row.createCell(m).setCellValue(innMap.get(innDataMeta[m]) + "");// 设置每一个单元格的信息
+                }
+                for (int m = listWidth-6; m <= listWidth; m++) {
+                	if(m == listWidth-1 && innMap.get("operator") == null){
+                		row.createCell(m).setCellValue("系统");
+                		continue;
+                	}
+                	row.createCell(m).setCellValue(innMap.get(innDataMeta[m-listWidth+12]) + "");// 设置每一个单元格的信息
+                }
+                for(OrderOtherPrice item : order.getOrderOtherPriceList()){
+                	//其他消费数量在对应的单元格填空
+                	if(item.getConsumerProjectName() != null && item.getPriceName() != null){
+                		row.createCell((short)map.get(item.getConsumerProjectName()+":"+item.getPriceName()).shortValue()).setCellValue(item.getNums());
+                	}
+                }
+                Integer totalLocate = null;
+                Integer totalCost = null;
+                if(order.getOtherTotalCost() != null){
+                	  for(OrderOtherPrice item : order.getOtherTotalCost()){
+                      	totalLocate = map.get(item.getConsumerProjectName()+"合计");
+                      	totalCost = totalLocate + 1;
+                      	row.createCell(totalLocate.shortValue()).setCellValue(item.getNums());
+                      	row.createCell(totalCost.shortValue()).setCellValue(item.getTotalCost().floatValue());
+                      }
+                }
+                int m = innIndex;
+                order.getDailyInfoses().remove(null);
+                for(DailyInfos daily: order.getDailyInfoses()){
+                	if(daily.getRoomTypeName() != null){
+                    	sheet.getRow(m).createCell(listWidth-7).setCellValue(daily.getRoomTypeName());
+                	}
+                	if(daily.getRoomTypeNums() != null){
+                    	sheet.getRow(m).createCell(listWidth-6).setCellValue(daily.getRoomTypeNums());
+                	}
+                	m++;
+                	innIndex++;
+                }
+                index++;
             }
             try {
                 log.info("--------------开始写excel数据-----------------");
@@ -353,37 +423,7 @@ public class ExportExcelUtil {
         }
     }
     
-    /**
-     * 创建表格的多行
-     * @param width
-     * 			表格宽度-1
-     * @param start 
-     * 			起始行-1
-     * @param height
-     * 			行数
-     * @param sheet
-     * @param row
-     */
-    private static void createRows(int width, int start, int height, HSSFSheet sheet) {
-		// TODO Auto-generated method stub
-    	HSSFRow row = null;
-    	for(int m=0;m<=height;m++){
-    		row = sheet.createRow(start + m);
-          	createOneRow(width, row);
-        }
-	}
 
-	/**
-     * 创建表格的一行
-     * @param width
-     * 			表格宽度-1
-     * @param row
-     */
-    private static void createOneRow(int width, HSSFRow row) {
-    	 for(int m=0;m<=width;m++){
-         	row.createCell(m);
-         }
-	}
 
 	public static void zhExeclExport(List<JointWisdomInnRoomMappingDto> allList, HttpServletResponse response, String s)throws Exception {
 

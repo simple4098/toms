@@ -28,6 +28,10 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.taobao.api.ApiException;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONString;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.util.DateUtils;
 import org.slf4j.Logger;
@@ -84,11 +88,12 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping("find_orders")
-    public String findOrder(Model model, @RequestParam(defaultValue = "1", required = false) int page, OrderParamDto orderParamDto) {
+    public String findOrder(Model model, @RequestParam(defaultValue = "1", required = false) int page,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectedOperators, OrderParamDto orderParamDto) {
         try {
             UserInfo currentUser = getCurrentUser();
             //初始化查询已处理订单属性
-        	orderService.initFindOrderParam(orderParamDto);
+            logger.info("++++++++++++++++++++++++++++++"+operatorsJson);
+        	orderService.initFindOrderParam(orderParamDto,currentUser,operatorsJson);
             List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
             //对订单相关数据进行统计
             OrderStatisticsDto orderStatisticsDto = orderService.statisticsOrder(currentUser.getCompanyId(), orderParamDto);
@@ -103,6 +108,7 @@ public class OrderController extends BaseController {
             model.addAttribute("pageDecorator", pageDecorator);
             //分转查询条件
             model.addAttribute("order", orderParamDto.getOrderByDealTime(orderParamDto));
+            
             /*OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);*/
             //渠道来源
@@ -111,6 +117,8 @@ public class OrderController extends BaseController {
             //操作人相关
             orderService.searchOperatorsInfo(orderParamDto);
             model.addAttribute("operators", orderParamDto.getOperators());
+            model.addAttribute("operatorsJson", operatorsJson);
+            model.addAttribute("selectedOperators", selectedOperators);
             //酒店相关
 			List<BangInn> inns = bangInnService.findBangInnByCompanyId(orderParamDto.getCompanyId());
 			model.addAttribute("inns", inns);
