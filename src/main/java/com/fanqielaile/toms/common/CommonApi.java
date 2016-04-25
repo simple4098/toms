@@ -31,6 +31,8 @@ public class CommonApi {
     public static   String roomStatus;
     public static String pmsOrderStatus;
     public static   String sellingRoomType;
+    public static String qunarOrderOpt;
+
 
     public  String getSellingRoomType() {
         return sellingRoomType;
@@ -221,5 +223,13 @@ public class CommonApi {
 
     public String getPmsOrderStatus() {
         return pmsOrderStatus;
+    }
+
+    public void setQunarOrderOpt(String qunarOrderOpt) {
+        this.qunarOrderOpt = qunarOrderOpt;
+    }
+
+    public String getQunarOrderOpt() {
+        return qunarOrderOpt;
     }
 }

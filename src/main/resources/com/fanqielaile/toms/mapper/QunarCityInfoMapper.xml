@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.QunarCityInfoDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.qunar.QunarCityInfo">
+        <id column="id" property="id"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_type" property="cityType"/>
+        <result column="name" property="name"/>
+        <result column="en_name" property="enName"/>
+        <result column="area_path" property="areaPath"/>
+        <result column="is_rootcity" property="isRootCity"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, city_code, city_type, name,en_name,area_path,is_rootcity
+    </sql>
+
+    <select id="selectQunarCityInfoByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from qunar_city_info where city_type ='city' and (name = #{name} or name like concat('%',#{name},'%')) and
+        limit 1
+    </select>
+
+
+</mapper>

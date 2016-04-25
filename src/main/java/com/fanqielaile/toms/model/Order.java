@@ -173,7 +173,18 @@ public class Order extends Domain {
     private List<OrderOtherPrice> otherTotalCost;
     //某订单的利润
     private BigDecimal profit;
-    
+
+    //创建订单请求的xml数据
+    private String xmlData;
+
+    public String getXmlData() {
+        return xmlData;
+    }
+
+    public void setXmlData(String xmlData) {
+        this.xmlData = xmlData;
+    }
+
     public List<OrderOtherPrice> getOrderOtherPriceList() {
         return orderOtherPriceList;
     }

@@ -473,6 +473,7 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         order.setInnId(jointWisdomInnRoomMappingDto.getInnId());
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "众荟创建订单传入参数"));
         //1.创建toms本地订单
+        order.setXmlData(xml);
         this.orderService.createOrderMethod(order.getChannelSource(), order);
 
         //查询当前公司设置的下单是自动或者手动

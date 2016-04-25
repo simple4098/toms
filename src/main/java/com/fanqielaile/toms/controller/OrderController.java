@@ -149,6 +149,7 @@ public class OrderController extends BaseController {
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
             //分转查询条件
+            /*model.addAttribute("order", orderParamDto);
            /* model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);*/
@@ -179,6 +180,7 @@ public class OrderController extends BaseController {
             Paginator paginator = ((PageList) orderParamDtos).getPaginator();
             model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
             //分转查询条件
+            /*model.addAttribute("order", orderParamDto);
            /* model.addAttribute("order", orderParamDto);
             OrderParamDto paramDto = this.orderService.findOrders(currentUser.getCompanyId(), orderParamDto);
             model.addAttribute("orderPrice", paramDto);*/
@@ -394,15 +396,19 @@ public class OrderController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("agree_pay_back")
-    public void agreePayBack(Model model, String id) throws Exception {
-        OrderParamDto order = this.orderService.findOrderById(id);
-        if (null != order) {
-            JsonModel jsonModel = this.orderService.agreePayBackOrder(order, getCurrentUser());
-            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
-            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+    public void agreePayBack(Model model, String id) {
+        try {
+            OrderParamDto order = this.orderService.findOrderById(id);
+            if (null != order) {
+                JsonModel jsonModel = this.orderService.agreePayBackOrder(order, getCurrentUser());
+                model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+                model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+            }
+        } catch (Exception e) {
+            logger.info("同意退款系统错误" + e);
         }
     }
 
@@ -413,15 +419,19 @@ public class OrderController extends BaseController {
      * @param id
      */
     @RequestMapping("refuse_pay_back")
-    public void refusePayBack(Model model, String id) throws IOException {
-        OrderParamDto order = this.orderService.findOrderById(id);
-        if (null != order) {
-            JsonModel jsonModel = this.orderService.refusePayBackOrder(order, getCurrentUser());
-            model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
-            model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
-        } else {
-            model.addAttribute(Constants.STATUS, Constants.ERROR);
-            model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+    public void refusePayBack(Model model, String id) {
+        try {
+            OrderParamDto order = this.orderService.findOrderById(id);
+            if (null != order) {
+                JsonModel jsonModel = this.orderService.refusePayBackOrder(order, getCurrentUser());
+                model.addAttribute(Constants.STATUS, jsonModel.isSuccess());
+                model.addAttribute(Constants.MESSAGE, jsonModel.getMessage());
+            } else {
+                model.addAttribute(Constants.STATUS, Constants.ERROR);
+                model.addAttribute(Constants.MESSAGE, "没有找到该订单信息，请检查参数");
+            }
+        } catch (Exception e) {
+            logger.info("拒绝退款系统错误" + e);
         }
     }
 
@@ -479,6 +489,8 @@ public class OrderController extends BaseController {
     public Map<String, Object> hotelOrderStatusMethod(HotelOrderStatus hotelOrderStatus) {
         Map<String, Object> result = new HashMap<>();
         logger.info("同步订单状态oms传入参数" + JacksonUtil.obj2json(hotelOrderStatus));
+        result.put("status", 200);
+        result.put("message", "同步订单状态成功");
         try {
             JsonModel jsonModel = this.orderService.pushHotelOrderStatus(hotelOrderStatus);
             result.put("status", jsonModel.isSuccess() ? 200 : 500);
