@@ -139,7 +139,8 @@
 	                                 	</c:forEach>
 	                                 	
                                  </c:if>
-                                 	<li><input type="hidden" id="operatorsJson" name="operatorsJson" value="${operatorsJson}"/></li>
+                                 	<%-- <li><input type="text" style="display:none" id="operatorsJson" name="operatorsJson" value="${operatorsJson}"/></li> --%>
+                                 	<li><textarea style="display:none" cols="20" rows="5" id="operatorsJson" name="operatorsJson" >${operatorsJson}</textarea></li>
                                      <li id="enterOperators"><label class="enteroperator"><a>确认</a></label></li>
                                  </ul>
                              </div>
