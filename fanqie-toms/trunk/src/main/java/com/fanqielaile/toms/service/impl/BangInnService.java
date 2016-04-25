@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.qunar.model.Hotel;
+import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -265,5 +267,13 @@ public class BangInnService implements IBangInnService {
     @Override
     public List<BangInn> selectNoMatch() {
         return bangInnDao.selectNoMatch();
+    }
+
+    @Override
+    public QunarGetHotelInfoResponse findBangInnListByCompanyCode(String companyCode) {
+        QunarGetHotelInfoResponse result = new QunarGetHotelInfoResponse();
+        List<Hotel> hotelList = this.bangInnDao.selectBangInnListByCompanyCode(companyCode);
+        result.setHotelList(hotelList);
+        return result;
     }
 }

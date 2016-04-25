@@ -10,6 +10,7 @@ import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
+import com.fanqielaile.toms.support.tb.TBXHotelUtilPromotion;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
@@ -79,9 +80,9 @@ public class OrderTest {
     @Test
     @Ignore
     public void testUpdateOrder() throws Exception {
-        Order order = this.orderDao.selectOrderByIdAndChannelSource("d959bcfe-f10f-42a5-aa2c-6f5dcb02ca6e", ChannelSource.TAOBAO);
-        OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("88888888", OtaType.TB.name());
-        String result = TBXHotelUtil.orderUpdate(order, otaInfo, 1L);
+        Order order = this.orderDao.selectOrderByIdAndChannelSource("11988898-ece7-4d91-ad1e-d0469b0db1f8", ChannelSource.TAOBAO);
+        OtaInfoRefDto otaInfo = this.otaInfoDao.selectAllOtaByCompanyAndType("70c0a1ad-63a4-4d8f-b9f1-774366e0ee10", OtaType.CREDIT.name());
+        String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
         System.out.println(result.toString());
     }
 

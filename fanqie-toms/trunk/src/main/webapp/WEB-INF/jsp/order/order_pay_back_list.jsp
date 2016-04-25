@@ -133,12 +133,12 @@
                                         <td>
                                             <button class="btn btn-danger pay-back-sure"
                                                     data-url="<c:url value="/order/agree_pay_back.json?id=${d.id}"/>"
-                                                    type="button" data-toggle="modal" data-target="#payBackSure">同意退款
+                                                    type="button" data-toggle="modal" data-target="#payBackSure">同意退款/取消
                                             </button>
                                             <button class="btn btn-pink refuse-pay-back"
                                                     data-url="<c:url value="/order/refuse_pay_back.json?id=${d.id}"/>"
                                                     type="button" data-toggle="modal" data-target="#refusePayBack">
-                                                拒绝退款
+                                                拒绝退款/取消
                                             </button>
                                         </td>
                                     </tr>

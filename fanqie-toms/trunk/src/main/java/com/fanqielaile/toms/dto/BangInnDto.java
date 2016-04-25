@@ -44,6 +44,26 @@ public class BangInnDto extends BangInn {
     private List<String> companyIdList;
     //上架模式
     private String sJiaModel;
+    //所在城市
+    private String qunarCityCode;
+    //地址
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getQunarCityCode() {
+        return qunarCityCode;
+    }
+
+    public void setQunarCityCode(String qunarCityCode) {
+        this.qunarCityCode = qunarCityCode;
+    }
 
     public List<String> getCompanyIdList() {
         return companyIdList;
@@ -169,6 +189,7 @@ public class BangInnDto extends BangInn {
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setSj(tbParam.isSj()?1:0);
         bangInnDto.setInnId(Integer.valueOf(tbParam.getInnId()));
+        bangInnDto.setAddress(omsInnDto.getAddr());
         /*bangInnDto.setAccountId(Integer.valueOf(tbParam.getAccountId()));*/
         /*bangInnDto.setOtaWgId(otaInnOtaId);*/
         /*bangInnDto.setInnName(omsInnDto.getInnName());*/
@@ -182,6 +203,7 @@ public class BangInnDto extends BangInn {
                 bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
             }
         }
+        bangInnDto.setQunarCityCode(omsInnDto.getCity());
         return  bangInnDto;
     }
 

@@ -182,7 +182,7 @@ public interface IOrderService {
      * @param currentUser
      * @return
      */
-    JsonModel refusePayBackOrder(OrderParamDto order, UserInfo currentUser);
+    JsonModel refusePayBackOrder(OrderParamDto order, UserInfo currentUser) throws IOException;
 
     /**
      * 天下房仓创建订单

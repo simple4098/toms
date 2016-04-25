@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqie.qunar.model.Hotel;
+import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.InnDto;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
@@ -156,4 +158,13 @@ public interface IBangInnService {
     List<BangInnDto> findFcBangInn(BangInnDto bangInnDto);
 
     List<BangInn> selectNoMatch();
+
+    /**
+     * 通过公司code查询绑定客栈信息
+     *
+     * @param companyCode
+     * @return
+     */
+    QunarGetHotelInfoResponse findBangInnListByCompanyCode(String companyCode);
+
 }

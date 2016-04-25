@@ -36,6 +36,11 @@ public enum OtaType {
         public ITPService create() {
             return (CreditService)SpringContextUtil.getBean("creditService");
         }
+    }, QUNAR {
+        @Override
+        public ITPService create() {
+            return (QunarService) SpringContextUtil.getBean("qunarService");
+        }
     };
     public abstract ITPService create();
 }

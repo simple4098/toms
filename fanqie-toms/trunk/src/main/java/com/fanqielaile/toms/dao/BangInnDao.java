@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqie.qunar.model.Hotel;
+import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.OrderConfigDto;
 import com.fanqielaile.toms.model.BangInn;
@@ -212,4 +214,12 @@ public interface BangInnDao {
     void updateSjBangInn( @Param("innId") Integer innId, @Param("companyId") String companyId, @Param("sj")boolean sj);
 
     List<BangInn> selectNoMatch();
+
+    /**
+     * 通过公司code查询绑定客栈信息
+     *
+     * @param companyCode
+     * @return
+     */
+    List<Hotel> selectBangInnListByCompanyCode(@Param("companyCode") String companyCode);
 }

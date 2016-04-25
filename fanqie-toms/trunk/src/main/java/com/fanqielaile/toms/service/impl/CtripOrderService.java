@@ -349,6 +349,7 @@ public class CtripOrderService implements ICtripOrderService {
         order.setInnId(Integer.parseInt(ctripRoomTypeMapping.getInnId()));
         order.setRoomTypeId(ctripRoomTypeMapping.getTomRoomTypeId());
         //1.创建toms本地订单
+        order.setXmlData(xml);
         this.orderService.createOrderMethod(order.getChannelSource(), order);
 
         //携程创建订单，同步oms

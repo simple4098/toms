@@ -3,6 +3,8 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.bean.enums.CtripRequestType;
 import com.fanqie.bean.order.*;
 import com.fanqie.jw.enums.OrderRequestType;
+import com.fanqie.qunar.enums.RequestType;
+import com.fanqie.qunar.response.*;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.dto.fc.CancelHotelOrderResponse;
 import com.fanqielaile.toms.dto.fc.CheckRoomAvailResponse;
@@ -22,13 +24,12 @@ import com.fanqielaile.toms.model.fc.FCcheckRoomAvailResponseResult;
 import com.fanqielaile.toms.model.fc.FcCancelHotelOrderResponseResult;
 import com.fanqielaile.toms.model.fc.FcCreateHotelOrderResponseResult;
 import com.fanqielaile.toms.model.fc.FcGetOrderStatusResponseResult;
-import com.fanqielaile.toms.service.ICtripOrderService;
-import com.fanqielaile.toms.service.IJointWisdomOrderService;
-import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.service.jointwisdomService.JointWisdomAvailCheckOrderSuccessResponse;
 import com.fanqielaile.toms.service.jointwisdomService.JointWisdomOrderErrorResponse;
 import com.fanqielaile.toms.support.util.*;
 import org.apache.commons.lang3.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,6 +60,10 @@ public class OTAManageController extends BaseController {
     /*@Resource
     private BusinLogClient businLogClient;
     private BusinLog businLog = new BusinLog();*/
+    @Resource
+    private IBangInnService bangInnService;
+    @Resource
+    private IQunarOrderService qunarOrderService;
 
     /**
      * 淘宝调用的接口
@@ -534,4 +541,157 @@ public class OTAManageController extends BaseController {
         }
     }
 
+
+    // -------------------------------去哪儿对接
+
+    @RequestMapping(value = "qunarService")
+    @ResponseBody
+    public Object qunarOrderService(String xml, String companyCode) {
+        logger.info("去哪儿传入参数：" + xml);
+        try {
+            if (StringUtils.isNotEmpty(companyCode)) {
+                //获取酒店信息
+                logger.info("去哪儿获取酒店信息，传入参数：" + companyCode);
+                QunarGetHotelInfoResponse result = null;
+                result = new QunarGetHotelInfoResponse();
+                if (StringUtils.isNotEmpty(companyCode)) {
+                    result = this.bangInnService.findBangInnListByCompanyCode(companyCode);
+                }
+                logger.info("去哪儿获取酒店信息，返回值：" + FcUtil.fcRequest(result));
+
+                return result;
+            } else {
+                if (StringUtils.isNotEmpty(xml)) {
+                    Element element = XmlDeal.dealXmlStr(xml);
+                    //得到根节点名字
+                    String rootName = element.getName();
+                    if (rootName.equals(RequestType.priceRequest.name())) {
+                        //获取酒店房型信息
+                        QunarGetRoomTypeInfoResponse roomTypeInfo = this.qunarOrderService.findRoomTypeInfo(xml);
+                        logger.info("去哪儿获取酒店房型信息，返回值：" + FcUtil.fcRequest(roomTypeInfo));
+                        return roomTypeInfo;
+                    } else if (rootName.equals(RequestType.bookingRequest.name())) {
+                        //预定接口
+                        BookingResponse orderByQunar = this.qunarOrderService.createOrderByQunar(xml);
+                        logger.info("去哪儿预定，返回值：" + FcUtil.fcRequest(orderByQunar));
+                        return orderByQunar;
+                    } else if (rootName.equals(RequestType.cancelRequest.name())) {
+                        //取消订单接口
+                        QunarCancelOrderResponse qunarCancelOrderResponse = this.qunarOrderService.cancelOrderMethod(xml);
+                        logger.info("去哪儿取消订单接口，返回值：" + FcUtil.fcRequest(qunarCancelOrderResponse));
+                        return qunarCancelOrderResponse;
+                    } else if (rootName.equals(RequestType.wrapperOrderQueryRequest.name())) {
+                        //查询订单接口
+                        QunarWrapperOrderQueryResponse queryResponse = this.qunarOrderService.queryOrderStatus(xml);
+                        logger.info("去哪儿查询订单接口，返回值：" + FcUtil.fcRequest(queryResponse));
+                        return queryResponse;
+                    } else {
+                        logger.info("去哪儿传入参数不匹配,参数" + xml);
+                        return null;
+                    }
+
+                } else {
+                    logger.info("去哪儿获取酒店信息，传入参数为空");
+                }
+            }
+        } catch (Exception e) {
+            logger.info("去哪儿对接信息出错" + e);
+        }
+        return null;
+    }
+
+
+    /**
+     * 去哪儿获取酒店信息
+     *
+     * @param companyCode
+     * @return
+     */
+    @RequestMapping(value = "/getHotelInfo")
+    @ResponseBody
+    public Object getHotelInfo(String companyCode) {
+        logger.info("去哪儿获取酒店信息，传入参数：" + companyCode);
+        QunarGetHotelInfoResponse result = null;
+        try {
+            result = new QunarGetHotelInfoResponse();
+            if (StringUtils.isNotEmpty(companyCode)) {
+                result = this.bangInnService.findBangInnListByCompanyCode(companyCode);
+            }
+            logger.info("去哪儿获取酒店信息，返回值：" + FcUtil.fcRequest(result));
+        } catch (Exception e) {
+            logger.info("去哪儿获取酒店信息出错" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 去哪儿获取房型信息
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping(value = "/getRoomTypeInfo")
+    @ResponseBody
+    public Object getRoomTypeInfo(String xml) {
+        logger.info("去哪儿获取房型信息，传入参数：" + xml);
+        QunarGetRoomTypeInfoResponse result = null;
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                result = this.qunarOrderService.findRoomTypeInfo(xml);
+            } else {
+                logger.info("去哪儿获取酒店信息，传入参数为空");
+            }
+            logger.info("去哪儿获取酒店房型信息，返回值：" + FcUtil.fcRequest(result));
+        } catch (Exception e) {
+            logger.info("去哪儿获取酒店房型信息出错" + e);
+        }
+        return result;
+    }
+
+    /**
+     * 去哪儿预定订单
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping(value = "/createOrder")
+    @ResponseBody
+    public Object createOrderQunar(String xml) {
+        logger.info("去哪儿预定订单传入参数：" + xml);
+        BookingResponse bookingResponse = new BookingResponse();
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                bookingResponse = this.qunarOrderService.createOrderByQunar(xml);
+            } else {
+                logger.info("去哪儿预定订单，传入参数为空");
+            }
+            logger.info("去哪儿预定返回值：" + FcUtil.fcRequest(bookingResponse));
+        } catch (Exception e) {
+            logger.info("去哪儿预定订单出错" + e);
+        }
+        return bookingResponse;
+    }
+
+    /**
+     * 去哪儿取消订单
+     *
+     * @param xml
+     * @return
+     */
+    @RequestMapping(value = "/cancelOrder")
+    @ResponseBody
+    public Object cancelOrderQunar(String xml) {
+        logger.info("去哪儿取消订单传入参数：" + xml);
+        QunarCancelOrderResponse result = new QunarCancelOrderResponse();
+        try {
+            if (StringUtils.isNotEmpty(xml)) {
+                result = this.qunarOrderService.cancelOrderMethod(xml);
+            } else {
+                logger.info("去哪儿取消订单传入参数为空");
+            }
+        } catch (Exception e) {
+            logger.info("去哪儿取消订单出错" + e);
+        }
+        return result;
+    }
 }
