@@ -515,6 +515,10 @@ public class OrderService implements IOrderService {
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.NOT_PAY);
+                if (jsonObject.get("status").equals(800) && ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                    return new JsonModel(false, "oms系统返回800，创建订单失败");
+                }
                 JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
                 jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
                 return jsonModel;

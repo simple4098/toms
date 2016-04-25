@@ -284,7 +284,9 @@ public class QunarOrderService implements IQunarOrderService {
             //判断返回是否失败，记录异常订单
             JSONObject jsonObject = JSONObject.parseObject(response);
             if (!(Boolean) jsonObject.get("ret")) {
-                this.exceptionOrderDao.insertExceptionOrder(order);
+                this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
+                //发送微信
+                MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
             }
             logger.info("调用去哪儿订单操作接口返回值：orderCode" + order.getChannelOrderCode() + response);
         } catch (Exception e) {
@@ -294,7 +296,7 @@ public class QunarOrderService implements IQunarOrderService {
             result.setQunarOrderNum(order.getChannelOrderCode());
             result.setResult(ResultStatus.FAILURE.name());
             //异常返回失败
-            this.exceptionOrderDao.insertExceptionOrder(order);
+            this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
             //发送微信
             MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
         }
@@ -333,7 +335,9 @@ public class QunarOrderService implements IQunarOrderService {
                     //判断返回是否失败，记录异常订单
                     JSONObject jsonObject = JSONObject.parseObject(response);
                     if (!(Boolean) jsonObject.get("ret")) {
-                        this.exceptionOrderDao.insertExceptionOrder(orderParamDto);
+                        this.exceptionOrderDao.insertExceptionOrder(orderParamDto.getExceptionOrderListByOrder(orderParamDto));
+                        //发送微信
+                        MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + orderParamDto.getChannelOrderCode());
                     }
                 }
                 result.setQunarOrderNum(cancelOrderParam.getChannelOrderCode());

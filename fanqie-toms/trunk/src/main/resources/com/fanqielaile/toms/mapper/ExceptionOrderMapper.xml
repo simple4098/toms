@@ -17,9 +17,11 @@
     <insert id="insertExceptionOrder" parameterType="com.fanqielaile.toms.model.Order">
         INSERT INTO ota_exception_order(id,order_id,created_date,updated_date,modifier_person,modifier_status,deleted)
         VALUES
+        <if test="exceptionOrderList.size()>0">
         <foreach collection="exceptionOrderList" item="eo" separator=",">
             (#{eo.uuid},#{eo.orderId},now(),now(),#{eo.modifierId},#{eo.modifierStatus},0)
         </foreach>
+        </if>
     </insert>
     <insert id="insertExceptionOrderByException" parameterType="com.fanqielaile.toms.model.ExceptionOrder">
         INSERT INTO ota_exception_order(id,order_id,created_date,updated_date,modifier_person,modifier_status,deleted)
