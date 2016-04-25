@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">
     <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/ace.min.css">
+    <link rel="stylesheet" href="<%=basePath%>/assets/css/select2.min.css"/>
     <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
     <script src="<%=basePath%>/assets/layer/layer.js"></script>
 </head>
@@ -407,6 +408,12 @@
 </html>
 <script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/js/order.js"></script>
+<script src="<c:url value='/js/select2.full.js'/>"></script>
+<script>
+    $(document).ready(function () {
+        $(".select-hotel").select2();
+    });
+</script>
 
 
 <script>
