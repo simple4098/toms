@@ -1775,13 +1775,20 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception {
+    public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators) throws Exception {
         orderParamDto.setCompanyId(currentUser.getCompanyId());
         //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //处理查询时间
         orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
         orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
+        //设置被选操作人
+        if(!StringUtils.isEmpty(operatorsJson)){
+        	orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsJson), UserInfoDto.class));
+        }
+        if(StringUtils.isEmpty(selectedOperators)){
+        	orderParamDto.setOperators(null);
+        }
         //营业汇总
         OrderStatisticsDto orderStatisticsDto = statisticsOrder(currentUser.getCompanyId(), orderParamDto);
         //订单其他消费类型汇总
@@ -2073,7 +2080,7 @@ public class OrderService implements IOrderService {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,  String operatorsString) {
+	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,  String operatorsString, String selectedOperators) {
 		 //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //默认下单日期
@@ -2085,6 +2092,9 @@ public class OrderService implements IOrderService {
         //设置被选操作人
         if(!StringUtils.isEmpty(operatorsString)){
         	orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsString), UserInfoDto.class));
+        }
+        if(StringUtils.isEmpty(selectedOperators)){
+        	orderParamDto.setOperators(null);
         }
         //处理查询时间
     	Date date = new Date();

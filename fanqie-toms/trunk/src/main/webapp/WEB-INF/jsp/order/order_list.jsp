@@ -134,7 +134,7 @@
                                  <ul id="operatorList">
                                  <c:if test="${not empty operators }">
 	                                 	<c:forEach items="${operators}" var="op">
-	                                 		<li><label><input type="checkbox" <c:if test="${op.selected == true}"> checked</c:if> name="name"><span>${op.userName }</span><input type="hidden" name="userid" value="${op.userId}"></label></li>
+	                                 		<li><label><input type="checkbox" <c:if test="${op.selected == true}"> checked</c:if> name="name"><span>${op.userName }</span><input type="hidden" name="userid" value="${op.id}"></label></li>
 	                                 		
 	                                 	</c:forEach>
 	                                 	

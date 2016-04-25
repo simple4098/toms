@@ -45,6 +45,8 @@ public class UserInfo extends Domain implements UserDetails {
     private String userId;
     //关键字
     private String keywords;
+    //管理员ID
+    private String id;
     private CompanyType companyType;
 
     public CompanyType getCompanyType() {
@@ -177,7 +179,15 @@ public class UserInfo extends Domain implements UserDetails {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setCompanyId(String companyId) {
         this.companyId = companyId;
     }
 

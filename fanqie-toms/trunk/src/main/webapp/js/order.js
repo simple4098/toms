@@ -33,7 +33,7 @@ $("#enterOperators").on("click",function() {
         str = ''
     $.each($("input[name='name']"),function(key,value) {
         var json = {
-            userId	: $("input[name='userid']").eq(key).val(),
+            id	: $("input[name='userid']").eq(key).val(),
             userName : $(this).next().text()
         }
         if($(this).is(":checked")) {

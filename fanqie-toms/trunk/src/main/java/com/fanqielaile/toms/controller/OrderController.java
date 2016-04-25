@@ -72,9 +72,9 @@ public class OrderController extends BaseController {
      */
     @RequestMapping("order_export")
     @ResponseBody
-    public void orderExport(OrderParamDto orderParamDto, HttpServletResponse response) {
+    public void orderExport(OrderParamDto orderParamDto,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectedOperators, HttpServletResponse response) {
         try {
-            this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response);
+            this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response, operatorsJson, selectedOperators);
         } catch (Exception e) {
         	e.printStackTrace();
             logger.info("导出订单列表出错" + e);
@@ -93,7 +93,7 @@ public class OrderController extends BaseController {
             UserInfo currentUser = getCurrentUser();
             //初始化查询已处理订单属性
             logger.info("++++++++++++++++++++++++++++++"+operatorsJson);
-        	orderService.initFindOrderParam(orderParamDto,currentUser,operatorsJson);
+        	orderService.initFindOrderParam(orderParamDto,currentUser,operatorsJson,selectedOperators);
             List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
             //对订单相关数据进行统计
             OrderStatisticsDto orderStatisticsDto = orderService.statisticsOrder(currentUser.getCompanyId(), orderParamDto);

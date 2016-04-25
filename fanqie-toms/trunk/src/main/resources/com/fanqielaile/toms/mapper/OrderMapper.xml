@@ -160,7 +160,7 @@
            		and oto.user_id in
             	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
             		<if test="op.selected == true">
-                		'${op.userId}'
+                		'${op.id}'
                 	</if>
                 </foreach>
             </if>
@@ -247,7 +247,7 @@
            		and oto.user_id in
             	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
             		<if test="op.selected == true">
-                		'${op.userId}'
+                		'${op.id}'
                 	</if>
                 </foreach>
             </if>
@@ -292,7 +292,7 @@
            		and oto.user_id in
             	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
             		<if test="op.selected == true">
-                		'${op.userId}'
+                		'${op.id}'
                 	</if>
                 </foreach>
             </if>
@@ -318,8 +318,8 @@
 			ota_toms_order oto
 		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
 			AND oto.company_id = bi.company_id
-		LEFT JOIN order_other_price oop ON oto."id" = oop.order_id
-		LEFT JOIN other_consumer_info oci ON oop.other_consumer_info_id = oci.id
+		left JOIN order_other_price oop ON oto."id" = oop.order_id
+		inner JOIN other_consumer_info oci ON oop.other_consumer_info_id = oci.id and oci.deleted = 0
         <include refid="selectOrderFilter"></include>
         GROUP BY oop.other_consumer_info_id,oci.consumer_project_name
     </select>
