@@ -196,17 +196,17 @@ public class ExportExcelUtil {
 	public static void execlOrderExport(OrderParamDto orderParamDto, List<OrderParamDto> orderDtos, OrderStatisticsDto orderStatisticsDto, List<OrderOtherPrice> orderOtherPrice, HttpServletResponse response, String fileName) throws Exception {
     	//将其他消费类型和子类型与excle表中的列对应
     	Map<String, Integer> map = new HashMap<String, Integer>();
-    	int i=0;
-    	int j=5;
-    	int width=3;
-    	int listWidth=12;
+    	int subtypeIndex=0;//用于其他消费子类型计数
+    	int typeLocation=5;//用于其他消费父类型定位
+    	int width=3;//营业汇总相关表格的宽度
+    	int listWidth=12;//订单详细列表的宽度
     	HSSFWorkbook workbook = new HSSFWorkbook();//建立工作空间
         HSSFSheet sheet = workbook.createSheet("订单列表");// 创建sheet
         HSSFCellStyle style = workbook.createCellStyle();
         style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
         HSSFRow row = sheet.createRow(0);// 设置excel第一行
-//        createOneRow(width,row);
-        //判断所选条件是否有订单
+        setResposeHeader(response, fileName);
+        //对没有订单的情况进行处理
         if(orderStatisticsDto == null){
         	 Region region = new Region((short)0,(short)0,(short)0,(short)10);
              sheet.addMergedRegion(region);
@@ -233,33 +233,34 @@ public class ExportExcelUtil {
             }
         	return;
         }
+        //统计其他消费项目长度
     	if(orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0){
-    		int count=0;
+    		int otherCount=0;
 //    		List<OrderOtherPrice> list = new ArrayList<>();
     		orderStatisticsDto.getOtherConsumer().remove(null);
     		for(OrderOtherPrice item:orderStatisticsDto.getOtherConsumer()){
-    			count++;
+    			otherCount++;
     		}
 //    		orderStatisticsDto.setOtherConsumer(list);
-    		if(count != 0){//有其他消费的列表宽度
-    			width = 4 + count;
+    		if(otherCount != 0){//有其他消费的列表宽度
+    			width = 4 + otherCount;
     		}
     	}
-    	
+    	//对其他消费相关的订单详细列表进行定位
     	if(orderOtherPrice != null && orderOtherPrice.size() != 0){
 	    	for(OrderOtherPrice item : orderOtherPrice){
 	    		item.getPriceNameList().remove(null);
-	    		i = 0;
+	    		subtypeIndex = 0;
 	    		if(item.getPriceNameList().size() != 0){
 		    		for(String subType : item.getPriceNameList()){
-		    			map.put(item.getConsumerProjectName()+":"+subType, j+i);
-		    			i++;
+		    			map.put(item.getConsumerProjectName()+":"+subType, typeLocation+subtypeIndex);
+		    			subtypeIndex++;
 		    		}
-		    		map.put(item.getConsumerProjectName()+"合计", j+i);
-		    		j = j + 2 + i;
+		    		map.put(item.getConsumerProjectName()+"合计", typeLocation+subtypeIndex);
+		    		typeLocation = typeLocation + 2 + subtypeIndex;
 		    	}
 	    	}
-	    	listWidth = listWidth + j - 5;
+	    	listWidth = listWidth + typeLocation - 5;
 	    }
     	Region region = new Region((short)0,(short)0,(short)0,(short)width);
         sheet.addMergedRegion(region);
@@ -267,7 +268,8 @@ public class ExportExcelUtil {
        	 	row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+orderParamDto.getChannelSource().getText()+"         酒店："+orderParamDto.getInnName());
         }else{
        	 	row.createCell(0).setCellValue("时间范围："+orderParamDto.getBeginDate()+"~"+orderParamDto.getEndDate()+"            渠道："+"暂无"+"         酒店："+orderParamDto.getInnName());
-        }        row = sheet.createRow(1);// 设置excel第2行
+        }        
+        row = sheet.createRow(1);// 设置excel第2行
         region = new Region((short)1,(short)0,(short)1,(short)width);
         sheet.addMergedRegion(region);
         row.createCell(0).setCellValue("营业汇总");
@@ -304,7 +306,6 @@ public class ExportExcelUtil {
         sheet.getRow(3).createCell(width).setCellValue(orderStatisticsDto.getProfit()+"");
         
         
-        setResposeHeader(response, fileName);
         String[] innHeader = {"序号", "渠道订单号", "订单状态", "客栈名称", "客人姓名", "房型", "房间数", "住离日期","房费成本","总收入","利润","岗点（经手人）", "下单时间"};
         String[] innDataMeta = {"id", "channelOrderCode", "orderStatus", "innName", "guestName", "roomTypeName", "homeAmount", "liveLeaveDate","costPrice", "prepayPrice","profit","operator","orderTime"};
         
@@ -316,12 +317,13 @@ public class ExportExcelUtil {
         sheet.createRow(8);
         int otherPriceStart = 5;
         int subTypeIndex = 5;
-        
+        //处理其他消费前订单相关表头显示内容
         for (int n = 0; n < 5; n++) {
         	region = new Region((short)7,(short)n,(short)8,(short)n);
             sheet.addMergedRegion(region);
             row.createCell(n).setCellValue(innHeader[n]);
         }
+        //处理有其他消费时订单相关表头显示内容
         if(orderOtherPrice != null && orderOtherPrice.size() != 0){
         	for(OrderOtherPrice item : orderOtherPrice){
         		subTypeIndex = otherPriceStart;
@@ -341,6 +343,7 @@ public class ExportExcelUtil {
                 
             }
         }
+        //处理其他消费相关信息后订单相关表头显示内容
         for (int n = otherPriceStart; n <= listWidth; n++) {
         	region = new Region((short)7,(short)n,(short)8,(short)n);
             sheet.addMergedRegion(region);
@@ -349,6 +352,7 @@ public class ExportExcelUtil {
         
         int innIndex = 9;
         int index = 1;//订单编号
+        //对订单列表内容进行填空
         if (!CollectionUtils.isEmpty(orderDtos)) {
             for (OrderParamDto order : orderDtos) {
                 Map innMap = order.toMap();
@@ -360,24 +364,26 @@ public class ExportExcelUtil {
                 for(int m=1;m<count;m++){
                 	sheet.createRow(innIndex+m);
                 }
+                //合并房型前的单元格
                 for(int m=0;m<listWidth-7;m++){
                 	region = new Region((short)innIndex,(short)(m),(short)(innIndex+count-1),(short)(m));
                     sheet.addMergedRegion(region);
                 }
+                //合并房间数后的单元格
                 for(int m=listWidth-5;m<=listWidth;m++){
                 	region = new Region((short)innIndex,(short)(m),(short)(innIndex+count-1),(short)(m));
                     sheet.addMergedRegion(region);
                 }
                 row.createCell(0).setCellValue(index);
                 for (int m = 1; m < 5; m++) {
-                    row.createCell(m).setCellValue(innMap.get(innDataMeta[m]) + "");// 设置每一个单元格的信息
+                    row.createCell(m).setCellValue(innMap.get(innDataMeta[m]) + "");// 设置其他消费前的单元格信息
                 }
                 for (int m = listWidth-6; m <= listWidth; m++) {
                 	if(m == listWidth-1 && innMap.get("operator") == null){
                 		row.createCell(m).setCellValue("系统");
                 		continue;
                 	}
-                	row.createCell(m).setCellValue(innMap.get(innDataMeta[m-listWidth+12]) + "");// 设置每一个单元格的信息
+                	row.createCell(m).setCellValue(innMap.get(innDataMeta[m-listWidth+12]) + "");// 设置其他消费后的单元格信息
                 }
                 for(OrderOtherPrice item : order.getOrderOtherPriceList()){
                 	//其他消费数量在对应的单元格填空
@@ -387,6 +393,7 @@ public class ExportExcelUtil {
                 }
                 Integer totalLocate = null;
                 Integer totalCost = null;
+                //对其他消费的统计填空
                 if(order.getOtherTotalCost() != null){
                 	  for(OrderOtherPrice item : order.getOtherTotalCost()){
                       	totalLocate = map.get(item.getConsumerProjectName()+"合计");
@@ -397,6 +404,7 @@ public class ExportExcelUtil {
                 }
                 int m = innIndex;
                 order.getDailyInfoses().remove(null);
+                //对房间名和房间数填空
                 for(DailyInfos daily: order.getDailyInfoses()){
                 	if(daily.getRoomTypeName() != null){
                     	sheet.getRow(m).createCell(listWidth-7).setCellValue(daily.getRoomTypeName());

@@ -37,7 +37,7 @@ public class MsgConsumer implements MsgEventListener {
     @Override
     public void onEvent(MsgEvent msgEvent) {
         JSONObject jsonObject = JSON.parseObject(msgEvent.getSource().toString());
-//        eventFactory.pushEvent(jsonObject);
+        eventFactory.pushEvent(jsonObject);
     }
 
     public void setSystemName(String systemName) {
