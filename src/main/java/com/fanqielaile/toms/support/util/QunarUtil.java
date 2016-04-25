@@ -12,6 +12,7 @@ import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OrderGuests;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -115,10 +116,12 @@ public class QunarUtil {
                     for (Element element : customer) {
                         OrderGuests guests = new OrderGuests();
                         guests.setOrderId(order.getId());
-                        guests.setFirstName(element.elementText("firstName"));
-                        guests.setLastName(element.elementText("lastName"));
-                        guests.setNationality(element.elementText("nationality"));
-                        guests.setRoomPos(Integer.parseInt(element.elementText("seq")));
+                        guests.setFirstName(element.attributeValue("firstName"));
+                        guests.setLastName(element.attributeValue("lastName"));
+                        guests.setNationality(element.attributeValue("nationality"));
+                        if (StringUtils.isNotEmpty(element.attributeValue("seq"))) {
+                            guests.setRoomPos(Integer.parseInt(element.attributeValue("seq")));
+                        }
                         guests.setName(guests.getFirstName() + guests.getLastName());
                         result.add(guests);
                     }
@@ -141,92 +144,24 @@ public class QunarUtil {
         List<Date> dateList = DateUtil.getDateEntrysByDifferenceDate(order.getLiveTime(), order.getLeaveTime());
         //得到每日价格数组
         String priceString = room.attributeValue("prices");
-        String prices[] = priceString.split("|");
-        for (int i = 0; i < dateList.size(); i++) {
+        String prices[] = priceString.split("\\|");
+        for (int i = 0; i < prices.length; i++) {
             DailyInfos infos = new DailyInfos();
             infos.setRoomTypeName(order.getRoomTypeName());
             infos.setRoomTypeNums(order.getHomeAmount());
             infos.setOrderId(order.getId());
-            infos.setBasicPrice(BigDecimal.valueOf(Long.parseLong(prices[i])));
-            infos.setPrice(infos.getBasicPrice());
-            infos.setRoomTypeId(order.getRoomTypeId());
-            infos.setDay(dateList.get(i));
-            dailyInfosList.add(infos);
+            if (StringUtils.isNotEmpty(prices[i])) {
+                infos.setBasicPrice(BigDecimal.valueOf(Long.parseLong(prices[i])));
+                infos.setPrice(infos.getBasicPrice());
+                infos.setRoomTypeId(order.getRoomTypeId());
+                infos.setDay(dateList.get(i));
+                dailyInfosList.add(infos);
+            }
         }
         return dailyInfosList;
     }
 
 
-    public static void main(String[] args) {
-        String xml = "<bookingRequest>\n" +
-                "\n" +
-                "    <hotelId>16166</hotelId>\n" +
-                "    <checkin>2015-02-20</checkin>\n" +
-                "    <checkout>2015-02-22</checkout>\n" +
-                "\n" +
-                "    <totalPrice>380</totalPrice><!--  totalPrices = sum(prices) - promotionRule[@code=INSTANT_SUBTRACT]/value  -->\n" +
-                "    <currencyCode>USD</currencyCode>\n" +
-                "    <rmbPrice>2356.87</rmbPrice>\n" +
-                "    <customerArriveTime>16:00-18:00</customerArriveTime>\n" +
-                "    <specialRemarks>PREFER_NON_SMOKING,PREFER_HIGH_FLOOR</specialRemarks> <!-- preference from consumer -->\n" +
-                "\n" +
-                "    <numberOfRooms>2</numberOfRooms>\n" +
-                "    <bedChoice>1</bedChoice>\n" +
-                "    <instantConfirm>false</instantConfirm>\n" +
-                "    <requiredAction>CONFIRM_ROOM_SUCCESS/CONFIRM_ROOM_FAILURE</requiredAction>\n" +
-                "\n" +
-                "    <room id=\"9986\" name=\"特色房\" broadband=\"FREE\" payType=\"PREPAY\" prices=\"200|200\" status=\"ACTIVE|ACTIVE\" counts=\"5|5\" \n" +
-                "        roomRate=\"180|180\" taxAndFee=\"20|20\" maxOccupancy=\"2\" occupancyNumber=\"2\"\n" +
-                "        freeChildrenNumber=\"1\" freeChildrenAgeLimit=\"8\" instantConfirmRoomCount=\"3|3\" wifi=\"FREE\" \n" +
-                "        checkinTime=\"\" checkoutTime=\"\" area=\"\" >\n" +
-                "\n" +
-                "      <bedType>\n" +
-                "            <beds seq=\"1\" code=\"SINGLE\" desc=\"单人床\" count=\"2\" size=\"1.2m*2m\" >\n" +
-                "            </beds>\n" +
-                "      </bedType>\n" +
-                "      <meal>\n" +
-                "            <breakfast count=\"2|2\" desc=\"self-service breakfast\" />\n" +
-                "            <lunch count=\"0|0\" desc=\"\" />\n" +
-                "            <dinner count=\"0|0\" desc=\"\" />\n" +
-                "      </meal>\n" +
-                "      <promotionRules>\n" +
-                "        <promotionRule code=\"INSTANT_DEDUCT\" desc=\"立减\" value=\"20\"></promotionRule>\n" +
-                "      </promotionRules>\n" +
-                "    </room>\n" +
-                "\n" +
-                "    <customerInfos>\n" +
-                "            <customerInfo seq=\"1\" numberOfAdults=\"2\" numberOfChildren=\"2\" childrenAges=\"8|12\" >\n" +
-                "                <customer firstName=\"Deng\" lastName=\"Ziqiang\" nationality=\"CN\" gender=\"male\" />\n" +
-                "                <customer firstName=\"Li\" lastName=\"Xuejuan\" nationality=\"CN\" gender=\"female\" />\n" +
-                "                <customer firstName=\"Child\" lastName=\"One\" nationality=\"CN\" gender=\"female\" />\n" +
-                "            </customerInfo>\n" +
-                "            <customerInfo seq=\"2\" numberOfAdults=\"2\" numberOfChildren=\"0\" childrenAges=\"\" >\n" +
-                "                <customer firstName=\"Li\" lastName=\"XoXo\" nationality=\"CN\" gender=\"male\" />\n" +
-                "                <customer firstName=\"Sun\" lastName=\"MoMo\" nationality=\"CN\" gender=\"female\" />\n" +
-                "            </customerInfo>\n" +
-                "    </customerInfos>\n" +
-                "\n" +
-                "    <qunarOrderInfo>\n" +
-                "        <orderNum>j3gm141219163017759</orderNum><!-- unique order id at Qunar  -->\n" +
-                "        <hotelSeq>osaka_2202</hotelSeq><!-- unique id for a hotel at Qunar -->\n" +
-                "        <hotelName>阪急阪神大阪国际酒店(Hotel Hankyu International)</hotelName>\n" +
-                "        <hotelAddress>19-19, Chayamachi, Kita-ku, Osaka 530-0013, Japan</hotelAddress>\n" +
-                "        <cityName>大阪</cityName>\n" +
-                "        <hotelPhone>0081-6-63772100</hotelPhone>\n" +
-                "        <orderDate>2014-12-19 16:30:17</orderDate>\n" +
-                "        <contactName>张三</contactName>\n" +
-                "        <contactPhone>1381****818</contactPhone>\n" +
-                "        <contactEmail>miao.****@qunar.com</contactEmail>\n" +
-                "        <payType>PREPAY</payType>\n" +
-                "        <customerIp>103.24.27.9</customerIp>\n" +
-                "        <invoiceCode>E</invoiceCode><!-- N=no require Y=paper invoice E=electronic receipt -->\n" +
-                "\n" +
-                "    </qunarOrderInfo>\n" +
-                "\n" +
-                "</bookingRequest>";
-
-        getOrderDto(xml);
-    }
 
     /**
      * 去哪儿取消订单，解析传入参数

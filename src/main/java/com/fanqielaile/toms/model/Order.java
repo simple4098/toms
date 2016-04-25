@@ -1212,4 +1212,19 @@ public class Order extends Domain {
 	public void setOtherTotalCost(List<OrderOtherPrice> otherTotalCost) {
 		this.otherTotalCost = otherTotalCost;
 	}
+
+    /**
+     * 转换order为异常订单
+     *
+     * @param order
+     * @return
+     */
+    public Order getExceptionOrderListByOrder(Order order) {
+        List<ExceptionOrder> exceptionOrders = new ArrayList<>();
+        ExceptionOrder exceptionOrder = new ExceptionOrder();
+        exceptionOrder.setOrderId(order.getId());
+        exceptionOrders.add(exceptionOrder);
+        order.setExceptionOrderList(exceptionOrders);
+        return order;
+    }
 }
