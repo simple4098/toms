@@ -249,9 +249,11 @@ public interface IOrderService {
      * @param currentUser
      * @param orderParamDto
      * @param response
+     * @param selectedOperators 
+     * @param operatorsJson 
      * @throws Exception
      */
-    void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response) throws Exception;
+    void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators) throws Exception;
 
     /**
      * 取消订单
@@ -370,8 +372,9 @@ public interface IOrderService {
      * @param orderParamDto
 	 * @param currentUser 
 	 * @param operatorsJson 
+	 * @param selectedOperators 
      */
-	void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsJson);
+	void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsJson, String selectedOperators);
 	
 	/**
      * 根据订单id,统计该订单其他消费的成本

@@ -358,6 +358,9 @@ public class ExportExcelUtil {
                 Map innMap = order.toMap();
 //                order.getDailyInfoses().remove(null);
                 int count = order.getDailyInfoses().size();
+                if(count == 0){
+                	count = 1;
+                }
 //                List<OrderOtherPrice> otherTotalCost = orderService.statisticsOrderOtherPrice(order.getId());
 //                BigDecimal profit = orderService.countOrderProfit(order, otherTotalCost);
                 row = sheet.createRow(innIndex);// 设置下一行数据
@@ -378,7 +381,7 @@ public class ExportExcelUtil {
                 for (int m = 1; m < 5; m++) {
                     row.createCell(m).setCellValue(innMap.get(innDataMeta[m]) + "");// 设置其他消费前的单元格信息
                 }
-                for (int m = listWidth-6; m <= listWidth; m++) {
+                for (int m = listWidth-5; m <= listWidth; m++) {
                 	if(m == listWidth-1 && innMap.get("operator") == null){
                 		row.createCell(m).setCellValue("系统");
                 		continue;
@@ -396,22 +399,30 @@ public class ExportExcelUtil {
                 //对其他消费的统计填空
                 if(order.getOtherTotalCost() != null){
                 	  for(OrderOtherPrice item : order.getOtherTotalCost()){
-                      	totalLocate = map.get(item.getConsumerProjectName()+"合计");
-                      	totalCost = totalLocate + 1;
-                      	row.createCell(totalLocate.shortValue()).setCellValue(item.getNums());
-                      	row.createCell(totalCost.shortValue()).setCellValue(item.getTotalCost().floatValue());
+						if (item != null && item.getConsumerProjectName() != null) {
+							totalLocate = map.get(item.getConsumerProjectName() + "合计");
+							totalCost = totalLocate + 1;
+							row.createCell(totalLocate.shortValue()).setCellValue(item.getNums());
+							if(item.getTotalCost() != null){
+								row.createCell(totalCost.shortValue()).setCellValue(item.getTotalCost().floatValue());
+							}
+						}
                       }
                 }
                 int m = innIndex;
                 order.getDailyInfoses().remove(null);
                 //对房间名和房间数填空
                 for(DailyInfos daily: order.getDailyInfoses()){
-                	if(daily.getRoomTypeName() != null){
+                	if(daily.getRoomTypeName() != null && daily.getRoomTypeNums() != null){
                     	sheet.getRow(m).createCell(listWidth-7).setCellValue(daily.getRoomTypeName());
-                	}
-                	if(daily.getRoomTypeNums() != null){
                     	sheet.getRow(m).createCell(listWidth-6).setCellValue(daily.getRoomTypeNums());
                 	}
+//                	if(daily.getRoomTypeName() != null){
+//                    	sheet.getRow(m).createCell(listWidth-7).setCellValue(daily.getRoomTypeName());
+//                	}
+//                	if(daily.getRoomTypeNums() != null){
+//                    	sheet.getRow(m).createCell(listWidth-6).setCellValue(daily.getRoomTypeNums());
+//                	}
                 	m++;
                 	innIndex++;
                 }
