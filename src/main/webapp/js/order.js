@@ -106,10 +106,10 @@ $('.btn-order').on('click', function () {
                 }
                 $("#orderPrice").html(tatalPrice+"/"+data.order.prepayPrice)
                 $("#profit").html(data.profit);
-                if(data.operator == null){
+                if(data.order.operator == null){
                     $("#operator").html("系统");
                 }else{
-                    $("#operator").html(data.operator);
+                    $("#operator").html(data.order.operator);
                 }
                 $("#costPrice").html(data.order.costPrice)
                 if(data.otherTotalCost && data.otherTotalCost.length) {
