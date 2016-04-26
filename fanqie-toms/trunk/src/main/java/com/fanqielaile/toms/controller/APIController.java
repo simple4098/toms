@@ -120,6 +120,9 @@ public class APIController extends BaseController {
             @Override
             public void run() {
                 List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
+                if (StringUtils.isNotEmpty(tbParam.getCompanyCode())){
+                    infoDtoList = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
+                }
                 try {
                     ITPService service = null;
                     for (OtaInfoRefDto o:infoDtoList){

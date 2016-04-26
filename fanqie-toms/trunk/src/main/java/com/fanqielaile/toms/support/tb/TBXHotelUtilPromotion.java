@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -451,6 +452,8 @@ public class TBXHotelUtilPromotion {
         if (!CollectionUtils.isEmpty(roomTypeInfo.getRoomDetail())){
             InventoryPrice inventory = new InventoryPrice();
             List<InventoryRate> rateList = TomsUtil.inventory(roomTypeInfo.getRoomDetail(), priceDto, priceModelDto, commission);
+            //todo 信用住关房
+            roomRateZero(infoRefDto,rateList);
             inventory.setInventory_price(rateList);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
@@ -466,6 +469,24 @@ public class TBXHotelUtilPromotion {
         }
         return  null;
     }
+
+    public static  void roomRateZero(OtaInfoRefDto otaInfoRefDto,List<InventoryRate> rateList){
+        if (StringUtils.isNotEmpty(otaInfoRefDto.getVendorId())){
+            String creditSwitchDate = PropertiesUtil.readFile("/data.properties", "credit.switch.room");
+            if (StringUtils.isNotEmpty(creditSwitchDate)){
+                String[] split = creditSwitchDate.split(",");
+                List<String> dateList = Arrays.asList(split);
+                for (InventoryRate inventoryRate:rateList){
+                    boolean b = dateList.contains(inventoryRate.getDate());
+                    if (b){
+                        inventoryRate.setQuota(0);
+                    }
+                }
+
+            }
+        }
+    }
+
     /**
      * 获取库存
      * @param company
@@ -645,6 +666,8 @@ public class TBXHotelUtilPromotion {
             InventoryPrice inventoryPrice = new InventoryPrice();
             InventoryPriceIncrement ratePrice = null;
             List<InventoryPriceIncrement> ratePriceList = new ArrayList<InventoryPriceIncrement>();
+           /* Inventory inventory = null;*/
+            /*List<Inventory>  inventoryList = new ArrayList<Inventory>();*/
             double price = 0;
             Double value = null;
             Date startDate = null;
@@ -681,6 +704,8 @@ public class TBXHotelUtilPromotion {
             inventoryPriceIncrementObj.setData(inventoryPrice);
             String obj2json = JacksonUtil.obj2json(inventoryPriceIncrementObj);
             log.info("================================及时推送价格==============================");
+            log.info("["+obj2json+"]");
+
             TaobaoClient client = new DefaultTaobaoClient(CommonApi.TB_URL, otaInfoRefDto.getAppKey(), otaInfoRefDto.getAppSecret());
             XhotelRatesIncrementRequest req = new XhotelRatesIncrementRequest();
             req.setRateInventoryPriceMap("[" + obj2json + "]");
@@ -689,8 +714,6 @@ public class TBXHotelUtilPromotion {
             log.info("rate.update response"+JacksonUtil.obj2json(rsp));
             if (CollectionUtils.isEmpty(rsp.getGidAndRpids()) ){
                 throw  new TomsRuntimeException(rsp.getMsg());
-            }else {
-                log.info("更新成功"+rsp.getGidAndRpids());
             }
         }
     }
