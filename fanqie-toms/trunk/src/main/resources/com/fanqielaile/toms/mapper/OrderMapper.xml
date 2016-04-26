@@ -300,13 +300,20 @@
     </sql>
     <select id="statisticsOrderData" resultType="com.fanqielaile.toms.dto.OrderStatisticsDto">
        SELECT
-			sum(date_part('day', oto.leave_time - oto.live_time)) as orderNightNumber,
+			sum(date_part('day', oto.leave_time - oto.live_time)*odi.room_type_nums) as orderNightNumber,
 			sum(oto.prepay_price) as totalPrice,
 			sum(oto.cost_price) as totalCostPrice
 		FROM
 			ota_toms_order oto
 		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
 			AND oto.company_id = bi.company_id
+		left join(
+			select 
+				order_id,
+				sum(COALESCE(room_type_nums,0)) room_type_nums 
+			from ota_daily_infos odi
+			group by odi.order_id
+		) odi on oto.id = odi.order_id 
         <include refid="selectOrderFilter"></include>
     </select>
     <select id="statisticsOtherConsumer" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
