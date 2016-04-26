@@ -1436,7 +1436,7 @@ public class OrderService implements IOrderService {
     private void updateQunarOrderStatus(OrderParamDto order, OptCode optCode, BigDecimal money) throws IOException {
         OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.QUNAR.name());
         OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInfoRefDto.getOtaInfoId());
-        String response = HttpClientUtil.httpGetQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), optCode.name(), otaInfo.getSessionKey(), money);
+        String response = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), optCode.name(), otaInfo.getSessionKey(), money);
         logger.info("去哪儿取消订单调用更新订单状态接口返回值：订单号为：" + order.getChannelOrderCode() + "," + response);
     }
 

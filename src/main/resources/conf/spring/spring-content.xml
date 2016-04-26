@@ -9,92 +9,91 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
                            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
-       <context:component-scan base-package="com.fanqielaile.toms" use-default-filters="true">
-              <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-       </context:component-scan>
-       <context:annotation-config/>
+    <context:component-scan base-package="com.fanqielaile.toms" use-default-filters="true">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <context:annotation-config/>
     <context:property-placeholder location="classpath:config.properties"/>
-      <!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-              <property name="locations">
-                     <list>
-                            <value>classpath:conf/properties/datasource.properties</value>
-                     </list>
-              </property>
-       </bean>-->
+    <!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+            <property name="locations">
+                   <list>
+                          <value>classpath:conf/properties/datasource.properties</value>
+                   </list>
+            </property>
+     </bean>-->
 
-       <bean class="org.springframework.context.support.ResourceBundleMessageSource" id="messageSource"
-             p:basenames="message"/>
+    <bean class="org.springframework.context.support.ResourceBundleMessageSource" id="messageSource"
+          p:basenames="message"/>
 
 
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
-       <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-              <property name="dataSource" ref="dataSource"/>
-       </bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:conf/mybatis/sqlMapConfig.xml"/>
+        <property name="mapperLocations" value="classpath:com/fanqielaile/toms/mapper/*.xml"/>
+        <property name="plugins">
+            <ref bean="paginationInterceptor"></ref>
+        </property>
+    </bean>
+    <bean id="paginationInterceptor" class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+        <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.PostgreSQLDialect"/>
+    </bean>
+    <bean class="org.mybatis.spring.SqlSessionTemplate" id="templateDc">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
 
-       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-              <property name="dataSource" ref="dataSource"/>
-              <property name="configLocation" value="classpath:conf/mybatis/sqlMapConfig.xml"/>
-              <property name="mapperLocations" value="classpath:com/fanqielaile/toms/mapper/*.xml"/>
-              <property name="plugins">
-                     <ref bean="paginationInterceptor"></ref>
-              </property>
-       </bean>
-       <bean id="paginationInterceptor" class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
-              <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.PostgreSQLDialect"/>
-       </bean>
-       <bean class="org.mybatis.spring.SqlSessionTemplate" id="templateDc">
-              <constructor-arg index="0" ref="sqlSessionFactory" />
-       </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.fanqielaile.toms.dao"/>
+    </bean>
 
-       <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
-              <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-              <property name="basePackage" value="com.fanqielaile.toms.dao"/>
-       </bean>
+    <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="append*" propagation="REQUIRED"/>
+            <tx:method name="insert*" propagation="REQUIRED"/>
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="validated*" propagation="REQUIRED"/>
+            <tx:method name="modify*" propagation="REQUIRED"/>
+            <tx:method name="edit*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="remove*" propagation="REQUIRED"/>
+            <tx:method name="repair" propagation="REQUIRED"/>
+            <tx:method name="delAndRepair" propagation="REQUIRED"/>
 
-       <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
-       <tx:advice id="txAdvice" transaction-manager="transactionManager">
-              <tx:attributes>
-                     <tx:method name="add*" propagation="REQUIRED" />
-                     <tx:method name="append*" propagation="REQUIRED" />
-                     <tx:method name="insert*" propagation="REQUIRED" />
-                     <tx:method name="save*" propagation="REQUIRED" />
-                     <tx:method name="update*" propagation="REQUIRED" />
-                     <tx:method name="validated*" propagation="REQUIRED" />
-                     <tx:method name="modify*" propagation="REQUIRED" />
-                     <tx:method name="edit*" propagation="REQUIRED" />
-                     <tx:method name="delete*" propagation="REQUIRED" />
-                     <tx:method name="remove*" propagation="REQUIRED" />
-                     <tx:method name="repair" propagation="REQUIRED" />
-                     <tx:method name="delAndRepair" propagation="REQUIRED" />
+            <tx:method name="get*" propagation="SUPPORTS"/>
+            <tx:method name="find*" propagation="SUPPORTS"/>
+            <tx:method name="load*" propagation="SUPPORTS"/>
+            <tx:method name="search*" propagation="SUPPORTS"/>
+            <tx:method name="datagrid*" propagation="SUPPORTS"/>
 
-                     <tx:method name="get*" propagation="SUPPORTS" />
-                     <tx:method name="find*" propagation="SUPPORTS" />
-                     <tx:method name="load*" propagation="SUPPORTS" />
-                     <tx:method name="search*" propagation="SUPPORTS" />
-                     <tx:method name="datagrid*" propagation="SUPPORTS" />
+            <tx:method name="*" propagation="SUPPORTS"/>
+        </tx:attributes>
+    </tx:advice>
 
-                     <tx:method name="*" propagation="SUPPORTS" />
-              </tx:attributes>
-       </tx:advice>
+    <aop:config proxy-target-class="true">
+        <aop:pointcut id="serviceMethods" expression="execution(public * com.fanqielaile.toms.service.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
+    </aop:config>
 
-       <aop:config proxy-target-class="true">
-              <aop:pointcut id="serviceMethods" expression="execution(public * com.fanqielaile.toms.service.*.*(..))"/>
-              <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
-       </aop:config>
-
-       <bean id="multipartResolver"
-             class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-              <property name="maxUploadSize">
-                     <value>32212254720</value>
-              </property>
-              <property name="maxInMemorySize">
-                     <value>4096</value>
-              </property>
-       </bean>
-       <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <value>32212254720</value>
+        </property>
+        <property name="maxInMemorySize">
+            <value>4096</value>
+        </property>
+    </bean>
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
-    <property name="connectionFactory"   ref="connectionFactory" />
+        <property name="connectionFactory" ref="connectionFactory"/>
     </bean>
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <!--是否启用后进先出, 默认true-->
@@ -110,165 +109,184 @@
         <property name="testWhileIdle" value="true"></property>
     </bean>
 
-    <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton" />
-       <beans profile="dev">
-              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-                     <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url" value="jdbc:postgresql://192.168.1.17:5432/dc_pms?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
-                     <property name="username" value="ota"/>
-                     <property name="password" value="ota"/>
-                     <property name="maxWait" value="1000" />
-                     <property name="initialSize" value="5" />
-                     <property name="maxActive" value="20" />
-                     <property name="testWhileIdle" value="false" />
-                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
-                     <property name="removeAbandoned" value="true" />
-                     <property name="removeAbandonedTimeout" value="1800" />
-                     <property name="validationQuery" value="select 1"/>
-              </bean>
-           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-               <constructor-arg name="systemName" value="TOMS_DEV"></constructor-arg>
-           </bean>
-           <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-               <property name="hostName" value="192.168.1.159"/>
-               <property name="port" value="6379"/>
-               <property name="password" value="111111"/>
-               <property name="database" value="0"/>
-               <property name="poolConfig" ref="jedisPoolConfig"></property>
-           </bean>
-          <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">
-               <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
-               <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
-               <property name="KF" value="http://dc.fanqiele.com/api/toms/obtCustomerNum.json"></property>
-               <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
-               <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
-               <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
-               <property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
-               <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
-               <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
-               <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
-               <property name="imgUrl" value="http://img.fanqiele.com"></property>
-           </bean>-->
-           <bean class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
-                     <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
-                     <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
-                     <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
-                     <property name="roomType" value="http://oms.local.fanqiele.com/api/queryRoomType"></property>
-                     <property name="checkRoom" value="http://oms.local.fanqiele.com/api/check_room_avail"></property>
-                     <property name="innInfo" value="http://oms.local.fanqiele.com/api/queryInn"></property>
-                     <property name="roomStatus" value="http://oms.local.fanqiele.com/api/queryRoomStatus"></property>
-                     <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-                     <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
-                     <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
-                     <property name="sellingRoomType" value="http://oms.local.fanqiele.com/api/getSellingRoomType"></property>
-                     <property name="ProxySaleList" value="http://oms.local.fanqiele.com/api/queryProxySaleList"></property>
-                     <property name="imgUrl" value="http://img.fanqiele.com"></property>
-                     <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
-                     <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
-                     <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
-                     <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
-                     <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
-                     <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
-                     <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
-                     <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
-                     <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
-              </bean>
-       </beans>
-       <beans profile="staging">
-              <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-                     <property name="driverClassName" value="org.postgresql.Driver"/>
-                     <property name="url"  value="jdbc:postgresql://10.163.227.13:9999/oms_db"/>
-                     <property name="username" value="ota"/>
-                     <property name="password" value="ota@fanqie.COM888"/>
-                     <property name="maxWait" value="1000" />
-                     <property name="initialSize" value="5" />
-                     <property name="maxActive" value="20" />
-                     <property name="testWhileIdle" value="false" />
-                     <property name="timeBetweenEvictionRunsMillis" value="15000" />
-                     <property name="removeAbandoned" value="true" />
-                     <property name="removeAbandonedTimeout" value="1800" />
-                     <property name="validationQuery" value="select 1"/>
-              </bean>
-           <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-               <property name="hostName" value="10.144.10.151"/>
-               <property name="port" value="6379"/>
-               <property name="password" value="mfgkftoajpvH3lds8ykgcnzeWcaAuwhlo0lqzqsappsfacjfenwqiJtadydqwfjrN2obv3xrmfoV6l5jl2ofwgPqndqaemcuppgYkzK4fotunwlznjhb1opvaiaozaYq"/>
-               <property name="database" value="10"/>
-               <property name="poolConfig" ref="jedisPoolConfig"></property>
-           </bean>
-           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-               <constructor-arg name="systemName" value="TOMS_STAGING"></constructor-arg>
-           </bean>
-              <bean  class="com.fanqielaile.toms.common.CommonApi">
-                     <property name="QS" value="http://dc.test.fanqiele.com/api/toms/operate.json"></property>
-                     <property name="QSDetail" value="http://dc.test.fanqiele.com/api/toms/opeDetail.json"></property>
-                     <property name="KF" value="http://dc.test.fanqiele.com/api/toms/obtCustomerNum.json"></property>
-                     <property name="kfD" value="http://dc.test.fanqiele.com/api/toms/customer.json"></property>
-                     <property name="ORDER" value="http://dc.test.fanqiele.com/api/toms/order.json"></property>
-                     <property name="ActiveInn" value="http://dc.test.fanqiele.com/api/toms/innActive.json"></property>
-                     <property name="roomType" value="http://openapi.test.fanqielaile.com/api/queryRoomType"></property>
-                     <property name="checkRoom" value="http://openapi.test.fanqielaile.com/api/check_room_avail"></property>
-                     <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/queryInn"></property>
-                  <property name="roomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
-                  <property name="sellingRoomType" value="http://openapi.test.fanqielaile.com/api/getSellingRoomType"></property>
-                     <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
-                  <property name="pmsOrderStatus" value="http://pms.test.fanqiele.com/api/book"></property>
-                  <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
-                    <property name="ProxySaleList" value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
-                    <property name="imgUrl" value="http://img.test.fanqiele.com"></property>
-                  <property name="proxyOtaPercent" value="http://115.28.149.182:8282/proxysale/api/channel/"></property>
-                  <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
-                  <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
-                  <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
-                  <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
-                  <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
-                  <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
-                  <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
-                  <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
+    <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton"/>
+    <beans profile="dev">
+        <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
+              destroy-method="close">
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url"
+                      value="jdbc:postgresql://192.168.1.17:5432/dc_pms?autoReconnectForPools=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull"/>
+            <property name="username" value="ota"/>
+            <property name="password" value="ota"/>
+            <property name="maxWait" value="1000"/>
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="20"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="15000"/>
+            <property name="removeAbandoned" value="true"/>
+            <property name="removeAbandonedTimeout" value="1800"/>
+            <property name="validationQuery" value="select 1"/>
+        </bean>
+        <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+            <constructor-arg name="systemName" value="TOMS_DEV_011"></constructor-arg>
+        </bean>
+        <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="hostName" value="192.168.1.159"/>
+            <property name="port" value="6379"/>
+            <property name="password" value="111111"/>
+            <property name="database" value="0"/>
+            <property name="poolConfig" ref="jedisPoolConfig"></property>
+        </bean>
+        <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">
+             <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
+             <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
+             <property name="KF" value="http://dc.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+             <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
+             <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
+             <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
+             <property name="roomType" value="http://oms.fanqiele.com/api/getRoomType"></property>
+             <property name="innInfo" value="http://oms.fanqiele.com/api/getInnInfo"></property>
+             <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
+             <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
+             <property name="imgUrl" value="http://img.fanqiele.com"></property>
+         </bean>-->
+        <bean class="com.fanqielaile.toms.common.CommonApi">
+            <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
+            <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
+            <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
+            <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
+            <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
+            <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
+            <property name="roomType" value="http://oms.local.fanqiele.com/api/queryRoomType"></property>
+            <property name="checkRoom" value="http://oms.local.fanqiele.com/api/check_room_avail"></property>
+            <property name="innInfo" value="http://oms.local.fanqiele.com/api/queryInn"></property>
+            <property name="roomStatus" value="http://oms.local.fanqiele.com/api/queryRoomStatus"></property>
+            <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
+            <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
+            <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+            <property name="sellingRoomType" value="http://oms.local.fanqiele.com/api/getSellingRoomType"></property>
+            <property name="ProxySaleList" value="http://oms.local.fanqiele.com/api/queryProxySaleList"></property>
+            <property name="imgUrl" value="http://img.fanqiele.com"></property>
+            <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
+            <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
+            <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
+            <property name="fcAddRoomTypeMappingUrl"
+                      value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
+            <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
+            <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
+            <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
+            <property name="FcDeleteRoomTypeUrl"
+                      value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
+            <property name="FcDeleteHotelMappingUrl"
+                      value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
+            <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
+        </bean>
+    </beans>
+    <beans profile="staging">
+        <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
+              destroy-method="close">
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url" value="jdbc:postgresql://10.163.227.13:9999/oms_db"/>
+            <property name="username" value="ota"/>
+            <property name="password" value="ota@fanqie.COM888"/>
+            <property name="maxWait" value="1000"/>
+            <property name="initialSize" value="5"/>
+            <property name="maxActive" value="20"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="15000"/>
+            <property name="removeAbandoned" value="true"/>
+            <property name="removeAbandonedTimeout" value="1800"/>
+            <property name="validationQuery" value="select 1"/>
+        </bean>
+        <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="hostName" value="10.144.10.151"/>
+            <property name="port" value="6379"/>
+            <property name="password"
+                      value="mfgkftoajpvH3lds8ykgcnzeWcaAuwhlo0lqzqsappsfacjfenwqiJtadydqwfjrN2obv3xrmfoV6l5jl2ofwgPqndqaemcuppgYkzK4fotunwlznjhb1opvaiaozaYq"/>
+            <property name="database" value="10"/>
+            <property name="poolConfig" ref="jedisPoolConfig"></property>
+        </bean>
+        <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+            <constructor-arg name="systemName" value="TOMS_STAGING"></constructor-arg>
+        </bean>
+        <bean class="com.fanqielaile.toms.common.CommonApi">
+            <property name="QS" value="http://dc.test.fanqiele.com/api/toms/operate.json"></property>
+            <property name="QSDetail" value="http://dc.test.fanqiele.com/api/toms/opeDetail.json"></property>
+            <property name="KF" value="http://dc.test.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+            <property name="kfD" value="http://dc.test.fanqiele.com/api/toms/customer.json"></property>
+            <property name="ORDER" value="http://dc.test.fanqiele.com/api/toms/order.json"></property>
+            <property name="ActiveInn" value="http://dc.test.fanqiele.com/api/toms/innActive.json"></property>
+            <property name="roomType" value="http://openapi.test.fanqielaile.com/api/queryRoomType"></property>
+            <property name="checkRoom" value="http://openapi.test.fanqielaile.com/api/check_room_avail"></property>
+            <property name="innInfo" value="http://openapi.test.fanqielaile.com/api/queryInn"></property>
+            <property name="roomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"></property>
+            <property name="sellingRoomType"
+                      value="http://openapi.test.fanqielaile.com/api/getSellingRoomType"></property>
+            <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
+            <property name="pmsOrderStatus" value="http://pms.test.fanqiele.com/api/book"></property>
+            <!-- <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
+            <property name="ProxySaleList"
+                      value="http://openapi.test.fanqielaile.com/api/queryProxySaleList"></property>
+            <property name="imgUrl" value="http://img.test.fanqiele.com"></property>
+            <property name="proxyOtaPercent" value="http://115.28.149.182:8282/proxysale/api/channel/"></property>
+            <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
+            <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
+            <property name="fcAddRoomTypeMappingUrl"
+                      value="http://www.fangcang.org/USP/api_v1/addRoomTypeMapping"></property>
+            <property name="FcSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/syncRatePlan"></property>
+            <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.org/USP/api_v1/deleteRatePlan"></property>
+            <property name="FcSyncRateInfoUrl" value="http://www.fangcang.org/USP/api_v1/syncRateInfo"></property>
+            <property name="FcDeleteRoomTypeUrl"
+                      value="http://www.fangcang.org/USP/api_v1/deleteRoomTypeMapping"></property>
+            <property name="FcDeleteHotelMappingUrl"
+                      value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
+            <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
 
-              </bean>
-       </beans>
+        </bean>
+    </beans>
 
-       <beans profile="production">
-           <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
-           <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-               <constructor-arg name="systemName" value="TOMS_PRODUCTION"></constructor-arg>
-           </bean>
-           <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-               <property name="hostName" value="10.144.10.151"/>
-               <property name="port" value="6379"/>
-               <property name="password" value="mfgkftoajpvH3lds8ykgcnzeWcaAuwhlo0lqzqsappsfacjfenwqiJtadydqwfjrN2obv3xrmfoV6l5jl2ofwgPqndqaemcuppgYkzK4fotunwlznjhb1opvaiaozaYq"/>
-               <property name="database" value="11"/>
-               <property name="poolConfig" ref="jedisPoolConfig"></property>
-           </bean>
-              <bean  class="com.fanqielaile.toms.common.CommonApi">
-                  <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
-                  <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
-                  <property name="KF" value="http://dc.fanqiele.com/api/toms/obtCustomerNum.json"></property>
-                  <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
-                  <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
-                  <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
-                  <property name="roomType" value="http://oms.fanqiele.com/api/queryRoomType"></property>
-                  <property name="innInfo" value="http://oms.fanqiele.com/api/queryInn"></property>
-                  <property name="roomStatus" value="http://oms.fanqiele.com/api/queryRoomStatus"></property>
-                  <property name="checkRoom" value="http://oms.fanqiele.com/api/check_room_avail"></property>
-                  <property name="sellingRoomType" value="http://oms.fanqiele.com/api/getSellingRoomType"></property>
-                  <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
-                  <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
-                  <property name="imgUrl" value="http://img.fanqiele.com"></property>
-                  <property name="pmsOrderStatus" value="http://www.fanqiele.com/api/book"></property>
-                  <property name="proxyOtaPercent" value="http://www.afanqie.com/proxysale/api/channel/"></property>
-                  <property name="fcHotelInfo" value="http://www.fangcang.com/USP/api_v1/getHotelInfo"></property>
-                  <property name="fcAddHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/addHotelMapping"></property>
-                  <property name="fcAddRoomTypeMappingUrl" value="http://www.fangcang.com/USP/api_v1/addRoomTypeMapping"></property>
-                  <property name="FcSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/syncRatePlan"></property>
-                  <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/deleteRatePlan"></property>
-                  <property name="FcSyncRateInfoUrl" value="http://www.fangcang.com/USP/api_v1/syncRateInfo"></property>
-                  <property name="FcDeleteRoomTypeUrl" value="http://www.fangcang.com/USP/api_v1/deleteRoomTypeMapping"></property>
-                  <property name="FcDeleteHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
-              </bean>
-       </beans>
+    <beans profile="production">
+        <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/tomato-toms"/>
+        <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
+            <constructor-arg name="systemName" value="TOMS_PRODUCTION"></constructor-arg>
+        </bean>
+        <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+            <property name="hostName" value="10.144.10.151"/>
+            <property name="port" value="6379"/>
+            <property name="password"
+                      value="mfgkftoajpvH3lds8ykgcnzeWcaAuwhlo0lqzqsappsfacjfenwqiJtadydqwfjrN2obv3xrmfoV6l5jl2ofwgPqndqaemcuppgYkzK4fotunwlznjhb1opvaiaozaYq"/>
+            <property name="database" value="11"/>
+            <property name="poolConfig" ref="jedisPoolConfig"></property>
+        </bean>
+        <bean class="com.fanqielaile.toms.common.CommonApi">
+            <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
+            <property name="QSDetail" value="http://dc.fanqiele.com/api/toms/opeDetail.json"></property>
+            <property name="KF" value="http://dc.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+            <property name="kfD" value="http://dc.fanqiele.com/api/toms/customer.json"></property>
+            <property name="ORDER" value="http://dc.fanqiele.com/api/toms/order.json"></property>
+            <property name="ActiveInn" value="http://dc.fanqiele.com/api/toms/innActive.json"></property>
+            <property name="roomType" value="http://oms.fanqiele.com/api/queryRoomType"></property>
+            <property name="innInfo" value="http://oms.fanqiele.com/api/queryInn"></property>
+            <property name="roomStatus" value="http://oms.fanqiele.com/api/queryRoomStatus"></property>
+            <property name="checkRoom" value="http://oms.fanqiele.com/api/check_room_avail"></property>
+            <property name="sellingRoomType" value="http://oms.fanqiele.com/api/getSellingRoomType"></property>
+            <property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>
+            <property name="ProxySaleList" value="http://oms.fanqiele.com/api/queryProxySaleList"></property>
+            <property name="imgUrl" value="http://img.fanqiele.com"></property>
+            <property name="pmsOrderStatus" value="http://www.fanqiele.com/api/book"></property>
+            <property name="proxyOtaPercent" value="http://www.afanqie.com/proxysale/api/channel/"></property>
+            <property name="fcHotelInfo" value="http://www.fangcang.com/USP/api_v1/getHotelInfo"></property>
+            <property name="fcAddHotelMappingUrl" value="http://www.fangcang.com/USP/api_v1/addHotelMapping"></property>
+            <property name="fcAddRoomTypeMappingUrl"
+                      value="http://www.fangcang.com/USP/api_v1/addRoomTypeMapping"></property>
+            <property name="FcSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/syncRatePlan"></property>
+            <property name="FcDelSyncRatePlanUrl" value="http://www.fangcang.com/USP/api_v1/deleteRatePlan"></property>
+            <property name="FcSyncRateInfoUrl" value="http://www.fangcang.com/USP/api_v1/syncRateInfo"></property>
+            <property name="FcDeleteRoomTypeUrl"
+                      value="http://www.fangcang.com/USP/api_v1/deleteRoomTypeMapping"></property>
+            <property name="FcDeleteHotelMappingUrl"
+                      value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
+            <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
+        </bean>
+    </beans>
 </beans>

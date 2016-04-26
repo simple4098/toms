@@ -73,7 +73,7 @@ public class QunarUtil {
             order.setOTAHotelId(element.elementText("hotelId"));
             order.setLiveTime(DateUtil.parse(element.elementText("checkin"), "yyyy-MM-dd"));
             order.setLeaveTime(DateUtil.parse(element.elementText("checkout"), "yyyy-MM-dd"));
-            order.setTotalPrice(BigDecimal.valueOf(Long.parseLong(element.elementText("totalPrice"))));
+            order.setTotalPrice(BigDecimal.valueOf(Double.valueOf(element.elementText("totalPrice"))));
             order.setPrepayPrice(order.getTotalPrice());
             order.setBasicTotalPrice(order.getTotalPrice());
             order.setCurrency(CurrencyCode.CNY);
@@ -151,7 +151,7 @@ public class QunarUtil {
             infos.setRoomTypeNums(order.getHomeAmount());
             infos.setOrderId(order.getId());
             if (StringUtils.isNotEmpty(prices[i])) {
-                infos.setBasicPrice(BigDecimal.valueOf(Long.parseLong(prices[i])));
+                infos.setBasicPrice(BigDecimal.valueOf(Double.valueOf(prices[i])));
                 infos.setPrice(infos.getBasicPrice());
                 infos.setRoomTypeId(order.getRoomTypeId());
                 infos.setDay(dateList.get(i));
@@ -176,6 +176,7 @@ public class QunarUtil {
             order.setChannelOrderCode(element.elementText("qunarOrderNum"));
             order.setId(element.elementText("orderId"));
             order.setReason(element.elementText("reason"));
+            order.setChannelSource(ChannelSource.QUNAR);
         } catch (Exception e) {
             logger.info("解析去哪儿取消订单xml出错" + e);
         }
@@ -194,6 +195,7 @@ public class QunarUtil {
             Element element = XmlDeal.dealXmlStr(xml);
             order.setChannelOrderCode(element.elementText("qunarOrderNum"));
             order.setId(element.elementText("orderId"));
+            order.setChannelSource(ChannelSource.QUNAR);
         } catch (Exception e) {
             logger.info("解析去哪儿查询订单xml出错" + e);
         }
@@ -227,7 +229,7 @@ public class QunarUtil {
             orderInfo.setHotelId(element.elementText("hotelId"));
             orderInfo.setCheckin(element.elementText("checkin"));
             orderInfo.setCheckout(element.elementText("checkout"));
-            orderInfo.setTotalPrice(BigDecimal.valueOf(Long.parseLong(element.elementText("totalPrice"))));
+            orderInfo.setTotalPrice(BigDecimal.valueOf(Double.valueOf(element.elementText("totalPrice"))));
             orderInfo.setCurrencyCode(element.elementText("currencyCode"));
             orderInfo.setCustomerArriveTime(element.elementText("customerArriveTime"));
             orderInfo.setSpecialRemarks(element.elementText("specialRemarks"));
@@ -265,11 +267,12 @@ public class QunarUtil {
         List<CustomerInfo> result = new ArrayList<>();
         if (null != customerInfos && ArrayUtils.isNotEmpty(customerInfos.toArray())) {
             for (Element element : customerInfos) {
+                element = element.element("customerInfo");
                 CustomerInfo customerInfo = new CustomerInfo();
-                customerInfo.setSeq(Integer.valueOf(element.attributeValue("seq")));
-                customerInfo.setChildrenAges(element.elementText("childrenAges"));
-                customerInfo.setNumberOfAdults(Integer.valueOf(element.elementText("numberOfAdults")));
-                customerInfo.setNumberOfChildren(Integer.valueOf(element.elementText("numberOfChildren")));
+                customerInfo.setSeq(Integer.valueOf(element.attributeValue("seq") == null ? "0" : element.attributeValue("seq")));
+                customerInfo.setChildrenAges(element.attributeValue("childrenAges"));
+                customerInfo.setNumberOfAdults(Integer.valueOf(element.attributeValue("numberOfAdults") == null ? "0" : element.attributeValue("numberOfAdults")));
+                customerInfo.setNumberOfChildren(Integer.valueOf(element.attributeValue("numberOfChildren") == null ? "0" : element.attributeValue("numberOfChildren")));
                 customerInfo.setCustomerList(getCutomerList(element.elements("customer")));
                 result.add(customerInfo);
             }
@@ -288,10 +291,10 @@ public class QunarUtil {
         if (null != customer && ArrayUtils.isNotEmpty(customer.toArray())) {
             for (Element element : customer) {
                 Customer customer1 = new Customer();
-                customer1.setFirstName(element.elementText("firstName"));
-                customer1.setLastName(element.elementText("lastName"));
-                customer1.setGender(element.elementText("gender"));
-                customer1.setNationality(element.elementText("nationality"));
+                customer1.setFirstName(element.attributeValue("firstName"));
+                customer1.setLastName(element.attributeValue("lastName"));
+                customer1.setGender(element.attributeValue("gender"));
+                customer1.setNationality(element.attributeValue("nationality"));
                 result.add(customer1);
             }
         }

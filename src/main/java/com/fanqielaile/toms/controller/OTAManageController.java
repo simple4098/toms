@@ -548,7 +548,10 @@ public class OTAManageController extends BaseController {
     @ResponseBody
     public Object qunarOrderService(String xml, String companyCode, HttpServletRequest request) {
         try {
-            xml = new String(xml.getBytes("iso8859-1"), "utf-8");
+            //本地浏览器访问需要转码
+//            if (StringUtils.isNotEmpty(xml)) {
+//                xml = new String(xml.getBytes("iso8859-1"), "utf-8");
+//            }
             logger.info("去哪儿传入参数：" + xml);
             if (StringUtils.isNotEmpty(companyCode)) {
                 //获取酒店信息
