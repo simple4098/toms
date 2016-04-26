@@ -269,7 +269,7 @@ public class QunarOrderService implements IQunarOrderService {
                 result.setResult(ResultStatus.SUCCESS.name());
                 MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(result), order.getInnId(), order.getInnCode(), "去哪儿创建订单,toms返回值"));
                 //调用去哪儿订单修改接口
-                response = HttpClientUtil.httpGetQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_SUCCESS.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                response = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_SUCCESS.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
 
             } else {
                 //下单到oms失败
@@ -279,16 +279,16 @@ public class QunarOrderService implements IQunarOrderService {
                 result.setResult(ResultStatus.FAILURE.name());
                 MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(new JointWisdomAddOrderSuccessResponse().getBasicError(jsonModel.getMessage() + "  预定失败", Version.v1003.getText(), OrderResponseType.Committed.name())), order.getInnId(), order.getInnCode(), "去哪儿创建订单,toms返回值"));
                 // 调用去哪儿订单修改接口
-                response = HttpClientUtil.httpGetQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                response = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
             }
             //判断返回是否失败，记录异常订单
             JSONObject jsonObject = JSONObject.parseObject(response);
+            logger.info("调用去哪儿订单操作接口返回值：orderCode" + order.getChannelOrderCode() + response);
             if (!(Boolean) jsonObject.get("ret")) {
                 this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
                 //发送微信
                 MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
             }
-            logger.info("调用去哪儿订单操作接口返回值：orderCode" + order.getChannelOrderCode() + response);
         } catch (Exception e) {
             logger.info("去哪儿创建订单出错,orderCode:" + order.getChannelOrderCode());
             result.setOrderId(order.getId());
@@ -311,7 +311,7 @@ public class QunarOrderService implements IQunarOrderService {
         OrderParamDto orderParamDto = this.orderDao.selectOrderById(cancelOrderParam.getId());
         if (null != orderParamDto) {
             //判断当前时间离入住时间是否超过48个小时
-            if (DateUtil.subDay(DateUtil.format(orderParamDto.getLiveTime(), "yyyy-MM-dd HH:mm:ss"), DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss")) >= 48) {
+            if (DateUtil.getDifferDay(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"), DateUtil.format(orderParamDto.getLiveTime(), "yyyy-MM-dd HH:mm:ss")) * 24 >= 48) {
                 //如果大于48个小时离入住时间,同意退订
                 //取消订单，同步
                 JsonModel jsonModel = this.orderService.cancelOrderMethod(orderParamDto);
@@ -331,7 +331,7 @@ public class QunarOrderService implements IQunarOrderService {
                     OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.QUNAR.name());
                     OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(orderParamDto.getCompanyId(), otaInfoRefDto.getOtaInfoId());
                     //调用订单操作接口
-                    String response = HttpClientUtil.httpGetQunarOrderOpt(CommonApi.qunarOrderOpt, cancelOrderParam.getChannelOrderCode(), OptCode.REFUSE_UNSUBSCRIBE.name(), otaInfo.getSessionKey(), BigDecimal.ZERO);
+                    String response = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, cancelOrderParam.getChannelOrderCode(), OptCode.REFUSE_UNSUBSCRIBE.name(), otaInfo.getSessionKey(), BigDecimal.ZERO);
                     //判断返回是否失败，记录异常订单
                     JSONObject jsonObject = JSONObject.parseObject(response);
                     if (!(Boolean) jsonObject.get("ret")) {
@@ -369,7 +369,7 @@ public class QunarOrderService implements IQunarOrderService {
         try {
             //解析xml
             Order orderParam = QunarUtil.getQueryOrder(xml);
-            Order order = this.orderDao.selectOrderByIdAndChannelSource(orderParam.getId(), ChannelSource.QUNAR);
+            Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(orderParam);
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.SEARCH_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "去哪儿查询订单传入参数"));
             if (null == order) {
                 return result;
