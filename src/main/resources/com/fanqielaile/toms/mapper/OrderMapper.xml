@@ -318,7 +318,7 @@
     </select>
     <select id="statisticsOtherConsumer" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
         SELECT
-			oci.consumer_project_name as consumerProjectName,
+			oci1.consumer_project_name as consumerProjectName,
 			sum(oop.price*oop.nums) as totalCost,
 			sum(oop.nums) as nums
 		FROM
@@ -327,8 +327,9 @@
 			AND oto.company_id = bi.company_id
 		left JOIN order_other_price oop ON oto."id" = oop.order_id
 		inner JOIN other_consumer_info oci ON oop.other_consumer_info_id = oci.id and oci.deleted = 0
+		left join other_consumer_info oci1 on oci.parent_id = oci1.id
         <include refid="selectOrderFilter"></include>
-        GROUP BY oop.other_consumer_info_id,oci.consumer_project_name
+        GROUP BY oci1.id,oci1.consumer_project_name
     </select>
     <select id="selectOrderOtherPriceType" resultMap="orderOtherType">
         SELECT
