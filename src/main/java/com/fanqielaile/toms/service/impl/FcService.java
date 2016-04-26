@@ -194,8 +194,8 @@ public class FcService implements ITPService {
                     Response response = FCXHotelUtil.syncRateInfo(company, o, fcRoomTypeFqDto, bangInn, roomTypeId, priceDto, commission);
                     if (Constants.FcResultNo.equals(response.getResultNo())) {
                         fcRoomTypeFqDao.updateRoomTypeFqSj(fcRoomTypeFqDto.getId(), Constants.FC_SJ);
-                        MessageCenterUtils.savePushTomsLog(OtaType.FC, bangInn.getInnId(), priceDto.getRoomTypeId(), null, LogDec.RoomType_PHSH_PRICE,
-                                "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());
+                       /* MessageCenterUtils.savePushTomsLog(OtaType.FC, bangInn.getInnId(), priceDto.getRoomTypeId(), null, LogDec.RoomType_PHSH_PRICE,
+                                "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());*/
                     } else {
                         log.error("及时推送失败:" + response.getResultMsg());
                     }
