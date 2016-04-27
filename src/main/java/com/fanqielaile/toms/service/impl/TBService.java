@@ -165,7 +165,7 @@ public class TBService implements ITPService {
                     }
                 }
             } else {
-                log.info("无客栈信息!");
+                log.info("无客栈信息! 客栈id:"+innId);
             }
         }
 
