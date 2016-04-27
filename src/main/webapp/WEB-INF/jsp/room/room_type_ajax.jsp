@@ -22,7 +22,7 @@
       </tr>
       <tr class="active"><td colspan="2">房型</td></tr>
       <c:forEach items="${roomType.roomStatus}" var="v">
-        <tr class="active"><td colspan="2">${v.roomTypeName}</td></tr>
+        <tr class="active"><td colspan="2" style="height: 67px;">${v.roomTypeName}</td></tr>
       </c:forEach>
     </table>
   </div>
@@ -45,7 +45,7 @@
       <c:forEach items="${list}" var="v">
         <tr>
           <c:forEach items="${v.roomDetail}" var="vv">
-            <td>${(empty vv.roomNum)?0: vv.roomNum}/${vv.roomPrice}</td>
+            <td style="height: 67px;">${(empty vv.roomNum)?0: vv.roomNum}/${vv.roomPrice}</td>
           </c:forEach>
         </tr>
       </c:forEach>

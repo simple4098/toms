@@ -36,59 +36,9 @@
     <div class="btn-box clearfix">
         <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled id="manualOrder">手动下单</button>
     </div>
-    <c:set value="${roomType.list}" var="list"/>
-    <div class="room-status-box" id="roomTypeContainerId">
-        <c:if test="${not empty list}">
-            <div class="table-left">
-                <table class="table table-bordered">
-                    <tr class="success">
-                        <td colspan="2">
-                            <span id="prevM">&lt;</span>
-                            <!-- <form> -->
-                            <input readonly class="date-input-2" type="text" id="from_datepicker">
-                            <input  readonly type="text" id="to_datepicker">
-                            <!-- </form> -->
-                            <span id="nextM">&gt;</span>
-                        </td>
-                    </tr>
-                    <tr class="active"><td colspan="2">房型</td></tr>
-                    <c:forEach items="${roomType.list}" var="v">
-                        <tr class="active"><td colspan="2">${v.roomTypeName}</td></tr>
-                    </c:forEach>
-                </table>
-            </div>
-            <div class="table-right">
-                <table class="table table-bordered table-hover room-status-table">
 
-                    <thead>
-                    <tr>
-                        <c:forEach items="${roomType.roomDates}" var="vv">
-                            <th>${vv}</th>
-                        </c:forEach>
-                    </tr>
-                    <tr>
-                        <c:forEach  begin="1" step="1" end="${roomType.roomDates.size()}">
-                            <th>剩余</th>
-                        </c:forEach>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <c:forEach items="${list}" var="v">
-                        <tr>
-                            <c:forEach items="${v.roomDetail}" var="vv">
-                                <td>${vv.roomNum}</td>
-                            </c:forEach>
-                        </tr>
-                    </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </c:if>
-        <c:if test="${empty list}">
-            <div class="alert alert-danger center">
-                没有数据,请选择分类/客栈查询房态房量
-            </div>
-        </c:if>
+    <div class="room-status-box" id="roomTypeContainerId">
+
     </div>
 </div>
 
