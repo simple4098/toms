@@ -338,7 +338,7 @@
     </select>
 
     <update id="updateSjBangInn">
-        UPDATE bang_inn SET  <if test="!sj">sj=0</if><if test="sj">sj=1</if>
+        UPDATE bang_inn SET  <if test="!sj">sj=0</if><if test="sj">sj=1</if>,updated_date=now()
         where inn_id=#{innId} and company_id='${companyId}'
     </update>
     <select id="selectBangInnListByCompanyCode" parameterType="java.lang.String"
