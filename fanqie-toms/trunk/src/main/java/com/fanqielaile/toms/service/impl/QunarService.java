@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.*;
@@ -14,8 +15,10 @@ import com.fanqielaile.toms.model.*;
 import com.fanqielaile.toms.model.qunar.QunarCityInfo;
 import com.fanqielaile.toms.service.IQunarCityInfoService;
 import com.fanqielaile.toms.service.ITPService;
+import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.holder.TPHolder;
 import com.fanqielaile.toms.support.tb.TBXHotelUtilPromotion;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.taobao.api.domain.XHotel;
@@ -168,7 +171,56 @@ public class QunarService implements ITPService {
 
     @Override
     public void updateRoomTypePrice(OtaInfoRefDto infoRefDto, String innId, String companyId, String userId, String json) throws Exception {
-
+        List<AddFangPrice> prices = JacksonUtil.json2list(json, AddFangPrice.class);
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(companyId, Integer.valueOf(innId));
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), companyId, infoRefDto.getOtaInfoId());
+        Company company = companyDao.selectCompanyById(companyId);
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), infoRefDto.getUsedPriceModel().name()));
+        if (otaInnOta != null && otaInnOta.getSj() == 0) {
+            throw new TomsRuntimeException("此客栈已经下架!");
+        }
+        OtaPriceModelDto priceModelDto = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
+        if (!CollectionUtils.isEmpty(prices)) {
+            String checkRoom = null;
+            OtaRoomPriceDto priceDto = null;
+            List<RoomDetail> roomDetailList = null;
+            RoomTypeInfo roomTypeInfo = null;
+            for (AddFangPrice price : prices) {
+                if (!StringUtils.isEmpty(price.getEndDateStr()) && !StringUtils.isEmpty(price.getStartDateStr()) && price.getPriceChange() != null) {
+                    priceDto = TomsUtil.buildRoomPrice(companyId, price.getRoomTypeId(), infoRefDto.getOtaInfoId(), price, Integer.valueOf(innId), userId);
+                    priceDto.setRoomTypeName(price.getRoomTypeName());
+                    if (bangInn != null && bangInn.getSj() == Constants.FC_SJ) {
+                        checkRoom = DcUtil.omsTbRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), price.getRoomTypeId(), CommonApi.checkRoom);
+                        roomDetailList = InnRoomHelper.getRoomDetail(checkRoom);
+                        roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetailList, price.getRoomTypeId());
+                        boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList, commission);
+                        if (b) {
+                            //rate = TBXHotelUtilPromotion.rateGet(infoRefDto, price.getRoomTypeId());
+                            //if ( rate!=null ){
+                            if (roomDetailList != null) {
+                                try {
+                                    log.info("宝贝roomTypeId：" + price.getRoomTypeId() + "去哪儿加减价");
+                                    otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
+                                    MessageCenterUtils.savePushTomsLog(OtaType.QUNAR, Integer.valueOf(innId), price.getRoomTypeId(), userId, LogDec.MT_RoomType_Price,
+                                            "startDate:" + priceDto.getStartDateStr() + " endDate:" + priceDto.getEndDateStr() + " price:" + priceDto.getValue());
+                                } catch (Exception e) {
+                                    throw new TomsRuntimeException("房型名称:" + price.getRoomTypeId() + " 同步失败");
+                                }
+                            }
+                           /* }else {
+                                throw new TomsRuntimeException("xRoom  rate 为null"+price.getRoomTypeId()+" rate:"+rate);
+                            }*/
+                        } else {
+                            log.error("房型Id" + price.getRoomTypeId() + " 减小的价格不能低于1元");
+                            throw new TomsRuntimeException("房型Id" + price.getRoomTypeName() + " 减小的价格不能低于1元");
+                        }
+                    } else {
+                        log.error("innId：" + innId + " 房型id" + price.getRoomTypeId() + "还没有上架到房仓");
+                        throw new TomsRuntimeException("innId：" + innId + " 房型名称:" + price.getRoomTypeName() + "还没有上架到淘宝");
+                    }
+                }
+            }
+        }
     }
 
     @Override
