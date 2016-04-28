@@ -198,7 +198,7 @@ $('#sortable').sortable({
 
 
 $('#roomTypeBtn').click(function(){
-    layer.load(0, {time: 3*1000});
+    var i = layer.load(0);
     var _this = $(this);
     var url = _this.attr("data-url");
     var fcHotelId = $("input[name='fcHotelId']:checked").val();
@@ -257,15 +257,16 @@ $('#roomTypeBtn').click(function(){
         type:'post',
         url:url,
         success:function(data){
-
             if(data.status==400){
                 layer.msg("匹配失败:"+data.message);
+                layer.close(i);
             }else{
-
                 window.location.href=window.location.href;
+                layer.close(i);
             }
         },error:function(data){
             layer.msg("匹配失败:"+data.message);
+            layer.close(i);
         }
     })
     console.log(json)
