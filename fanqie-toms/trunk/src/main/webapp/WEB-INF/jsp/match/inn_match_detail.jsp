@@ -462,7 +462,8 @@
       layer.msg("请选择价格计划信息");
       return false;
     }
-    layer.load(0, {time: 4*1000});
+    /*layer.load(0, {time: 4*1000});*/
+    var i = layer.load(0);
     $.ajax({
       data:{"matchRoomTypeId":matchRoomTypeId},
       type:'post',
@@ -471,14 +472,16 @@
       success:function(data){
         if(data.status=='200'){
           layer.msg("上架成功");
-
+          layer.close(i);
           window.location.href = window.location.href;
         }else{
           layer.msg("上架失败:"+data.message);
+          layer.close(i);
         }
 
       },error:function(data){
         layer.msg("上架失败:"+data.message);
+        layer.close(i);
       }
     })
   })
