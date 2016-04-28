@@ -53,7 +53,7 @@ function getRoomType(postData){
 		dataType:'html',
 		success:function(data){
 			$("#roomTypeContainerId").empty();
-			if (data.indexOf("没有") == -1) {
+			if (data.indexOf("没有房型数据") == -1) {
 				$('.hand-btn').attr('disabled', false);
 			} else {
 				$('.hand-btn').attr('disabled', true);
