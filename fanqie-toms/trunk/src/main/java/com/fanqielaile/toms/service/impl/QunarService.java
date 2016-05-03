@@ -124,6 +124,15 @@ public class QunarService implements ITPService {
                         otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
                         otaInnOtaDao.updateOtaInnOta(otaInnOta);
                     }
+                    //保存去哪儿的城市对应关系
+                    BangInnDto innDto = bangInnDao.selectBangInnToQunarCity(bangInnDto);
+                    innDto.setQunarCityId(qunarCityInfo.getId());
+                    if (null != innDto) {
+                        bangInnDao.updateBangInnToQunarCity(innDto);
+                    } else {
+                        innDto.setId(bangInnDto.getId());
+                        bangInnDao.createBangInnToQunarCity(innDto);
+                    }
 
                     //绑定底价的客栈
                 } else {
@@ -141,6 +150,15 @@ public class QunarService implements ITPService {
                             bangInn.setSj(1);
                         }
                         bangInnDao.updateBangInnTp(bangInn);
+                    }
+                    //保存去哪儿的城市对应关系
+                    BangInnDto innDto = bangInnDao.selectBangInnToQunarCity(bangInnDto);
+                    innDto.setQunarCityId(qunarCityInfo.getId());
+                    if (null != innDto) {
+                        bangInnDao.updateBangInnToQunarCity(innDto);
+                    } else {
+                        innDto.setId(bangInnDto.getId());
+                        bangInnDao.createBangInnToQunarCity(innDto);
                     }
                 }
             } else {

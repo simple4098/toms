@@ -222,4 +222,16 @@ public interface BangInnDao {
      * @return
      */
     List<Hotel> selectBangInnListByCompanyCode(@Param("companyCode") String companyCode);
+
+    /**
+     * 查询绑定客栈与去哪儿城市对应关系是否存在
+     *
+     * @param bangInnDto
+     * @return
+     */
+    BangInnDto selectBangInnToQunarCity(BangInnDto bangInnDto);
+
+    void updateBangInnToQunarCity(BangInnDto innDto);
+
+    void createBangInnToQunarCity(BangInnDto innDto);
 }
