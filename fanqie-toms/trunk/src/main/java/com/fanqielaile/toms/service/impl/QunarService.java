@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
@@ -212,7 +213,9 @@ public class QunarService implements ITPService {
                     priceDto.setRoomTypeName(price.getRoomTypeName());
                     if (bangInn != null && bangInn.getSj() == Constants.FC_SJ) {
                         checkRoom = DcUtil.omsTbRoomTYpeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), bangInn.getInnId(), price.getRoomTypeId(), CommonApi.checkRoom);
+                        log.info("去哪儿改价调用oms接口：" + checkRoom);
                         roomDetailList = InnRoomHelper.getRoomDetail(checkRoom);
+                        log.info("去哪儿改价调用oms接口返回值：" + JSON.toJSONString(roomDetailList));
                         roomTypeInfo = TomsUtil.buildRoomTypeInfo(roomDetailList, price.getRoomTypeId());
                         boolean b = tpHolder.checkRooPrice(priceDto.getValue(), roomDetailList, commission);
                         if (b) {
