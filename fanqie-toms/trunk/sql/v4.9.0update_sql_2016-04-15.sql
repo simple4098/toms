@@ -15,3 +15,6 @@ ALTER TABLE "public"."ota_toms_order"
 ADD COLUMN "user_id" varchar(64);
 
 COMMENT ON COLUMN "public"."ota_toms_order"."user_id" IS '操作人id';
+
+ALTER TABLE "public"."ota_toms_order"
+DROP COLUMN "creator_id";
