@@ -4,7 +4,7 @@
     <groupId>com.fanqielaile.toms</groupId>
     <artifactId>toms</artifactId>
     <packaging>war</packaging>
-    <version>4.8.0</version>
+    <version>4.9.0</version>
     <name>toms Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <properties>
