@@ -44,10 +44,20 @@ public class BangInnDto extends BangInn {
     private List<String> companyIdList;
     //上架模式
     private String sJiaModel;
-    //所在城市
-    private String qunarCityCode;
+    //所在去哪儿城市的id
+    private String qunarCityId;
     //地址
     private String address;
+    //去哪儿城市code
+    private String qunarCityCode;
+
+    public String getQunarCityCode() {
+        return qunarCityCode;
+    }
+
+    public void setQunarCityCode(String qunarCityCode) {
+        this.qunarCityCode = qunarCityCode;
+    }
 
     public String getAddress() {
         return address;
@@ -57,12 +67,12 @@ public class BangInnDto extends BangInn {
         this.address = address;
     }
 
-    public String getQunarCityCode() {
-        return qunarCityCode;
+    public String getQunarCityId() {
+        return qunarCityId;
     }
 
-    public void setQunarCityCode(String qunarCityCode) {
-        this.qunarCityCode = qunarCityCode;
+    public void setQunarCityId(String qunarCityId) {
+        this.qunarCityId = qunarCityId;
     }
 
     public List<String> getCompanyIdList() {
@@ -185,6 +195,7 @@ public class BangInnDto extends BangInn {
     public static BangInnDto toDto(String companyId,TBParam tbParam,InnDto omsInnDto){
         List<PriceModel> priceModelArray = tbParam.getPriceModelArray();
         BangInnDto bangInnDto = new BangInnDto();
+        bangInnDto.setId(bangInnDto.getUuid());
         bangInnDto.setCompanyId(companyId);
         bangInnDto.setMobile(omsInnDto.getFrontPhone());
         bangInnDto.setSj(tbParam.isSj()?1:0);
@@ -203,7 +214,6 @@ public class BangInnDto extends BangInn {
                 bangInnDto.setAccountId(Integer.valueOf(p.getAccountId()));
             }
         }
-        bangInnDto.setQunarCityCode(omsInnDto.getCity());
         return  bangInnDto;
     }
 

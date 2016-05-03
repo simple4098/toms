@@ -114,7 +114,11 @@ public class QunarOrderService implements IQunarOrderService {
             result.setCheckOut(priceRequest.getCheckOut());
             result.setCurrencyCode(CurrencyCode.CNY.name());
             result.setHotelAddress(bangInnDto.getAddress());
-            result.setHotelCity(bangInnDto.getQunarCityCode());
+            //根据绑定客栈信息,查询城市code
+            BangInnDto innDto = this.bangInnDao.selectBangInnToQunarCity(bangInnDto);
+            if (null != innDto) {
+                result.setHotelCity(innDto.getQunarCityCode());
+            }
             result.setHotelName(bangInnDto.getInnName());
             result.setHotelPhone(bangInnDto.getMobile());
             List<Room> roomList = new ArrayList<>();

@@ -1,7 +1,4 @@
-ALTER TABLE "public"."bang_inn"
-ADD COLUMN "qunar_city_code" varchar(50);
 
-COMMENT ON COLUMN "public"."bang_inn"."qunar_city_code" IS '去哪儿的城市code';
 ALTER TABLE "public"."bang_inn"
 ADD COLUMN "address" varchar(200);
 

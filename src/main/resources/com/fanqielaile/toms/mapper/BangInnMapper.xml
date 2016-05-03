@@ -39,7 +39,6 @@
         <result column="account_id" property="accountId"/>
         <result column="ota_wg_id" property="otaWgId"/>
         <result column="account_id_di" property="accountIdDi"/>
-        <result column="qunar_city_code" property="qunarCityCode"/>
         <result column="address" property="address"/>
     </resultMap>
     <resultMap id="orderConfigId" type="com.fanqielaile.toms.dto.OrderConfigDto">
@@ -58,7 +57,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,account_id_di,ota_wg_id,sj,qunar_city_code,address
+        id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,account_id_di,ota_wg_id,sj,address
        </sql>
     <insert id="insertBangInn" parameterType="com.fanqielaile.toms.model.BangInn">
               insert into bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,deleted)
@@ -186,9 +185,9 @@
     <insert id="createBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto">
         insert into
         bang_inn(id,company_id,bang_date,lose_date,start_date,inn_id,inn_name,code,inn_label_id,mobile,inn_code,user_id,type,account_id,ota_wg_id,account_id_di,
-        deleted,sj,qunar_city_code,address)
+        deleted,sj,address)
         VALUES
-        (#{uuid},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi},0,#{sj},#{qunarCityCode},#{address})
+        (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},#{accountId},#{otaWgId},#{accountIdDi},0,#{sj},#{address})
     </insert>
     <select id="selectBangInnByCompanyIdAndInnId" resultMap="BaseResultMap">
         select
@@ -345,12 +344,38 @@
             resultType="com.fanqie.qunar.model.Hotel">
     SELECT oo.wg_hid as hotelId,
         bi.address as address,
-    bi.qunar_city_code as city,
+        biqc.city_code as city,
         bi.mobile as telephone,
         bi.inn_name as name
       from bang_inn bi LEFT join company c on bi.company_id = c.id
        LEFT JOIN ota_inn_ota oo on bi.id = oo.bang_inn_id
+        LEFT join bang_inn_to_qunar_city biqc on bi.id=biqc.bang_inn_id
        where c.company_code = #{companyCode} and oo.sj = 1
 </select>
-
+    <select id="selectBangInnToQunarCity" parameterType="com.fanqielaile.toms.dto.BangInnDto"
+            resultType="com.fanqielaile.toms.dto.BangInnDto">
+        SELECT biqc.bang_inn_id as id,biqc.qunar_city_info_id as qunarCityId,qc.city_code as qunarCityCode from
+        bang_inn_to_qunar_city biqc
+        LEFT JOIN qunar_city_info qc on biqc.qunar_city_info_id = qc.id
+        where 1=1
+        <if test="id != null and id != ''">
+            and biqc.bang_inn_id = #{id}
+        </if>
+        <if test="qunarCityId != null and qunarCityId != ''">
+            and biqc.qunar_city_info_id = #{qunarCityId}
+        </if>
+        limit 1
+    </select>
+    <update id="updateBangInnToQunarCity" parameterType="com.fanqielaile.toms.dto.BangInnDto">
+        update bang_inn_to_qunar_city
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="qunarCityId != null and qunarCityId != ''">
+                qunar_city_info_id = #{qunarCityId},
+            </if>
+        </trim>
+        where bang_inn_id = #{id}
+    </update>
+    <insert id="createBangInnToQunarCity" parameterType="com.fanqielaile.toms.dto.BangInnDto">
+        INSERT INTO bang_inn_to_qunar_city(id,bang_inn_id,qunar_city_info_id) VALUES (#{uuid},#{id},#{qunarCityId})
+    </insert>
 </mapper>
