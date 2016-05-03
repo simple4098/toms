@@ -7,10 +7,12 @@ import com.fanqie.qunar.request.Customer;
 import com.fanqie.qunar.request.CustomerInfo;
 import com.fanqie.qunar.request.PriceRequest;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OrderGuests;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -321,5 +324,23 @@ public class QunarUtil {
             }
         }
         return bedList;
+    }
+
+    /**
+     * 处理请求获取房型信息
+     * @param list
+     * @param roomId
+     * @return
+     */
+    public static List<RoomTypeInfo> dealRoomTypeList(List<RoomTypeInfo> list, String roomId) {
+        List<RoomTypeInfo> result = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(list)){
+            for (RoomTypeInfo roomTypeInfo : list){
+                if (roomTypeInfo.getRoomTypeId().toString().equals(roomId)){
+                    result.add(roomTypeInfo);
+                }
+            }
+        }
+        return result;
     }
 }

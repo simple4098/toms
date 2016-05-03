@@ -102,6 +102,9 @@ public class QunarOrderService implements IQunarOrderService {
                 roomType = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.ROOM_TYPE, priceRequest.getCheckIn(), DateUtil.format(DateUtil.addDay(DateUtil.parseDate(priceRequest.getCheckOut(), "yyyy-MM-dd"), -1), "yyyy-MM-dd"));
             }
             List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(roomType);
+            if (StringUtils.isNotEmpty(priceRequest.getRoomId())) {
+                list = QunarUtil.dealRoomTypeList(list, priceRequest.getRoomId());
+            }
             List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
             InnRoomHelper.updateRoomTypeInfo(list, statusDetails);
 
@@ -144,7 +147,7 @@ public class QunarOrderService implements IQunarOrderService {
                         for (RoomDetail roomD : roomDetail.getRoomDetail()) {
                             //设置房型的加减价
                             if (null != otaRoomPriceDto) {
-                                if (DateUtil.isBetween(roomD.getRoomDate(), otaRoomPriceDto.getStartDateStr(), otaRoomPriceDto.getEndDateStr())) {
+                                if (DateUtil.isBetween(roomD.getRoomDate(), DateUtil.format(otaRoomPriceDto.getStartDate(), "yyyy-MM-dd"), DateUtil.format(otaRoomPriceDto.getEndDate(), "yyyy-MM-dd"))) {
                                     roomD.setRoomPrice(roomD.getRoomPrice() + otaRoomPriceDto.getValue());
                                 }
                             }
