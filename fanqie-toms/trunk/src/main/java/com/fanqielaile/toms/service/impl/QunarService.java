@@ -112,7 +112,7 @@ public class QunarService implements ITPService {
                         BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
                         bangInnDao.updateBangInnTp(bangInn);
                     }
-                    String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
+                    String bangInnId = bangInn == null ? bangInnDto.getId() : bangInn.getId();
                     if (otaInnOta == null) {
                         otaInnOta = OtaInnOtaDto.toDto(hid, omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
                         otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
@@ -126,11 +126,13 @@ public class QunarService implements ITPService {
                     }
                     //保存去哪儿的城市对应关系
                     BangInnDto innDto = bangInnDao.selectBangInnToQunarCity(bangInnDto);
-                    innDto.setQunarCityId(qunarCityInfo.getId());
                     if (null != innDto) {
+                        innDto.setQunarCityId(qunarCityInfo.getId());
                         bangInnDao.updateBangInnToQunarCity(innDto);
                     } else {
-                        innDto.setId(bangInnDto.getId());
+                        innDto = new BangInnDto();
+                        innDto.setQunarCityId(qunarCityInfo.getId());
+                        innDto.setId(bangInnId);
                         bangInnDao.createBangInnToQunarCity(innDto);
                     }
 
@@ -153,11 +155,12 @@ public class QunarService implements ITPService {
                     }
                     //保存去哪儿的城市对应关系
                     BangInnDto innDto = bangInnDao.selectBangInnToQunarCity(bangInnDto);
-                    innDto.setQunarCityId(qunarCityInfo.getId());
                     if (null != innDto) {
+                        innDto.setQunarCityId(qunarCityInfo.getId());
                         bangInnDao.updateBangInnToQunarCity(innDto);
                     } else {
-                        innDto.setId(bangInnDto.getId());
+                        innDto = new BangInnDto();
+                        innDto.setId(bangInn == null ? bangInnDto.getId() : bangInn.getId());
                         bangInnDao.createBangInnToQunarCity(innDto);
                     }
                 }
