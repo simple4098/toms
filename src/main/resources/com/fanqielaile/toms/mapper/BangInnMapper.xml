@@ -344,12 +344,13 @@
             resultType="com.fanqie.qunar.model.Hotel">
     SELECT oo.wg_hid as hotelId,
         bi.address as address,
-        biqc.city_code as city,
+        qc.city_code as city,
         bi.mobile as telephone,
         bi.inn_name as name
       from bang_inn bi LEFT join company c on bi.company_id = c.id
        LEFT JOIN ota_inn_ota oo on bi.id = oo.bang_inn_id
         LEFT join bang_inn_to_qunar_city biqc on bi.id=biqc.bang_inn_id
+        LEFT join qunar_city_info qc on qc.id = biqc.qunar_city_info_id
        where c.company_code = #{companyCode} and oo.sj = 1
 </select>
     <select id="selectBangInnToQunarCity" parameterType="com.fanqielaile.toms.dto.BangInnDto"
