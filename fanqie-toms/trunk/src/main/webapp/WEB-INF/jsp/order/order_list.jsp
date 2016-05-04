@@ -305,7 +305,7 @@
                                             </td>
                                             <td><c:if test="${not empty d.dailyInfoses}">
                                                 <c:forEach items="${d.dailyInfoses}" var="dd">
-                                                    ${dd.roomTypeNums}<br><br>
+                                                    ${dd.roomTypeNums}<br>
                                                 </c:forEach>
                                             </c:if>
                                             </td>
