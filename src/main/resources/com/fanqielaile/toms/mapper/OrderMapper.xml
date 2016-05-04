@@ -299,26 +299,33 @@
         </where>
     </sql>
     <select id="statisticsOrderData" resultType="com.fanqielaile.toms.dto.OrderStatisticsDto">
-        SELECT
-        sum(odi1.nightNum) AS orderNightNumber,
-        SUM (oto.prepay_price) AS totalPrice,
-        SUM (oto.cost_price) AS totalCostPrice
-        FROM
-        ota_toms_order oto
-        LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
-        AND oto.company_id = bi.company_id
-        LEFT JOIN (
-        SELECT
-        order_id,
-        SUM (COALESCE(room_type_nums, 0)) room_type_nums
-        FROM
-        ota_daily_infos odi
-        GROUP BY
-        odi.order_id
-        ) odi ON oto. ID = odi.order_id
-        LEFT JOIN(
-        SELECT "count"("id") as nightNum,order_id from ota_daily_infos odi1 GROUP BY odi1.order_id
-        ) odi1 on odi1.order_id = oto.id
+       SELECT
+			SUM (
+				date_part(
+					'day',
+					oto.leave_time - oto.live_time
+				) * odi.room_type_nums
+			) AS orderNightNumber,
+			SUM (oto.prepay_price) AS totalPrice,
+			SUM (oto.cost_price) AS totalCostPrice
+		FROM
+			ota_toms_order oto
+		LEFT JOIN bang_inn bi ON oto.inn_id = bi.inn_id
+		AND oto.company_id = bi.company_id
+		LEFT JOIN (
+			SELECT 
+				"sum"(a.room_type_nums) as room_type_nums,
+				a.order_id 
+			from (
+				SELECT
+					odi.order_id,
+					odi.room_type_nums
+				FROM
+					ota_daily_infos odi 
+				GROUP BY
+					odi.room_type_id,odi.room_type_nums,odi.order_id
+			) a GROUP BY a.order_id
+		) odi on oto.id = odi.order_id
         <include refid="selectOrderFilter"></include>
     </select>
     <select id="statisticsOtherConsumer" resultType="com.fanqielaile.toms.model.OrderOtherPrice">
