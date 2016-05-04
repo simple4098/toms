@@ -39,5 +39,3 @@ COMMENT ON COLUMN "public"."bang_inn_to_qunar_city"."qunar_city_info_id" IS '去
 -- ----------------------------
 ALTER TABLE "public"."bang_inn_to_qunar_city" ADD PRIMARY KEY ("id");
 
-ALTER TABLE "public"."ota_toms_order"
-DROP COLUMN "creator_id";
