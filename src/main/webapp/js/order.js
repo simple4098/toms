@@ -310,8 +310,9 @@ $(".btn-cancel-order").on('click', function () {
     var url = $('.cancel-hand_order-url').val();
     var orderId = $('.cancel-order-id').val();
     layer.confirm('取消订单后，将无法恢复，确认要取消吗？', {
-        btn: ['确定', '取消'] //按钮
-    }, function () {
+        btn: ['确定', '取消'],
+        offset: ['240px' , '40%']
+    },function () {
         layer.msg('加载中', {icon: 16});
         $.ajax({
             url: url + "?orderId=" + orderId,
