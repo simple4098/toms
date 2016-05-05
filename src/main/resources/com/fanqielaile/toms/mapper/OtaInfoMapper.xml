@@ -42,7 +42,7 @@
           SELECT oi.ota_info,oi.ota_type ,oi.sort,c.company_code,o.* from ota_info oi
           LEFT  JOIN otainfo_company_ref o ON oi.id = o.ota_info_id
           left JOIN  company c on c.id = o.company_id
-          where oi.deleted=0 and c.company_code = '${companyCode}' ORDER BY oi.sort
+          where oi.deleted=0 and o.status=1 and c.company_code = '${companyCode}' ORDER BY oi.sort
        </select>
 
        <select id="selectOtaInfoByCompanyIdAndOtaInnOtaId"  resultMap="otaInfoRefId">
