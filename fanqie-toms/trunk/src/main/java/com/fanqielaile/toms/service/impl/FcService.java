@@ -106,6 +106,8 @@ public class FcService implements ITPService {
                         }
                     }
                 }
+            }else {
+                log.info("房仓客栈上下架 获取不到客栈基本信息");
             }
         }
 

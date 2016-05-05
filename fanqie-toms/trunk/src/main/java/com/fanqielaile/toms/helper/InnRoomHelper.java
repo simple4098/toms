@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.helper;
 
+import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
@@ -7,6 +8,7 @@ import com.fanqie.util.TomsConstants;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.FcUtil;
 import com.fanqielaile.toms.support.util.XmlDeal;
 import net.sf.json.JSONNull;
@@ -130,6 +132,23 @@ public class InnRoomHelper {
             return JacksonUtil.json2list(jsonObject.getJSONArray("list").toString(), SellingRoomType.class);
         }
         return null;
+    }
+
+
+    public static List<RoomTypeInfo> obtRoomTypeInfoList(Company company,TBParam tbParam){
+        String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
+        String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus, Constants.day);
+        log.info("zh room_type url :"+room_type);
+        log.info("zh roomStatus url :"+roomStatus);
+        List<RoomTypeInfo> roomTypeInfoList = null;
+        try {
+            roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
+            List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
+            InnRoomHelper.updateRoomTypeInfo(roomTypeInfoList, statusDetails);
+        } catch (IOException e) {
+            log.error("获取客栈的房型房态信息异常",e);
+        }
+        return roomTypeInfoList;
     }
 
 }

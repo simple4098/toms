@@ -402,6 +402,17 @@ public class TomsUtil {
         roomTypeInfo.setRoomTypeId(roomTypeId);
         return roomTypeInfo;
     }
+    /**
+     * 组装roomTypeInfo
+     * @param roomDetailList
+     * @param roomTypeId
+     * @return
+     */
+    public static RoomTypeInfo buildRoomTypeInfo(List<RoomDetail> roomDetailList, Integer roomTypeId,String roomTypeName) {
+        RoomTypeInfo roomTypeInfo =buildRoomTypeInfo(roomDetailList,  roomTypeId);
+        roomTypeInfo.setRoomTypeName(roomTypeName);
+        return roomTypeInfo;
+    }
 
     public static List<RoomDetail> buildRoomDetail(Integer roomTypeId) {
         List<RoomDetail> list = new ArrayList<>();

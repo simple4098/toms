@@ -90,6 +90,8 @@ public class XcService implements ITPService {
                     ctripRoomService.updateRoomPrice(company,otaInfo,list, tbParam.isSj());
                 }
             }
+        }else {
+            log.info("携程客栈上下架 获取不到客栈基本信息");
         }
     }
 

@@ -78,81 +78,107 @@ public class ZhService implements ITPService {
         tbParam.setOtaId(company.getOtaId().toString());
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
         InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
-        if (omsInnDto != null) {
-            omsInnDto.setInnId(innId);
-            BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-            BangInnDto bangInnDto = null;
-            if (bangInn == null) {
-                bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
-                bangInnDao.createBangInn(bangInnDto);
-            } else {
-                log.info("zh 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
-                OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(bangInn.getInnId(), company.getId(), otaInfoId);
-                TomsUtil.sjModel(tbParam, bangInn, omsInnDto);
-                bangInnDao.updateBangInnTp(bangInn);
-                if (tbParam.isUpDown()){
-                    String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
-                    if (otaInnOta == null) {
-                        otaInnOta = OtaInnOtaDto.toDto(company.getOtaId() + "_" + bangInn.getInnId(), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfoId);
-                        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-                        otaInnOtaDao.saveOtaInnOta(otaInnOta);
-                        OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
-                        priceModelDao.savePriceModel(otaPriceModel);
-                    } else {
-                        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-                        //下架状态的 删除关联关系
-                        if (!tbParam.isSj()){
-                            otaInnOtaDao.deletedOtaInnOtaById(otaInnOta.getId());
-                        }else {
-                            otaInnOtaDao.updateOtaInnOta(otaInnOta);
-                        }
-                    }
-                    String room_type = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.ROOM_TYPE);
-                    String roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId(), CommonApi.roomStatus, Constants.day);
-                    log.info("zh room_type url :"+room_type);
-                    log.info("zh roomStatus url :"+roomStatus);
-
-                    List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.getRoomTypeInfo(room_type);
-                    List<RoomStatusDetail> statusDetails = InnRoomHelper.getRoomStatus(roomStatus);
-                    InnRoomHelper.updateRoomTypeInfo(roomTypeInfoList, statusDetails);
-                    if (!CollectionUtils.isEmpty(roomTypeInfoList)){
-                        OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
-                        JointWisdomMappingDto jointWisdomInnRoom = null;
-                        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
-                        OtaRoomPriceDto priceDto = null;
-                        Result result = null;
-                        for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-                            priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfo.getOtaInfoId()));
-                            jointWisdomInnRoom = JwXHotelUtil.buildMapping(priceDto, roomTypeInfo, company.getId(), Integer.valueOf(innId), String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), tbParam.isSj());
-                            result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
-                            if (Constants.SUCCESS200 == result.getStatus()){
-                                JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
-                                if (jw==null ){
-                                    jointWisdomInnRoomDao.insertJsRoomInnRooType(jointWisdomInnRoom);
-                                }else {
-                                    jointWisdomInnRoom.setId(jw.getId());
-                                    jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
-                                }
-                                //记录日志
-                                MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
-                            }
-                        }
-                       /* Result result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoomList,  commission);
-                        if (Constants.SUCCESS200 == result.getStatus()){
+        OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
+        OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
+        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(bangInn.getInnId(), company.getId(), otaInfoId);
+        if (!tbParam.isSj() ){
+            updateFcXj(company,otaInfoId,innId,tbParam,bangInn,commission,otaInnOta,null,otaRatePlan);
+        }else {
+            if (omsInnDto != null) {
+                omsInnDto.setInnId(innId);
+                //BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
+                BangInnDto bangInnDto = null;
+                if (bangInn == null) {
+                    bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
+                    bangInnDao.createBangInn(bangInnDto);
+                } else {
+                    log.info("zh 客栈" + bangInn.getInnId() + " 已绑定" + " 状态:" + tbParam.isSj());
+                    //OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(bangInn.getInnId(), company.getId(), otaInfoId);
+                    TomsUtil.sjModel(tbParam, bangInn, omsInnDto);
+                    bangInnDao.updateBangInnTp(bangInn);
+                    if (tbParam.isUpDown()){
+                        //bang_inn   ota_inn_ota
+                        updateOtaBang(bangInn,tbParam,otaInnOta,company,omsInnDto.getInnName(),otaInfoId);
+                        //获取客栈的房型房态信息 60天
+                        List<RoomTypeInfo> roomTypeInfoList = InnRoomHelper.obtRoomTypeInfoList(company, tbParam);
+                        if (!CollectionUtils.isEmpty(roomTypeInfoList)){
+                            JointWisdomMappingDto jointWisdomInnRoom = null;
+                            OtaRoomPriceDto priceDto = null;
+                            Result result = null;
                             for (RoomTypeInfo roomTypeInfo:roomTypeInfoList){
-                                JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
-                                if (jw==null ){
-                                    jointWisdomInnRoomDao.insertJsRoomInnRooType(jointWisdomInnRoom);
-                                }else {
-                                    jointWisdomInnRoom.setId(jw.getId());
-                                    jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
+                                priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(roomTypeInfo.getRoomTypeId()), otaInfoId));
+                                jointWisdomInnRoom = JwXHotelUtil.buildMapping(priceDto, roomTypeInfo, company.getId(), Integer.valueOf(innId), String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), tbParam.isSj());
+                                result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, priceDto, commission);
+                                if (Constants.SUCCESS200 == result.getStatus()){
+                                    JointWisdomInnRoomMappingDto jw = jointWisdomInnRoomDao.selectJsInnRooType(company.getId(),Integer.valueOf(innId), roomTypeInfo.getRoomTypeId());
+                                    if (jw==null ){
+                                        jointWisdomInnRoomDao.insertJsRoomInnRooType(jointWisdomInnRoom);
+                                    }else {
+                                        jointWisdomInnRoom.setId(jw.getId());
+                                        jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
+                                    }
+                                    //记录日志
+                                    MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
                                 }
-                                //记录日志
-                                MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
                             }
-                        }*/
+                        }
                     }
                 }
+            }
+        }
+
+    }
+
+    /**
+     * 房仓 更新 bangInn  OtaInnOta
+     * @param bangInn 绑定客栈
+     * @param tbParam
+     * @param otaInnOta
+     * @param company  恭喜信息
+     * @param innName 客栈名称
+     * @param otaInfoId 渠道id
+     */
+    private  void updateOtaBang(BangInn bangInn,TBParam tbParam, OtaInnOtaDto otaInnOta,Company company, String innName,String otaInfoId){
+
+        if (otaInnOta == null) {
+            otaInnOta = OtaInnOtaDto.toDto(company.getOtaId() + "_" + bangInn.getInnId(), innName, company.getId(), tbParam, bangInn.getId(), otaInfoId);
+            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+            otaInnOtaDao.saveOtaInnOta(otaInnOta);
+            OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
+            priceModelDao.savePriceModel(otaPriceModel);
+        } else {
+            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+            //下架状态的 删除关联关系
+            if (!tbParam.isSj()){
+                otaInnOtaDao.deletedOtaInnOtaById(otaInnOta.getId());
+            }else {
+                otaInnOtaDao.updateOtaInnOta(otaInnOta);
+            }
+        }
+    }
+
+    private  void  updateFcXj(Company company,String otaInfoId,String innId,TBParam tbParam,BangInn bangInn,
+                              OtaCommissionPercentDto commission,OtaInnOtaDto otaInnOta,String innName,OtaRatePlan otaRatePlan)throws Exception{
+        OtaRoomPriceDto price = null;
+        JointWisdomMappingDto jointWisdomInnRoom = null;
+        RoomTypeInfo roomTypeInfo= null;
+        String room_type = null;
+        Result result = null;
+        List<JointWisdomInnRoomMappingDto> roomMappings = jointWisdomInnRoomDao.selectJwMapping(new JointWisdomInnRoomMappingDto(company.getId(), Integer.valueOf(innId), null));
+        for (JointWisdomInnRoomMappingDto mappingDto:roomMappings){
+            room_type = DcUtil.omsRoomTypeUrl(company.getUserAccount(), company.getUserPassword(), company.getOtaId(), mappingDto.getInnId(), mappingDto.getRoomTypeId(), CommonApi.checkRoom, Constants.day);
+            List<RoomDetail> roomDetailList = InnRoomHelper.getRoomDetail(room_type);
+            roomTypeInfo= TomsUtil.buildRoomTypeInfo(roomDetailList,mappingDto.getRoomTypeId(),mappingDto.getRoomTypeName());
+            price = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(mappingDto.getRoomTypeId()), otaInfoId));
+            jointWisdomInnRoom = JwXHotelUtil.buildMapping(price, roomTypeInfo, company.getId(), Integer.valueOf(innId), String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), tbParam.isSj());
+            result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, price, commission);
+            if (Constants.SUCCESS200 == result.getStatus()){
+                updateOtaBang(bangInn, tbParam, otaInnOta, company,  innName, otaInfoId);
+                jointWisdomInnRoom.setId(mappingDto.getId());
+                jointWisdomInnRoomDao.updateJsRoomInnRooType(jointWisdomInnRoom);
+                //记录日志
+                MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
             }
         }
     }
