@@ -143,7 +143,7 @@ public class ZhService implements ITPService {
 
         if (otaInnOta == null) {
             otaInnOta = OtaInnOtaDto.toDto(company.getOtaId() + "_" + bangInn.getInnId(), innName, company.getId(), tbParam, bangInn.getId(), otaInfoId);
-            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+            //otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
             otaInnOtaDao.saveOtaInnOta(otaInnOta);
             OtaPriceModelDto otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
             priceModelDao.savePriceModel(otaPriceModel);

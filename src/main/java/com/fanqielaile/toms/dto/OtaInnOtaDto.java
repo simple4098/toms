@@ -40,6 +40,7 @@ public class OtaInnOtaDto extends OtaInnOta {
         otaInnOta.setOtaId(tbParam.getOtaId());
         otaInnOta.setBangInnId(bangInnId);
         otaInnOta.setOtaInfoId(otaInfoId);
+        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
         return otaInnOta;
     }
     public static OtaInnOtaDto  toFcDto(Long hid,String innName,Integer innId,Company company,String bangInnId,String otaInfoId){
