@@ -39,3 +39,9 @@ COMMENT ON COLUMN "public"."bang_inn_to_qunar_city"."qunar_city_info_id" IS '去
 -- ----------------------------
 ALTER TABLE "public"."bang_inn_to_qunar_city" ADD PRIMARY KEY ("id");
 
+
+--ota
+ALTER TABLE "public"."ota_inn_ota"
+ADD COLUMN "updated_date" timestamp(6),
+ADD COLUMN "created_date" timestamp(6);
+
