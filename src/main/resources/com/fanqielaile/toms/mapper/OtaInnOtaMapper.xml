@@ -17,11 +17,13 @@
               <result column="ota_info_id" property="otaInfoId"/>
               <result column="inn_id" property="innId"/>
               <result column="sj" property="sj"/>
+              <result column="updatedDate" property="updated_date"/>
+              <result column="createdDate" property="created_date"/>
        </resultMap>
 
        <insert id="saveOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
-              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model,bang_inn_id,ota_info_id,inn_id,sj)
-              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel},#{bangInnId},#{otaInfoId},#{innId},#{sj})
+              insert into ota_inn_ota(id,deleted,wg_hid,commission_percent,company_id,alias_inn_name,ota_id,price_model,sjia_model,bang_inn_id,ota_info_id,inn_id,sj,updated_date,created_date)
+              values (#{uuid},0,#{wgHid},#{commissionPercent},#{companyId},#{aliasInnName},#{otaId},#{priceModel},#{sJiaModel},#{bangInnId},#{otaInfoId},#{innId},#{sj},now(),now())
        </insert>
 
        <select id="findOtaInnOta" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -72,7 +74,7 @@
        </select>
 
        <update id="updateOtaInnOta" parameterType="com.fanqielaile.toms.dto.OtaInnOtaDto">
-             update ota_inn_ota set sj=#{sj} where  id=#{id}
+             update ota_inn_ota set sj=#{sj},updated_date=now() where  id=#{id}
        </update>
        <select id="selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId" resultMap="BaseResultMap">
               select * from ota_inn_ota WHERE company_id = #{companyId} and ota_info_id=#{otaInfoId} and inn_id = #{innId} and sj=1 limit 1;

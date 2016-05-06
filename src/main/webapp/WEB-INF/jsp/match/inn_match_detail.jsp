@@ -494,7 +494,8 @@
 
   //下架
   $("#xjEditSave").on("click",function(){
-    layer.load(0, {time: 3*1000});
+    /*layer.load(0, {time: 3*1000});*/
+    var i = layer.load(0);
     var fqRoomTypeFcId = $("#fqRoomTypeFcId").val();
     $.ajax({
       data:{"fqRoomTypeFcId":fqRoomTypeFcId},
@@ -509,9 +510,10 @@
         }else{
           layer.msg("下架失败:"+data.message);
         }
-
+        layer.close(i);
       },error:function(data){
         layer.msg("下架失败:"+data.message);
+        layer.close(i);
       }
     })
   })
