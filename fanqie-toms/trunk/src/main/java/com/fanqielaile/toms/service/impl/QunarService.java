@@ -116,7 +116,7 @@ public class QunarService implements ITPService {
                     String bangInnId = bangInn == null ? bangInnDto.getId() : bangInn.getId();
                     if (otaInnOta == null) {
                         otaInnOta = OtaInnOtaDto.toDto(hid, omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
-                        otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                        //otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
                         otaInnOtaDao.saveOtaInnOta(otaInnOta);
                         otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                         priceModelDao.savePriceModel(otaPriceModel);

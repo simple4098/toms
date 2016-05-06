@@ -132,7 +132,7 @@ public class TBService implements ITPService {
                         String bangInnId = bangInn == null ? bangInnDto.getUuid() : bangInn.getId();
                         if (otaInnOta == null) {
                             otaInnOta = OtaInnOtaDto.toDto(String.valueOf(xHotel.getHid()), omsInnDto.getInnName(), company.getId(), tbParam, bangInnId, otaInfo.getOtaInfoId());
-                            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+                            //otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
                             otaInnOtaDao.saveOtaInnOta(otaInnOta);
                             otaPriceModel = OtaPriceModelDto.toDto(otaInnOta.getUuid());
                             priceModelDao.savePriceModel(otaPriceModel);
