@@ -6,6 +6,7 @@ import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.xl.ChangePriceMessageDto;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.service.IOtaInfoService;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.service.IXlMessageService;
@@ -36,6 +37,8 @@ public class EventFactory {
     private IOtaInfoService otaInfoService;
     @Autowired
     private IXlMessageService xlMessageService;
+    @Autowired
+    private IOrderService orderService;
 
     public void pushEvent(JSONObject jsonObject){
         String bizType = jsonObject.getString("bizType");
@@ -66,6 +69,12 @@ public class EventFactory {
             log.info("=====监听到改价消息==================参数："+content);
             ChangePriceMessageDto message=xlMessageService.initChangePriceMessageParam(content);
             xlMessageService.insertChangPriceMsg(message);
+        }
+        if (Constants.UPDATE_ORDER_STATUS.equals(bizType)) {
+            //订单状态更新
+            log.info("=========监听订单状态同步===============参数：" + content);
+            this.orderService.eventUpdateOrderStatus(content);
+
         }
     }
 }

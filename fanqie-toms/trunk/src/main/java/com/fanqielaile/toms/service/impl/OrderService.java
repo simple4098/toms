@@ -1,5 +1,8 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 import com.fanqie.core.domain.OrderSource;
 import com.fanqie.core.dto.OrderSourceDto;
 import com.fanqie.core.dto.ParamDto;
@@ -505,7 +508,19 @@ public class OrderService implements IOrderService {
             } catch (Exception e) {
                 order.setOrderStatus(OrderStatus.REFUSE);
                 order.setFeeStatus(FeeStatus.PAID);
-                JsonModel resultJson = dealCancelOrder(order, currentUser, otaInfo);
+                JsonModel resultJson = new JsonModel();
+                if (ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
+                    logger.info("oms请求异常，采用调用淘宝接口的方式同步淘宝订单状态，订单号：" + order.getChannelOrderCode());
+                    resultJson = dealCancelOrder(order, currentUser, otaInfo);
+                } else {
+                    logger.info("oms请求异常，采用事件监听的方式同步淘宝订单状态，订单号：" + order.getChannelOrderCode());
+                    resultJson.setSuccess(true);
+                    resultJson.setMessage("付款成功");
+                    //更新订单状态
+                    order.setOrderStatus(OrderStatus.ACCEPT);
+                    order.setFeeStatus(FeeStatus.PAID);
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                }
                 MessageCenterUtils.sendWeiXin("付款成功回调时，调用oms下单接口异常，订单号为：" + order.getChannelOrderCode());
                 MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), null, order.getInnId(), order.getInnCode(), "下单到oms，传递参数"));
                 return resultJson;
@@ -514,13 +529,28 @@ public class OrderService implements IOrderService {
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，返回值"));
             if (!jsonObject.get("status").equals(200)) {
                 order.setOrderStatus(OrderStatus.REFUSE);
-                order.setFeeStatus(FeeStatus.NOT_PAY);
+                order.setFeeStatus(FeeStatus.PAID);
                 if (jsonObject.get("status").equals(800) && ChannelSource.TAOBAO.equals(order.getChannelSource())) {
                     this.orderDao.updateOrderStatusAndFeeStatus(order);
                     return new JsonModel(false, "oms系统返回800，创建订单失败");
                 }
-                JsonModel jsonModel = dealCancelOrder(order, currentUser, otaInfo);
-                jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+                JsonModel jsonModel = new JsonModel();
+                if (ChannelSource.TAOBAO.equals(order.getChannelSource()) && PaymentType.PREPAID.equals(order.getPaymentType())) {
+                    if (ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
+                        jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                        jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+                    } else {
+                        logger.info("oms返回状态非200，返回淘宝状态付款成功，采用事件同步订单状态，订单号为：" + order.getChannelOrderCode());
+                        jsonModel.setSuccess(false);
+                        jsonModel.setMessage("付款失败");
+                        order.setOrderStatus(OrderStatus.REFUSE);
+                        order.setFeeStatus(FeeStatus.PAID);
+                        this.orderDao.updateOrderStatusAndFeeStatus(order);
+                    }
+                } else {
+                    jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                    jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+                }
                 return jsonModel;
             } else {
                 logger.info("oms返回oms订单号为：" + jsonObject.get("orderNo"));
@@ -530,7 +560,17 @@ public class OrderService implements IOrderService {
                     //判断当前配置下单请求是否为同步
                     if (1 != dictionary.getWeatherAsynchronous()) {
                         logger.info("同步下单，单号为：" + order.getChannelOrderCode());
-                        return pushSuccessToTB(order, currentUser, otaInfo);
+                        //判断是否是现付
+                        if (PaymentType.PREPAID.equals(order.getPaymentType()) && !ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
+                            //采用事件同步订单状态
+                            logger.info("采用事件同步订单状态，oms返回200,订单号为：" + order.getChannelOrderCode());
+                            order.setFeeStatus(FeeStatus.PAID);
+                            order.setOrderStatus(OrderStatus.ACCEPT);
+                            this.orderDao.updateOrderStatusAndFeeStatus(order);
+                            return new JsonModel(true, "付款成功");
+                        } else {
+                            return pushSuccessToTB(order, currentUser, otaInfo);
+                        }
                     } else {
                         logger.info("异步下单，单号为：" + order.getChannelOrderCode());
                         order.setFeeStatus(FeeStatus.PAID);
@@ -740,6 +780,7 @@ public class OrderService implements IOrderService {
      */
     private JsonModel dealCancelOrder(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo) {
         this.orderDao.updateOrderStatusAndFeeStatus(order);
+        //判断同步订单状态开关是否打开
         if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
             logger.info("淘宝更新订单传入订单号为orderCode=" + order.getChannelOrderCode());
             String result = TBXHotelUtilPromotion.orderUpdate(order, otaInfo, 1L);
@@ -2136,5 +2177,40 @@ public class OrderService implements IOrderService {
 		return profit;
 	}
 
+    @Override
+    public void eventUpdateOrderStatus(String content) {
+        //将参数转换为order对象
+        Order order = JSON.parseObject(content, new TypeReference<Order>() {
+        });
+        order.setChannelSource(ChannelSource.TAOBAO);
+        //查询订单是否存在
+        Order orderParam = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != orderParam && ChannelSource.TAOBAO.equals(orderParam.getChannelSource()) && PaymentType.PREPAID.equals(orderParam.getPaymentType())) {
+            //查询当前酒店以什么模式发布
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
+            //更新订单状态
+            //判断oms返回的订单状态
+            logger.info("事件更新淘宝订单,订单号为：" + orderParam.getChannelOrderCode() + ",更新订单状态为,oms订单状态：" + order.getOmsIntOrderStatus());
+            if (StringUtils.isNotEmpty(order.getOmsIntOrderStatus())) {
+                if (order.getOmsIntOrderStatus().equals("0") || order.getOmsIntOrderStatus().equals("2") || order.getOmsIntOrderStatus().equals("4")) {
+                    //未处理/已拒绝/验证失败
+                    //更新淘宝订单状态
+                    orderParam.setFeeStatus(FeeStatus.PAID);
+                    orderParam.setOrderStatus(OrderStatus.REFUSE);
+                    dealCancelOrder(orderParam, new UserInfo(), otaInfo);
+                } else if (order.getOmsIntOrderStatus().equals("1")) {
+                    //已接受
+                    orderParam.setFeeStatus(FeeStatus.PAID);
+                    orderParam.setOrderStatus(OrderStatus.ACCEPT);
+                    pushSuccessToTB(orderParam, new UserInfo(), otaInfo);
+                }
+            } else {
+                logger.info("事件更新淘宝订单状态，oms传入订单状态为空");
+            }
+        } else {
+            logger.info("事件更新淘宝订单状态，oms传入渠道订单号，toms未找到此订单,订单号为：" + order.getChannelOrderCode());
+        }
 
+    }
 }

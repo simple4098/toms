@@ -389,4 +389,11 @@ public interface IOrderService {
      * @return
      */
 	BigDecimal countOrderProfit(OrderParamDto order, List<OrderOtherPrice> otherTotalCost);
+
+    /**
+     * 事件监听同步订单状态
+     *
+     * @param content
+     */
+    void eventUpdateOrderStatus(String content);
 }
