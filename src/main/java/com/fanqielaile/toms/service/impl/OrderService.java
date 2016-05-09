@@ -2187,8 +2187,8 @@ public class OrderService implements IOrderService {
         Order orderParam = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
         if (null != orderParam && ChannelSource.TAOBAO.equals(orderParam.getChannelSource()) && PaymentType.PREPAID.equals(orderParam.getPaymentType())) {
             //查询当前酒店以什么模式发布
-            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
-            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(order.getCompanyId(), otaInnOtaDto.getOtaInfoId());
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParam.getOTAHotelId());
+            OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(orderParam.getCompanyId(), otaInnOtaDto.getOtaInfoId());
             //更新订单状态
             //判断oms返回的订单状态
             logger.info("事件更新淘宝订单,订单号为：" + orderParam.getChannelOrderCode() + ",更新订单状态为,oms订单状态：" + order.getOmsIntOrderStatus());
