@@ -403,8 +403,11 @@
     <select id="selectOrderByOmsOrderCodeAndChannelSourceCode" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from ota_toms_order where channel_order_code = #{channelOrderCode} and oms_order_code = #{omsOrderCode} and
-        deleted = 0
+        from ota_toms_order where channel_order_code = #{channelOrderCode}
+        and deleted = 0
+        <if test="omsOrderCode != null and omsOrderCode != ''">
+            and oms_order_code = #{omsOrderCode}
+        </if>
     </select>
     <select id="selectAllExceptionOrder" resultMap="BaseResultsMap">
         SELECT

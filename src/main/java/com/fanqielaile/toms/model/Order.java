@@ -176,6 +176,16 @@ public class Order extends Domain {
 
     //创建订单请求的xml数据
     private String xmlData;
+    //oms订单状态
+    private String omsIntOrderStatus;
+
+    public String getOmsIntOrderStatus() {
+        return omsIntOrderStatus;
+    }
+
+    public void setOmsIntOrderStatus(String omsIntOrderStatus) {
+        this.omsIntOrderStatus = omsIntOrderStatus;
+    }
 
     public String getXmlData() {
         return xmlData;
