@@ -56,9 +56,9 @@ public class TPServiceUtil {
     public static String obtPics(List<OmsImg> imgList) {
         List<TbImgDto> list = new ArrayList<>();
         TbImgDto tbImgDto = null;
-        if (org.apache.commons.collections.CollectionUtils.isEmpty(imgList)){
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(imgList)){
             for (OmsImg img:imgList){
-                tbImgDto = new TbImgDto(CommonApi.IMG_URL+img,img.getIsCover()==1);
+                tbImgDto = new TbImgDto(CommonApi.IMG_URL+img.getImgUrl(),img.getIsCover()==1);
                 list.add(tbImgDto);
             }
         }
