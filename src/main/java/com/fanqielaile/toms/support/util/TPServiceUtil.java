@@ -58,7 +58,7 @@ public class TPServiceUtil {
         TbImgDto tbImgDto = null;
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(imgList)){
             for (OmsImg img:imgList){
-                tbImgDto = new TbImgDto(CommonApi.IMG_URL+img.getImgUrl(),img.getIsCover()==1);
+                tbImgDto = new TbImgDto(CommonApi.IMG_URL+img.getImgUrl(),new Integer(1).equals(img.getIsCover()));
                 list.add(tbImgDto);
             }
         }
