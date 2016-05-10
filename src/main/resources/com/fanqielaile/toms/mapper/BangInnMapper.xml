@@ -161,7 +161,7 @@
     <update id="updateBangInnTp" parameterType="com.fanqielaile.toms.model.BangInn">
         update bang_inn
         <trim prefix="SET" suffixOverrides=",">
-             updated_date = now(), account_id_di = #{accountIdDi},
+             updated_date = now(),sj=#{sj},account_id_di = #{accountIdDi},
             <if test="mobile != null and mobile != ''">
                 mobile= #{mobile},
             </if>
