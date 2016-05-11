@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
@@ -25,12 +26,12 @@
                 <input type="hidden" id="pageId" name="page" value="${customerParamDto.page}" />
                 <input type="hidden" id="cityPageId" name="cityPage" value="${customerParamDto.cityPage}" />
                 <input type="hidden" id="provinceId" name="province" value="${customerParamDto.province}" />
-                <select class="form-control" id="fast_select">
-                    <option>快捷日期</option>
-                    <option>昨日</option>
-                    <option>本月</option>
-                    <option>近7天</option>
-                    <option>近30天</option>
+                <select class="form-control" id="fast_select" name="quickTime">
+                    <option value="快捷日期" <c:if test="${customerParamDto.quickTime == '快捷日期' }">selected</c:if>>快捷日期</option>
+                    <option value="本月" <c:if test="${customerParamDto.quickTime == '本月' }">selected</c:if>>本月</option>
+                    <option value="昨天" <c:if test="${customerParamDto.quickTime == '昨日' }">selected</c:if>>昨日</option>
+                    <option value="近7天" <c:if test="${customerParamDto.quickTime == '近7天' }">selected</c:if>>近7天</option>
+                    <option value="近30天" <c:if test="${customerParamDto.quickTime == '近30天' }">selected</c:if>>近30天</option>
                 </select>
                 <input  class="date-input" name="startDate" type="text" id="from_datepicker" placeholder="请选择开始日期">
                 <span>至</span>
@@ -70,26 +71,10 @@
             		</td>
             		<td>${p.province}</td>
             		<td>${p.provinceGuestCount }</td>
-            		<td>${p.provinceGuestCount/totalGuestCount*100 }%</td>
+            		<td><fmt:formatNumber type="number" value="${p.provinceGuestCount/totalGuestCount*100 }" maxFractionDigits="1"></fmt:formatNumber>%</td> 
+            		<%-- <td><fmt:formatNumber type="number" value="${10/3*100}" maxFractionDigits="0"></fmt:formatNumber>%</td> --%>
             	</tr>
             </c:forEach>
-            	
-                <%-- <c:forEach items="${customer.innCustomer}" var="c">
-                    <tr>
-                        <td>${c.city}</td>
-                        <td>${c.num}</td>
-                        <td>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar progress-bar-success" style="width:${c.percent}%;"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="easy-pie-chart percentage" data-percent="${c.percent}" data-color="#87CEEB">
-                                <span class="percent">${c.percent}</span>%
-                            </div>
-                        </td>
-                    </tr>
-                </c:forEach> --%>
                 <tr>
                 	<td></td>
                 	<td id="province-td" colspan=3> <c:if test="${not empty provinceAnalysisList && page.pageCount>1}">
@@ -127,7 +112,7 @@
 		            		</td>
 		            		<td>${c.city}</td>
 		            		<td>${c.cityGuestCount }</td>
-		            		<td>${c.cityGuestCount/c.provinceGuestCount*100 }%</td>
+		            		<td><fmt:formatNumber type="number" value="${c.cityGuestCount/c.provinceGuestCount*100 }" maxFractionDigits="1"></fmt:formatNumber>%</td> 
 		            	</tr>
 		            </c:forEach>
             		<tr>
@@ -172,13 +157,14 @@
     })
     $("#province-td").click(function(){
     	if($("#page-val").attr("page-change") == 'true'){
-    		$("#page-val-up").val($("#page-val").val(page));
+    		$("#page-val-up").val($("#page-val").val());
     		$("#page-val-up").attr("page-change",'true');
     	}
     	if($("#page-val-up").attr("page-change") == 'true'){
     		//page
     		$("#from_datepicker").val('${customerParamDto.startDate}');
        		$("#to_datepicker").val('${customerParamDto.endDate}');
+    		$("#fast_select").val('${customerParamDto.quickTime}');
     		$("#PageId").attr("value",$("#page-val-up").val());
             $("#analysisId").submit();
     	}
@@ -196,6 +182,7 @@
     		//page
     		$("#from_datepicker").val('${customerParamDto.startDate}');
        		$("#to_datepicker").val('${customerParamDto.endDate}');
+    		$("#fast_select").val('${customerParamDto.quickTime}');
     		$("#cityPageId").attr("value",$("#page-val-down").val());
             $("#analysisId").submit();
     	}
@@ -212,6 +199,7 @@
 	$('.provinceList').change(function() {
 		$("#from_datepicker").val('${customerParamDto.startDate}');
 		$("#to_datepicker").val('${customerParamDto.endDate}');
+		$("#fast_select").val('${customerParamDto.quickTime}');
 		$("#provinceId").val($('.provinceList').val());
 		$("#cityPageId").attr("value", 1);
 		$("#analysisId").submit();

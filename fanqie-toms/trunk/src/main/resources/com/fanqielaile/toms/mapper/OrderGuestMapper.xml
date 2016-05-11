@@ -67,9 +67,10 @@
     <select id="selectCityGuestNumList" resultMap="CustomerAnalysisResultsMap">
         SELECT 
         	province.guest_province as guest_province,
-        	province_guest_count,
+        	province_guest_count, 
         	guest_city,
-        	city_guest_count
+        	city_guest_count,
+        	city_guest_count/province_guest_count::NUMERIC(4,1) as percent
         from(
         	<include refid="selectProvinceGuestNumListSql"/>
         ) province

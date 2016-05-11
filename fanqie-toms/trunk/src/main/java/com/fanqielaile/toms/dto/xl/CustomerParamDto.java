@@ -10,6 +10,8 @@ public class CustomerParamDto extends ParamDto {
 	private Integer cityPage;
 	//城市所属省份
 	private String province;
+	//快捷日期数据
+	private String quickTime;
 	
 	public Integer getCityPage() {
 		return cityPage;
@@ -23,5 +25,12 @@ public class CustomerParamDto extends ParamDto {
 	public void setProvince(String province) {
 		this.province = province;
 	}
+	public String getQuickTime() {
+		return quickTime;
+	}
+	public void setQuickTime(String quickTime) {
+		this.quickTime = quickTime;
+	}
+	
 	
 }
