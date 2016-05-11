@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
