@@ -165,7 +165,7 @@
     		$("#from_datepicker").val('${customerParamDto.startDate}');
        		$("#to_datepicker").val('${customerParamDto.endDate}');
     		$("#fast_select").val('${customerParamDto.quickTime}');
-    		$("#PageId").attr("value",$("#page-val-up").val());
+    		$("#pageId").attr("value",$("#page-val-up").val());
             $("#analysisId").submit();
     	}
 		$("#page-val-up").attr("page-change",'false');
