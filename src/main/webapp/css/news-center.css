@@ -308,6 +308,18 @@ input[type=button].off_button {
     border-top: none;
     display: none;
 }
+.select-order-status {
+    position: relative;
+}
+.select-order-status ul {
+    position: absolute;
+    left: 97px;
+    width: 157px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    display: none; 
+}
 .select-operator ul li {
     height: 30px;
     line-height: 30px;
@@ -344,7 +356,7 @@ input[type=button].off_button {
 .query-btn {
     position: absolute;
     left: 750px;
-    top: 30px;
+    top: 12px;
 }
 .query-btn button {
     margin-right: 15px;

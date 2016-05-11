@@ -2121,7 +2121,7 @@ public class OrderService implements IOrderService {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,  String operatorsString, String selectedOperators) {
+	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,String operatorsString, String selectedOperators, String selectStatusString) {
 		 //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //默认下单日期
@@ -2145,7 +2145,46 @@ public class OrderService implements IOrderService {
     	}else{
     		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
     		orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
-        }		
+        }	
+    	//处理订单状态
+		List<OrderStatus> selectStatus = new ArrayList<>();
+		
+		for(String select:selectStatusString.split(",")){
+			for(OrderStatus status: OrderStatus.values()){
+				if(select.equals(status.getText())){
+					selectStatus.add(status);
+					break;
+				}
+			}
+			if(select.equals("人工拒绝")){
+				selectStatus.add(OrderStatus.HAND_REFUSE);
+			}
+			if(select.equals("人工确认并下单")){
+				selectStatus.add(OrderStatus.CONFIM_AND_ORDER);
+			}
+			if(select.equals("人工确认但不下单")){
+				selectStatus.add(OrderStatus.CONFIM_NO_ORDER);
+			}
+//			if(select.equals("自动接受")){
+//				orderStatus=
+//			}
+//			if(select.equals("确认并下单")){
+//				
+//			}
+//			if(select.equals("已确认但不下单")){
+//				
+//			}
+//			if(select.equals("已取消")){
+//				
+//			}
+//			if(select.equals("自动拒绝")){
+//				
+//			}
+//			if(select.equals("人工拒绝")){
+//				
+//			}
+		}
+		orderParamDto.setSelectedOrderStatus(selectStatus);
 	}
 
 
@@ -2213,4 +2252,14 @@ public class OrderService implements IOrderService {
         }
 
     }
+
+
+	@Override
+	public Object handleOrderStatusString(String selectStatusString) {
+		// TODO Auto-generated method stub
+		if(StringUtils.isEmpty(selectStatusString)){
+			selectStatusString = "自动接受,人工确认并下单,人工确认但不下单,自动拒绝,人工拒绝,已取消";
+		}
+		return selectStatusString;
+	}
 }

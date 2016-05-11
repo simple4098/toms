@@ -61,10 +61,18 @@
                         <li <c:if test="${fn:contains('/operate/kf',url)}">class="active"</c:if>>
                             <a href="<c:url value='/operate/kf?page=1'/>">
                                 <i class="icon-double-angle-right"></i>
-                                客户资料分析
+                                客栈客户分析
                             </a>
                         </li>
                         </toms:authorize>
+                        <toms:authorize uri="/operate_test/customer_analysis">
+                        <li <c:if test="${fn:contains('/operate/customer_analysis',url)}">class="active"</c:if>> 
+                            <a href="<c:url value='/operate/customer_analysis'/>">
+                                <i class="icon-double-angle-right"></i>
+                                客户资料分析
+                            </a>
+                        </li>
+                        </toms:authorize> 
 
                         <toms:authorize uri="/operate/order">
                         <li <c:if test="${fn:contains(url,'/operate/order')}">class="active"</c:if>>

@@ -140,9 +140,10 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
 
     @Override
     public void deleteOtherConsumerInfo(String consumerInfoId) throws Exception {
+    	//获取该消费项目订单记录数
         otherConsumerInfoDao.deleteOtherConsumerInfo(consumerInfoId);
     }
-
+    
     @Override
     public OtherConsumerInfoDto findChildOtherConsumerInfo(String companyId) {
         OtherConsumerInfoDto otherConsumerInfoDto = new OtherConsumerInfoDto();
@@ -177,4 +178,9 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
             otherConsumerInfoDao.insertConsumerFunction(otherConsumerFunction);
         }
     }
+
+	@Override
+	public Integer getOrderRecordCount(String consumerInfoId) {
+		return otherConsumerInfoDao.getOrderRecordCount(consumerInfoId);
+	}
 }

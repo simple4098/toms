@@ -59,4 +59,10 @@ public interface IOtherConsumerInfoDao {
      */
     OtherConsumerInfoDto selectConsumerInfoByProjectName(@Param("companyId")String companyId, @Param("consumerProjectName")String consumerProjectName);
     OtherConsumerInfoDto selectConsumerInfoByPriceName(@Param("companyId")String companyId, @Param("priceName")String priceName,@Param("parentId")String parentId);
+    /**
+     * 根据其他消费项目id获取该消费项目订单记录数
+     * @param consumerInfoId 其他消费项目id
+     * @return
+     */
+	Integer getOrderRecordCount(@Param("consumerInfoId")String consumerInfoId);
 }

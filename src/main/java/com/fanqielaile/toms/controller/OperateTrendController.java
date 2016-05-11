@@ -4,9 +4,18 @@ package com.fanqielaile.toms.controller;
 import com.fanqie.core.domain.OperateTrend;
 import com.fanqie.core.dto.CustomerDto;
 import com.fanqie.core.dto.ParamDto;
+import com.fanqie.util.Pagination;
+import com.fanqielaile.toms.dto.xl.CustomerAnalysisDto;
+import com.fanqielaile.toms.dto.xl.CustomerParamDto;
+import com.fanqielaile.toms.helper.PaginationHelper;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOperateTrendService;
 import com.fanqielaile.toms.service.IOrderService;
+import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.github.miemiedev.mybatis.paginator.domain.Paginator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,6 +23,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,6 +82,37 @@ public class OperateTrendController extends BaseController  {
             logger.error("客户资料异常",e);
         }
         return "/operate/kf";
+    }
+    /**
+     * 客服资料分析
+     * @param paramDto  查询参数
+     */
+    @RequestMapping("/customer_analysis")
+    public String customerAnalysis(Model model,CustomerParamDto customerParamDto){
+    	try {
+    		UserInfo currentUser = getCurrentUser();
+    		operateTrendService.initCustomerParam(customerParamDto);
+    		List<CustomerAnalysisDto> provinceAnalysisList = operateTrendService.selectProvinceGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getPage(), defaultRows));
+    		model.addAttribute("provinceAnalysisList",provinceAnalysisList);
+    		Paginator paginator = ((PageList) provinceAnalysisList).getPaginator();
+            Pagination pagination = PaginationHelper.toPagination(paginator);
+            FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+    	    model.addAttribute("pagination",pagination);
+            model.addAttribute("pageDecorator",pageDecorator);
+    		List<CustomerAnalysisDto> cityAnalysisList = operateTrendService.selectCityGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getCityPage(), defaultRows));
+    		model.addAttribute("cityAnalysisList",cityAnalysisList);
+    		Paginator paginatorCity = ((PageList) cityAnalysisList).getPaginator();
+            Pagination paginationCity = PaginationHelper.toPagination(paginatorCity);
+            FrontendPagerDecorator pageDecoratorCity = new FrontendPagerDecorator(paginationCity);
+    	    model.addAttribute("paginationCity",paginationCity);
+            model.addAttribute("pageDecoratorCity",pageDecoratorCity);
+            Integer totalGuestCount = operateTrendService.getTotalGuestCount(customerParamDto,currentUser);
+            model.addAttribute("totalGuestCount",totalGuestCount);
+            model.addAttribute("customerParamDto",customerParamDto);
+    	} catch (Exception e) {
+    		logger.error("客户分析执行异常",e);
+    	}
+    	return "/operate/customer_analysis";
     }
 
     /**
