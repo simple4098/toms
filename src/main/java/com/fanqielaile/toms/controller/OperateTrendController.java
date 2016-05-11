@@ -12,6 +12,8 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOperateTrendService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
+import com.github.miemiedev.mybatis.paginator.domain.Order;
+import com.github.miemiedev.mybatis.paginator.domain.Order.Direction;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
@@ -92,14 +94,14 @@ public class OperateTrendController extends BaseController  {
     	try {
     		UserInfo currentUser = getCurrentUser();
     		operateTrendService.initCustomerParam(customerParamDto);
-    		List<CustomerAnalysisDto> provinceAnalysisList = operateTrendService.selectProvinceGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getPage(), defaultRows));
+    		List<CustomerAnalysisDto> provinceAnalysisList = operateTrendService.selectProvinceGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getPage(), defaultRows,Order.formString("province_guest_count.desc")));
     		model.addAttribute("provinceAnalysisList",provinceAnalysisList);
     		Paginator paginator = ((PageList) provinceAnalysisList).getPaginator();
             Pagination pagination = PaginationHelper.toPagination(paginator);
             FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
     	    model.addAttribute("pagination",pagination);
             model.addAttribute("pageDecorator",pageDecorator);
-    		List<CustomerAnalysisDto> cityAnalysisList = operateTrendService.selectCityGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getCityPage(), defaultRows));
+    		List<CustomerAnalysisDto> cityAnalysisList = operateTrendService.selectCityGuestNumList(customerParamDto,currentUser,new PageBounds(customerParamDto.getCityPage(), defaultRows,Order.formString("percent.desc")));
     		model.addAttribute("cityAnalysisList",cityAnalysisList);
     		Paginator paginatorCity = ((PageList) cityAnalysisList).getPaginator();
             Pagination paginationCity = PaginationHelper.toPagination(paginatorCity);
