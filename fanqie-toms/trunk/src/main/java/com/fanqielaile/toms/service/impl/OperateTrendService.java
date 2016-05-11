@@ -6,16 +6,25 @@ import com.fanqie.core.dto.CustomerDto;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.util.*;
 import com.fanqielaile.toms.common.CommonApi;
+import com.fanqielaile.toms.dao.OrderGuestsDao;
+import com.fanqielaile.toms.dto.xl.CustomerAnalysisDto;
+import com.fanqielaile.toms.dto.xl.CustomerParamDto;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IOperateTrendService;
+import com.fanqielaile.toms.support.util.TomsUtil;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.util.DateUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 /**
  * DESC :
@@ -25,6 +34,9 @@ import java.util.Map;
  */
 @Service
 public class OperateTrendService implements IOperateTrendService {
+	
+	@Resource
+	private OrderGuestsDao orderGuestsDao;
 
     @Override
     public CustomerDto findCustomer(ParamDto paramDto,UserInfo userInfo)throws Exception{
@@ -71,4 +83,36 @@ public class OperateTrendService implements IOperateTrendService {
             return null;
         }
     }
+
+	@Override
+	public List<CustomerAnalysisDto> selectProvinceGuestNumList(CustomerParamDto customerParamDto, UserInfo currentUser,
+			PageBounds pageBounds) {
+		return orderGuestsDao.selectProvinceGuestNumList(customerParamDto,currentUser,pageBounds);
+	}
+
+	@Override
+	public List<CustomerAnalysisDto> selectCityGuestNumList(CustomerParamDto customerParamDto, UserInfo currentUser,
+			PageBounds pageBounds) {
+		return orderGuestsDao.selectCityGuestNumList(customerParamDto,currentUser,pageBounds);
+	}
+
+	@Override
+	public void initCustomerParam(CustomerParamDto customerParamDto) {
+		// TODO Auto-generated method stub
+		if(customerParamDto.getCityPage() == null){
+			customerParamDto.setCityPage(1);
+			customerParamDto.setPage(1);
+		}
+		Date date = new Date();
+		if(customerParamDto.getStartDate() == null || customerParamDto.getEndDate() == null){
+			customerParamDto.setStartDate(DateUtils.format(date, "yyyy-MM")+"-01");
+			customerParamDto.setEndDate(DateUtils.format(date, "yyyy-MM-dd"));
+		}
+	}
+
+	@Override
+	public Integer getTotalGuestCount(CustomerParamDto customerParamDto, UserInfo currentUser) {
+		// TODO Auto-generated method stub
+		return orderGuestsDao. getTotalGuestCount(customerParamDto,currentUser);
+	}
 }

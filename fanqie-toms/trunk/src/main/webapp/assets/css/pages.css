@@ -66,7 +66,7 @@ select.form-control{
 .search-btn{
 	height: 29px;
 }
-/* ------------------客户资料分析------------------ */
+/* ------------------客栈客户分析------------------ */
 #myTab{
 	height: 34px;
 }
@@ -91,6 +91,64 @@ select.form-control{
 	width: 100px;
 }
 
+/* ------------------客户资料分析------------------ */
+.table-format tbody td:nth-child(1){
+	width: 50%;
+}
+.table-format tbody td:nth-child(n+2){
+	width: 16.6%;
+}
+
+.table-format th:nth-child(1){
+	vertical-align: bottom!important;
+	font-size: 18px;
+	background-color: white;
+}
+.table-format th:nth-child(2){
+	vertical-align: middle!important;
+	font-size: 18px;
+	background-color: white;
+}
+.table-format tbody tr:nth-child(1),.table-format tbody tr:last-child{
+	background-color: #EDEDED;
+}
+.table-format tbody,.table-format tbody td{
+	border:solid #ddd; 
+	border-width:1px 1px 1px 1px;
+	font-size: 14px;
+} 
+.table-format span{
+	color: #5cb85c;
+	font-size: 34px;
+	padding-right: 2px;
+}
+.table-format .div-chart,.table-format-city .div-chart{
+	height: 21px;
+	background-color: #00BFFF;
+}
+
+td.bar-chart{
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.table-format-city thead th:nth-child(1){
+	width: 50%;
+}
+.text-format{
+	font-size: 18px;
+}
+.table-format-city thead th:nth-child(n+2){
+	width: 16.6%;
+}
+.table-format-city thead th,.table-format-city tbody tr:last-child{
+	background-color: #EDEDED;
+}
+.table-format-city table,.table-format-city table th,.table-format-city table td{
+	border:solid #ddd; 
+	border-width:1px 1px 1px 1px;
+	font-size: 14px;
+} 
 /* ------------------订单来源分析------------------ */
 /* 表格样式重置 */
 .row{

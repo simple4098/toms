@@ -373,8 +373,9 @@ public interface IOrderService {
 	 * @param currentUser 
 	 * @param operatorsJson 
 	 * @param selectedOperators 
+	 * @param selectStatusString 
      */
-	void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsJson, String selectedOperators);
+	void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsJson, String selectedOperators, String selectStatusString);
 	
 	/**
      * 根据订单id,统计该订单其他消费的成本
@@ -396,4 +397,10 @@ public interface IOrderService {
      * @param content
      */
     void eventUpdateOrderStatus(String content);
+    /**
+     * 处理返回被选择的订单状态字符串
+     *
+     * @param selectStatusString
+     */
+	Object handleOrderStatusString(String selectStatusString);
 }

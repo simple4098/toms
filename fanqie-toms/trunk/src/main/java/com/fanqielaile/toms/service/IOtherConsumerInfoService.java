@@ -60,5 +60,12 @@ public interface IOtherConsumerInfoService {
      * @param status 状态
      */
     void updateFunction(String companyId, String status);
+    
+    /**
+     * 根据其他消费项目id获取该消费项目订单记录数
+     * @param consumerInfoId 其他消费项目id
+     * @return
+     */
+	Integer getOrderRecordCount(String consumerInfoId);
 }
 

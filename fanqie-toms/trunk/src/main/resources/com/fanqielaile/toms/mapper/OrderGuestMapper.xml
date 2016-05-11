@@ -11,19 +11,82 @@
         <result column="first_name" property="firstName"/>
         <result column="last_name" property="lastName"/>
     </resultMap>
+    <resultMap id="CustomerAnalysisResultsMap" type="com.fanqielaile.toms.dto.xl.CustomerAnalysisDto">
+        <result column="guest_province" property="province"/>
+        <result column="province_guest_count" property="provinceGuestCount"/>
+        <result column="guest_city" property="city"/>
+        <result column="city_guest_count" property="cityGuestCount"/>
+    </resultMap>
     <sql id="Base_Column_List">
         id,created_date,order_id,name,room_pos,nationality,first_name,last_name
     </sql>
     <insert id="insertOrderGuests" parameterType="com.fanqielaile.toms.model.Order">
-        INSERT INTO ota_order_guests(id,created_date,order_id,name,room_pos,nationality,first_name,last_name)
+        INSERT INTO ota_order_guests(id,created_date,order_id,name,room_pos,nationality,first_name,last_name,guest_province,guest_city)
         VALUES
         <foreach collection="orderGuestses" separator="," item="o">
-            (#{o.uuid},now(),#{o.orderId},#{o.name},#{o.roomPos},#{o.nationality},#{o.firstName},#{o.lastName})
+            (#{o.uuid},now(),#{o.orderId},#{o.name},#{o.roomPos},#{o.nationality},#{o.firstName},#{o.lastName},#{o.guestProvince},#{o.guestCity})
         </foreach>
     </insert>
     <select id="selectOrderGuestByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
         from ota_order_guests where order_id = #{orderId}
+    </select>
+    <sql id="filterOrder">
+    	<where>
+        	<if test="currentUser.companyId != null">
+        		and oto.company_id = #{currentUser.companyId}
+        	</if>
+        	<if test="customerParamDto.startDate != null and customerParamDto.endDate != null">
+    			and oto.order_time between '${customerParamDto.startDate} 00:00:00' and '${customerParamDto.endDate} 23:59:59'
+    		</if>
+    		and oto.channel_source = 'HAND_ORDER'
+    		and oto.order_status in('CONFIM_AND_ORDER','ACCEPT') 
+    		and oog.guest_province is not null
+        </where>
+    </sql>
+    <sql id="selectProvinceGuestNumListSql">
+    	SELECT
+        	oog.guest_province,
+        	count(oog.guest_city) as province_guest_count
+        from ota_order_guests oog 
+        inner join ota_toms_order oto on oog.order_id = oto.id 
+        <include refid="filterOrder"></include>
+        group by guest_province
+    </sql>
+    <select id="selectProvinceGuestNumList" resultMap="CustomerAnalysisResultsMap">
+    	<include refid="selectProvinceGuestNumListSql"></include>
+    </select>
+    <select id="getTotalGuestCount" resultType="Integer">
+        SELECT
+        	count(oog.guest_city)
+        from ota_order_guests oog 
+        inner join ota_toms_order oto on oog.order_id = oto.id 
+        <include refid="filterOrder"></include>
+    </select>
+    <select id="selectCityGuestNumList" resultMap="CustomerAnalysisResultsMap">
+        SELECT 
+        	province.guest_province as guest_province,
+        	province_guest_count,
+        	guest_city,
+        	city_guest_count
+        from(
+        	<include refid="selectProvinceGuestNumListSql"/>
+        ) province
+        left join(
+        	SELECT
+	        	guest_province,
+	        	guest_city,
+	        	count(oog.id) as city_guest_count
+	        from ota_order_guests oog 
+	        inner join ota_toms_order oto on oog.order_id = oto.id 
+	        <include refid="filterOrder"></include>
+	        group by guest_province,guest_city
+        ) city on province.guest_province = city.guest_province
+        <where>
+        	<if test="customerParamDto.province != null and customerParamDto.province != ''">
+        		province.guest_province = '${customerParamDto.province}'
+        	</if>
+        </where>
     </select>
 </mapper>

@@ -36,9 +36,9 @@
         <input type="hidden" name="beginDate" value="${order.beginDate}"/>
         <input type="hidden" name="endDate" value="${order.endDate}"/>
         <input type="hidden" name="channelSource" class="channel-source-text" value="${order.channelSource}"/>
-        <input type="hidden" name="orderStatus" class="order-status-text" value="${order.orderStatus}"/>
+        <input type="hidden" name="selectStatusString" class="order-status-text" value="${selectStatusString}"/>
         <input type="hidden" name="channelOrderCode" class="channel-order-code" value="${order.channelOrderCode}"/>
-        <input type="hidden" name="operatorsJson"  class="operatorsJson-form" value="${operatorsJson}"/>
+        <textarea style="display:none" cols="20" rows="5" name="operatorsJson"  class="operatorsJson-form">${operatorsJson}</textarea>
         <input type="hidden" name="selectedOperators"  class="selectedOperators-form" value="${selectedOperators}"/>
        	<input type="hidden" name="orderInnName" class="innName-form" value="${order.orderInnName }"/>
     </form>
@@ -73,8 +73,6 @@
                     </div>
                     <form class="search-form" name="search-form" action="<c:url value="/order/find_orders"/>"
                           method="post">
-                        <input type="hidden" name="orderStatus" id="orderStatus" value="${order.orderStatus}"/>
-
                         <div style="margin-top:10px">
                             日期选择：
                             <select name="searchType" class="search-type">
@@ -129,7 +127,7 @@
                                 </select>
                             </div>
                              <div class="select-operator">
-                                 操作人选择：
+                         操作人选择：        
                                  <input type="text" id="selectOperator" name="selectedOperators" value="${selectedOperators}" autocomplete="off">
                                  <ul id="operatorList">
                                  <c:if test="${not empty operators }">
@@ -144,7 +142,27 @@
                                      <li id="enterOperators"><label class="enteroperator"><a>确认</a></label></li>
                                  </ul>
                              </div>
-                        </div>
+                             <div class="select-order-status">
+                                 订单状态选择：
+                                 <input type="text" id="orderStatus" name="selectStatusString" value="${selectStatusString}" autocomplete="off">
+                                 <ul id="orderStatusList">
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'自动接受')}"> checked</c:if> name="status-name"><span>自动接受</span></label></li>
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'人工确认并下单')}"> checked</c:if> name="status-name"><span>人工确认并下单</span></label></li>
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'人工确认但不下单')}"> checked</c:if> name="status-name"><span>人工确认但不下单</span></label></li>
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'自动拒绝')}"> checked</c:if> name="status-name"><span>自动拒绝</span></label></li>
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'人工拒绝')}"> checked</c:if> name="status-name"><span>人工拒绝</span></label></li>
+                                 	<li><label><input type="checkbox" <c:if test="${fs:contains(selectStatusString,'已取消')}"> checked</c:if> name="status-name"><span>已取消</span></label></li>
+                                 <%-- <c:if test="${not empty orderStatusList }">
+	                                 	<c:forEach items="${orderStatusList}" var="order">
+	                                 		<li><label><input type="checkbox" <c:if test="${order.selected == true}"> checked</c:if> name="name"><span>${order.userName }</span><input type="hidden" name="userid" value="${op.id}"></label></li>
+	                                 		
+	                                 	</c:forEach>
+	                                 	
+                                 </c:if> --%>
+                                 	<%-- <li><input type="text" style="display:none" id="operatorsJson" name="operatorsJson" value="${operatorsJson}"/></li> --%>
+                                     <li id="enterOrderStatus"><label class="enteroperator"><a>确认</a></label></li>
+                                 </ul>
+                             </div>
                         <div class="query-btn">
                             <button type="submit" class="btn-info btn-search">查询</button>
                             <button type="button" style="float: right" class="btn-success btn-export-form">导出订单</button>
@@ -160,8 +178,10 @@
                         <input type="hidden" name="endDate" class="end-date-form">
                         <input type="hidden" name="operatorsJson" class="operatorsJson-form"/>
                         <input type="hidden" name="selectedOperators"  class="selectedOperators-form" >
+                        <input type="hidden" name="selectStatusString"  class="selectStatusString-form" >
                         <input type="hidden" name="orderInnName" class="innName-form"/>
                     </form>
+                   </div>
                     <div class="form-group">
                         <h3>营业汇总</h3>
                         <div>
@@ -234,7 +254,8 @@
                                 </th>
                                 <th>渠道订单号</th>
                                 <th>
-                                    <select name="orderStatus" class="order-status">
+                                	订单状态
+                                    <%-- <select name="orderStatus" class="order-status">
                                         <option selected value="">订单状态</option>
                                         <option
                                                 <c:if test="${order.orderStatus == 'ACCEPT'}">selected</c:if>
@@ -260,7 +281,7 @@
                                                 <c:if test="${order.orderStatus == 'CANCEL_ORDER'}">selected</c:if>
                                                 value="CANCEL_ORDER">已取消
                                         </option>
-                                    </select>
+                                    </select> --%>
                                 </th>
                                 <th>付款状态</th>
                                 <th>

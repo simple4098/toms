@@ -22,6 +22,9 @@ function formatDate(date,oneday) {
 $("#selectOperator").on("focus",function() {
      $("#operatorList").show();
 })
+$("#orderStatus").on("focus",function() {
+	$("#orderStatusList").show();
+})
 /*$("#selectOperator").on("blur",function() {
     $("#operatorList").hide();
 })*/
@@ -55,6 +58,25 @@ $("#enterOperators").on("click",function() {
 //    alert($("#operatorsJson").val());
    
 })
+$("#enterOrderStatus").on("click",function() {
+	var operator = [],
+	str = ''
+		$.each($("input[name='status-name']"),function(key,value) {
+			
+			if($(this).is(":checked")) {
+				if(str) {
+					str+=(","+$(this).next().html())
+				}else {
+					str+=$(this).next().html()
+				}
+				
+			}
+			$("#orderStatus").val(str);
+		})
+		$("#orderStatusList").hide();
+//    alert($("#operatorsJson").val());
+	
+})
 //分页方法
 function page(page) {
     $("#pageId").attr("value", page);
@@ -67,7 +89,7 @@ $('.btn-search').on('click', function () {
     $('.search-form').submit();
 })
 //渠道来源，订单状态联动
-$('.order-status').change(function () {
+/*$('.order-status').change(function () {
     $('#channelSource').val($('.channel-source').val());
     $('#orderStatus').val($('.order-status').val());
     $('.channel-source-text').val($('.channel-source').val());
@@ -81,7 +103,7 @@ $('.order-status').change(function () {
         $('.search-type').val(null);
     }
     $('.search-form').submit();
-})
+})*/
 /*查询订单*/
 $('.btn-order').on('click', function () {
     var url = $(this).attr('data-url');
@@ -357,18 +379,18 @@ $('.btn-export-form').on('click', function () {
             var searchType = $('.search-type').val();
             var channelOrderCode = $('.keyword').val();
             var channelSource = $('.channel-source').val();
-            var orderStatus = $('.order-status').val();
             var operatorsJson = $('#operatorsJson').val();
+            var selectOrderStatus = $('#orderStatus').val();
             var selectOperator = $('#selectOperator').val();
             var innName = $('.select-hotel').val();
             $('.search-type-form').val(searchType);
             $('.channel-order-code-form').val(channelOrderCode);
             $('.channel-source-form').val(channelSource);
-            $('.order-status-form').val(orderStatus);
             $('.begin-date-form').val(beginDateStr);
             $('.end-date-form').val(endDateStr);
             $('.operatorsJson-form').val(operatorsJson);
             $('.selectedOperators-form').val(selectOperator);
+            $('.selectStatusString-form').val(selectOrderStatus);
             $('.innName-form').val(innName);
             var objForm = $('#export-order-form');
             objForm.submit();

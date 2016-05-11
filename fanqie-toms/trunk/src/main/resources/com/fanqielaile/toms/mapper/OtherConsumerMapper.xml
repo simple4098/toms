@@ -80,6 +80,11 @@
     <delete id="deleteOtherConsumerInfo">
         update other_consumer_info set deleted=1 where id=#{consumerInfoId} or parent_id=#{consumerInfoId}
     </delete>
-
+	<select id="getOrderRecordCount" resultType="Integer">
+		select count(*)
+		from order_other_price oop
+		left join other_consumer_info oci on oop.other_consumer_info_id = oci.id
+		where oci.parent_id = #{consumerInfoId}
+	</select>
 
 </mapper>

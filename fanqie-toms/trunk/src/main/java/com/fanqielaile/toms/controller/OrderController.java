@@ -23,6 +23,7 @@ import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
+import com.fanqielaile.toms.support.util.MobileUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
@@ -88,12 +89,12 @@ public class OrderController extends BaseController {
      * @return
      */
     @RequestMapping("find_orders")
-    public String findOrder(Model model, @RequestParam(defaultValue = "1", required = false) int page,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectedOperators, OrderParamDto orderParamDto) {
+    public String findOrder(Model model, @RequestParam(defaultValue = "1", required = false) int page,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectStatusString,@RequestParam(defaultValue = "",required = false) String selectedOperators, OrderParamDto orderParamDto) {
         try {
             UserInfo currentUser = getCurrentUser();
+            logger.info("++++++++++++++++++++++++++++++传入参数：operatorsJson："+operatorsJson+"+++++selectStatusString："+selectStatusString);
             //初始化查询已处理订单属性
-            logger.info("++++++++++++++++++++++++++++++"+operatorsJson);
-        	orderService.initFindOrderParam(orderParamDto,currentUser,operatorsJson,selectedOperators);
+        	orderService.initFindOrderParam(orderParamDto,currentUser,operatorsJson,selectedOperators,selectStatusString);
             List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
             //对订单相关数据进行统计
             OrderStatisticsDto orderStatisticsDto = orderService.statisticsOrder(currentUser.getCompanyId(), orderParamDto);
@@ -119,6 +120,8 @@ public class OrderController extends BaseController {
             model.addAttribute("operators", orderParamDto.getOperators());
             model.addAttribute("operatorsJson", operatorsJson);
             model.addAttribute("selectedOperators", selectedOperators);
+            //订单状态相关
+            model.addAttribute("selectStatusString",orderService.handleOrderStatusString(selectStatusString) );
             //酒店相关
 			List<BangInn> inns = bangInnService.findBangInnByCompanyId(orderParamDto.getCompanyId());
 			model.addAttribute("inns", inns);
@@ -292,13 +295,21 @@ public class OrderController extends BaseController {
         UserInfo userInfo = getCurrentUser();
         //检查参数
         Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
+        Map<String,String> map = null;
         order.setCompanyId(getCurrentUser().getCompanyId());
         order.setUserId(userInfo.getId());
         if (param) {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
             order.setId(order.getUuid());
-            //单房型手动下单
+            try {
+				map = MobileUtil.getRegion(order.getGuestMobile());
+				order.setGuestProvince(map.get("province"));
+				order.setGuestCity(map.get("city"));
+			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
+			//单房型手动下单
 //            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
             //多方手动下单
             Map<String, Object> result = this.orderService.dealHandMakeOrderRoomTypes(order, userInfo);

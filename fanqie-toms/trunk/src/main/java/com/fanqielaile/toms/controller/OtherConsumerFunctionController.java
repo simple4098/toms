@@ -113,8 +113,22 @@ public class OtherConsumerFunctionController  extends BaseController {
     @ResponseBody
     public Object delete(String consumerInfoId){
         JsonModel jsonModel = new JsonModel();
+        Integer count = 0;
+		try {
+			count = otherConsumerInfoService.getOrderRecordCount(consumerInfoId);
+		} catch (Exception e) {
+			log.error("获取其他消费项目订单记录条数异常",e);
+			jsonModel.put(Constants.STATUS, Constants.ERROR400);
+            jsonModel.put(Constants.MESSAGE, e);
+			return jsonModel;
+		}
+    	if(count > 0){
+            jsonModel.put(Constants.STATUS, Constants.ERROR400);
+            jsonModel.put(Constants.MESSAGE, "该消费项目已经存在订单记录了，不能删除");
+            return jsonModel;
+    	}
         try {
-            otherConsumerInfoService.deleteOtherConsumerInfo(consumerInfoId);
+        	otherConsumerInfoService.deleteOtherConsumerInfo(consumerInfoId);
             jsonModel.put(Constants.STATUS, Constants.SUCCESS200);
         } catch (Exception e) {
             log.error("删除其他消费异常",e);

@@ -2,6 +2,7 @@ package com.fanqielaile.toms.dto;
 
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.enums.ChannelSource;
+import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.model.Order;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +41,8 @@ public class OrderParamDto extends Order {
     private String orderStatusString;
     //订单操作人下拉列表框相关
     private List<UserInfoDto> operators;
+    //订单状态下拉列表框相关
+    private List<OrderStatus> selectedOrderStatus;
 
     public String getOrderStatusString() {
         return orderStatusString;
@@ -188,5 +191,13 @@ public class OrderParamDto extends Order {
 
 	public void setOperators(List<UserInfoDto> operators) {
 		this.operators = operators;
+	}
+
+	public List<OrderStatus> getSelectedOrderStatus() {
+		return selectedOrderStatus;
+	}
+
+	public void setSelectedOrderStatus(List<OrderStatus> selectedOrderStatus) {
+		this.selectedOrderStatus = selectedOrderStatus;
 	}
 }

@@ -176,6 +176,12 @@ public class Order extends Domain {
 
     //创建订单请求的xml数据
     private String xmlData;
+
+    //订单客人所属省份
+    private String guestProvince;
+    //订单客人所属城市
+    private String guestCity;
+
     //oms订单状态
     private String omsIntOrderStatus;
 
@@ -186,6 +192,7 @@ public class Order extends Domain {
     public void setOmsIntOrderStatus(String omsIntOrderStatus) {
         this.omsIntOrderStatus = omsIntOrderStatus;
     }
+
 
     public String getXmlData() {
         return xmlData;
@@ -1114,6 +1121,8 @@ public class Order extends Domain {
         OrderGuests orderGuests = new OrderGuests();
         orderGuests.setName(order.getGuestName());
         orderGuests.setOrderId(order.getId());
+        orderGuests.setGuestProvince(order.getGuestProvince());
+        orderGuests.setGuestCity(order.getGuestCity());
         //默认房间号排序为0
         orderGuests.setRoomPos(0);
         orderGuestses.add(orderGuests);
@@ -1237,4 +1246,20 @@ public class Order extends Domain {
         order.setExceptionOrderList(exceptionOrders);
         return order;
     }
+
+	public String getGuestProvince() {
+		return guestProvince;
+	}
+
+	public void setGuestProvince(String guestProvince) {
+		this.guestProvince = guestProvince;
+	}
+
+	public String getGuestCity() {
+		return guestCity;
+	}
+
+	public void setGuestCity(String guestCity) {
+		this.guestCity = guestCity;
+	}
 }
