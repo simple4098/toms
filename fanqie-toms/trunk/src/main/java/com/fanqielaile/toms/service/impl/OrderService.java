@@ -2158,9 +2158,11 @@ public class OrderService implements IOrderService {
 			}
 			if(select.equals("人工拒绝")){
 				selectStatus.add(OrderStatus.HAND_REFUSE);
+				continue;
 			}
 			if(select.equals("人工确认并下单")){
 				selectStatus.add(OrderStatus.CONFIM_AND_ORDER);
+				continue;
 			}
 			if(select.equals("人工确认但不下单")){
 				selectStatus.add(OrderStatus.CONFIM_NO_ORDER);
