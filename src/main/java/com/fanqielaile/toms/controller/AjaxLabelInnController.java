@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.controller;
 
+import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dto.BangInnDto;
 import com.fanqielaile.toms.dto.CompanyAjaxDto;
 import com.fanqielaile.toms.enums.CompanyType;
@@ -60,32 +61,39 @@ public class AjaxLabelInnController extends BaseController{
      */
     @RequestMapping("add_bang_inn")
     @ResponseBody
-    public Object addBangInn(BangInnDto bangInnDto, Model model) {
-        logger.info("传入参数", bangInnDto);
-        if (BangInnDataCheckHelper.checkBangInn(bangInnDto)) {
-            //添加之前检查公司是否存在
-            Company checkCompany = this.companyService.findCompanyByCompanyCode(bangInnDto.getCompanyCode());
-            if (null != checkCompany && CompanyType.OPEN.equals(checkCompany.getCompanyType())) {
-                //检查是否重复绑定
-                BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(checkCompany.getId(), bangInnDto.getInnId());
-                if (null == bangInn) {
-                    JsonModel jsonModel = new JsonModel();
-                    bangInnDto.setBangDate(new Date());
-                    bangInnDto.setCompanyId(checkCompany.getId());
-                    this.bangInnService.addBanginn(bangInnDto);
-                    //添加成功后，绑定公司信息返回
-                    jsonModel.setSuccess(true);
-                    jsonModel.addAttribute(Constants.DATA, CompanyAjaxDto.toAjaxBangInnDto(checkCompany));
-                    return jsonModel;
+    public Object addBangInn(BangInnDto bangInnDto) {
+        boolean checkBangInn = BangInnDataCheckHelper.checkBangInn(bangInnDto);
+        logger.info("checkBangInn:"+checkBangInn+" 传入参数:"+bangInnDto.getCompanyCode()+" "+bangInnDto.getInnId()+" "+bangInnDto.getInnName()+" "+bangInnDto.getAccountId()+" "+bangInnDto.getMobile());
+        try{
+            if (checkBangInn) {
+                //添加之前检查公司是否存在
+                Company checkCompany = this.companyService.findCompanyByCompanyCode(bangInnDto.getCompanyCode());
+                if (null != checkCompany && CompanyType.OPEN.equals(checkCompany.getCompanyType())) {
+                    //检查是否重复绑定
+                    BangInn bangInn = this.bangInnService.findBangInnByCompanyIdAndInnId(checkCompany.getId(), bangInnDto.getInnId());
+                    if (null == bangInn) {
+                        JsonModel jsonModel = new JsonModel();
+                        bangInnDto.setBangDate(new Date());
+                        bangInnDto.setCompanyId(checkCompany.getId());
+                        bangInnDto.setId(bangInnDto.getUuid());
+                        this.bangInnService.addBanginn(bangInnDto);
+                        //添加成功后，绑定公司信息返回
+                        jsonModel.setSuccess(true);
+                        jsonModel.addAttribute(Constants.DATA, CompanyAjaxDto.toAjaxBangInnDto(checkCompany));
+                        return jsonModel;
+                    } else {
+                        return new JsonModel(false, "该客栈已绑定过");
+                    }
                 } else {
-                    return new JsonModel(false, "该客栈已绑定过");
+                    return new JsonModel(false, "请检查公司唯一码是否正确、公司类型只能是线下专有类型");
                 }
             } else {
-                return new JsonModel(false, "请检查公司唯一码是否正确、公司类型只能是线下专有类型");
+                return new JsonModel(false, "请检查传递的参数!");
             }
-        } else {
-            return new JsonModel(false, "请检查传递的参数!");
+        }catch (Exception e){
+           logger.error("开放平台绑定异常",e);
         }
+        return null;
     }
 
     /**
