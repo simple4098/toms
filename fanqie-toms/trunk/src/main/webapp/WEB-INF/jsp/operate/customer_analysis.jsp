@@ -29,7 +29,7 @@
                 <select class="form-control" id="fast_select" name="quickTime">
                     <option value="快捷日期" <c:if test="${customerParamDto.quickTime == '快捷日期' }">selected</c:if>>快捷日期</option>
                     <option value="本月" <c:if test="${customerParamDto.quickTime == '本月' }">selected</c:if>>本月</option>
-                    <option value="昨天" <c:if test="${customerParamDto.quickTime == '昨日' }">selected</c:if>>昨日</option>
+                    <option value="昨日" <c:if test="${customerParamDto.quickTime == '昨日' }">selected</c:if>>昨日</option>
                     <option value="近7天" <c:if test="${customerParamDto.quickTime == '近7天' }">selected</c:if>>近7天</option>
                     <option value="近30天" <c:if test="${customerParamDto.quickTime == '近30天' }">selected</c:if>>近30天</option>
                 </select>
@@ -72,7 +72,6 @@
             		<td>${p.province}</td>
             		<td>${p.provinceGuestCount }</td>
             		<td><fmt:formatNumber type="number" value="${p.provinceGuestCount/totalGuestCount*100 }" maxFractionDigits="1"></fmt:formatNumber>%</td> 
-            		<%-- <td><fmt:formatNumber type="number" value="${10/3*100}" maxFractionDigits="0"></fmt:formatNumber>%</td> --%>
             	</tr>
             </c:forEach>
                 <tr>
