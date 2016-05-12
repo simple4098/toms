@@ -17,6 +17,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * DESC : 电话util
  * @author : xkj
@@ -54,33 +56,91 @@ public class MobileUtil {
 		Map<String, String> map = new HashMap<String, String>();
 		Pattern pattern = Pattern.compile("1\\d{10}");
 		Matcher matcher = pattern.matcher(mobile);
+		String url;
 		if (matcher.matches()) {
-			String url = ResourceBundleUtil.getString("mobile.region.url") + mobile;
-			String result = callUrlByGet(url, "GBK");
-			StringReader stringReader = new StringReader(result);
-			InputSource inputSource = new InputSource(stringReader);
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-			Document document = documentBuilder.parse(inputSource);
-			String retmsg = document.getElementsByTagName("retmsg").item(0).getFirstChild().getNodeValue();
-			if (retmsg.equals("OK")) {
-				String supplier = document.getElementsByTagName("supplier").item(0).getFirstChild().getNodeValue()
-						.trim();
-				String province = document.getElementsByTagName("province").item(0).getFirstChild().getNodeValue()
-						.trim();
-				String city = document.getElementsByTagName("city").item(0).getFirstChild().getNodeValue().trim();
-				if (province.equals("-") || city.equals("-")) {
-					throw new Exception("未获取到该手机号的归属地");
+			if(ResourceBundleUtil.getString("mobile.region.url").equals("http://life.tenpay.com/cgi-bin/mobile/MobileQueryAttribution.cgi?chgmobile=")){
+			//外部接口1
+				url = ResourceBundleUtil.getString("mobile.region.url") + mobile;
+				String result = callUrlByGet(url, "GBK");
+				StringReader stringReader = new StringReader(result);
+				InputSource inputSource = new InputSource(stringReader);
+				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+				Document document = documentBuilder.parse(inputSource);
+				String retmsg = document.getElementsByTagName("retmsg").item(0).getFirstChild().getNodeValue();
+				if (retmsg.equals("OK")) {
+					String supplier = document.getElementsByTagName("supplier").item(0).getFirstChild().getNodeValue()
+							.trim();
+					String province = document.getElementsByTagName("province").item(0).getFirstChild().getNodeValue()
+							.trim();
+					String city = document.getElementsByTagName("city").item(0).getFirstChild().getNodeValue().trim();
+					if (province.equals("-") || city.equals("-")) {
+						throw new Exception("未获取到该手机号的归属地");
+					} else {
+						map.put("province", province);
+						map.put("city", city);
+						return map;
+					}
 				} else {
-					map.put("province", province);
-					map.put("city", city);
-					return map;
+					throw new Exception("获取该手机号归属地出错");
 				}
-			} else {
-				throw new Exception("获取该手机号归属地出错");
+			}else{
+				//外部接口2
+				url = ResourceBundleUtil.getString("mobile.region.url") + mobile+"&key="+ResourceBundleUtil.getString("mobile.region.key");
+				String result = callUrlByGet(url, "GBK");
+				JSONObject object = JSONObject.parseObject(result);
+				if(object.getString("resultcode").equals("200")){
+					JSONObject data = object.getJSONObject("result");
+					map.put("province", data.getString("province"));
+					map.put("city", data.getString("city"));
+					return map;
+				}else{
+					throw new Exception("获取该手机号归属地出错,message:"+object.getString("reason"));
+				}
+				
 			}
+			
 		} else {
 			 throw new Exception("手机号格式不正确");
 		}
 	}
+//	/**
+//	 * 根据手机号获取归属地信息
+//	 * @param mobile 手机号
+//	 * @return
+//	 */
+//	public static Map<String, String> getRegion (String mobile) throws Exception{
+//		String url = ResourceBundleUtil.getString("mobile.region.url") + mobile+"&key="+ResourceBundleUtil.getString("mobile.region.key");
+//		Map<String, String> map = new HashMap<String, String>();
+//		Pattern pattern = Pattern.compile("1\\d{10}");
+//		Matcher matcher = pattern.matcher(mobile);
+//		if (matcher.matches()) {
+//			String url = ResourceBundleUtil.getString("mobile.region.url") + mobile;
+//			String result = callUrlByGet(url, "GBK");
+//			StringReader stringReader = new StringReader(result);
+//			InputSource inputSource = new InputSource(stringReader);
+//			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+//			Document document = documentBuilder.parse(inputSource);
+//			String retmsg = document.getElementsByTagName("retmsg").item(0).getFirstChild().getNodeValue();
+//			if (retmsg.equals("OK")) {
+//				String supplier = document.getElementsByTagName("supplier").item(0).getFirstChild().getNodeValue()
+//						.trim();
+//				String province = document.getElementsByTagName("province").item(0).getFirstChild().getNodeValue()
+//						.trim();
+//				String city = document.getElementsByTagName("city").item(0).getFirstChild().getNodeValue().trim();
+//				if (province.equals("-") || city.equals("-")) {
+//					throw new Exception("未获取到该手机号的归属地");
+//				} else {
+//					map.put("province", province);
+//					map.put("city", city);
+//					return map;
+//				}
+//			} else {
+//				throw new Exception("获取该手机号归属地出错");
+//			}
+//		} else {
+//			throw new Exception("手机号格式不正确");
+//		}
+//	}
 }
