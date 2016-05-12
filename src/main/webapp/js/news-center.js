@@ -113,33 +113,33 @@ $(function(){
 
     }
     if(queryChangeMessageUrl){
-//        setInterval(function(){
-//            data = {
-//                from : new Date((new Date().setMinutes(new Date().getMinutes() -1, new Date().getSeconds(), 0))).Format("yyyy-MM-dd hh:mm:ss"),
-//                to : new Date().Format("yyyy-MM-dd hh:mm:ss")
-//            }
-//            $.ajax({
-//                type:'GET',
-//                data: data,
-//                url:queryChangeMessageUrl,
-//                dataType:'html',
-//                success:function(rs){
-//                    rs = $.parseJSON(rs);
-//                    if(rs && rs.count && rs.status==200) {
-//                        if(!rs.count) {
-//                            return
-//                        }
-//                        $(".click-read-new-message").show();
-//                        var MP = document.getElementById("MP");
-//                        MP.play();
-//                        queryNotReadCount()
-//                    }
-//                },
-//                error: function() {
-//                    alert("查询某一时间段的未读改价消息数量失败！")
-//                }
-//            })
-//        },CONST.TIME)
+        setInterval(function(){
+            data = {
+                from : new Date((new Date().setMinutes(new Date().getMinutes() -1, new Date().getSeconds(), 0))).Format("yyyy-MM-dd hh:mm:ss"),
+                to : new Date().Format("yyyy-MM-dd hh:mm:ss")
+            }
+            $.ajax({
+                type:'GET',
+                data: data,
+                url:queryChangeMessageUrl,
+                dataType:'html',
+                success:function(rs){
+                    rs = $.parseJSON(rs);
+                    if(rs && rs.count && rs.status==200) {
+                        if(!rs.count) {
+                            return
+                        }
+                        $(".click-read-new-message").show();
+                        var MP = document.getElementById("MP");
+                        MP.play();
+                        queryNotReadCount()
+                    }
+                },
+                error: function() {
+                    alert("查询某一时间段的未读改价消息数量失败！")
+                }
+            })
+        },CONST.TIME)
     }
 
     $(".click-read-new-message a").on("click",function() {
