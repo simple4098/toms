@@ -61,7 +61,7 @@ public class MobileUtil {
 			if(ResourceBundleUtil.getString("mobile.region.url").equals("http://life.tenpay.com/cgi-bin/mobile/MobileQueryAttribution.cgi?chgmobile=")){
 			//外部接口1
 				url = ResourceBundleUtil.getString("mobile.region.url") + mobile;
-				String result = callUrlByGet(url, "GBK");
+				String result = callUrlByGet(url, "UTF-8");
 				StringReader stringReader = new StringReader(result);
 				InputSource inputSource = new InputSource(stringReader);
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -87,7 +87,7 @@ public class MobileUtil {
 			}else{
 				//外部接口2
 				url = ResourceBundleUtil.getString("mobile.region.url") + mobile+"&key="+ResourceBundleUtil.getString("mobile.region.key");
-				String result = callUrlByGet(url, "GBK");
+				String result = callUrlByGet(url, "UTF-8");
 				JSONObject object = JSONObject.parseObject(result);
 				if(object.getString("resultcode").equals("200")){
 					JSONObject data = object.getJSONObject("result");
