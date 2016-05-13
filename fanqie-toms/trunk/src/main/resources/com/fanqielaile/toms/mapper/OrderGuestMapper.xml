@@ -38,7 +38,7 @@
         		and oto.company_id = #{currentUser.companyId}
         	</if>
         	<if test="customerParamDto.startDate != null and customerParamDto.endDate != null">
-    			and oto.order_time between '${customerParamDto.startDate} 00:00:00' and '${customerParamDto.endDate} 23:59:59'
+    			and oto.live_time between '${customerParamDto.startDate} 00:00:00' and '${customerParamDto.endDate} 23:59:59'
     		</if>
     		and oto.channel_source = 'HAND_ORDER'
     		and oto.order_status in('CONFIM_AND_ORDER','ACCEPT') 
