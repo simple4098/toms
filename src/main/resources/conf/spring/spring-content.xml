@@ -97,16 +97,16 @@
     </bean>
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <!--是否启用后进先出, 默认true-->
-        <property name="lifo" value="false"></property>
+        <property name="lifo" value="false"/>
         <!--最大空闲连接数, 默认8个-->
-        <property name="maxIdle" value="5"></property>
+        <property name="maxIdle" value="5"/>
         <!--//最大连接数, 默认8个-->
-        <property name="maxTotal" value="10"></property>
-        <property name="minIdle" value="2"></property>
+        <property name="maxTotal" value="10"/>
+        <property name="minIdle" value="2"/>
         <!--获取连接时的最大等待毫秒数(如果设置为阻塞时BlockWhenExhausted),如果超时就抛异常, 小于零:阻塞不确定的时间,  默认-1-->
-        <property name="maxWaitMillis" value="1000"></property>
-        <property name="testOnBorrow" value="true"></property>
-        <property name="testWhileIdle" value="true"></property>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="true"/>
+        <property name="testWhileIdle" value="true"/>
     </bean>
 
     <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton"/>
@@ -128,14 +128,14 @@
             <property name="validationQuery" value="select 1"/>
         </bean>
         <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-            <constructor-arg name="systemName" value="TOMS_DEV_011"></constructor-arg>
+            <constructor-arg name="systemName" value="TOMS_DEV_0111"></constructor-arg>
         </bean>
         <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
             <property name="hostName" value="192.168.1.159"/>
             <property name="port" value="6379"/>
             <property name="password" value="111111"/>
             <property name="database" value="0"/>
-            <property name="poolConfig" ref="jedisPoolConfig"></property>
+            <property name="poolConfig" ref="jedisPoolConfig"/>
         </bean>
         <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">
              <property name="QS" value="http://dc.fanqiele.com/api/toms/operate.json"></property>
@@ -151,12 +151,12 @@
              <property name="imgUrl" value="http://img.fanqiele.com"></property>
          </bean>-->
         <bean class="com.fanqielaile.toms.common.CommonApi">
-            <property name="QS" value="http://192.168.1.159:38080/api/toms/operate.json"></property>
-            <property name="QSDetail" value="http://192.168.1.159:38080/api/toms/opeDetail.json"></property>
-            <property name="KF" value="http://192.168.1.159:38080/api/toms/obtCustomerNum.json"></property>
-            <property name="kfD" value="http://192.168.1.159:38080/api/toms/customer.json"></property>
-            <property name="ORDER" value="http://192.168.1.159:38080/api/toms/order.json"></property>
-            <property name="ActiveInn" value="http://192.168.1.159:38080/api/toms/innActive.json"></property>
+            <property name="QS" value="http://dc.local.fanqiele.com/api/toms/operate.json"></property>
+            <property name="QSDetail" value="http://dc.local.fanqiele.com/api/toms/opeDetail.json"></property>
+            <property name="KF" value="http://dc.local.fanqiele.com/api/toms/obtCustomerNum.json"></property>
+            <property name="kfD" value="http://dc.local.fanqiele.com/api/toms/customer.json"></property>
+            <property name="ORDER" value="http://dc.local.fanqiele.com/api/toms/order.json"></property>
+            <property name="ActiveInn" value="http://dc.local.fanqiele.com/api/toms/innActive.json"></property>
             <property name="roomType" value="http://oms.local.fanqiele.com/api/queryRoomType"></property>
             <property name="checkRoom" value="http://oms.local.fanqiele.com/api/check_room_avail"></property>
             <property name="innInfo" value="http://oms.local.fanqiele.com/api/queryInn"></property>
@@ -167,7 +167,7 @@
             <property name="sellingRoomType" value="http://oms.local.fanqiele.com/api/getSellingRoomType"></property>
             <property name="ProxySaleList" value="http://oms.local.fanqiele.com/api/queryProxySaleList"></property>
             <property name="imgUrl" value="http://img.fanqiele.com"></property>
-            <property name="proxyOtaPercent" value="http://192.168.1.159:8089/proxysale/api/channel/"></property>
+            <property name="proxyOtaPercent" value="http://fqms.local.afanqie.com/proxysale/api/channel/"></property>
             <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
             <property name="fcAddHotelMappingUrl" value="http://www.fangcang.org/USP/api_v1/addHotelMapping"></property>
             <property name="fcAddRoomTypeMappingUrl"
