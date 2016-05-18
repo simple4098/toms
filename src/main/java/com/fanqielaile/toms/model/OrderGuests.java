@@ -7,7 +7,9 @@ import com.fanqie.core.Domain;
  * 订单入住人信息
  */
 public class OrderGuests extends Domain {
-    //入住人姓名
+	//id
+	private String id;
+	//入住人姓名
     private String name;
     //房间序号
     private int roomPos;
@@ -23,6 +25,14 @@ public class OrderGuests extends Domain {
     private String guestProvince;
     //订单客人所属城市
     private String guestCity;
+
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
     public String getFirstName() {
         return firstName;
