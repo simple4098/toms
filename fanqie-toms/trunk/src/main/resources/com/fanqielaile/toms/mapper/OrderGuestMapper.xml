@@ -24,9 +24,23 @@
         INSERT INTO ota_order_guests(id,created_date,order_id,name,room_pos,nationality,first_name,last_name,guest_province,guest_city)
         VALUES
         <foreach collection="orderGuestses" separator="," item="o">
-            (#{o.uuid},now(),#{o.orderId},#{o.name},#{o.roomPos},#{o.nationality},#{o.firstName},#{o.lastName},#{o.guestProvince},#{o.guestCity})
+            (#{o.id},now(),#{o.orderId},#{o.name},#{o.roomPos},#{o.nationality},#{o.firstName},#{o.lastName},#{o.guestProvince},#{o.guestCity})
         </foreach>
     </insert>
+    <update id="updateOrderGuests" parameterType="com.fanqielaile.toms.model.Order">
+        <foreach collection="orderGuestses" separator=";" item="o">
+        	update ota_order_guests
+        	<set>
+        		<if test="o.guestProvince != null">
+        			guest_province = #{o.guestProvince},
+        		</if>
+        		<if test="o.guestCity != null">
+        			guest_city = #{o.guestCity},
+        		</if>
+        	</set>
+        	where id = #{o.id}
+        </foreach>
+    </update>
     <select id="selectOrderGuestByOrderId" parameterType="java.lang.String" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>

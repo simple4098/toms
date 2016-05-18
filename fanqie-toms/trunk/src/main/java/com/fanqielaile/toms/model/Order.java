@@ -22,11 +22,11 @@ import org.dom4j.Element;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by wangdayin on 2015/6/18.
@@ -1119,13 +1119,13 @@ public class Order extends Domain {
     public static List<OrderGuests> getOrderGuest(Order order) {
         List<OrderGuests> orderGuestses = new ArrayList<>();
         OrderGuests orderGuests = new OrderGuests();
+        orderGuests.setId(UUID.randomUUID().toString());
         orderGuests.setName(order.getGuestName());
         orderGuests.setOrderId(order.getId());
-        orderGuests.setGuestProvince(order.getGuestProvince());
-        orderGuests.setGuestCity(order.getGuestCity());
         //默认房间号排序为0
         orderGuests.setRoomPos(0);
         orderGuestses.add(orderGuests);
+        order.setOrderGuestses(orderGuestses);
         return orderGuestses;
     }
 

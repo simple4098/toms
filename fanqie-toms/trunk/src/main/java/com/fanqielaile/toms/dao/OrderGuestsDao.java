@@ -8,6 +8,8 @@ import com.fanqielaile.toms.model.UserInfo;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +23,13 @@ public interface OrderGuestsDao {
      * @param order
      */
     void insertOrderGuests(Order order);
+    /**
+     * 更新入住人归属地信息
+     *
+     * @param order
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    void updateOrderGuests(Order order);
 
     /**
      * 根据订单ID查询入住人信息

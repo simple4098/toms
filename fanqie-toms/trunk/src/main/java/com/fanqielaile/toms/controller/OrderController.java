@@ -21,35 +21,25 @@ import com.fanqielaile.toms.service.IBangInnService;
 import com.fanqielaile.toms.service.IOrderService;
 import com.fanqielaile.toms.support.decorator.FrontendPagerDecorator;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
+import com.fanqielaile.toms.support.thread.LocalThread;
 import com.fanqielaile.toms.support.util.Constants;
 import com.fanqielaile.toms.support.util.JsonModel;
-import com.fanqielaile.toms.support.util.MobileUtil;
-import com.fanqielaile.toms.support.util.TomsUtil;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
-import com.taobao.api.ApiException;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONString;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,24 +285,21 @@ public class OrderController extends BaseController {
         UserInfo userInfo = getCurrentUser();
         //检查参数
         Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
-        Map<String,String> map = null;
         order.setCompanyId(getCurrentUser().getCompanyId());
         order.setUserId(userInfo.getId());
         if (param) {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
             order.setId(order.getUuid());
-            try {
-				map = MobileUtil.getRegion(order.getGuestMobile());
-				order.setGuestProvince(map.get("province"));
-				order.setGuestCity(map.get("city"));
-			} catch (Exception e) {
-				logger.error(e.getMessage(),e);
-			}
 			//单房型手动下单
 //            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
             //多方手动下单
             Map<String, Object> result = this.orderService.dealHandMakeOrderRoomTypes(order, userInfo);
+            if((Boolean)result.get("status")){
+            	//下单成功才异步更新订单归属地信息
+            	LocalThread thread = new LocalThread(order);
+            	thread.start();
+            }
             model.addAttribute("status", result.get("status"));
             model.addAttribute("message", result.get("message"));
         } else {
