@@ -286,7 +286,7 @@
                       value="http://www.fangcang.com/USP/api_v1/deleteRoomTypeMapping"></property>
             <property name="FcDeleteHotelMappingUrl"
                       value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
-            <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
+            <property name="qunarOrderOpt" value="http://a7im.trade.qunar.com"/>
         </bean>
     </beans>
 </beans>
