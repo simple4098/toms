@@ -1816,8 +1816,9 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators) throws Exception {
-        orderParamDto.setCompanyId(currentUser.getCompanyId());
+    public void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators, String selectStatusString) throws Exception {
+        List<OrderStatus> selectStatus = new ArrayList<>();
+    	orderParamDto.setCompanyId(currentUser.getCompanyId());
         //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //处理查询时间
@@ -1830,6 +1831,26 @@ public class OrderService implements IOrderService {
         if(StringUtils.isEmpty(selectedOperators)){
         	orderParamDto.setOperators(null);
         }
+        for(String select:selectStatusString.split(",")){
+			for(OrderStatus status: OrderStatus.values()){
+				if(select.equals(status.getText())){
+					selectStatus.add(status);
+					break;
+				}
+			}
+			if(select.equals("人工拒绝")){
+				selectStatus.add(OrderStatus.HAND_REFUSE);
+				continue;
+			}
+			if(select.equals("人工确认并下单")){
+				selectStatus.add(OrderStatus.CONFIM_AND_ORDER);
+				continue;
+			}
+			if(select.equals("人工确认但不下单")){
+				selectStatus.add(OrderStatus.CONFIM_NO_ORDER);
+			}
+		}
+        orderParamDto.setSelectedOrderStatus(selectStatus);
         //营业汇总
         OrderStatisticsDto orderStatisticsDto = statisticsOrder(currentUser.getCompanyId(), orderParamDto);
         //订单其他消费类型汇总

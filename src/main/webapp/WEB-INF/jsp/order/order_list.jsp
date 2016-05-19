@@ -173,7 +173,7 @@
                         <input type="hidden" name="searchType" class="search-type-form">
                         <input type="hidden" name="channelOrderCode" class="channel-order-code-form">
                         <input type="hidden" name="channelSource" class="channel-source-form">
-                        <input type="hidden" name="orderStatus" class="order-status-form">
+                        <!-- <input type="hidden" name="orderStatus" class="order-status-form"> -->
                         <input type="hidden" name="beginDate" class="begin-date-form">
                         <input type="hidden" name="endDate" class="end-date-form">
                         <input type="hidden" name="operatorsJson" class="operatorsJson-form"/>
