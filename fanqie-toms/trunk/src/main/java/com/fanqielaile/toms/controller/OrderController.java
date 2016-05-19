@@ -63,9 +63,9 @@ public class OrderController extends BaseController {
      */
     @RequestMapping("order_export")
     @ResponseBody
-    public void orderExport(OrderParamDto orderParamDto,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectedOperators, HttpServletResponse response) {
+    public void orderExport(OrderParamDto orderParamDto,@RequestParam(defaultValue = "",required = false) String operatorsJson,@RequestParam(defaultValue = "",required = false) String selectedOperators,@RequestParam(defaultValue = "",required = false) String selectStatusString, HttpServletResponse response) {
         try {
-            this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response, operatorsJson, selectedOperators);
+            this.orderService.dealOrderExport(getCurrentUser(), orderParamDto, response, operatorsJson, selectedOperators,selectStatusString);
         } catch (Exception e) {
         	e.printStackTrace();
             logger.info("导出订单列表出错" + e);

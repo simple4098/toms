@@ -251,9 +251,10 @@ public interface IOrderService {
      * @param response
      * @param selectedOperators 
      * @param operatorsJson 
+     * @param selectStatusString 
      * @throws Exception
      */
-    void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators) throws Exception;
+    void dealOrderExport(UserInfo currentUser, OrderParamDto orderParamDto, HttpServletResponse response, String operatorsJson, String selectedOperators, String selectStatusString) throws Exception;
 
     /**
      * 取消订单

@@ -156,6 +156,12 @@
                 and (oto.channel_order_code = '${order.channelOrderCode}'
                 or oto.guest_mobile = '${order.channelOrderCode}')
             </if>
+            <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0">
+           		and oto.order_status in
+            	<foreach collection="order.selectedOrderStatus" item="se" open="(" separator="," close=")">
+                	'${se}'
+                </foreach>
+            </if>
             <if test="order.operators != null and order.operators.size != 0">
            		and oto.user_id in
             	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
@@ -243,6 +249,12 @@
                 and (oto.channel_order_code = '${order.channelOrderCode}'
                 or oto.guest_mobile = '${order.channelOrderCode}')
             </if>
+            <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0">
+           		and oto.order_status in
+            	<foreach collection="order.selectedOrderStatus" item="se" open="(" separator="," close=")">
+                	'${se}'
+                </foreach>
+            </if>
             <if test="order.operators != null and order.operators.size != 0">
            		and oto.user_id in
             	<foreach collection="order.operators" item="op" open="(" separator="," close=")">
@@ -251,6 +263,7 @@
                 	</if>
                 </foreach>
             </if>
+            
         </where>
         ORDER BY oto.order_time DESC
     </select>
@@ -272,9 +285,9 @@
             <if test="companyId != null and companyId != ''">
                 and oto.company_id=#{companyId}
             </if>
-            <!-- <if test="order.orderStatus != null and order.orderStatus != ''">
+            <if test="order.orderStatus != null and order.orderStatus != ''">
                 and oto.order_status = '${order.orderStatus}'
-            </if> -->
+            </if>
             <if test="order.innName != null and order.innName != '' and order.innName != '暂无'">
                 and bi.inn_name='${order.innName}'
             </if>

@@ -24,14 +24,18 @@ public class LocalThread extends Thread {
 	@Override
 	public void run(){
 		try {
-			Map<String,String> map = MobileUtil.getRegion(order.getGuestMobile());
-			List<OrderGuests> guests = order.getOrderGuestses();
 			OrderGuestsDao orderGuestsDao = (OrderGuestsDao)SpringContextUtil.getBean("orderGuestsDao");
+			Map<String,String> map = MobileUtil.getRegion(order.getGuestMobile());
+			List<OrderGuests> guests = orderGuestsDao.selectOrderGuestByOrderId(order.getId());
+			if(guests == null || guests.size() == 0){
+				logger.info("未获取到该订单入住人相关信息，orderId:"+order.getId());
+				return;
+			}
 			for(OrderGuests guest:guests){
 				guest.setGuestProvince(map.get("province"));
 				guest.setGuestCity(map.get("city"));
 			}
-			orderGuestsDao.updateOrderGuests(order);
+			orderGuestsDao.updateOrderGuests(guests);
 		} catch (Exception e) {
 			logger.error("获取归属地失败",e);
 		}

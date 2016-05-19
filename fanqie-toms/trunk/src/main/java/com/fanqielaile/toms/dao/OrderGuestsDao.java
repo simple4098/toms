@@ -29,7 +29,7 @@ public interface OrderGuestsDao {
      * @param order
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    void updateOrderGuests(Order order);
+    void updateOrderGuests(List<OrderGuests> guests);
 
     /**
      * 根据订单ID查询入住人信息
@@ -37,6 +37,7 @@ public interface OrderGuestsDao {
      * @param orderId
      * @return
      */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     List<OrderGuests> selectOrderGuestByOrderId(@Param("orderId") String orderId);
     /**
      * 统计省份客户数量
