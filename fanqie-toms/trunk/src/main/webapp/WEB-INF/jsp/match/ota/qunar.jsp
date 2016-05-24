@@ -8,12 +8,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>客栈匹配列表</title>
-    <%--  <link rel="stylesheet" type="text/css" href="/assets/css/normalize.css">
-      <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
-      <link rel="stylesheet" type="text/css" href="/assets/css/font-awesome.min.css">
-      <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui-1.10.3.full.min.css">
-      <link rel="stylesheet" type="text/css" href="/assets/css/ace.min.css">
-      <link rel="stylesheet" type="text/css" href="/assets/css/innRelation.css">--%>
 
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/userSet.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
@@ -85,7 +79,7 @@
     </div>
 </div>
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
-<script src="<c:url value='/js/match/vetted.js'/>"></script>
+<script src="<c:url value='/js/match/vettedQunar.js'/>"></script>
 
 </body>
 </html>

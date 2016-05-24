@@ -249,7 +249,15 @@ public class QunarService implements ITPService {
 
     @Override
     public Result validatedOTAAccuracy(OtaInfoRefDto infoRefDto) {
-        return null;
+        Result result = new Result();
+        try {
+            otaInfoDao.saveOtaInfo(infoRefDto);
+            result.setStatus(Constants.SUCCESS200);
+        } catch (Exception e) {
+            result.setStatus(Constants.ERROR400);
+            result.setMessage(e.getMessage());
+        }
+        return result;
     }
 
     @Override
