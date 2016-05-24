@@ -62,6 +62,8 @@ public class ModelViewUtil {
                 return "/match/inn_xc_match_list";
             }if(OtaType.ZH.equals(otaInfo.getOtaType())){
                 return "/match/inn_zh_match_list";
+            }if(OtaType.QUNAR.equals(otaInfo.getOtaType())){
+                return "/match/inn_qunar_match_list";
             }
         }
 
