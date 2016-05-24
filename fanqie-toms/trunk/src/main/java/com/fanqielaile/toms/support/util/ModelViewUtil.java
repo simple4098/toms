@@ -30,6 +30,8 @@ public class ModelViewUtil {
                 return "/match/ota/xc";
             }else if (OtaType.ZH.equals(infoRefDto.getOtaType())){
                 return "/match/ota/zh";
+            } else if (OtaType.QUNAR.equals(infoRefDto.getOtaType())) {
+                return "/match/ota/qunar";
             }
         }
         return "/match/not_ota";
