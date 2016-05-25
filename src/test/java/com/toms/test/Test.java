@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.support.tb.TBXHotelUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 

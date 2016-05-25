@@ -109,6 +109,7 @@ public class OTAManageController extends BaseController {
                             } else {
                                 result.setResultCode("-102");
                                 result.setMessage(String.valueOf(map.get("message")));
+                                result.setOrderId(order.getId());
                             }
                         } else if (rootElementString.equals(OrderMethod.ValidateRQ.name())) {
                             //试订单请求
@@ -227,6 +228,7 @@ public class OTAManageController extends BaseController {
                             } else {
                                 result.setResultCode("-102");
                                 result.setMessage(String.valueOf(map.get("message")));
+                                result.setOrderId(order.getId());
                             }
                         } else if (rootElementString.equals(OrderMethod.ValidateRQ.name())) {
                             //试订单请求

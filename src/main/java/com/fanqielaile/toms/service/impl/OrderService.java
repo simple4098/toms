@@ -400,20 +400,20 @@ public class OrderService implements IOrderService {
     public JsonModel paymentSuccessCallBack(String xmlStr, ChannelSource channelSource) throws Exception {
         Order orderXml = XmlDeal.getOrder(xmlStr);
 
-            //日志
-            String logStr = "付款成功回调传递参数" + xmlStr;
+        //日志
+        String logStr = "付款成功回调传递参数" + xmlStr;
 //        businLog.setDescr(logStr);
 //        businLogClient.save(businLog);
 
-            //获取订单号，判断订单是否存在
-            Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(orderXml);
-            logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
-            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "付款通知传递参数"));
-            //付款金额
-            order.setPayment(orderXml.getPayment());
-            //支付宝付款码
-            order.setAlipayTradeNo(orderXml.getAlipayTradeNo());
-            //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
+        //获取订单号，判断订单是否存在
+        Order order = this.orderDao.selectOrderByChannelOrderCodeAndSource(orderXml);
+        logger.info("付款订单号orderCode=" + order.getChannelOrderCode());
+        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xmlStr, null, order.getInnId(), order.getInnCode(), "付款通知传递参数"));
+        //付款金额
+        order.setPayment(orderXml.getPayment());
+        //支付宝付款码
+        order.setAlipayTradeNo(orderXml.getAlipayTradeNo());
+        //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
         //查询当前酒店以什么模式发布
         OtaInnOtaDto otaInnOtaDto = null;
 
@@ -528,68 +528,118 @@ public class OrderService implements IOrderService {
             logger.info("OMS接口响应=>" + respose + " 订单号：" + order.getChannelOrderCode());
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，返回值"));
             if (!jsonObject.get("status").equals(200)) {
-                order.setOrderStatus(OrderStatus.REFUSE);
-                order.setFeeStatus(FeeStatus.PAID);
-                if (jsonObject.get("status").equals(800) && ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                    this.orderDao.updateOrderStatusAndFeeStatus(order);
-                    return new JsonModel(false, "oms系统返回800，创建订单失败");
-                }
-                JsonModel jsonModel = new JsonModel();
-                if (ChannelSource.TAOBAO.equals(order.getChannelSource()) && PaymentType.PREPAID.equals(order.getPaymentType())) {
-                    if (ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
-                        jsonModel = dealCancelOrder(order, currentUser, otaInfo);
-                        jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
-                    } else {
-                        logger.info("oms返回状态非200，返回淘宝状态付款成功，采用事件同步订单状态，订单号为：" + order.getChannelOrderCode());
-                        jsonModel.setSuccess(false);
-                        jsonModel.setMessage("付款失败");
-                        order.setOrderStatus(OrderStatus.REFUSE);
-                        order.setFeeStatus(FeeStatus.PAID);
-                        this.orderDao.updateOrderStatusAndFeeStatus(order);
-                    }
+                //如果oms返回非200,查询oms订单一次
+                String responseOmsOrderStatus = getOrderStatusMethod(order);
+                //解析返回值
+                JSONObject jsonObjectOmsSearchOrder = JSONObject.fromObject(responseOmsOrderStatus);
+                if (!jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                    logger.error("调用oms下单接口返回非200，再次查询订单失败，订单号：" + order.getChannelOrderCode());
+                    //走老流程
+                    return dealOmsResultNotSuccessMethod(order, currentUser, otaInfo, jsonObject);
+
                 } else {
-                    jsonModel = dealCancelOrder(order, currentUser, otaInfo);
-                    jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+                    String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                    if (omsOrderStatus.equals("1")) {
+                        logger.info("oms返回非200，再次查询oms订单状态，返回1：已接收，订单号：" + order.getChannelOrderCode());
+                        //订单已接收
+                        order.setOmsOrderCode((String) jsonObjectOmsSearchOrder.get("orderNo"));
+                        return dealOmsResultSuccessMethod(order, currentUser, beforeOrderStatus, dictionary, otaInfo, company, respose);
+                    } else {
+                        logger.info("oms返回非200，再次查询oms订单状态，返回" + omsOrderStatus + "：已接收，订单号:" + order.getChannelOrderCode());
+                        //订单查询状态不为1：已接收走以前老的流程
+                        return dealOmsResultNotSuccessMethod(order, currentUser, otaInfo, jsonObject);
+                    }
                 }
-                return jsonModel;
+
             } else {
                 logger.info("oms返回oms订单号为：" + jsonObject.get("orderNo"));
                 order.setOmsOrderCode((String) jsonObject.get("orderNo"));
-                if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
-                    //同步
-                    //判断当前配置下单请求是否为同步
-                    if (1 != dictionary.getWeatherAsynchronous()) {
-                        logger.info("同步下单，单号为：" + order.getChannelOrderCode());
-                        //判断是否是现付
-                        if (PaymentType.PREPAID.equals(order.getPaymentType()) && !ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
-                            //采用事件同步订单状态
-                            logger.info("采用事件同步订单状态，oms返回200,订单号为：" + order.getChannelOrderCode());
-                            order.setFeeStatus(FeeStatus.PAID);
-                            order.setOrderStatus(OrderStatus.ACCEPT);
-                            this.orderDao.updateOrderStatusAndFeeStatus(order);
-                            return new JsonModel(true, "付款成功");
-                        } else {
-                            return pushSuccessToTB(order, currentUser, otaInfo);
-                        }
-                    } else {
-                        logger.info("异步下单，单号为：" + order.getChannelOrderCode());
-                        order.setFeeStatus(FeeStatus.PAID);
-                        order.setOrderStatus(OrderStatus.DEALING);
-                        this.orderDao.updateOrderStatusAndFeeStatus(order);
-                        return new JsonModel(true, "付款成功");
-                    }
-                } else {
-                    //返回创建订单成功
-                    order.setOrderStatus(OrderStatus.ACCEPT);
-                    order.setFeeStatus(FeeStatus.PAID);
-                    this.orderDao.updateOrderStatusAndFeeStatus(order);
-                    MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
-                    return new JsonModel(true, "创建订单成功");
-                }
+                return dealOmsResultSuccessMethod(order, currentUser, beforeOrderStatus, dictionary, otaInfo, company, respose);
             }
-
         }
         return new JsonModel(true, "付款成功");
+    }
+
+    /**
+     * 调用oms接口下单，返回成功处理方法
+     *
+     * @param order
+     * @param currentUser
+     * @param beforeOrderStatus
+     * @param dictionary
+     * @param otaInfo
+     * @param company
+     * @param respose
+     * @return
+     */
+    private JsonModel dealOmsResultSuccessMethod(Order order, UserInfo currentUser, OrderStatus beforeOrderStatus, Dictionary dictionary, OtaInfoRefDto otaInfo, Company company, String respose) {
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            //同步
+            //判断当前配置下单请求是否为同步
+            if (1 != dictionary.getWeatherAsynchronous()) {
+                logger.info("同步下单，单号为：" + order.getChannelOrderCode());
+                //判断是否是现付
+                if (PaymentType.PREPAID.equals(order.getPaymentType()) && !ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
+                    //采用事件同步订单状态
+                    logger.info("采用事件同步订单状态，oms返回200,订单号为：" + order.getChannelOrderCode());
+                    order.setFeeStatus(FeeStatus.PAID);
+                    order.setOrderStatus(OrderStatus.ACCEPT);
+                    this.orderDao.updateOrderStatusAndFeeStatus(order);
+                    return new JsonModel(true, "付款成功");
+                } else {
+                    return pushSuccessToTB(order, currentUser, otaInfo);
+                }
+            } else {
+                logger.info("异步下单，单号为：" + order.getChannelOrderCode());
+                order.setFeeStatus(FeeStatus.PAID);
+                order.setOrderStatus(OrderStatus.DEALING);
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+                return new JsonModel(true, "付款成功");
+            }
+        } else {
+            //返回创建订单成功
+            order.setOrderStatus(OrderStatus.ACCEPT);
+            order.setFeeStatus(FeeStatus.PAID);
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.CREATE_ORDER_TO_OMS, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), beforeOrderStatus, order.getOrderStatus(), order.getFeeStatus(), order.toOrderParamDto(order, company).toString(), respose, order.getInnId(), order.getInnCode(), "下单到oms，toms更新订单状态"));
+            return new JsonModel(true, "创建订单成功");
+        }
+    }
+
+    /**
+     * 调用oms下单接口，返回非200，处理方法
+     *
+     * @param order
+     * @param currentUser
+     * @param otaInfo
+     * @param jsonObject
+     * @return
+     */
+    private JsonModel dealOmsResultNotSuccessMethod(Order order, UserInfo currentUser, OtaInfoRefDto otaInfo, JSONObject jsonObject) {
+        order.setOrderStatus(OrderStatus.REFUSE);
+        order.setFeeStatus(FeeStatus.PAID);
+        if (jsonObject.get("status").equals(800) && ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+            this.orderDao.updateOrderStatusAndFeeStatus(order);
+            return new JsonModel(false, "oms系统返回800，创建订单失败");
+        }
+        JsonModel jsonModel = new JsonModel(false, "付款失败");
+        if (ChannelSource.TAOBAO.equals(order.getChannelSource()) && PaymentType.PREPAID.equals(order.getPaymentType())) {
+            if (ResourceBundleUtil.getBoolean("oms.exception.update.order.status")) {
+                jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+                jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+            } else {
+                logger.info("oms返回状态非200，返回淘宝状态付款成功，采用事件同步订单状态，订单号为：" + order.getChannelOrderCode());
+                jsonModel.setSuccess(false);
+                jsonModel.setMessage("付款失败");
+                order.setOrderStatus(OrderStatus.REFUSE);
+                order.setFeeStatus(FeeStatus.PAID);
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+            }
+        } else {
+            jsonModel = dealCancelOrder(order, currentUser, otaInfo);
+            jsonModel.setMessage(jsonObject.get("status") + ":" + jsonObject.get("message"));
+        }
+        return jsonModel;
     }
 
     /**
@@ -1825,11 +1875,11 @@ public class OrderService implements IOrderService {
         orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
         orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
         //设置被选操作人
-        if(!StringUtils.isEmpty(operatorsJson)){
-        	orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsJson), UserInfoDto.class));
+        if(!StringUtils.isEmpty(operatorsJson)) {
+            orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsJson), UserInfoDto.class));
         }
-        if(StringUtils.isEmpty(selectedOperators)){
-        	orderParamDto.setOperators(null);
+        if(StringUtils.isEmpty(selectedOperators)) {
+            orderParamDto.setOperators(null);
         }
         for(String select:selectStatusString.split(",")){
 			for(OrderStatus status: OrderStatus.values()){
@@ -1855,15 +1905,15 @@ public class OrderService implements IOrderService {
         OrderStatisticsDto orderStatisticsDto = statisticsOrder(currentUser.getCompanyId(), orderParamDto);
         //订单其他消费类型汇总
         List<OrderOtherPrice> orderOtherPrice = orderDao.selectOrderOtherPriceType(currentUser.getCompanyId(),orderParamDto);
-        if(!CollectionUtils.isEmpty(orderOtherPrice)){
-        	orderOtherPrice.remove(null);
-	        for(OrderOtherPrice price : orderOtherPrice){
-	        	price.setPriceNameList(orderDao.getOtherPriceSubtype(price.getConsumerProjectName(),orderParamDto));
-	        }
+        if(!CollectionUtils.isEmpty(orderOtherPrice)) {
+            orderOtherPrice.remove(null);
+            for (OrderOtherPrice price : orderOtherPrice) {
+                price.setPriceNameList(orderDao.getOtherPriceSubtype(price.getConsumerProjectName(), orderParamDto));
+            }
         }
         //查询订单列表
         List<OrderParamDto> orderDtos = this.orderDao.selectOrderByNoPage(orderParamDto);
-        
+
         //房型名称
         if (ArrayUtils.isNotEmpty(orderDtos.toArray())) {
             for (OrderParamDto orderDto : orderDtos) {
@@ -1887,11 +1937,11 @@ public class OrderService implements IOrderService {
                     }
                     orderDto.setTotalPrice(orderDto.getTotalPrice().add(addTatalPirce));
                 }
-                
+
             }
         }
         orderParamDto.getOrderByDealTime(orderParamDto);
-        
+
         StringBuilder builder = new StringBuilder("订单列表_");
         builder.append(DateUtil.formatDateToString(new Date(), "yyyyMMddHHmmssSSS")).append(".xls");
         ExportExcelUtil.execlOrderExport(orderParamDto, orderDtos, orderStatisticsDto, orderOtherPrice, response, builder.toString());
@@ -2104,46 +2154,46 @@ public class OrderService implements IOrderService {
     }
 
 
-	@Override
-	public void searchOperatorsInfo(OrderParamDto orderParamDto) throws Exception {
-		List<UserInfoDto> operators;
-		if (orderParamDto.getOperators() == null) {
-			operators=userInfoDao.selectUserInfos(orderParamDto.getCompanyId());
-			orderParamDto.setOperators(operators);
-		} 
-	}
+    @Override
+    public void searchOperatorsInfo(OrderParamDto orderParamDto) throws Exception {
+        List<UserInfoDto> operators;
+        if (orderParamDto.getOperators() == null) {
+            operators = userInfoDao.selectUserInfos(orderParamDto.getCompanyId());
+            orderParamDto.setOperators(operators);
+        }
+    }
 
 
-	@Override
-	public OrderStatisticsDto statisticsOrder(String companyId, OrderParamDto orderParamDto) {
-		OrderStatisticsDto orderStatisticsDto = orderDao.statisticsOrderData(companyId, orderParamDto);
-		if(orderStatisticsDto == null ){
-			return null;
-		}
-		//对其他消费进行统计
-		List<OrderOtherPrice> otherPrice = orderDao.statisticsOtherConsumer(companyId, orderParamDto);
-		otherPrice.remove(null);
-		orderStatisticsDto.setOtherConsumer(otherPrice);
-		//计算利润
-		BigDecimal countTotalCost = BigDecimal.ZERO;
-		if(orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0){
-			for (OrderOtherPrice item : orderStatisticsDto.getOtherConsumer()) {
-				if(item != null && item.getTotalCost() != null){
-					countTotalCost = countTotalCost.add(item.getTotalCost());
-				}
-			}
-			orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(countTotalCost).subtract(orderStatisticsDto.getTotalCostPrice()));
-		}else{
-			orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(orderStatisticsDto.getTotalCostPrice()));
-		}
-		return orderStatisticsDto;
-	}
+    @Override
+    public OrderStatisticsDto statisticsOrder(String companyId, OrderParamDto orderParamDto) {
+        OrderStatisticsDto orderStatisticsDto = orderDao.statisticsOrderData(companyId, orderParamDto);
+        if (orderStatisticsDto == null) {
+            return null;
+        }
+        //对其他消费进行统计
+        List<OrderOtherPrice> otherPrice = orderDao.statisticsOtherConsumer(companyId, orderParamDto);
+        otherPrice.remove(null);
+        orderStatisticsDto.setOtherConsumer(otherPrice);
+        //计算利润
+        BigDecimal countTotalCost = BigDecimal.ZERO;
+        if (orderStatisticsDto.getOtherConsumer() != null && orderStatisticsDto.getOtherConsumer().size() != 0) {
+            for (OrderOtherPrice item : orderStatisticsDto.getOtherConsumer()) {
+                if (item != null && item.getTotalCost() != null) {
+                    countTotalCost = countTotalCost.add(item.getTotalCost());
+                }
+            }
+            orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(countTotalCost).subtract(orderStatisticsDto.getTotalCostPrice()));
+        } else {
+            orderStatisticsDto.setProfit(orderStatisticsDto.getTotalPrice().subtract(orderStatisticsDto.getTotalCostPrice()));
+        }
+        return orderStatisticsDto;
+    }
 
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void initFindOrderParam(OrderParamDto orderParamDto,UserInfo currentUser,String operatorsString, String selectedOperators, String selectStatusString) {
-		 //已处理订单
+    @SuppressWarnings("deprecation")
+    @Override
+    public void initFindOrderParam(OrderParamDto orderParamDto, UserInfo currentUser, String operatorsString, String selectedOperators, String selectStatusString) {
+        //已处理订单
         orderParamDto.setOrderStatusString(OrderStatus.DEAL.name());
         //默认下单日期
         if(orderParamDto.getSearchType() == null){
@@ -2152,42 +2202,42 @@ public class OrderService implements IOrderService {
         //设置公司
         orderParamDto.setCompanyId(currentUser.getCompanyId());
         //设置被选操作人
-        if(!StringUtils.isEmpty(operatorsString)){
-        	orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsString), UserInfoDto.class));
+        if(!StringUtils.isEmpty(operatorsString)) {
+            orderParamDto.setOperators(JSONArray.toList(JSONArray.fromObject(operatorsString), UserInfoDto.class));
         }
-        if(StringUtils.isEmpty(selectedOperators)){
-        	orderParamDto.setOperators(null);
+        if(StringUtils.isEmpty(selectedOperators)) {
+            orderParamDto.setOperators(null);
         }
         //处理查询时间
-    	Date date = new Date();
-    	if(StringUtils.isEmpty(orderParamDto.getBeginDate()) || StringUtils.isEmpty(orderParamDto.getEndDate())){
-    		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM")+"-01"));
-    		orderParamDto.setEndDate(TomsUtil.getDayEnd(DateUtils.format(date, "yyyy-MM-dd")));
-    	}else{
-    		orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
-    		orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
-        }	
-    	//处理订单状态
-		List<OrderStatus> selectStatus = new ArrayList<>();
-		
-		for(String select:selectStatusString.split(",")){
-			for(OrderStatus status: OrderStatus.values()){
-				if(select.equals(status.getText())){
-					selectStatus.add(status);
-					break;
-				}
-			}
-			if(select.equals("人工拒绝")){
-				selectStatus.add(OrderStatus.HAND_REFUSE);
-				continue;
-			}
-			if(select.equals("人工确认并下单")){
-				selectStatus.add(OrderStatus.CONFIM_AND_ORDER);
-				continue;
-			}
-			if(select.equals("人工确认但不下单")){
-				selectStatus.add(OrderStatus.CONFIM_NO_ORDER);
-			}
+        Date date = new Date();
+        if (StringUtils.isEmpty(orderParamDto.getBeginDate()) || StringUtils.isEmpty(orderParamDto.getEndDate())) {
+            orderParamDto.setBeginDate(TomsUtil.getDayBeafore(DateUtils.format(date, "yyyy-MM") + "-01"));
+            orderParamDto.setEndDate(TomsUtil.getDayEnd(DateUtils.format(date, "yyyy-MM-dd")));
+        } else {
+            orderParamDto.setBeginDate(TomsUtil.getDayBeafore(orderParamDto.getBeginDate()));
+            orderParamDto.setEndDate(TomsUtil.getDayEnd(orderParamDto.getEndDate()));
+        }
+        //处理订单状态
+        List<OrderStatus> selectStatus = new ArrayList<>();
+
+        for (String select : selectStatusString.split(",")) {
+            for (OrderStatus status : OrderStatus.values()) {
+                if (select.equals(status.getText())) {
+                    selectStatus.add(status);
+                    break;
+                }
+            }
+            if (select.equals("人工拒绝")) {
+                selectStatus.add(OrderStatus.HAND_REFUSE);
+                continue;
+            }
+            if (select.equals("人工确认并下单")) {
+                selectStatus.add(OrderStatus.CONFIM_AND_ORDER);
+                continue;
+            }
+            if (select.equals("人工确认但不下单")) {
+                selectStatus.add(OrderStatus.CONFIM_NO_ORDER);
+            }
 //			if(select.equals("自动接受")){
 //				orderStatus=
 //			}
@@ -2206,38 +2256,38 @@ public class OrderService implements IOrderService {
 //			if(select.equals("人工拒绝")){
 //				
 //			}
-		}
-		orderParamDto.setSelectedOrderStatus(selectStatus);
-	}
+        }
+        orderParamDto.setSelectedOrderStatus(selectStatus);
+    }
 
 
-	@Override
-	public List<OrderOtherPrice> statisticsOrderOtherPrice(String id) {
-		return orderDao.statisticsOrderOtherPrice(id);
-	}
+    @Override
+    public List<OrderOtherPrice> statisticsOrderOtherPrice(String id) {
+        return orderDao.statisticsOrderOtherPrice(id);
+    }
 
 
-	@Override
-	public BigDecimal countOrderProfit(OrderParamDto order, List<OrderOtherPrice> otherTotalCost) {
-		if(order == null){
-			return null;
-		}
-		BigDecimal costPrice = order.getCostPrice();
-		BigDecimal prepayPrice = order.getPrepayPrice();
-		BigDecimal profit;
-		if(otherTotalCost == null || otherTotalCost.size() == 0){
-			profit = prepayPrice.subtract(costPrice);
-		}else{
-			BigDecimal countOtherCost = BigDecimal.ZERO;
-			for(OrderOtherPrice item : otherTotalCost){
-				if(item.getTotalCost() != null){
-					countOtherCost = countOtherCost.add(item.getTotalCost());
-				}
-			}
-			profit = prepayPrice.subtract(countOtherCost).subtract(costPrice);
-		}
-		return profit;
-	}
+    @Override
+    public BigDecimal countOrderProfit(OrderParamDto order, List<OrderOtherPrice> otherTotalCost) {
+        if (order == null) {
+            return null;
+        }
+        BigDecimal costPrice = order.getCostPrice();
+        BigDecimal prepayPrice = order.getPrepayPrice();
+        BigDecimal profit;
+        if (otherTotalCost == null || otherTotalCost.size() == 0) {
+            profit = prepayPrice.subtract(costPrice);
+        } else {
+            BigDecimal countOtherCost = BigDecimal.ZERO;
+            for (OrderOtherPrice item : otherTotalCost) {
+                if (item.getTotalCost() != null) {
+                    countOtherCost = countOtherCost.add(item.getTotalCost());
+                }
+            }
+            profit = prepayPrice.subtract(countOtherCost).subtract(costPrice);
+        }
+        return profit;
+    }
 
     @Override
     public void eventUpdateOrderStatus(String content) {
@@ -2277,12 +2327,12 @@ public class OrderService implements IOrderService {
     }
 
 
-	@Override
-	public Object handleOrderStatusString(String selectStatusString) {
-		// TODO Auto-generated method stub
-		if(StringUtils.isEmpty(selectStatusString)){
-			selectStatusString = "自动接受,人工确认并下单,人工确认但不下单,自动拒绝,人工拒绝,已取消";
-		}
-		return selectStatusString;
-	}
+    @Override
+    public Object handleOrderStatusString(String selectStatusString) {
+        // TODO Auto-generated method stub
+        if (StringUtils.isEmpty(selectStatusString)) {
+            selectStatusString = "自动接受,人工确认并下单,人工确认但不下单,自动拒绝,人工拒绝,已取消";
+        }
+        return selectStatusString;
+    }
 }
