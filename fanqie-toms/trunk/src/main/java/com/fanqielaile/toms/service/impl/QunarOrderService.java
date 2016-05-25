@@ -28,6 +28,7 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.QunarUtil;
+import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -85,8 +86,10 @@ public class QunarOrderService implements IQunarOrderService {
             Company company = this.companyDao.selectCompanyById(bangInnDto.getCompanyId());
             //查询公司上架模式
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(otaInnOtaDto.getCompanyId(), otaInnOtaDto.getOtaInfoId());
+            //查询公司比例
+            OtaCommissionPercentDto commissionPercentDto = this.otaCommissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), otaInfo.getUsedPriceModel().name()));
             //设置acountid
-            if (!UsedPriceModel.MAI.equals(otaInfo.getUsedPriceModel())) {
+            if (UsedPriceModel.DI.equals(otaInfo.getUsedPriceModel())) {
                 bangInnDto.setAccountId(bangInnDto.getAccountIdDi());
             }
             //oms房态请求参数
@@ -149,12 +152,19 @@ public class QunarOrderService implements IQunarOrderService {
                     String mealDesc = "无";
                     if (null != roomDetail && ArrayUtils.isNotEmpty(roomDetail.getRoomDetail().toArray())) {
                         for (RoomDetail roomD : roomDetail.getRoomDetail()) {
+                            //设置卖转低的价格
+                            if (UsedPriceModel.MAI2DI.equals(otaInfo.getUsedPriceModel())) {
+                                BigDecimal priceTemp = BigDecimal.valueOf(roomD.getRoomPrice()).multiply(BigDecimal.valueOf(1).subtract(TomsUtil.getPercent(BigDecimal.valueOf(commissionPercentDto.getCommissionPercent()))));
+                                roomD.setRoomPrice(priceTemp.doubleValue());
+                            }
                             //设置房型的加减价
                             if (null != otaRoomPriceDto) {
                                 if (DateUtil.isBetween(roomD.getRoomDate(), DateUtil.format(otaRoomPriceDto.getStartDate(), "yyyy-MM-dd"), DateUtil.format(otaRoomPriceDto.getEndDate(), "yyyy-MM-dd"))) {
                                     roomD.setRoomPrice(roomD.getRoomPrice() + otaRoomPriceDto.getValue());
                                 }
                             }
+                            //将小数全部五入
+                            roomD.setRoomPrice(TomsUtil.getPriceRoundUp(roomD.getRoomPrice()));
                             price += roomD.getRoomPrice() + "|";
                             if (roomD.getRoomNum() >= priceRequest.getNumberOfRooms()) {
                                 status = status + RoomStatus.ACTIVE.name() + "|";
