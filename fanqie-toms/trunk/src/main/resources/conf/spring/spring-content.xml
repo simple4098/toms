@@ -41,9 +41,9 @@
     <bean id="paginationInterceptor" class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
         <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.PostgreSQLDialect"/>
     </bean>
-    <bean class="org.mybatis.spring.SqlSessionTemplate" id="templateDc">
+   <!-- <bean class="org.mybatis.spring.SqlSessionTemplate" id="templateDc">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
-    </bean>
+    </bean>-->
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="mapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
