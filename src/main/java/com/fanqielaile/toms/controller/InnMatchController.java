@@ -662,7 +662,7 @@ public class InnMatchController extends BaseController {
             fcRoomTypeFqService.updateSjMatchRoomType(companyId, matchRoomTypeId);
             result.setStatus(Constants.SUCCESS200);
         } catch (Exception e) {
-            log.error("上架异常",e);
+            log.error("房型上架异常",e);
             result.setMessage(e.getMessage());
             result.setStatus(Constants.ERROR400);
         }
