@@ -55,6 +55,7 @@
         <result column="basic_total_price" property="basicTotalPrice"/>
         <result column="oms_order_code" property="omsOrderCode"/>
         <result column="xml_data" property="xmlData"/>
+        <result column="order_source" property="orderSource"/>
     </resultMap>
     <resultMap id="OrderDtoResults" type="com.fanqielaile.toms.dto.OrderParamDto">
         <id column="id" property="id"/>
@@ -111,6 +112,7 @@
         <result column="oms_order_code" property="omsOrderCode"/>
         <result column="xml_data" property="xmlData"/>
         <result column="user_name" property="operator"/>
+        <result column="order_source" property="orderSource"/>
         <collection property="orderOtherPriceList" column="id" ofType="com.fanqielaile.toms.model.OrderOtherPrice"
                     select="getOrderOtherPrice"/>
     </resultMap>
@@ -181,20 +183,20 @@
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,live_time,leave_time,
         total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,currency,payment_type,
         guest_mobile,OTA_rate_code,fee_status,reason,alipay_trade_no,payment,order_code,company_id,payment,guest_email,special_requirement,reserved_item,fc_bed_type,percent,used_price_model,add_price,basic_total_price,
-        partner_code,order_inn_name,order_room_type_name,person,interface_send_id,oms_order_code,xml_data
+        partner_code,order_inn_name,order_room_type_name,person,interface_send_id,oms_order_code,xml_data,order_source
     </sql>
     <insert id="insertOrder" parameterType="com.fanqielaile.toms.model.Order">
         INSERT INTO ota_toms_order(id, user_id, created_date,
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,
         live_time,leave_time,total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,
         currency,payment_type,guest_mobile,OTA_rate_code,fee_status,order_code,company_id,payment,guest_email,special_requirement,reserved_item,fc_bed_type,percent,used_price_model,
-        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id,xml_data)
+        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id,xml_data,order_source)
         VALUES
         (#{id},#{userId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{channelSource},#{channelOrderCode},#{orderStatus},#{innId},#{guestName},#{roomTypeId},#{homeAmount},
         #{liveTime},#{leaveTime},#{totalPrice},#{prepayPrice},#{costPrice},#{OTAPrice},#{orderTime},#{comment},#{OTARoomTypeId},#{OTAHotelId},#{OTARatePlanId},#{OTAGid},#{eariestArriveTime},
         #{lastestArriveTime},#{currency},#{paymentType},#{guestMobile},#{OTARateCode},#{feeStatus},#{orderCode},#{companyId},#{payment},#{guestEmail},#{specialRequirement},
         #{reservedItem},#{fcBedType},#{percent},#{usedPriceModel},#{addPrice},#{basicTotalPrice},#{partnerCode},#{omsOrderCode},#{orderInnName},
-        #{orderRoomTypeName},#{person},#{interFaceSendID},#{xmlData});
+        #{orderRoomTypeName},#{person},#{interFaceSendID},#{xmlData},#{orderSource});
     </insert>
     <select id="selectOrderByChannelSourceAndOrderId" resultMap="BaseResultsMap">
         SELECT
@@ -417,7 +419,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         from ota_toms_order where channel_order_code = #{channelOrderCode} and channel_source = #{channelSource} and
-        deleted = 0
+        deleted = 0 limit 1
     </select>
     <select id="selectOrderByOmsOrderCodeAndChannelSourceCode" resultMap="BaseResultsMap">
         SELECT
@@ -441,5 +443,18 @@
         <include refid="Base_Column_List"/>
         from ota_toms_order where order_status='ACCEPT' and fee_status='NOT_PAY' and created_date BETWEEN
         '${order.beginDate}' and '${order.endDate}'
+    </select>
+    <insert id="insertOtaPendingOrder" parameterType="com.fanqielaile.toms.model.OtaPendingOrder">
+        INSERT INTO ota_pending_order(id,created_date,updated_date,order_id,modify_status,reason_desc,deleted)
+        VALUES (#{uuid},now(),now(),#{orderId},#{modifyStatus},#{reasonDesc},0)
+    </insert>
+    <update id="deleteOtaPendingOrder">
+        update ota_pending_order set deleted = 1 where order_id = #{orderId}
+    </update>
+    <select id="selectOtaPendingOrder" resultMap="BaseResultsMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from ota_toms_order where id in (select order_id as id from ota_pending_order where deleted = 0 and created_date
+        &lt; now() - interval '10 min')
     </select>
 </mapper>

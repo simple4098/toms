@@ -255,6 +255,56 @@ public class QunarOrderService implements IQunarOrderService {
             MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "去哪儿创建订单传入参数"));
             //1.创建toms本地订单
             order.setXmlData(xml);
+            //验证订单是否存在
+            Order checkOrder = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+            if (null != checkOrder) {
+                String orderStatusMethod = this.orderService.getOrderStatusMethod(checkOrder);
+                //解析返回值
+                if (StringUtils.isNotEmpty(orderStatusMethod)) {
+                    net.sf.json.JSONObject jsonObjectOmsSearchOrder = net.sf.json.JSONObject.fromObject(orderStatusMethod);
+                    if (jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                        String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                        if (omsOrderStatus.equals("1")) {
+                            //下单成功
+                            result.setOrderId(checkOrder.getId());
+                            result.setMsg(ResultStatus.SUCCESS.getText());
+                            result.setQunarOrderNum(checkOrder.getChannelOrderCode());
+                            result.setResult(ResultStatus.SUCCESS.name());
+                        } else if (omsOrderStatus.equals("0")) {
+                            checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                            orderService.cancelOrderMethod(checkOrder);
+                            result.setOrderId(checkOrder.getId());
+                            result.setMsg(ResultStatus.FAILURE.getText());
+                            result.setQunarOrderNum(checkOrder.getChannelOrderCode());
+                            result.setResult(ResultStatus.FAILURE.name());
+                        } else {
+                            result.setOrderId(checkOrder.getId());
+                            result.setMsg(ResultStatus.FAILURE.getText());
+                            result.setQunarOrderNum(checkOrder.getChannelOrderCode());
+                            result.setResult(ResultStatus.FAILURE.name());
+                        }
+                    } else {
+                        //调用oms取消订单
+                        checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                        //调用渠道，oms取消订单接口
+                        orderService.cancelOrderMethod(checkOrder);
+                        HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                        result.setOrderId(checkOrder.getId());
+                        result.setMsg(ResultStatus.FAILURE.getText());
+                        result.setQunarOrderNum(checkOrder.getChannelOrderCode());
+                        result.setResult(ResultStatus.FAILURE.name());
+                    }
+                } else {
+                    checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                    orderService.cancelOrderMethod(checkOrder);
+                    HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                    result.setOrderId(checkOrder.getId());
+                    result.setMsg(ResultStatus.FAILURE.getText());
+                    result.setQunarOrderNum(checkOrder.getChannelOrderCode());
+                    result.setResult(ResultStatus.FAILURE.name());
+                }
+                return result;
+            }
             this.orderService.createOrderMethod(order.getChannelSource(), order);
             //查询当前公司设置的下单是自动或者手动
             //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则

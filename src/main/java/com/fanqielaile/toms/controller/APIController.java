@@ -1,16 +1,23 @@
 package com.fanqielaile.toms.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqie.core.dto.TBParam;
+import com.fanqie.qunar.enums.OptCode;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
+import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
+import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.OtaInfoRefDto;
 import com.fanqielaile.toms.dto.ParamJson;
+import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
+import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.*;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.*;
 import com.fanqielaile.toms.support.util.ftp.UploadStatus;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
@@ -23,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * DESC : 对接OTA ... controller
+ *
  * @author : 番茄木-ZLin
  * @data : 2015/6/23
  * @version: v1.0.0
@@ -39,7 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequestMapping("/api")
 public class APIController extends BaseController {
 
-    private static  final Logger log = LoggerFactory.getLogger(APIController.class);
+    private static final Logger log = LoggerFactory.getLogger(APIController.class);
     private final Lock lock = new ReentrantLock();
     @Resource
     private ICommissionService commissionService;
@@ -53,15 +62,16 @@ public class APIController extends BaseController {
 
     /**
      * 客栈上架、下架
+     *
      * @param tbParam 上架的参数（见文档）
      */
-    @RequestMapping(value = "/hotel/update",method = RequestMethod.POST)
+    @RequestMapping(value = "/hotel/update", method = RequestMethod.POST)
     @ResponseBody
-    public Object hotel(TBParam tbParam){
+    public Object hotel(TBParam tbParam) {
         JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         boolean validateParam = DcUtil.validateParam(tbParam);
-        log.info("推送参数APIController："+tbParam.toString()+" 企业唯一code"+tbParam.getCompanyCode()+" accountIdDi:"+tbParam.getAccountIdDi());
-        if (!validateParam){
+        log.info("推送参数APIController：" + tbParam.toString() + " 企业唯一code" + tbParam.getCompanyCode() + " accountIdDi:" + tbParam.getAccountIdDi());
+        if (!validateParam) {
             jsonModel.setMessage(Constants.MESSAGE_ERROR);
             jsonModel.setSuccess(false);
             return jsonModel;
@@ -76,9 +86,9 @@ public class APIController extends BaseController {
         } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
-        return  jsonModel;
+        return jsonModel;
     }
 
     /**
@@ -114,29 +124,29 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/hotel/timer")
     @ResponseBody
-    public Object hotelTimer(final TBParam tbParam ){
-        JsonModel jsonModel = new JsonModel(true,Constants.MESSAGE_SUCCESS);
+    public Object hotelTimer(final TBParam tbParam) {
+        JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
-                if (StringUtils.isNotEmpty(tbParam.getCompanyCode())){
+                if (StringUtils.isNotEmpty(tbParam.getCompanyCode())) {
                     infoDtoList = otaInfoService.findAllOtaByCompany(tbParam.getCompanyCode());
                 }
                 try {
                     ITPService service = null;
-                    for (OtaInfoRefDto o:infoDtoList){
+                    for (OtaInfoRefDto o : infoDtoList) {
                         service = o.getOtaType().create();
-                        service.updateHotel(o ,tbParam);
+                        service.updateHotel(o, tbParam);
                     }
                 } catch (Exception e) {
-                   throw  new TomsRuntimeException("同步房型失败",e);
+                    throw new TomsRuntimeException("同步房型失败", e);
                 }
             }
         };
         Thread t = new Thread(runnable);
         t.start();
-        return  jsonModel;
+        return jsonModel;
     }
 
     /**
@@ -144,7 +154,7 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/hotelFailTimer")
     @ResponseBody
-    public Object hotelFailTimer(){
+    public Object hotelFailTimer() {
         JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
@@ -152,20 +162,20 @@ public class APIController extends BaseController {
                 List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
                 try {
                     ITPService service = null;
-                    for (OtaInfoRefDto o:infoDtoList){
-                        log.info("hotelFailTimer START:"+JacksonUtil.obj2json(o));
+                    for (OtaInfoRefDto o : infoDtoList) {
+                        log.info("hotelFailTimer START:" + JacksonUtil.obj2json(o));
                         service = o.getOtaType().create();
                         service.updateHotelFailTimer(o);
-                        log.info("hotelFailTimer end:"+JacksonUtil.obj2json(o));
+                        log.info("hotelFailTimer end:" + JacksonUtil.obj2json(o));
                     }
                 } catch (Exception e) {
-                    log.error("定时更新未成功酒店失败",e);
+                    log.error("定时更新未成功酒店失败", e);
                 }
             }
         };
         Thread t = new Thread(runnable);
         t.start();
-        return  jsonModel;
+        return jsonModel;
     }
 
     /**
@@ -173,22 +183,22 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/commission/update")
     @ResponseBody
-    public Object commissionUpdate(String param){
+    public Object commissionUpdate(String param) {
         JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         ParamJson paramJson = JacksonUtil.json2obj(param, ParamJson.class);
         try {
-            if(paramJson!=null && !StringUtils.isEmpty(paramJson.getCompanyCode())){
+            if (paramJson != null && !StringUtils.isEmpty(paramJson.getCompanyCode())) {
                 commissionService.updateCommission(paramJson);
-            }else {
+            } else {
                 jsonModel.setMessage(Constants.MESSAGE_ERROR);
                 jsonModel.setSuccess(false);
                 return jsonModel;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             jsonModel.setMessage(e.getMessage());
             jsonModel.setSuccess(false);
         }
-        return  jsonModel;
+        return jsonModel;
     }
 
     /**
@@ -196,7 +206,7 @@ public class APIController extends BaseController {
      */
     @RequestMapping("/sellingRoomType")
     @ResponseBody
-    public Object sellingRoomType(final String from , final String to){
+    public Object sellingRoomType(final String from, final String to) {
         JsonModel jsonModel = new JsonModel(true, Constants.MESSAGE_SUCCESS);
         Runnable runnable = new Runnable() {
             @Override
@@ -204,18 +214,18 @@ public class APIController extends BaseController {
                 List<OtaInfoRefDto> infoDtoList = otaInfoService.findOtaInfoList();
                 try {
                     ITPService service = null;
-                    for (OtaInfoRefDto o:infoDtoList){
+                    for (OtaInfoRefDto o : infoDtoList) {
                         service = o.getOtaType().create();
-                        service.sellingRoomType(from,to,o);
+                        service.sellingRoomType(from, to, o);
                     }
                 } catch (Exception e) {
-                    throw  new TomsRuntimeException("定时更新客栈下架房型",e);
+                    throw new TomsRuntimeException("定时更新客栈下架房型", e);
                 }
             }
         };
         Thread t = new Thread(runnable);
         t.start();
-        return  jsonModel;
+        return jsonModel;
     }
 
     /**
@@ -245,7 +255,7 @@ public class APIController extends BaseController {
         log.info(new Date() + "开始执行定时任务=======>");
         try {
             Map<String, String> map = TomsUtil.getFifteenDate();
-            
+
             List<Order> exceptionOrderList = this.orderService.findExceptionOrderList(map);
             Order order = new Order().getOrderToExceptionOrder(exceptionOrderList);
             log.info("插入异常订单一共" + (null == order.getExceptionOrderList() ? 0 : order.getExceptionOrderList().size()));
@@ -265,6 +275,26 @@ public class APIController extends BaseController {
         return true;
     }
 
-
+    /**
+     * 定时任务执行同步订单状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/deal_order_status")
+    @ResponseBody
+    public Object taskDealOrderStatus() {
+        log.info(new Date() + "开始执行同步订单状态定时任务======>");
+        try {
+            List<Order> orderList = this.orderService.findOtaPendingOrder();
+            if (CollectionUtils.isNotEmpty(orderList)) {
+                this.orderService.dealPendingOrderMethod(orderList);
+            }
+        } catch (Exception e) {
+            log.error("执行同步订单状态定时任务异常！" + e);
+            return false;
+        }
+        log.info(new Date() + "结束执行同步订单状态定时任务======>");
+        return true;
+    }
 
 }

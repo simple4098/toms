@@ -42,6 +42,7 @@ import net.sf.json.JSONString;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.apache.tools.ant.util.DateUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -166,12 +167,72 @@ public class OrderService implements IOrderService {
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(ChannelSource.TAOBAO, order.getChannelOrderCode(), order.getId(), null, OrderStatus.ACCEPT, OrderStatus.ACCEPT, FeeStatus.NOT_PAY, JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "淘宝创建订单"));
         //创建订单
         order.setXmlData(xmlStr);
-        JsonModel j = createOrderMethod(channelSource, order);
-        reslut.put("status", j.isSuccess());
-        reslut.put("data", order);
-        reslut.put("message", j.getMessage());
-        logger.info("淘宝创建订单返回值:" + j.toString());
+        //创建订单之前验证toms订单是否存在
+        order.setChannelSource(channelSource);
+        Order checkOrder = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != checkOrder) {
+            //如果订单不为空，判断淘宝的付款状态
+            if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+                //预付
+                reslut.put("status", false);
+                reslut.put("data", checkOrder);
+                reslut.put("message", "创建失败，订单号重复");
+            } else {
+                try {
+                    //信用住
+                    String orderStatusMethod = getOrderStatusMethod(checkOrder);
+                    //解析返回值
+                    if (StringUtils.isNotEmpty(orderStatusMethod)) {
+                        JSONObject jsonObjectOmsSearchOrder = JSONObject.fromObject(orderStatusMethod);
+                        if (jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                            String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                            if (omsOrderStatus.equals("1")) {
+                                //确认有房
+                                //渠道确认有房
+                                TBCancelMethod(checkOrder, 2L, new UserInfo());
+                                reslut.put("status", true);
+                                reslut.put("data", checkOrder);
+                                reslut.put("message", "创建订单成功，付款成功");
+                            } else if (omsOrderStatus.equals("0")) {
+                                searchOmsOrderErrorMethod(checkOrder);
+                                reslut.put("status", false);
+                                reslut.put("data", checkOrder);
+                                reslut.put("message", "创建订单失败");
+                            } else {
+                                reslut.put("status", false);
+                                reslut.put("data", checkOrder);
+                                reslut.put("message", "创建订单失败");
+                            }
+                        } else {
+                            searchOmsOrderErrorMethod(checkOrder);
+                            reslut.put("status", false);
+                            reslut.put("data", checkOrder);
+                            reslut.put("message", "创建订单失败");
+                        }
+                    }
+                } catch (Exception e) {
+                    //调用信用住确认无房接口，并取消oms订单
+                    searchOmsOrderErrorMethod(checkOrder);
+                }
+            }
+        } else {
+            JsonModel j = createOrderMethod(channelSource, order);
+            reslut.put("status", j.isSuccess());
+            reslut.put("data", order);
+            reslut.put("message", j.getMessage());
+        }
+        logger.info("淘宝创建订单返回值:" + reslut.toString());
         return reslut;
+    }
+
+    private void searchOmsOrderErrorMethod(Order checkOrder) throws Exception {
+        logger.info("查询oms订单失败，调用渠道、oms取消订单,订单号：" + checkOrder.getChannelOrderCode());
+        //查询订单失败调用渠道，oms取消订单流程
+        checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+        //调用渠道，oms取消订单接口
+        cancelOrderMethod(checkOrder);
+        //调用渠道取消订单
+        TBCancelMethod(checkOrder, 1L, new UserInfo());
     }
 
     /**
@@ -289,6 +350,7 @@ public class OrderService implements IOrderService {
         //记录日志
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), OrderStatus.ACCEPT, OrderStatus.ACCEPT, order.getFeeStatus(), JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "创建toms订单"));
         //创建订单
+        order.setOrderSource(com.fanqielaile.toms.enums.OrderSource.SYSTEM);
         this.orderDao.insertOrder(order);
         //创建每日价格信息
         this.dailyInfosDao.insertDailyInfos(order.dealDailyInfosMethod(order));
@@ -463,7 +525,14 @@ public class OrderService implements IOrderService {
         OrderStatus beforeOrderStatus = order.getOrderStatus();
         //判断订单是否同步OMS
         if (order.getFeeStatus().equals(FeeStatus.NOT_PAY) || order.getOrderStatus().equals(OrderStatus.CONFIM_AND_ORDER)) {
-
+            //保存到待处理
+            if (ChannelSource.TAOBAO.equals(order.getChannelSource()) || ChannelSource.QUNAR.equals(order.getChannelSource())) {
+                OtaPendingOrder otaPendingOrder = new OtaPendingOrder();
+                otaPendingOrder.setOrderId(order.getId());
+                otaPendingOrder.setModifyStatus(order.getOrderStatus());
+                otaPendingOrder.setReasonDesc("付款中");
+                this.orderDao.insertOtaPendingOrder(otaPendingOrder);
+            }
             //查询字典表中同步OMS需要的数据
             Dictionary dictionary = this.dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             //判断是否为异步下单
@@ -545,7 +614,7 @@ public class OrderService implements IOrderService {
                         order.setOmsOrderCode((String) jsonObjectOmsSearchOrder.get("orderNo"));
                         return dealOmsResultSuccessMethod(order, currentUser, beforeOrderStatus, dictionary, otaInfo, company, respose);
                     } else {
-                        logger.info("oms返回非200，再次查询oms订单状态，返回" + omsOrderStatus + "：已接收，订单号:" + order.getChannelOrderCode());
+                        logger.info("oms返回非200，再次查询oms订单状态，返回" + omsOrderStatus + "，订单号:" + order.getChannelOrderCode());
                         //订单查询状态不为1：已接收走以前老的流程
                         return dealOmsResultNotSuccessMethod(order, currentUser, otaInfo, jsonObject);
                     }
@@ -1561,6 +1630,44 @@ public class OrderService implements IOrderService {
         OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(order.getInnId(), otaInfo.getCompanyId(), otaInfo.getOtaInfoId());
         order.setOTAHotelId(otaInnOtaDto.getWgHid());
         order.setXmlData(xml);
+        //创建toms本地订单查询订单是否存在
+        Order checkOrder = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != checkOrder) {
+            String orderStatusMethod = getOrderStatusMethod(checkOrder);
+            //解析返回值
+            if (StringUtils.isNotEmpty(orderStatusMethod)) {
+                JSONObject jsonObjectOmsSearchOrder = JSONObject.fromObject(orderStatusMethod);
+                if (jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                    String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                    if (omsOrderStatus.equals("1")) {
+                        //下单成功
+                        result.put("status", true);
+                        result.put("order", checkOrder);
+                    } else if (omsOrderStatus.equals("0")) {
+                        checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                        cancelOrderMethod(checkOrder);
+                        result.put("status", false);
+                        result.put("order", checkOrder);
+                    } else {
+                        result.put("status", false);
+                        result.put("order", checkOrder);
+                    }
+                } else {
+                    //调用oms取消订单
+                    checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                    //调用渠道，oms取消订单接口
+                    cancelOrderMethod(checkOrder);
+                    result.put("status", false);
+                    result.put("order", checkOrder);
+                }
+            } else {
+                checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                cancelOrderMethod(checkOrder);
+                result.put("status", false);
+                result.put("order", checkOrder);
+            }
+            return result;
+        }
         createOrderMethod(order.getChannelSource(), order);
         //天下房仓创建订单，同步oms
         //查询当前公司设置的下单是自动或者手动
@@ -2092,6 +2199,9 @@ public class OrderService implements IOrderService {
         JsonModel result = new JsonModel();
         Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(hotelOrderStatus.getTid(), hotelOrderStatus.getOmsOrderCode());
         if (null != order) {
+            //删除待处理订单数据
+            logger.info("收到淘宝信用住接口调用通知，删除待处理数据,订单号：" + order.getChannelOrderCode());
+            this.orderDao.deleteOtaPendingOrder(order.getId());
             //如果不为空，调用淘宝酒店更新接口
             hotelOrderStatus.setOutId(order.getId());
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
@@ -2298,6 +2408,9 @@ public class OrderService implements IOrderService {
         //查询订单是否存在
         Order orderParam = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
         if (null != orderParam && ChannelSource.TAOBAO.equals(orderParam.getChannelSource()) && PaymentType.PREPAID.equals(orderParam.getPaymentType())) {
+            //删除待处理订单数据
+            logger.info("收到更新淘宝订单状态事件，删除待处理订单数据,订单号：" + order.getChannelOrderCode());
+            this.orderDao.deleteOtaPendingOrder(order.getId());
             //查询当前酒店以什么模式发布
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(orderParam.getOTAHotelId());
             OtaInfoRefDto otaInfo = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(orderParam.getCompanyId(), otaInnOtaDto.getOtaInfoId());
@@ -2334,5 +2447,122 @@ public class OrderService implements IOrderService {
             selectStatusString = "自动接受,人工确认并下单,人工确认但不下单,自动拒绝,人工拒绝,已取消";
         }
         return selectStatusString;
+    }
+
+    @Override
+    public List<Order> findOtaPendingOrder() {
+        return this.orderDao.selectOtaPendingOrder();
+    }
+
+    @Override
+    public void dealPendingOrderMethod(List<Order> orderList) throws Exception {
+        for (Order order : orderList) {
+            //根据otahotelid查询信息
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
+            //查询公司signkey
+            OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByCompanyIdAndOtaInnOtaId(otaInnOtaDto.getCompanyId(), otaInnOtaDto.getOtaInfoId());
+            //查询oms订单状态
+            String response = getOrderStatusMethod(order);
+            if (StringUtils.isNotEmpty(response)) {
+                JSONObject jsonObject = JSONObject.fromObject(response);
+                if (jsonObject.get("status").toString().equals("200")) {
+                    String orderStatus = (String) jsonObject.get("orderStatus");
+                    if (StringUtils.isNotEmpty(orderStatus)) {
+                        if (orderStatus.equals("1")) {
+                            //确认有房
+                            if (ChannelSource.QUNAR.equals(order.getChannelSource())) {
+                                //调用去哪儿确认有房
+                                String qunarOrderOpt = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_SUCCESS.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                                logger.info("定时任务执行调用去哪儿确认有房订单返回值=>" + qunarOrderOpt + "  订单号为：" + order.getChannelOrderCode());
+                            } else if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+                                if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+                                    //预付
+                                    TBCancelMethod(order, 2L, new UserInfo());
+                                } else if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+                                    //信用住
+                                    HotelOrderStatus hotelOrderStatus = new HotelOrderStatus();
+                                    hotelOrderStatus.setCheckinDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd HH:mm:ss"));
+                                    hotelOrderStatus.setCheckoutDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd HH:mm:ss"));
+                                    hotelOrderStatus.setOmsOrderCode(order.getOmsOrderCode());
+                                    hotelOrderStatus.setOptType(2);//确认有房
+                                    hotelOrderStatus.setOutRoomNumber(String.valueOf(order.getHomeAmount()));
+                                    hotelOrderStatus.setRooms(order.getHomeAmount());
+                                    hotelOrderStatus.setTid(order.getChannelOrderCode());
+                                    String creditResponse = TBXHotelUtilPromotion.updateHotelOrderStatus(hotelOrderStatus, otaInfoRefDto);
+                                    logger.info("定时任务执行调用淘宝信用住确认有房订单返回值=>" + creditResponse + " 订单号为：" + order.getChannelOrderCode());
+                                }
+                            }
+                        } else if (orderStatus.equals("0")) {
+                            //oms待处理
+                            //执行取消订单流程
+                            taskCancelOrderMethod(order, otaInfoRefDto);
+                        } else {
+                            //确认无房
+                            if (ChannelSource.QUNAR.equals(order.getChannelSource())) {
+                                //调用去哪儿确认有房
+                                String qunarOrderOpt = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+                                logger.info("定时任务执行调用去哪儿确认无房订单返回值=>" + qunarOrderOpt + "  订单号为：" + order.getChannelOrderCode());
+                            } else if (ChannelSource.TAOBAO.equals(order.getChannelSource())) {
+                                if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+                                    //预付
+                                    TBCancelMethod(order, 1L, new UserInfo());
+                                } else if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+                                    //信用住
+                                    HotelOrderStatus hotelOrderStatus = new HotelOrderStatus();
+                                    hotelOrderStatus.setCheckinDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd HH:mm:ss"));
+                                    hotelOrderStatus.setCheckoutDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd HH:mm:ss"));
+                                    hotelOrderStatus.setOmsOrderCode(order.getOmsOrderCode());
+                                    hotelOrderStatus.setOptType(1);//确认无房
+                                    hotelOrderStatus.setOutRoomNumber(String.valueOf(order.getHomeAmount()));
+                                    hotelOrderStatus.setRooms(order.getHomeAmount());
+                                    hotelOrderStatus.setTid(order.getChannelOrderCode());
+                                    String creditResponse = TBXHotelUtilPromotion.updateHotelOrderStatus(hotelOrderStatus, otaInfoRefDto);
+                                    logger.info("定时任务执行调用淘宝信用住确认无房订单返回值=>" + creditResponse + " 订单号为：" + order.getChannelOrderCode());
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    logger.info("查询oms订单状态返回非200，定时任务执行，取消oms和渠道订单");
+                    taskCancelOrderMethod(order, otaInfoRefDto);
+                }
+            }
+        }
+    }
+
+    /**
+     * 定时任务执行取消订单流程
+     *
+     * @param order
+     * @param otaInfoRefDto
+     * @throws Exception
+     */
+    private void taskCancelOrderMethod(Order order, OtaInfoRefDto otaInfoRefDto) throws Exception {
+        cancelOrderMethod(order);
+        //判断订单来源
+        if (ChannelSource.QUNAR.equals(order.getChannelSource())) {
+            //去哪儿取消订单
+            String qunarOrderOpt = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
+            logger.info("定时任务执行调用去哪儿取消订单返回值=>" + qunarOrderOpt + "  订单号为：" + order.getChannelOrderCode());
+        } else if (ChannelSource.TAOBAO.equals(order)) {
+            if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+                //预付
+                TBCancelMethod(order, 1L, new UserInfo());
+            } else if (PaymentType.CREDIT.equals(order.getPaymentType())) {
+                //信用住
+                HotelOrderStatus hotelOrderStatus = new HotelOrderStatus();
+                hotelOrderStatus.setCheckinDate(DateUtil.format(order.getLiveTime(), "yyyy-MM-dd HH:mm:ss"));
+                hotelOrderStatus.setCheckoutDate(DateUtil.format(order.getLeaveTime(), "yyyy-MM-dd HH:mm:ss"));
+                hotelOrderStatus.setOmsOrderCode(order.getOmsOrderCode());
+                hotelOrderStatus.setOptType(3);
+                hotelOrderStatus.setOutRoomNumber(String.valueOf(order.getHomeAmount()));
+                hotelOrderStatus.setRooms(order.getHomeAmount());
+                hotelOrderStatus.setTid(order.getChannelOrderCode());
+                hotelOrderStatus.setReasonType("4");
+                String creditResponse = TBXHotelUtilPromotion.updateHotelOrderStatus(hotelOrderStatus, otaInfoRefDto);
+                logger.info("定时任务执行调用淘宝信用住取消订单返回值=>" + creditResponse + " 订单号为：" + order.getChannelOrderCode());
+
+            }
+        }
     }
 }

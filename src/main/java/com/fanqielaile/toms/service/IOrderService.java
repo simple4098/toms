@@ -404,4 +404,13 @@ public interface IOrderService {
      * @param selectStatusString
      */
 	Object handleOrderStatusString(String selectStatusString);
+
+    /**
+     * 查询所有待处理订单
+     *
+     * @return
+     */
+    List<Order> findOtaPendingOrder();
+
+    void dealPendingOrderMethod(List<Order> orderList) throws Exception;
 }
