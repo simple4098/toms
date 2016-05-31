@@ -34,6 +34,8 @@ import java.util.UUID;
  */
 @XmlRootElement(name = "ORDER")
 public class Order extends Domain {
+    //订单来源
+    private OrderSource orderSource;
     //渠道来源
     private ChannelSource channelSource;
     //渠道的订单ID（OTA订单ID）
@@ -179,6 +181,14 @@ public class Order extends Domain {
 
     //oms订单状态
     private String omsIntOrderStatus;
+
+    public OrderSource getOrderSource() {
+        return orderSource;
+    }
+
+    public void setOrderSource(OrderSource orderSource) {
+        this.orderSource = orderSource;
+    }
 
     public String getOmsIntOrderStatus() {
         return omsIntOrderStatus;
@@ -761,7 +771,7 @@ public class Order extends Domain {
         //如果是信用住，付款金额=付款金额
         omsOrder.setRemind(order.getComment());
         omsOrder.setTotalPrice(order.getTotalPrice());
-        if (ChannelSource.HAND_ORDER.equals(order.getChannelSource())) {
+        if (OrderSource.HAND.equals(order.getOrderSource())) {
             omsOrder.setRoomTypeNum(1);
         } else {
             omsOrder.setRoomTypeNum(order.getHomeAmount());
@@ -832,9 +842,10 @@ public class Order extends Domain {
      */
     public static Order makeHandOrderByRoomTypes(Order order, RoomTypeInfoDto roomTypeInfoDto) {
         Order handOrder = new Order();
+        handOrder.setOrderSource(order.getOrderSource());
         handOrder.setId(order.getId());
         handOrder.setAccountId(order.getAccountId());
-        handOrder.setChannelSource(ChannelSource.HAND_ORDER);
+        handOrder.setChannelSource(order.getChannelSource());
         if (StringUtils.isNotEmpty(order.getChannelOrderCode())) {
             handOrder.setChannelOrderCode(order.getChannelOrderCode());
         } else {

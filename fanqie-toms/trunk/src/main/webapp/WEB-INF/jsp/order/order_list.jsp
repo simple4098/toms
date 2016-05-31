@@ -304,7 +304,7 @@
                                 <c:forEach items="${data}" var="d">
                                     <tr>
                                         <td>
-                                                ${d.channelSource.text}
+                                            (${d.orderSource.text})${d.channelSource.text}
                                                     <c:if test="${d.channelSource == 'FC'}">(${d.partnerCode})</c:if>
                                         </td>
                                         <td>${d.channelOrderCode}</td>

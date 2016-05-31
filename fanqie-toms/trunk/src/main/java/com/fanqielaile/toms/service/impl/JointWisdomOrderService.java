@@ -3,6 +3,7 @@ package com.fanqielaile.toms.service.impl;
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.jw.enums.OrderResponseType;
 import com.fanqie.jw.enums.Version;
+import com.fanqie.qunar.enums.ResultStatus;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
@@ -28,6 +29,7 @@ import com.fanqielaile.toms.support.util.XmlJointWisdomUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -474,6 +476,56 @@ public class JointWisdomOrderService implements IJointWisdomOrderService {
         MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, null, order.getInnId(), order.getInnCode(), "众荟创建订单传入参数"));
         //1.创建toms本地订单
         order.setXmlData(xml);
+        //1.1创建toms本地订单，验证订单是否存在
+        //验证订单是否存在
+        Order checkOrder = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != checkOrder) {
+            String orderStatusMethod = this.orderService.getOrderStatusMethod(checkOrder);
+            //解析返回值
+            if (StringUtils.isNotEmpty(orderStatusMethod)) {
+                net.sf.json.JSONObject jsonObjectOmsSearchOrder = net.sf.json.JSONObject.fromObject(orderStatusMethod);
+                if (jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                    String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                    if (omsOrderStatus.equals("1")) {
+                        //下单成功
+                        //预定成功
+                        JointWisdomAddOrderSuccessResponse result = new JointWisdomAddOrderSuccessResponse();
+                        result.setMessage("预定成功");
+                        result.setVersion(Version.v1003.getText());
+                        result.setResponseType(OrderResponseType.Committed.name());
+                        result.setHotelReservations(result.getHotelReservationResult(order.getChannelOrderCode(), order.getId()));
+                        map.put("status", true);
+                        map.put("data", result);
+                        MessageCenterUtils.savePushTomsOrderLog(order.getInnId(), OrderLogDec.ADD_ORDER, new OrderLogData(order.getChannelSource(), order.getChannelOrderCode(), order.getId(), order.getOmsOrderCode(), order.getOrderStatus(), order.getOrderStatus(), order.getFeeStatus(), xml, JacksonUtil.obj2json(result), order.getInnId(), order.getInnCode(), "众荟创建订单,toms返回值"));
+                    } else if (omsOrderStatus.equals("0")) {
+                        checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                        orderService.cancelOrderMethod(checkOrder);
+                        map.put("status", false);
+                        map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("预定失败", Version.v1003.getText(), OrderResponseType.Committed.name()));
+
+                    } else {
+                        map.put("status", false);
+                        map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("预定失败", Version.v1003.getText(), OrderResponseType.Committed.name()));
+
+                    }
+                } else {
+                    //调用oms取消订单
+                    checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                    //调用渠道，oms取消订单接口
+                    orderService.cancelOrderMethod(checkOrder);
+                    map.put("status", false);
+                    map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("预定失败", Version.v1003.getText(), OrderResponseType.Committed.name()));
+
+                }
+            } else {
+                checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                orderService.cancelOrderMethod(checkOrder);
+                map.put("status", false);
+                map.put("data", new JointWisdomAddOrderSuccessResponse().getBasicError("预定失败", Version.v1003.getText(), OrderResponseType.Committed.name()));
+
+            }
+            return map;
+        }
         this.orderService.createOrderMethod(order.getChannelSource(), order);
 
         //查询当前公司设置的下单是自动或者手动

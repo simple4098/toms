@@ -6,6 +6,7 @@ import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OrderOtherPrice;
+import com.fanqielaile.toms.model.OtaPendingOrder;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.apache.ibatis.annotations.Param;
 
@@ -155,4 +156,12 @@ public interface OrderDao {
      * @return
      */
 	List<String> getOtherPriceSubtype(@Param("consumerProjectName") String consumerProjectName, @Param("order")OrderParamDto orderParamDto);
+
+
+    void insertOtaPendingOrder(OtaPendingOrder otaPendingOrder);
+
+    void deleteOtaPendingOrder(@Param("orderId") String orderId);
+
+    List<Order> selectOtaPendingOrder();
+
 }

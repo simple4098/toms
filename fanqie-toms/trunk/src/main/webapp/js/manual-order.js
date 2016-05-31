@@ -10,6 +10,7 @@ $(function(){
         }
     }
     var $manualOrder = $("#manualOrder"),
+        $channelSource = $("#channelSource"),
         $liveTimeString = $("#liveTimeString"),
         $leaveTimeString = $("#leaveTimeString"),
         $todayCheckin = $("#todayCheckin"),
@@ -378,7 +379,8 @@ $(function(){
             leaveTimeString : $leaveTimeString.val(),
             liveTimeString : $liveTimeString.val(),
             maiAccount : $(".maiAccount:checked").val(),
-            payment : $payment.val()
+            payment: $payment.val(),
+            channelSource: $channelSource.val()
         }
         $.each($(".room-type-operate"),function(key,val) {
             $selectedObj = $(this).find(".selectRoomType").find("option:checked")

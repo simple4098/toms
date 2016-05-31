@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqie.bean.order.*;
+import com.fanqie.qunar.enums.ResultStatus;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.dao.*;
@@ -350,29 +351,62 @@ public class CtripOrderService implements ICtripOrderService {
         order.setRoomTypeId(ctripRoomTypeMapping.getTomRoomTypeId());
         //1.创建toms本地订单
         order.setXmlData(xml);
-        this.orderService.createOrderMethod(order.getChannelSource(), order);
-
-        //携程创建订单，同步oms
-        //查询当前公司设置的下单是自动或者手动
-        //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
-        OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.XC.name());
-        OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByHidAndOtaInfoId(Long.valueOf(order.getOTAHotelId()), otaInfoRefDto.getId());
-        OrderConfig orderConfig = new OrderConfig(otaInnOtaDto.getOtaInfoId(), otaInnOtaDto.getCompanyId(), Integer.valueOf(order.getInnId()));
-        OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
+        //验证订单是否存在
+        //验证订单是否存在
         JsonModel jsonModel = null;
-        if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
-            //自动下单
-            //设置订单状态为：接受
-            order.setOrderStatus(OrderStatus.ACCEPT);
-            jsonModel = this.orderService.payBackDealMethod(order, new UserInfo(), OtaType.XC.name());
+        Order checkOrder = this.orderDao.selectOrderByChannelOrderCodeAndSource(order);
+        if (null != checkOrder) {
+            String orderStatusMethod = this.orderService.getOrderStatusMethod(checkOrder);
+            //解析返回值
+            if (StringUtils.isNotEmpty(orderStatusMethod)) {
+                net.sf.json.JSONObject jsonObjectOmsSearchOrder = net.sf.json.JSONObject.fromObject(orderStatusMethod);
+                if (jsonObjectOmsSearchOrder.get("status").equals(200)) {
+                    String omsOrderStatus = (String) jsonObjectOmsSearchOrder.get("orderStatus");
+                    if (omsOrderStatus.equals("1")) {
+                        //下单成功
+                        jsonModel = new JsonModel(true, "付款成功");
+                    } else if (omsOrderStatus.equals("0")) {
+                        checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                        orderService.cancelOrderMethod(checkOrder);
+                        jsonModel = new JsonModel(false, "下单失败,取消订单");
+                    } else {
+                        jsonModel = new JsonModel(false, "下单失败");
+                    }
+                } else {
+                    //调用oms取消订单
+                    checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                    //调用渠道，oms取消订单接口
+                    orderService.cancelOrderMethod(checkOrder);
+                    jsonModel = new JsonModel(false, "下单失败");
+                }
+            } else {
+                checkOrder.setOrderStatus(OrderStatus.CANCEL_ORDER);
+                orderService.cancelOrderMethod(checkOrder);
+                jsonModel = new JsonModel(false, "下单失败,取消订单");
+            }
         } else {
-            //手动下单,手动下单修改订单状态为待处理
-            order.setOrderStatus(OrderStatus.NOT_DEAL);
-            //待处理订单写入付款金额和付款码
-            order.setFeeStatus(FeeStatus.PAID);
-            this.orderDao.updateOrderStatusAndFeeStatus(order);
-            this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.NOT_DEAL, "手动下单", ChannelSource.FC.name()));
-            jsonModel = new JsonModel(true, "付款成功");
+            this.orderService.createOrderMethod(order.getChannelSource(), order);
+            //携程创建订单，同步oms
+            //查询当前公司设置的下单是自动或者手动
+            //1.判断当前订单客栈属于哪个公司，查找公司设置的下单规则
+            OtaInfoRefDto otaInfoRefDto = this.otaInfoDao.selectOtaInfoByType(OtaType.XC.name());
+            OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByHidAndOtaInfoId(Long.valueOf(order.getOTAHotelId()), otaInfoRefDto.getId());
+            OrderConfig orderConfig = new OrderConfig(otaInnOtaDto.getOtaInfoId(), otaInnOtaDto.getCompanyId(), Integer.valueOf(order.getInnId()));
+            OrderConfigDto orderConfigDto = orderConfigDao.selectOrderConfigByOtaInfoId(orderConfig);
+            if (null == orderConfigDto || 0 == orderConfigDto.getStatus()) {
+                //自动下单
+                //设置订单状态为：接受
+                order.setOrderStatus(OrderStatus.ACCEPT);
+                jsonModel = this.orderService.payBackDealMethod(order, new UserInfo(), OtaType.XC.name());
+            } else {
+                //手动下单,手动下单修改订单状态为待处理
+                order.setOrderStatus(OrderStatus.NOT_DEAL);
+                //待处理订单写入付款金额和付款码
+                order.setFeeStatus(FeeStatus.PAID);
+                this.orderDao.updateOrderStatusAndFeeStatus(order);
+                this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.NOT_DEAL, "手动下单", ChannelSource.FC.name()));
+                jsonModel = new JsonModel(true, "付款成功");
+            }
         }
         //封装返回对象
         CtripNewHotelOrderResponse ctripNewHotelOrderResponse = new CtripNewHotelOrderResponse();

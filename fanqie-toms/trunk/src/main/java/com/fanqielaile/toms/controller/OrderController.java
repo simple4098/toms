@@ -10,6 +10,7 @@ import com.fanqielaile.toms.dto.OrderStatisticsDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.dto.UserInfoDto;
 import com.fanqielaile.toms.enums.OrderMethod;
+import com.fanqielaile.toms.enums.OrderSource;
 import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import com.fanqielaile.toms.helper.PaginationHelper;
@@ -287,6 +288,7 @@ public class OrderController extends BaseController {
         Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
         order.setCompanyId(getCurrentUser().getCompanyId());
         order.setUserId(userInfo.getId());
+        order.setOrderSource(OrderSource.HAND);
         if (param) {
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));

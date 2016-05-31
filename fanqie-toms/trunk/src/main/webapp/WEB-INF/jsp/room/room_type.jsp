@@ -55,6 +55,19 @@
             <div class="modal-body">
                 <form class="form-horizontal hand-order-form" id="hand-order-form" role="form">
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> 渠道来源
+                        </label>
+                        <div class="col-sm-9">
+                            <select name="channelSource" id="channelSource">
+                                <option value="TAOBAO">淘宝</option>
+                                <option value="FC">天下房仓</option>
+                                <option value="ZH">众荟</option>
+                                <option value="XC">携程</option>
+                                <option value="QUNAR">去哪儿</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> 渠道订单号
                         </label>
                         <div class="col-sm-9">
