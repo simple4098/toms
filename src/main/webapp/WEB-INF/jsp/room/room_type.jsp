@@ -64,6 +64,7 @@
                                 <option value="ZH">众荟</option>
                                 <option value="XC">携程</option>
                                 <option value="QUNAR">去哪儿</option>
+                                <option value="HAND_ORDER">其他渠道</option>
                             </select>
                         </div>
                     </div>
