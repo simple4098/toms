@@ -2527,6 +2527,8 @@ public class OrderService implements IOrderService {
                     taskCancelOrderMethod(order, otaInfoRefDto);
                 }
             }
+            //删除待处理订单数据
+            this.orderDao.deleteOtaPendingOrder(order.getId());
         }
     }
 
