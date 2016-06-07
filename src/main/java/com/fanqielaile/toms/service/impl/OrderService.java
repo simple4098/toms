@@ -2567,4 +2567,33 @@ public class OrderService implements IOrderService {
             }
         }
     }
+
+
+	@Override
+	public JsonModel pmsCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) {
+		JsonModel result = new JsonModel();
+		Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(null,
+				pmsCancelOrderParam.getOmsOrderCode());
+		if (order != null) {
+			setOrderParam(order, pmsCancelOrderParam);
+			this.orderDao.updateOrderStatusAndReasonAndRefundStatus(order);
+			// 发送微信通知
+		} else {
+			result.setSuccess(Constants.ERROR);
+			result.setMessage("无此订单信息");
+		}
+		return result;
+	}
+
+	/*
+	 * 在取消订单申请中，设置订单属性
+	 * @param order
+	 * @param pmsCancelOrderParam
+	 */
+	public void setOrderParam(Order order, PmsCancelOrderParam pmsCancelOrderParam) {
+		// TODO Auto-generated method stub
+		order.setOrderStatus(OrderStatus.CANCEL_APPLY);
+		order.setReason("pms取消订单申请");
+		order.setRefundStatus(pmsCancelOrderParam.isRefundStatus());
+	}
 }

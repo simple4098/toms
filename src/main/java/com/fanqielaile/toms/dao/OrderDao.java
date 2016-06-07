@@ -164,4 +164,10 @@ public interface OrderDao {
 
     List<Order> selectOtaPendingOrder();
 
+    /*
+     * 更新pms取消订单时的订单状态
+     * @param order
+     * */
+	void updateOrderStatusAndReasonAndRefundStatus(Order order);
+
 }
