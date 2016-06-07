@@ -181,6 +181,9 @@ public class Order extends Domain {
 
     //oms订单状态
     private String omsIntOrderStatus;
+    
+    //取消订单时，是否扣款
+    private boolean refundStatus;
 
     public OrderSource getOrderSource() {
         return orderSource;
@@ -1251,5 +1254,13 @@ public class Order extends Domain {
         order.setExceptionOrderList(exceptionOrders);
         return order;
     }
+
+	public boolean isRefundStatus() {
+		return refundStatus;
+	}
+
+	public void setRefundStatus(boolean refundStatus) {
+		this.refundStatus = refundStatus;
+	}
 
 }

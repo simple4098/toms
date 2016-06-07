@@ -22,10 +22,14 @@ public class Constants {
     public static final String MESSAGE = "message";
     //返回正确
     public static final boolean SUCCESS = true;
+    public static final String SUCCESS200 = "200";
+    public static final int SUCCESS_NUMBER = 200 ;
     //返回错误
     public static final boolean ERROR = false;
     public static final String ERROR400 = "400";
-    public static final String SUCCESS200 = "200";
+    public static final int ERROR400_NUMBER = 400 ;
+    public static final int ERROR500_NUMBER = 500 ;
+
     //数据
     public static final String DATA = "data";
     //TB用户名

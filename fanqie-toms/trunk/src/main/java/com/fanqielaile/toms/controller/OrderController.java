@@ -7,9 +7,8 @@ import com.fanqielaile.toms.dto.HotelOrderPay;
 import com.fanqielaile.toms.dto.HotelOrderStatus;
 import com.fanqielaile.toms.dto.OrderParamDto;
 import com.fanqielaile.toms.dto.OrderStatisticsDto;
+import com.fanqielaile.toms.dto.PmsCancelOrderParam;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
-import com.fanqielaile.toms.dto.UserInfoDto;
-import com.fanqielaile.toms.enums.OrderMethod;
 import com.fanqielaile.toms.enums.OrderSource;
 import com.fanqielaile.toms.enums.OrderStatus;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
@@ -34,12 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -525,4 +527,57 @@ public class OrderController extends BaseController {
         return result;
     }
 
+    /*
+     * pms取消淘宝信用住订单操作接口
+     */
+	@RequestMapping("cancel_order")
+	public Map<String, Object> pmsCancelOrder(@Valid PmsCancelOrderParam pmsCancelOrderParam, BindingResult bindingResult) {
+		Map<String, Object> result = new HashMap<>();
+		logger.info(
+				"pms cancel the order operation parameters: omsOrderCode = " + pmsCancelOrderParam.getOmsOrderCode());
+		if (bindingResult.hasErrors()) {
+			result.put("status", Constants.ERROR400_NUMBER);
+			result.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
+			return result;
+		}
+		try {
+			JsonModel jsonModel = this.orderService.pmsCancelOrderOperate(pmsCancelOrderParam);
+			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);
+			result.put("message", jsonModel.getMessage());
+		} catch (Exception e) {
+			logger.error("pms cancel the order operation, System anomaly. parameters: omsOrderCode = "
+					+ pmsCancelOrderParam.getOmsOrderCode(), e);
+			result.put("status", Constants.ERROR500_NUMBER);
+			result.put("message", "系统异常");
+		}
+		logger.info("pms cancel the order operation result：" + result.toString());
+		return result;
+	}
+	
+	/**
+     * 查询退款申请订单列表
+     *
+     * @param model
+     * @param page
+     * @param orderParamDto
+     * @return
+     */
+    @RequestMapping("find_apply_cancel_orders")
+    public String findApplyCancelOrders(Model model, @RequestParam(defaultValue = "1", required = false) int page, OrderParamDto orderParamDto) {
+        try {
+            UserInfo currentUser = getCurrentUser();
+            orderParamDto.setOrderStatus(OrderStatus.CANCEL_APPLY);
+            List<OrderParamDto> orderParamDtos = this.orderService.findOrderByPage(currentUser.getCompanyId(), new PageBounds(page, defaultRows), orderParamDto);
+            model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+            model.addAttribute(Constants.DATA, orderParamDtos);
+            //封装分页信息
+            Paginator paginator = ((PageList) orderParamDtos).getPaginator();
+            model.addAttribute("pagination", PaginationHelper.toPagination(paginator));
+//            logger.info(JacksonUtil.obj2json(model.asMap().get("data")));
+        } catch (Exception e) {
+            logger.error("Query to apply for cancellation of the order list of failure", e);
+            throw new TomsRuntimeException("查询申请取消订单列表失败");
+        }
+        return "/order/order_apply_cancel_list";
+    }
 }

@@ -113,6 +113,7 @@
         <result column="xml_data" property="xmlData"/>
         <result column="user_name" property="operator"/>
         <result column="order_source" property="orderSource"/>
+        <result column="refund_status" property="refundStatus"/>
         <collection property="orderOtherPriceList" column="id" ofType="com.fanqielaile.toms.model.OrderOtherPrice"
                     select="getOrderOtherPrice"/>
     </resultMap>
@@ -424,8 +425,11 @@
     <select id="selectOrderByOmsOrderCodeAndChannelSourceCode" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
-        from ota_toms_order where channel_order_code = #{channelOrderCode}
-        and deleted = 0
+        from ota_toms_order 
+        where deleted = 0
+        <if test="channelOrderCode != null and channelOrderCode != ''">
+        	and channel_order_code = #{channelOrderCode}
+        </if>
         <if test="omsOrderCode != null and omsOrderCode != ''">
             and oms_order_code = #{omsOrderCode}
         </if>
@@ -457,4 +461,9 @@
         from ota_toms_order where id in (select order_id as id from ota_pending_order where deleted = 0 and created_date
         &lt; now() - interval '10 min')
     </select>
+    <update id="updateOrderStatusAndReasonAndRefundStatus" parameterType="com.fanqielaile.toms.model.Order">
+        UPDATE ota_toms_order 
+        set order_status = #{orderStatus}, reason = #{reason}, refund_status = #{refundStatus}, updated_date = now() 
+        where deleted = 0 and id=#{id}
+    </update>
 </mapper>

@@ -14,7 +14,8 @@ public enum OrderStatus {
     HAND_REFUSE("直接拒绝"),
     PAY_BACK("退款申请中"),
     DEALING("处理中"),
-    REFUSE("自动拒绝");
+    REFUSE("自动拒绝"),
+	CANCEL_APPLY("取消申请中");
     private String text;
 
     OrderStatus(String text) {

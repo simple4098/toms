@@ -413,4 +413,11 @@ public interface IOrderService {
     List<Order> findOtaPendingOrder();
 
     void dealPendingOrderMethod(List<Order> orderList) throws Exception;
+
+    /**
+     * pms取消订单操作接口
+     * @param pmsCancelOrderParam
+     * @return 
+     */
+	JsonModel pmsCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam);
 }
