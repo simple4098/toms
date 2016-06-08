@@ -1151,7 +1151,7 @@ public class OrderService implements IOrderService {
             orderParamDto.setRoomTypeName(roomTypeName);
             orderParamDto.setOrderRoomTypeName(roomTypeName);
             //价格策略
-            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource())) {
+            if (ChannelSource.TAOBAO.equals(orderParamDto.getChannelSource()) && com.fanqielaile.toms.enums.OrderSource.SYSTEM.equals(orderParamDto.getOrderSource())) {
                 if (ArrayUtils.isNotEmpty(dailyInfoses.toArray())) {
                     for (DailyInfos dailyInfos : dailyInfoses) {
                         dailyInfos.setCostPrice(dailyInfos.getPrice().multiply(otaInnOtaDto.getPriceModelValue()));
