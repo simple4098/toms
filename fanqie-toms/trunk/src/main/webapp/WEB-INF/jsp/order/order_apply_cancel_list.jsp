@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: wangdayin
-  Date: 2015/8/18
-  Time: 11:56
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -15,11 +8,11 @@
 <title>订单管理</title>
 <link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/userSet.css">
 <script src="<%=basePath%>/assets/js/jquery-2.0.3.min.js"></script>
-<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <script src="<%=basePath%>/assets/layer/layer.js"></script>
+<script src="<%=basePath%>/assets/js/jquery-ui-1.10.3.full.min.js"></script>
 <div class="page-content">
     <c:set value="${pagination}" var="page"/>
-    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_non_orders"/>"
+    <form class="form-page" name="form-page" id="form-page" action="<c:url value="/order/find_apply_cancel_orders"/>"
           method="post">
         <input type="hidden" class="pageId" id="pageId" name="page"/>
         <input type="hidden" name="searchType" value="${order.searchType}"/>
@@ -34,20 +27,20 @@
                 <div class="col-xs-12">
                     <div class="tabbable">
                         <ul class="nav nav-tabs" id="myTab">
-                            <li class="active">
+                            <li>
                                 <a href="<c:url value="/order/find_non_orders"/>">
-                                    <span class="badge badge-danger">${pagination.rowsCount}</span>
+                                    <span class="badge badge-danger">*</span>
                                     待处理--未确认订单
                                 </a>
                             </li>
 
                             <li>
                                 <a href="<c:url value="/order/find_pay_back_orders"/>">
-                                    <span class="badge badge-danger">*</span>
+                                    <span class="badge badge-danger">${pagination.rowsCount}</span>
                                     待处理--申请退款订单
                                 </a>
                             </li>
-                            <li>
+                            <li class="active">
                                 <a href="<c:url value="/order/find_apply_cancel_orders"/>">
                                     <span class="badge badge-danger">*</span>
                                     待处理--信用住申请取消订单
@@ -61,6 +54,10 @@
                             </li>
                         </ul>
                     </div>
+
+
+                    <%--<h4 class="smaller blue"><a href="<c:url value="/order/find_non_orders"/>">待处理--未确认订单</a> <a href="<c:url value="/order/find_pay_back_orders"/>">待处理--申请退款订单</a>  <a--%>
+                    <%--href="<c:url value="/order/find_orders"/> ">已处理订单</a>  </h4>--%>
                     <%--<div class="table-header">
                       所有筛选条件下，共有 <span
                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.acceptOrder}</span>
@@ -76,6 +73,9 @@
                             style="color: red;font-size: x-large;">${orderPrice == null ? 0 : orderPrice.allPayPrice}</span>
                       元
                     </div>--%>
+                    <div class="table-header">
+                        <span style="color: white">注：请和淘宝酒店管理后台选择相同的操作执行</span>
+                    </div>
                     <div class="table-responsive">
                         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
                             <thead style="font-size: 14px;">
@@ -96,7 +96,7 @@
                                 <th>成本价</th>
                                 <th>下单时间</th>
                                 <th>查看</th>
-                                <th style="width: 430px;">操作</th>
+                                <th>操作</th>
                             </tr>
                             </thead>
 
@@ -137,18 +137,14 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <button class="btn btn-warning btn-confirm"
-                                                    data-url="<c:url value="/order/confirm_make_order.json?id=${d.id}"/>"
-                                                    type="button" data-toggle="modal" data-target="#makeOrder">确认并执行下单
+                                            <button class="btn btn-danger apply-back-sure"
+                                                    data-url="<c:url value="/order/agree_cancel_order.json?id=${d.id}"/>"
+                                                    type="button" data-toggle="modal" data-target="#payBackSure">同意取消
                                             </button>
-                                            <button class="btn btn-danger btn-refues"
-                                                    data-url="<c:url value="/order/refues_order.json?id=${d.id}"/>"
-                                                    type="button" data-toggle="modal" data-target="#refuesOrder">直接拒绝
-                                            </button>
-                                            <button class="btn btn-pink btn-confirm-no"
-                                                    data-url="<c:url value="/order/confirm_no_order.json?id=${d.id}"/>"
-                                                    type="button" data-toggle="modal" data-target="#confirmNoOrder">
-                                                确认但不执行下单
+                                            <button class="btn btn-pink refuse-apply-back"
+                                                    data-url="<c:url value="/order/refuse_cancel_order.json?id=${d.id}"/>"
+                                                    type="button" data-toggle="modal" data-target="#refusePayBack">
+                                                拒绝取消
                                             </button>
                                         </td>
                                     </tr>
@@ -248,53 +244,39 @@
         </div>
     </div>
 </div>
-<%--确认并执行下单--%>
+<%--同意退款--%>
 <!-- Modal -->
-<div class="modal fade" id="makeOrder" tabindex="-1" role="dialog" aria-labelledby="myMakeOrder" aria-hidden="true">
+<div class="modal fade" id="applyBackSure" tabindex="-1" role="dialog" aria-labelledby="myRefuesOrder"
+     aria-hidden="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close btn-default" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myMakeOrder">提示信息</h4>
-            </div>
-            <div class="modal-body">
-                您选择“确认并执行下单”操作,系统将确认该订单，并自动将该订单下到客栈
-            </div>
-            <input type="hidden" class="confirm-url"/>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-success btn-confirm-sure">确认</button>
-            </div>
-        </div>
-    </div>
-</div>
-<%--直接拒绝订单--%>
-<!-- Modal -->
-<div class="modal fade" id="refuesOrder" tabindex="-1" role="dialog" aria-labelledby="myRefuesOrder" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close btn-default" data-dismiss="modal" aria-label="Close"><span
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myRefuesOrder">提示信息</h4>
             </div>
             <div class="modal-body">
-                您选择“直接拒绝”操作，系统将直接拒绝该订单，该订单将无法恢复
+                <span style="color: red">注：请和淘宝酒店管理后台选择相同的操作执行</span>
+                <br/>
+                您选择“同意退款”操作,系统将在客栈PMS中取消该订单<br/>
+                请根据实际情况选择是否扣款<br/>
+                <input type="radio" value='true' name='refundStatus' />扣款
+                <input type="radio" value='false' name='refundStatus' style='margin-left:20px;'/>不扣款
             </div>
-            <input type="hidden" class="refues-url"/>
+            <input type="hidden" class="apply-back-sure-url"/>
+            <input type="hidden" class="apply-back-sure-refundStatus"/>
+            
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-success btn-refues-sure">确认</button>
+                <button type="button" class="btn btn-success btn-apply-back-sure">确认</button>
             </div>
         </div>
     </div>
 </div>
-<%--确认但不执行下单--%>
+<%--拒绝退款--%>
 <!-- Modal -->
-<div class="modal fade" id="confirmNoOrder" tabindex="-1" role="dialog" aria-labelledby="myConfirmNoOrder"
+<div class="modal fade" id="refusePayBack" tabindex="-1" role="dialog" aria-labelledby="myConfirmNoOrder"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -304,13 +286,15 @@
                 <h4 class="modal-title" id="myConfirmNoOrder">提示信息</h4>
             </div>
             <div class="modal-body">
-                您选择“确认但不执行下单”操作，系统将确认该订单，但不会向客栈下单.
+                <span style="color: red">注：请和淘宝酒店管理后台选择相同的操作执行</span> <br/>
+                您选择“拒绝退款”操作，系统将在客栈PMS中保留该订单！
             </div>
-            <input type="hidden" class="confirm-no-url"/>
+            <input type="hidden" class="refuse-apply-back-url"/>
+            
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-success btn-confirm-no-sure">确认</button>
+                <button type="button" class="btn btn-success btn-refuse-apply-back-sure">确认</button>
             </div>
         </div>
     </div>

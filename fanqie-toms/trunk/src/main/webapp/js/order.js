@@ -327,6 +327,81 @@ $('.btn-refuse-pay-back-sure').on('click', function () {
         }
     })
 });
+
+
+//信用住同意退款
+$('.apply-back-sure').on('click', function () {	
+    var url = $(this).attr('data-url');
+    console.log(url)
+    $('.apply-back-sure-url').val(url);
+    $("#applyBackSure").modal();
+});
+//信用住同意退款
+$('.btn-apply-back-sure').on('click', function () {
+    var url = $('.apply-back-sure-url').val();
+    var refundStatus=$("input[name='refundStatus']:checked").val()
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url+'&refundStatus='+refundStatus,
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            layer.closeAll('loading');
+            console.log(data)
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    })
+});
+
+//信用住拒绝退款
+$('.refuse-apply-back').on('click', function () {
+    var url = $(this).attr('data-url');
+    console.log(url)
+    $('.refuse-apply-back-url').val(url);
+    $("#refusePayBack").modal();
+});
+$('.btn-refuse-apply-back-sure').on('click', function () {
+    var url = $('.refuse-apply-back-url').val();
+    layer.msg('加载中', {icon: 16});
+    $.ajax({
+        url: url,
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+        	console.log(data)
+            layer.closeAll('loading');
+            if (data.status) {
+                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                    window.location.reload();
+                });
+            } else {
+                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                    window.location.reload();
+                });
+            }
+        },
+        error: function () {
+            layer.closeAll('loading');
+            layer.msg("系统错误");
+        }
+    })
+});
+
+
+
+
 //取消手动下单
 $(".btn-cancel-order").on('click', function () {
     var url = $('.cancel-hand_order-url').val();
