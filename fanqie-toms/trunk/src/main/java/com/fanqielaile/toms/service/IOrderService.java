@@ -419,5 +419,21 @@ public interface IOrderService {
      * @param pmsCancelOrderParam
      * @return 
      */
-	JsonModel pmsCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam);
+	JsonModel pmsCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception;
+
+	 /**
+     * toms同意取消订单操作
+     * @param pmsCancelOrderParam
+     * @return 
+	 * @throws Exception 
+     */
+	JsonModel agreeCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception;
+
+	 /**
+     * toms拒绝取消订单操作
+     * @param pmsCancelOrderParam
+     * @return 
+	 * @throws Exception 
+     */
+	JsonModel refuseCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception;
 }

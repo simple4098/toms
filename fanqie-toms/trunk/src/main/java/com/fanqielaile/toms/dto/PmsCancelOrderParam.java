@@ -10,6 +10,8 @@ public class PmsCancelOrderParam {
 	String omsOrderCode;
 	/* 扣款状态 true为扣款，false不扣款 */
 	boolean refundStatus = true;
+	/*toms订单id*/
+	String id;
 
 	public String getOmsOrderCode() {
 		return omsOrderCode;
@@ -21,6 +23,18 @@ public class PmsCancelOrderParam {
 
 	public boolean isRefundStatus() {
 		return refundStatus;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setRefundStatus(boolean refundStatus) {
+		this.refundStatus = refundStatus;
 	}
 
 }
