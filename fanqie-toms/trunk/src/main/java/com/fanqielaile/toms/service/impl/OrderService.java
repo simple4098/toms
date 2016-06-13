@@ -2868,6 +2868,7 @@ public class OrderService implements IOrderService {
 		orderParamDto.setAgreeStatus(true);
 		HotelOrderStatus hotelOrderStatus = setHotelOrderStatusByTomsOrderParam(orderParamDto);
 		HotelOrderPay hotelOrderPay = setHotelOrderPayByTomsOrderParam(orderParamDto);
+		logger.info("taobao cancel the order operation . hotelOrderStatus parameter : " + JacksonUtil.obj2json(hotelOrderStatus) + ", hotelOrderPay parameter : " + JacksonUtil.obj2json(hotelOrderPay));
 		result = com.fanqielaile.toms.enums.OrderSource.SYSTEM.equals(orderParamDto.getOrderSource())
 				? agreeCancelSystemOrder(hotelOrderStatus, hotelOrderPay, orderParamDto)
 				: agreeCancelHandOrder(orderParamDto);
@@ -2887,6 +2888,7 @@ public class OrderService implements IOrderService {
 		hotelOrderPay.setOmsOrderCode(orderParamDto.getOmsOrderCode());
 		hotelOrderPay.setOtherFee(BigDecimal.ZERO);
 		hotelOrderPay.setTid(orderParamDto.getChannelOrderCode());
+		hotelOrderPay.setContainGuarantee(0);;
 		hotelOrderPay.setTotalRoomFee(orderParamDto.getChannelSource().equals(ChannelSource.HAND_ORDER)
 				? orderParamDto.getPrepayPrice() : orderParamDto.getTotalPrice());
 		return hotelOrderPay;
@@ -2955,7 +2957,7 @@ public class OrderService implements IOrderService {
 	 */
 	public JsonModel updateOmsOrderStatus(OrderParamDto orderParamDto) {
 		CancelCreditOrderDto cancelCreditOrderDto = dealCancelCreditOrderParam(orderParamDto);
-		logger.info("Oms cancel the order parameter : " + JacksonUtil.obj2json(cancelCreditOrderDto));
+		logger.info("update oms the order status parameter : " + JacksonUtil.obj2json(cancelCreditOrderDto));
 		String resultString = "";
 		try {
 			resultString = HttpClientUtil.httpPostCancelCreditOrder(CommonApi.cancelCreditOrder,
@@ -2963,7 +2965,7 @@ public class OrderService implements IOrderService {
 		} catch (Exception e) {
 			return new JsonModel(false, "oms订单状态更新失败！");
 		}
-		logger.info("Oms cancel the order result value : " + resultString);
+		logger.info("update oms the order status result value : " + resultString);
 		if (resultString.equals("")) {
 			return new JsonModel(false, "oms订单状态更新失败！");
 		}
@@ -2983,8 +2985,6 @@ public class OrderService implements IOrderService {
 	 */
 	public CancelCreditOrderDto dealCancelCreditOrderParam(OrderParamDto orderParamDto) {
 		CancelCreditOrderDto cancelCreditOrderDto = new CancelCreditOrderDto();
-		
-		List<NameValuePair> result = new ArrayList<>();
 		if (orderParamDto.isAgreeStatus()) {
 			cancelCreditOrderDto.setCancelStatus(orderParamDto.isRefundStatus() ? "cancelAndPay" : "cancelNotPay");
 		} else {
@@ -3015,6 +3015,7 @@ public class OrderService implements IOrderService {
 			}
 			order.setOrderStatus(OrderStatus.CANCEL_ORDER);
 		} else {
+			order.setReason("取消订单申请被拒绝");
 			order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
 		}
 		this.orderDao.updateOrderStatusAndReasonAndRefundStatus(order);

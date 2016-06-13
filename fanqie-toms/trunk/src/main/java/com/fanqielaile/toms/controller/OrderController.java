@@ -611,10 +611,9 @@ public class OrderController extends BaseController {
 	 * 拒绝取消订单
 	 */
 	@RequestMapping("refuse_cancel_order")
-	public Map<String, Object> refuseCancelOrder(@Valid PmsCancelOrderParam pmsCancelOrderParam, BindingResult bindingResult) {
+	public Map<String, Object> refuseCancelOrder(PmsCancelOrderParam pmsCancelOrderParam, BindingResult bindingResult) {
 		Map<String, Object> result = new HashMap<>();
-		logger.info(
-				"refuse to cancel the order operation parameters: omsOrderCode = " + pmsCancelOrderParam.getOmsOrderCode());
+		logger.info("refuse to cancel the order operation parameters: id = " + pmsCancelOrderParam.getId());
 		if (bindingResult.hasErrors()) {
 			result.put("status", Constants.ERROR400_NUMBER);
 			result.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
@@ -630,7 +629,7 @@ public class OrderController extends BaseController {
 			result.put("status", Constants.ERROR500_NUMBER);
 			result.put("message", "拒绝取消订单操作执行异常！");
 		}
-		logger.info("pms cancel the order operation result：" + result.toString());
+		logger.info("refuse to cancel the order operation result：" + result.toString());
 		return result;
 	}
 }
