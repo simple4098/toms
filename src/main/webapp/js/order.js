@@ -332,7 +332,6 @@ $('.btn-refuse-pay-back-sure').on('click', function () {
 //信用住同意退款
 $('.apply-back-sure').on('click', function () {	
     var url = $(this).attr('data-url');
-    console.log(url)
     $('.apply-back-sure-url').val(url);
     $("#applyBackSure").modal();
 });
@@ -347,7 +346,6 @@ $('.btn-apply-back-sure').on('click', function () {
         dataType: 'json',
         success: function (data) {
             layer.closeAll('loading');
-            console.log(data)
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
@@ -368,7 +366,6 @@ $('.btn-apply-back-sure').on('click', function () {
 //信用住拒绝退款
 $('.refuse-apply-back').on('click', function () {
     var url = $(this).attr('data-url');
-    console.log(url)
     $('.refuse-apply-back-url').val(url);
     $("#refusePayBack").modal();
 });
@@ -380,8 +377,7 @@ $('.btn-refuse-apply-back-sure').on('click', function () {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-        	console.log(data)
-            layer.closeAll('loading');
+        	layer.closeAll('loading');
             if (data.status) {
                 layer.alert('提示信息：' + data.message, {icon: 6}, function () {
                     window.location.reload();
