@@ -344,28 +344,33 @@ $('.apply-back-sure').on('click', function () {
 $('.btn-apply-back-sure').on('click', function () {
     var url = $('.apply-back-sure-url').val();
     var refundStatus=$("input[name='refundStatus']:checked").val()
-    layer.msg('加载中', {icon: 16});
-    $.ajax({
-        url: url+'&refundStatus='+refundStatus,
-        type: 'get',
-        dataType: 'json',
-        success: function (data) {
-            layer.closeAll('loading');
-            if (data.status) {
-                layer.alert('提示信息：' + data.message, {icon: 6}, function () {
-                    window.location.reload();
-                });
-            } else {
-                layer.alert('提示信息：' + data.message, {icon: 5}, function () {
-                    window.location.reload();
-                });
+        layer.msg('加载中', {icon: 16});
+    if(refundStatus==null || refundStatus==undefined || refundStatus==''){
+    	layer.closeAll('loading');
+    	layer.alert('提示信息：'+'请根据实际情况选择是否扣款');
+    }else{
+        $.ajax({
+            url: url+'&refundStatus='+refundStatus,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                layer.closeAll('loading');
+                if (data.status) {
+                    layer.alert('提示信息：' + data.message, {icon: 6}, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    layer.alert('提示信息：' + data.message, {icon: 5}, function () {
+                        window.location.reload();
+                    });
+                }
+            },
+            error: function () {
+                layer.closeAll('loading');
+                layer.msg("系统错误");
             }
-        },
-        error: function () {
-            layer.closeAll('loading');
-            layer.msg("系统错误");
-        }
-    })
+        })
+    }
 });
 
 //信用住拒绝退款
