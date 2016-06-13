@@ -280,7 +280,7 @@
     <sql id="selectOrderFilter">
     	<where>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
-                AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
+                AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK' AND oto.order_status != 'CANCEL_APPLY'
             </if>
             <if test="order.orderStatusString != null and order.orderStatusString =='NOT_DEAL'">
                 AND oto.order_status ='NOT_DEAL'
@@ -304,7 +304,10 @@
                 and (oto.channel_order_code = '${order.channelOrderCode}'
                 or oto.guest_mobile = '${order.channelOrderCode}')
             </if>
-            <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0">
+            <if test="order.statisticsStatus == true">
+            	and oto.order_status in('ACCEPT','CONFIM_AND_ORDER')
+            </if>
+            <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0 and order.statisticsStatus == false">
            		and oto.order_status in
             	<foreach collection="order.selectedOrderStatus" item="se" open="(" separator="," close=")">
                 	'${se}'

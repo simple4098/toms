@@ -580,4 +580,57 @@ public class OrderController extends BaseController {
         }
         return "/order/order_apply_cancel_list";
     }
+    
+    /*
+     * 同意取消订单
+     */
+	@RequestMapping("agree_cancel_order")
+	public Map<String, Object> agreeCancelOrder(PmsCancelOrderParam pmsCancelOrderParam) {
+		Map<String, Object> result = new HashMap<>();
+		logger.info("agree to cancel the order parameters: id = " + pmsCancelOrderParam.getId());
+		if (pmsCancelOrderParam.getId() == null) {
+			result.put("status", Constants.ERROR400_NUMBER);
+			result.put("message", "订单id不能为空！");
+			return result;
+		}
+		try {
+			JsonModel jsonModel = this.orderService.agreeCancelOrderOperate(pmsCancelOrderParam);
+			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);
+			result.put("message", jsonModel.getMessage());
+		} catch (Exception e) {
+			logger.error("agree to cancel the order, System anomaly. parameters: id = " + pmsCancelOrderParam.getId(),
+					e);
+			result.put("status", Constants.ERROR500_NUMBER);
+			result.put("message", "更新toms订单状态失败！");
+		}
+		logger.info("agree to cancel the order result：" + result.toString());
+		return result;
+	}
+	
+	/*
+	 * 拒绝取消订单
+	 */
+	@RequestMapping("refuse_cancel_order")
+	public Map<String, Object> refuseCancelOrder(@Valid PmsCancelOrderParam pmsCancelOrderParam, BindingResult bindingResult) {
+		Map<String, Object> result = new HashMap<>();
+		logger.info(
+				"refuse to cancel the order operation parameters: omsOrderCode = " + pmsCancelOrderParam.getOmsOrderCode());
+		if (bindingResult.hasErrors()) {
+			result.put("status", Constants.ERROR400_NUMBER);
+			result.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
+			return result;
+		}
+		try {
+			JsonModel jsonModel = this.orderService.refuseCancelOrderOperate(pmsCancelOrderParam);
+			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);
+			result.put("message", jsonModel.getMessage());
+		} catch (Exception e) {
+			logger.error("refuse to cancel the order operation, System anomaly. parameters: omsOrderCode = "
+					+ pmsCancelOrderParam.getOmsOrderCode(), e);
+			result.put("status", Constants.ERROR500_NUMBER);
+			result.put("message", "拒绝取消订单操作执行异常！");
+		}
+		logger.info("pms cancel the order operation result：" + result.toString());
+		return result;
+	}
 }

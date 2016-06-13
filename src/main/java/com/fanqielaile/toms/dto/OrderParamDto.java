@@ -43,7 +43,11 @@ public class OrderParamDto extends Order {
     private List<UserInfoDto> operators;
     //订单状态下拉列表框相关
     private List<OrderStatus> selectedOrderStatus;
-
+    //pms申请取消订单时，toms是否同意状态
+    private boolean agreeStatus;
+    //当前是否是营业统计状态，true为营业统计状态
+    private boolean statisticsStatus = false;
+    
     public String getOrderStatusString() {
         return orderStatusString;
     }
@@ -199,5 +203,21 @@ public class OrderParamDto extends Order {
 
 	public void setSelectedOrderStatus(List<OrderStatus> selectedOrderStatus) {
 		this.selectedOrderStatus = selectedOrderStatus;
+	}
+
+	public boolean isAgreeStatus() {
+		return agreeStatus;
+	}
+
+	public void setAgreeStatus(boolean agreeStatus) {
+		this.agreeStatus = agreeStatus;
+	}
+
+	public Boolean getStatisticsStatus() {
+		return statisticsStatus;
+	}
+
+	public void setStatisticsStatus(Boolean statisticsStatus) {
+		this.statisticsStatus = statisticsStatus;
 	}
 }

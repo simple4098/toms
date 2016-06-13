@@ -182,7 +182,7 @@ public class Order extends Domain {
     //oms订单状态
     private String omsIntOrderStatus;
     
-    //取消订单时，是否扣款
+    //取消订单时，是否扣款 true为扣款
     private boolean refundStatus;
 
     public OrderSource getOrderSource() {
