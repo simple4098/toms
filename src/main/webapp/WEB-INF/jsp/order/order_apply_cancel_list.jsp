@@ -236,6 +236,7 @@
                     <label class="order-total">订单总额：</label><br/>
                     <label class="order-pre">预付金额：</label><br/>
                     <label>操作人：系统</label><br/>
+                    <label class="cancel-remark"></label><br/>
                 </div>
             </div>
             <div class="modal-footer">

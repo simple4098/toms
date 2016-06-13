@@ -119,6 +119,11 @@ $('.btn-order').on('click', function () {
                 $('.inn-name').html("客栈名称:" + data.order.innName);
                 $('.guest-name').html("客人姓名:" + data.order.guestName);
                 $('.guest-mobile').html("客人手机号码：" + data.order.guestMobile);
+                if(data.order.refundStatus) {
+                	$('.cancel-remark').html("备注：扣款");
+                } else {
+                	$('.cancel-remark').html("备注：不扣款");
+                }
                 //$('.room-type').html("预定房型：" + data.order.roomTypeName);
                 var tatalPrice = ""
                 if (data.order.channelSource == 'HAND_ORDER') {
