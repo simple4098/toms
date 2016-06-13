@@ -238,7 +238,7 @@ public class CommonApi {
 		return cancelCreditOrder;
 	}
 
-	public static void setCancelCreditOrder(String cancelCreditOrder) {
+	public  void setCancelCreditOrder(String cancelCreditOrder) {
 		CommonApi.cancelCreditOrder = cancelCreditOrder;
 	}
 }
