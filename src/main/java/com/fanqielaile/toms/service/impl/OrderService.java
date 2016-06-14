@@ -3031,7 +3031,7 @@ public class OrderService implements IOrderService {
 			orderParamDto.setOrderStatus(OrderStatus.CANCEL_ORDER);
 		} else {
 			orderParamDto.setReason("取消订单申请被拒绝");
-			orderParamDto.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
+			orderParamDto.setOrderStatus(OrderStatus.ACCEPT);
 		}
 	}
 
