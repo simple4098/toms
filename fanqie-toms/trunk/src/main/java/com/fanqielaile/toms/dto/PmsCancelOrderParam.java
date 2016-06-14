@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PmsCancelOrderParam {
 	/* oms订单号 */
 	@NotNull(message = "oms订单号不能为空！")
-	String omsOrderCode;
+	private String omsOrderCode;
 	/* 扣款状态 true为扣款，false不扣款 */
-	boolean refundStatus = true;
+	private boolean refundStatus = true;
 	/*toms订单id*/
-	String id;
+	private String id;
+	/*toms操作用户id*/
+	private String userId;
 
 	public String getOmsOrderCode() {
 		return omsOrderCode;
@@ -35,6 +37,14 @@ public class PmsCancelOrderParam {
 
 	public void setRefundStatus(boolean refundStatus) {
 		this.refundStatus = refundStatus;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }
