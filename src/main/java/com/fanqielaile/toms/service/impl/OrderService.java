@@ -2861,9 +2861,10 @@ public class OrderService implements IOrderService {
 	public JsonModel agreeCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception {
 		JsonModel result = new JsonModel();
 		OrderParamDto orderParamDto = findOrderById(pmsCancelOrderParam.getId());
-		if (orderParamDto == null) {
+		if (orderParamDto == null
+				|| !com.fanqielaile.toms.enums.OrderSource.SYSTEM.equals(orderParamDto.getOrderSource())) {
 			result.setSuccess(false);
-			result.setMessage("未获取到该订单的相关信息！");
+			result.setMessage("未获取到该订单的相关信息，或该订单不是系统下单");
 			return result;
 		}
 		orderParamDto.setRefundStatus(pmsCancelOrderParam.isRefundStatus());
@@ -2872,9 +2873,10 @@ public class OrderService implements IOrderService {
 		HotelOrderStatus hotelOrderStatus = setHotelOrderStatusByTomsOrderParam(orderParamDto);
 		HotelOrderPay hotelOrderPay = setHotelOrderPayByTomsOrderParam(orderParamDto);
 		logger.info("taobao cancel the order operation . hotelOrderStatus parameter : " + JacksonUtil.obj2json(hotelOrderStatus) + ", hotelOrderPay parameter : " + JacksonUtil.obj2json(hotelOrderPay));
-		result = com.fanqielaile.toms.enums.OrderSource.SYSTEM.equals(orderParamDto.getOrderSource())
-				? agreeCancelSystemOrder(hotelOrderStatus, hotelOrderPay, orderParamDto)
-				: agreeCancelHandOrder(orderParamDto);
+//		result = com.fanqielaile.toms.enums.OrderSource.SYSTEM.equals(orderParamDto.getOrderSource())
+//				? agreeCancelSystemOrder(hotelOrderStatus, hotelOrderPay, orderParamDto)
+//				: agreeCancelHandOrder(orderParamDto);
+		result = agreeCancelSystemOrder(hotelOrderStatus, hotelOrderPay, orderParamDto);
 		return result;
 	}
 
@@ -2891,9 +2893,8 @@ public class OrderService implements IOrderService {
 		hotelOrderPay.setOmsOrderCode(orderParamDto.getOmsOrderCode());
 		hotelOrderPay.setOtherFee(BigDecimal.ZERO);
 		hotelOrderPay.setTid(orderParamDto.getChannelOrderCode());
-		hotelOrderPay.setContainGuarantee(0);;
-		hotelOrderPay.setTotalRoomFee(orderParamDto.getChannelSource().equals(ChannelSource.HAND_ORDER)
-				? orderParamDto.getPrepayPrice() : orderParamDto.getTotalPrice());
+		hotelOrderPay.setContainGuarantee(0);
+		hotelOrderPay.setTotalRoomFee(orderParamDto.getTotalPrice());
 		return hotelOrderPay;
 	}
 
