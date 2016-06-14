@@ -555,7 +555,7 @@ public class OrderController extends BaseController {
 	}
 	
 	/**
-     * 查询退款申请订单列表
+     * 查询申请取消订单列表
      *
      * @param model
      * @param page
@@ -593,6 +593,16 @@ public class OrderController extends BaseController {
 			result.put("message", "订单id不能为空！");
 			return result;
 		}
+		UserInfo currentUser;
+		try {
+			currentUser = getCurrentUser();
+		} catch (TomsRuntimeException tomsRuntimeException) {
+			logger.error(tomsRuntimeException.getMessage(), tomsRuntimeException);
+			result.put("status", Constants.ERROR400_NUMBER);
+			result.put("message", "未获取到用户的登录信息，请重新登录后操作！");
+			return result;
+		}
+		pmsCancelOrderParam.setUserId(currentUser.getId());
 		try {
 			JsonModel jsonModel = this.orderService.agreeCancelOrderOperate(pmsCancelOrderParam);
 			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);
@@ -619,6 +629,16 @@ public class OrderController extends BaseController {
 			result.put("message", bindingResult.getAllErrors().get(0).getDefaultMessage());
 			return result;
 		}
+		UserInfo currentUser;
+		try {
+			currentUser = getCurrentUser();
+		} catch (TomsRuntimeException tomsRuntimeException) {
+			logger.error(tomsRuntimeException.getMessage(), tomsRuntimeException);
+			result.put("status", Constants.ERROR400_NUMBER);
+			result.put("message", "未获取到用户的登录信息，请重新登录后操作！");
+			return result;
+		}
+		pmsCancelOrderParam.setUserId(currentUser.getId());
 		try {
 			JsonModel jsonModel = this.orderService.refuseCancelOrderOperate(pmsCancelOrderParam);
 			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);

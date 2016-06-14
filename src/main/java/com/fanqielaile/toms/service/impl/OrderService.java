@@ -2833,6 +2833,8 @@ public class OrderService implements IOrderService {
 		if (order != null) {
 			setOrderParam(order, pmsCancelOrderParam);
 			this.orderDao.updateOrderStatusAndReasonAndRefundStatus(order);
+			this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(),
+					OrderStatus.CONFIM_AND_ORDER, OrderStatus.CANCEL_APPLY, "pms取消订单申请", "pms"));
 			// 发送微信通知
 		} else {
 			result.setSuccess(Constants.ERROR);
@@ -2865,6 +2867,7 @@ public class OrderService implements IOrderService {
 			return result;
 		}
 		orderParamDto.setRefundStatus(pmsCancelOrderParam.isRefundStatus());
+		orderParamDto.setUserId(pmsCancelOrderParam.getUserId());
 		orderParamDto.setAgreeStatus(true);
 		HotelOrderStatus hotelOrderStatus = setHotelOrderStatusByTomsOrderParam(orderParamDto);
 		HotelOrderPay hotelOrderPay = setHotelOrderPayByTomsOrderParam(orderParamDto);
@@ -2970,7 +2973,7 @@ public class OrderService implements IOrderService {
 			return new JsonModel(false, "oms订单状态更新失败！");
 		}
 		Map<String, Object> result = JacksonUtil.json2map(resultString);
-		if ((int)result.get("status") == Constants.SUCCESS_NUMBER) {
+		if ((int) result.get("status") == Constants.SUCCESS_NUMBER) {
 			return new JsonModel(true, "oms订单状态更新成功！");
 		} else {
 			return new JsonModel(false, (String) result.get("message"));
@@ -3004,23 +3007,32 @@ public class OrderService implements IOrderService {
 	 * @return
 	 */
 	public JsonModel updateTomsOrderStatus(OrderParamDto orderParamDto) {
-		Order order = new Order();
-		order.setId(orderParamDto.getId());
-		order.setRefundStatus(orderParamDto.isRefundStatus());
+		OrderStatus beforeOrderStatus = orderParamDto.getOrderStatus();
+		setUpdateTomsOrderStatusParam(orderParamDto);
+		this.orderDao.updateOrderStatusAndReasonAndRefundStatus(orderParamDto);
+		// 写入操作记录
+		this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(orderParamDto.getId(),
+				beforeOrderStatus, orderParamDto.getOrderStatus(), orderParamDto.getReason(), orderParamDto.getUserId()));
+		return new JsonModel(true, "更新订单状态成功");
+	}
+
+	/**
+	 * 更新取消订单时toms订单状态时，设置orderParamDto对象属性
+	 * 
+	 * @param orderParamDto
+	 */
+	public void setUpdateTomsOrderStatusParam(OrderParamDto orderParamDto) {
 		if (orderParamDto.isAgreeStatus()) {
 			if (!orderParamDto.isRefundStatus()) {
-				order.setReason("同意取消订单");
+				orderParamDto.setReason("同意取消订单不扣款");
 			} else {
-				order.setReason("同意取消订单但要扣款");
+				orderParamDto.setReason("同意取消订单但要扣款");
 			}
-			order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+			orderParamDto.setOrderStatus(OrderStatus.CANCEL_ORDER);
 		} else {
-			order.setReason("取消订单申请被拒绝");
-			order.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
+			orderParamDto.setReason("取消订单申请被拒绝");
+			orderParamDto.setOrderStatus(OrderStatus.CONFIM_AND_ORDER);
 		}
-		this.orderDao.updateOrderStatusAndReasonAndRefundStatus(order);
-		
-		return new JsonModel(true, "更新订单状态成功");
 	}
 
 	/**
@@ -3079,6 +3091,7 @@ public class OrderService implements IOrderService {
 			return result;
 		}
 		orderParamDto.setAgreeStatus(false);
+		orderParamDto.setUserId(pmsCancelOrderParam.getUserId());
 		return updateOmsAndTomsOrderStatus(orderParamDto);
 	}
 }
