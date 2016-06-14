@@ -2908,17 +2908,17 @@ public class OrderService implements IOrderService {
 	public JsonModel agreeCancelSystemOrder(HotelOrderStatus hotelOrderStatus,
 			HotelOrderPay hotelOrderPay, OrderParamDto orderParamDto) throws Exception {
 		JsonModel result;
-		try {
-			result = updateTaoBaoOrderStatusAndOrderPay(hotelOrderStatus, hotelOrderPay);
-		} catch (Exception e) {
-			logger.error("Taobao checkout failure ! parameter:" + JacksonUtil.obj2json(hotelOrderPay), e);
-			return new JsonModel(false, "淘宝结账出错!");
-		}
-		if (result.isSuccess()) {
+//		try {
+//			result = updateTaoBaoOrderStatusAndOrderPay(hotelOrderStatus, hotelOrderPay);
+//		} catch (Exception e) {
+//			logger.error("Taobao checkout failure ! parameter:" + JacksonUtil.obj2json(hotelOrderPay), e);
+//			return new JsonModel(false, "淘宝结账出错!");
+//		}
+//		if (result.isSuccess()) {
 			return updateOmsAndTomsOrderStatus(orderParamDto);
-		} else {
-			return result;
-		}
+//		} else {
+//			return result;
+//		}
 	}
 
 	/**
