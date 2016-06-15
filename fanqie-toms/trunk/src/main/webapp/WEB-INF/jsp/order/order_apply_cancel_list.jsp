@@ -36,13 +36,13 @@
 
                             <li>
                                 <a href="<c:url value="/order/find_pay_back_orders"/>">
-                                    <span class="badge badge-danger">${pagination.rowsCount}</span>
+                                    <span class="badge badge-danger">*</span>
                                     待处理--申请退款订单
                                 </a>
                             </li>
                             <li class="active">
                                 <a href="<c:url value="/order/find_apply_cancel_orders"/>">
-                                    <span class="badge badge-danger">*</span>
+                                    <span class="badge badge-danger">${pagination.rowsCount}</span>
                                     待处理--信用住申请取消订单
                                 </a>
                             </li>
