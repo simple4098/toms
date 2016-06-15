@@ -54,7 +54,7 @@
         	<if test="customerParamDto.startDate != null and customerParamDto.endDate != null">
     			and oto.live_time between '${customerParamDto.startDate} 00:00:00' and '${customerParamDto.endDate} 23:59:59'
     		</if>
-    		and oto.channel_source = 'HAND_ORDER'
+    		and oto.order_source = 'HAND'
     		and oto.order_status in('CONFIM_AND_ORDER','ACCEPT') 
     		and oog.guest_province is not null
         </where>

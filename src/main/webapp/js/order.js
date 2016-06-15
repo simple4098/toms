@@ -126,7 +126,7 @@ $('.btn-order').on('click', function () {
                 }
                 //$('.room-type').html("预定房型：" + data.order.roomTypeName);
                 var tatalPrice = ""
-                if (data.order.channelSource == 'HAND_ORDER') {
+                if (data.order.orderSource == 'HAND') {
                     tatalPrice =  data.order.prepayPrice;
                 } else {
                     tatalPrice =  data.order.totalPrice;
@@ -155,7 +155,7 @@ $('.btn-order').on('click', function () {
                 }else {
                     $("#orderOtherPriceList").hide();
                 }
-                if (data.order.channelSource == "HAND_ORDER" && data.order.orderStatus == "CONFIM_AND_ORDER") {
+                if (data.order.orderSource == "HAND" && data.order.orderStatus == "CONFIM_AND_ORDER") {
                     $('.btn-cancel-order').attr('disabled', false);
                 } else {
                     $('.btn-cancel-order').attr('disabled', true);

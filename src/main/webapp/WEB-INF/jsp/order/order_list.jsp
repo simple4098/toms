@@ -319,11 +319,11 @@
                                         <td>${d.feeStatus.text}</td>
                                         <td>${d.innName}</td>
                                         <td>${d.guestName}<br>${d.guestMobile}</td>
-                                        <c:if test="${d.channelSource != 'HAND_ORDER'}">
+                                        <c:if test="${d.orderSource != 'HAND'}">
                                         <td>${d.roomTypeName}</td>
                                         <td>${d.homeAmount}</td>
                                         </c:if>
-                                        <c:if test="${d.channelSource == 'HAND_ORDER'}">
+                                        <c:if test="${d.orderSource == 'HAND'}">
                                             <td>
                                                 <c:if test="${not empty d.dailyInfoses}">
                                                     <c:forEach items="${d.dailyInfoses}" var="dd">
@@ -342,10 +342,10 @@
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
                                         <td>
-                                            <c:if test="${d.channelSource =='HAND_ORDER'}">
+                                            <c:if test="${d.orderSource == 'HAND'}">
                                                 ${d.prepayPrice}
                                             </c:if>
-                                            <c:if test="${d.channelSource != 'HAND_ORDER'}">
+                                            <c:if test="${d.orderSource != 'HAND'}">
                                                 ${d.totalPrice}
                                             </c:if>
                                         /${d.prepayPrice}</td>

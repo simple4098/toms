@@ -71,10 +71,10 @@
                                                                                pattern="yyyy-MM-dd"/>/<fmt:formatDate
                                                 value="${d.leaveTime}" pattern="yyyy-MM-dd"/></td>
                                         <td>
-                                            <c:if test="${d.channelSource =='HAND_ORDER'}">
+                                            <c:if test="${d.orderSource == 'HAND'}">
                                                 ${d.prepayPrice}
                                             </c:if>
-                                            <c:if test="${d.channelSource != 'HAND_ORDER'}">
+                                            <c:if test="${d.orderSource != 'HAND'}">
                                                 ${d.totalPrice}
                                             </c:if>
                                         </td>
