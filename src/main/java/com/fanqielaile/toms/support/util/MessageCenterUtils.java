@@ -9,6 +9,7 @@ import com.fanqielaile.toms.enums.ChannelSource;
 import com.fanqielaile.toms.enums.LogDec;
 import com.fanqielaile.toms.enums.OrderLogDec;
 import com.fanqielaile.toms.enums.OtaType;
+import com.fanqielaile.toms.model.Order;
 import com.tomasky.msp.client.model.PendingNotify;
 import com.tomasky.msp.client.service.impl.MessageManageServiceImpl;
 import com.tomasky.msp.client.support.MessageBuilder;
@@ -175,6 +176,39 @@ public class MessageCenterUtils {
         }
     }
 
+	/**
+	 * 发送取消订单申请微信
+	 * 
+	 * @param order
+	 * 			channelOrderCode 订单号
+	 *       	refundStatus 是否扣款
+	 * @param innName 申请客栈名
+	 */
+	public static void sendApplyCancelOrderWeiXin(Order order, String innName) {
+		try {
+			String openids = ResourceBundleUtil.getString("weixin.apply.cancel.order.openids");
+			Asserts.notEmpty(openids, "微信接受不能为空，必须先配置");
+			List<String> receivers = Arrays.asList(openids.split(","));
+			String title = "有新的信用住订单申请取消！";
+			String project = "信用住  未入住";
+			String applyTime = DateUtil.format(new Date(), DateUtil.FORMAT_DATE_STR_ONE);
+			String remark;
+			if (order.isRefundStatus()) {
+				remark = "备注：扣款";
+			} else {
+				remark = "备注：不扣款";
+			}
+			LOGGER.info("Apply for WeChat sent to cancel the order：title = " + title + ", applyTime = " + applyTime + ", orderNo = "
+					+ order.getChannelOrderCode() + ", applier = " + innName + ", remark = " + remark);
+			WeChatMessage message = MessageBuilder.buildCancelApplyWechatMessage(title, project, applyTime,
+					order.getChannelOrderCode(), innName, remark, receivers);
+			new MessageManageServiceImpl().sendMessage(message);
+			LOGGER.info("Send cancel the order application WeChat success");
+		} catch (Exception e) {
+			LOGGER.error("Cancel the order for WeChat send failure！", e);
+			throw new RuntimeException("发送微信失败！", e);
+		}
+	}
 }
 
 
