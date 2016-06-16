@@ -2464,13 +2464,13 @@ public class OrderService implements IOrderService {
 			logger.info("淘宝信用住更新订单状态，淘宝返回值：" + order.getChannelOrderCode() + ":" + response);
 			JSONObject jsonObject = JSONObject.fromObject(response);
 			if (null != jsonObject && null != jsonObject.get("xhotel_order_alipayface_update_response")) {
-				// 更新toms本地订单状态
-				// if (hotelOrderStatus.getOptType() == 8) {
-				// //取消订单同步数据库
-				// order.setReason("pms取消订单");
-				// order.setOrderStatus(OrderStatus.CANCEL_ORDER);
-				// this.orderDao.updateOrderStatusAndReason(order);
-				// }
+//				 更新toms本地订单状态
+//				 if (hotelOrderStatus.getOptType() == 8) {
+//				 //取消订单同步数据库
+//				 order.setReason("pms取消订单");
+//				 order.setOrderStatus(OrderStatus.CANCEL_ORDER);
+//				 this.orderDao.updateOrderStatusAndReason(order);
+//				 }
 				result.setSuccess(true);
 				result.setMessage("更新订单状态成功");
 			} else {
@@ -3026,10 +3026,11 @@ public class OrderService implements IOrderService {
 		if (orderParamDto.isAgreeStatus()) {
 			if (!orderParamDto.isRefundStatus()) {
 				orderParamDto.setReason("同意取消订单不扣款");
+				orderParamDto.setOrderStatus(OrderStatus.CANCEL_ORDER);
 			} else {
 				orderParamDto.setReason("同意取消订单但要扣款");
+				orderParamDto.setOrderStatus(OrderStatus.ACCEPT);
 			}
-			orderParamDto.setOrderStatus(OrderStatus.CANCEL_ORDER);
 		} else {
 			orderParamDto.setReason("取消订单申请被拒绝");
 			orderParamDto.setOrderStatus(OrderStatus.ACCEPT);
