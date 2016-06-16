@@ -2827,20 +2827,33 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public JsonModel pmsCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception {
-		JsonModel result = new JsonModel();
 		Order order = this.orderDao.selectOrderByOmsOrderCodeAndChannelSourceCode(null,
 				pmsCancelOrderParam.getOmsOrderCode());
-		if (order != null) {
+		if (order != null && order.getPaymentType().equals(PaymentType.CREDIT)) {
 			setOrderParam(order, pmsCancelOrderParam);
 			this.orderDao.updateOrderStatusAndReasonAndRefundStatus(order);
 			this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(),
 					OrderStatus.CONFIM_AND_ORDER, OrderStatus.CANCEL_APPLY, "pms取消订单申请", "pms"));
 			// 发送微信通知
+			try {
+				MessageCenterUtils.sendApplyCancelOrderWeiXin(order, this.getInnNameByOrderMsg(order));
+			} catch (Exception e) {
+				return new JsonModel(false, e.getMessage());
+			}
+			return new JsonModel(true, "更新toms订单状态成功！");
 		} else {
-			result.setSuccess(Constants.ERROR);
-			result.setMessage("无此订单信息");
+			return new JsonModel(false, "未获取到该信用住订单信息！");
 		}
-		return result;
+	}
+
+	@Override
+	public String getInnNameByOrderMsg(Order order) {
+		String innName = "";
+		BangInnDto innInfo = bangInnDao.selectBangInnByInnIdCompanyId(order.getInnId(), order.getCompanyId());
+		if(innInfo != null){
+			innName = innInfo.getInnName();
+		}
+		return innName;
 	}
 
 	/*

@@ -436,4 +436,12 @@ public interface IOrderService {
 	 * @throws Exception 
      */
 	JsonModel refuseCancelOrderOperate(PmsCancelOrderParam pmsCancelOrderParam) throws Exception;
+
+	 /**
+     * 通过订单信息获取下单的客栈名称
+     * @param order
+     * 			innId companyId
+     * @return 
+     */
+	String getInnNameByOrderMsg(Order order);
 }
