@@ -304,10 +304,16 @@
                 and (oto.channel_order_code = '${order.channelOrderCode}'
                 or oto.guest_mobile = '${order.channelOrderCode}')
             </if>
-            <if test="order.statisticsStatus == true">
+           <!--  <if test="order.statisticsStatus == true">
             	and oto.order_status in('ACCEPT','CONFIM_AND_ORDER')
             </if>
             <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0 and order.statisticsStatus == false">
+           		and oto.order_status in
+            	<foreach collection="order.selectedOrderStatus" item="se" open="(" separator="," close=")">
+                	'${se}'
+                </foreach>
+            </if> -->
+            <if test="order.selectedOrderStatus != null and order.selectedOrderStatus.size != 0">
            		and oto.order_status in
             	<foreach collection="order.selectedOrderStatus" item="se" open="(" separator="," close=")">
                 	'${se}'

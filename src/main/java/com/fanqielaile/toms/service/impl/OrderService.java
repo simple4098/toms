@@ -2529,7 +2529,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public OrderStatisticsDto statisticsOrder(String companyId, OrderParamDto orderParamDto) {
-		orderParamDto.setStatisticsStatus(true);
+//		orderParamDto.setStatisticsStatus(true);
 		OrderStatisticsDto orderStatisticsDto = orderDao.statisticsOrderData(companyId, orderParamDto);
 		if (orderStatisticsDto == null) {
 			return null;
@@ -2552,7 +2552,7 @@ public class OrderService implements IOrderService {
 			orderStatisticsDto
 					.setProfit(orderStatisticsDto.getTotalPrice().subtract(orderStatisticsDto.getTotalCostPrice()));
 		}
-		orderParamDto.setStatisticsStatus(false);//还原
+//		orderParamDto.setStatisticsStatus(false);//还原
 		return orderStatisticsDto;
 	}
 
