@@ -10,6 +10,7 @@ import com.fanqie.core.dto.ParamDto;
 import com.fanqie.jw.dto.JointWisdomInnRoomMappingDto;
 import com.fanqie.qunar.enums.OptCode;
 import com.fanqie.util.DateUtil;
+import com.fanqie.util.DcUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
@@ -2883,6 +2884,7 @@ public class OrderService implements IOrderService {
 		orderParamDto.setRefundStatus(pmsCancelOrderParam.isRefundStatus());
 		orderParamDto.setUserId(pmsCancelOrderParam.getUserId());
 		orderParamDto.setAgreeStatus(true);
+		handleOrderParamForOms(orderParamDto, pmsCancelOrderParam);
 		HotelOrderStatus hotelOrderStatus = setHotelOrderStatusByTomsOrderParam(orderParamDto);
 		HotelOrderPay hotelOrderPay = setHotelOrderPayByTomsOrderParam(orderParamDto);
 		logger.info("taobao cancel the order operation . hotelOrderStatus parameter : " + JacksonUtil.obj2json(hotelOrderStatus) + ", hotelOrderPay parameter : " + JacksonUtil.obj2json(hotelOrderPay));
@@ -2893,6 +2895,16 @@ public class OrderService implements IOrderService {
 		return result;
 	}
 
+	/*
+	 * 同意或不同意取消订单时设置oms所需的订单属性
+	 * */
+	public void handleOrderParamForOms(OrderParamDto orderParamDto, PmsCancelOrderParam pmsCancelOrderParam) {
+		// TODO Auto-generated method stub
+		Company company = this.companyDao.selectCompanyById(pmsCancelOrderParam.getCompanyId());
+		orderParamDto.setOtaId(company.getOtaId());
+		orderParamDto.setvName(company.getUserAccount());
+		orderParamDto.setvPWD(company.getUserPassword());
+	}
 
 	/**
 	 * 根据toms的订单信息，设置HotelOrderPay对象属性
@@ -3007,6 +3019,10 @@ public class OrderService implements IOrderService {
 		} else {
 			cancelCreditOrderDto.setCancelStatus("noCancel");
 		}
+		cancelCreditOrderDto.setOtaId(orderParamDto.getOtaId());
+		cancelCreditOrderDto.setTimestamp(String.valueOf(new Date().getTime()));
+		cancelCreditOrderDto.setSignature(DcUtil.obtMd5(orderParamDto.getOtaId() + cancelCreditOrderDto.getTimestamp()
+				+ orderParamDto.getvName() + orderParamDto.getvPWD()));
 		cancelCreditOrderDto.setInnId(orderParamDto.getInnId());
 		cancelCreditOrderDto.setOmsOrderCode(orderParamDto.getOmsOrderCode());
 		cancelCreditOrderDto.setOtaOrderCode(orderParamDto.getChannelOrderCode());
@@ -3107,6 +3123,7 @@ public class OrderService implements IOrderService {
 		}
 		orderParamDto.setAgreeStatus(false);
 		orderParamDto.setUserId(pmsCancelOrderParam.getUserId());
+		handleOrderParamForOms(orderParamDto, pmsCancelOrderParam);
 		return updateOmsAndTomsOrderStatus(orderParamDto);
 	}
 }
