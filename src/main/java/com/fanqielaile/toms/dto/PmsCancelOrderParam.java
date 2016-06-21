@@ -14,6 +14,8 @@ public class PmsCancelOrderParam {
 	private String id;
 	/*toms操作用户id*/
 	private String userId;
+	/*toms公司id*/
+	private String companyId;
 
 	public String getOmsOrderCode() {
 		return omsOrderCode;
@@ -45,6 +47,14 @@ public class PmsCancelOrderParam {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
 	}
 
 }

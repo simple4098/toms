@@ -603,6 +603,7 @@ public class OrderController extends BaseController {
 			return result;
 		}
 		pmsCancelOrderParam.setUserId(currentUser.getId());
+		pmsCancelOrderParam.setCompanyId(currentUser.getCompanyId());
 		try {
 			JsonModel jsonModel = this.orderService.agreeCancelOrderOperate(pmsCancelOrderParam);
 			result.put("status", jsonModel.isSuccess() ? Constants.SUCCESS_NUMBER : Constants.ERROR400_NUMBER);
