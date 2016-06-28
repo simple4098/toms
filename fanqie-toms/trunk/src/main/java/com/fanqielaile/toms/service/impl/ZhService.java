@@ -77,6 +77,7 @@ public class ZhService implements ITPService {
         tpHolder.validate(company, innId, otaInfoId);
         tbParam.setOtaId(company.getOtaId().toString());
         String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
+        log.info("===================inn url:"+inn_info);
         InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
         OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
