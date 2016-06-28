@@ -81,7 +81,7 @@ public class ZhService implements ITPService {
         OtaRatePlan otaRatePlan = ratePlanDao.selectRatePlanByCompanyIdOtaIdDefault(company.getId(), otaInfo.getOtaInfoId());
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(),otaInfo.getUsedPriceModel().name()));
         BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.valueOf(tbParam.getInnId()));
-        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(bangInn.getInnId(), company.getId(), otaInfoId);
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(Integer.valueOf(innId), company.getId(), otaInfoId);
         if (!tbParam.isSj() ){
             updateFcXj(company,otaInfoId,innId,tbParam,bangInn,commission,otaInnOta,null,otaRatePlan);
         }else {
