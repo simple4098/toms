@@ -7,6 +7,7 @@ import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dao.*;
 import com.fanqielaile.toms.dto.FcHotelInfoDto;
+import com.fanqielaile.toms.dto.FcRoomTypeInfoDto;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.enums.BedType;
 import com.fanqielaile.toms.enums.CurrencyCode;
@@ -306,23 +307,72 @@ public class FcStaticTest {
     @Test
     @Ignore
     public void  readFcInn() throws IOException {
-//        File file = new File("F:\\FC_inn.xls");
-//        String[][] result = ExcelUtil.getData(file, 1);
-//        int rowLength = result.length;
-//        FcHotelInfoDto hotelInfoDto = null;
-//        for(int i=0;i<rowLength;i++) {
-//            hotelInfoDto = new FcHotelInfoDto();
-//            hotelInfoDto.setHotelId(result[i][1]);
-//            hotelInfoDto.setHotelName(result[i][2]);
-//            System.out.print(result[i][2]+"\t\t");
-//            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
-//            System.out.println();
-//
-//        }
+        File file = new File("F:\\fc-excel\\fc\\0628番茄来了导入酒店与房型.xls");
+        String[][] result = ExcelUtil.getData(file, 1,0);
+        int rowLength = result.length;
+        FcHotelInfoDto hotelInfoDto = null;
+        for(int i=0;i<rowLength;i++) {
+            hotelInfoDto = new FcHotelInfoDto();
+            hotelInfoDto.setHotelId(result[i][1]);
+            hotelInfoDto.setHotelName(result[i][2]);
+            System.out.print(result[i][2]+"\t\t");
+            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
+            System.out.println();
+
+        }
+    }
+    @Test
+    @Ignore
+    public void  readFcRoomType() throws IOException {
+        File file = new File("F:\\fc-excel\\fc\\0628番茄来了导入酒店与房型.xls");
+        String[][] result = ExcelUtil.getData(file, 1,1);
+        int rowLength = result.length;
+        FcHotelInfoDto hotelInfoDto = null;
+        for(int i=0;i<rowLength;i++) {
+            hotelInfoDto = new FcHotelInfoDto();
+            hotelInfoDto.setHotelId(result[i][1]);
+            hotelInfoDto.setHotelName(result[i][2]);
+            System.out.print(result[i][2]+"\t\t");
+            fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
+            System.out.println();
+
+        }
+    }
+
+    /**
+     * 房苍 房型 客栈
+     * @throws IOException
+     */
+    @Test
+    public void  readFcRoomTypeInn1() throws IOException {
+        File file = new File("F:\\fc-excel\\fc\\0628番茄来了导入酒店与房型.xls");
+        String[][] result = ExcelUtil.getData(file, 1);
+        int rowLength = result.length;
+        FcRoomTypeInfo fcRoomTypeInfo = null;
+        FcHotelInfoDto hotelInfoDto = null;
+        fcRoomTypeInfoDao.insertRoomTypeInfo(new FcRoomTypeInfo());
+        for(int i=0;i<rowLength;i++) {
+            hotelInfoDto = new FcHotelInfoDto();
+            hotelInfoDto.setHotelId(result[i][1]);
+            hotelInfoDto.setHotelName(result[i][2]);
+            hotelInfoDto.setHotelAddress(result[i][3]);
+
+            fcRoomTypeInfo = new FcRoomTypeInfo();
+            fcRoomTypeInfo.setHotelId(result[i][1]);
+            fcRoomTypeInfo.setRoomTypeId(result[i][4]);
+            fcRoomTypeInfo.setRoomTypeName(result[i][5]);
+            FcHotelInfoDto fcHotelInfoDto = fcHotelInfoDao.selectFcHotelByHotelId(result[i][1]);
+            if (fcHotelInfoDto==null){
+                fcHotelInfoDao.insertFcHotelInfo(hotelInfoDto);
+            }
+            FcRoomTypeInfoDto fcRoomTypeInfoDto = fcRoomTypeInfoDao.selectFcRoomTypeByHotelIdAndRoomTypeId(result[i][1], result[i][4]);
+            if (fcRoomTypeInfoDto==null){
+                fcRoomTypeInfoDao.insertRoomTypeInfo(fcRoomTypeInfo);
+            }
+        }
     }
 
     @Test
-
     public void  readFcRoomTypeInn() throws IOException {
         File file = new File("F:\\FC_ROOMTYPE.xls");
         String[][] result = ExcelUtil.getData(file, 1);
