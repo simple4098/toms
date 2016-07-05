@@ -167,4 +167,13 @@ public interface IBangInnService {
      */
     QunarGetHotelInfoResponse findBangInnListByCompanyCode(String companyCode);
 
+    /**
+     * 根据当前登录用户查询客栈分类（标签）
+     *
+     * @param userInfo
+     * @return
+     */
+    List<BangInn> findClassifyByUser(UserInfo userInfo);
+
+
 }

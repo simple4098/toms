@@ -54,6 +54,21 @@ public class AjaxLabelInnController extends BaseController{
     }
 
     /**
+     * Create by jame
+     * Date: 2016/7/5 14:09
+     * Description: 客栈分类
+     * params :
+     * return :
+     */
+    @RequestMapping("/innClassify")
+    public void innClassify(Model model){
+        UserInfo currentUser = getCurrentUser();
+        List<BangInn> bangInnAndLabel = this.bangInnService.findClassifyByUser(currentUser);
+        model.addAttribute(Constants.STATUS, Constants.SUCCESS);
+        model.addAttribute(Constants.DATA, bangInnAndLabel);
+    }
+
+    /**
      * 新增绑定客栈
      *
      * @param

@@ -49,11 +49,11 @@
     </resultMap>
 
     <resultMap id="fcId" type="com.fanqielaile.toms.dto.BangInnDto" extends="BaseResultMap">
-       <result column="ota_inn_ota_id" property="otaInnOtaId"/>
-       <result column="ota_info_id" property="otaInfoId"/>
+        <result column="ota_inn_ota_id" property="otaInnOtaId"/>
+        <result column="ota_info_id" property="otaInfoId"/>
     </resultMap>
     <resultMap id="fcId_otaInn" type="com.fanqielaile.toms.dto.BangInnDto" extends="fcId">
-       <result column="sjia_model" property="sJiaModel"/>
+        <result column="sjia_model" property="sJiaModel"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -64,7 +64,23 @@
               values (#{id},#{companyId},#{bangDate},#{loseDate},#{startDate},#{innId},#{innName},#{code},#{innLabelId},#{mobile},#{innCode},#{userId},#{type},0)
        </insert>
 
-
+    <select id="selectBangInnByName" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from bang_inn where deleted=0
+        <if test="innLabelId != null and innLabelId != ''">
+            and inn_label_id = #{innLabelId}
+        </if>
+        <if test="userInfo.dataPermission == 0">
+            and user_id = #{userInfo.id}
+        </if>
+        <if test="userInfo.companyId != null and userInfo.companyId != ''">
+            and company_id = #{userInfo.companyId}
+        </if>
+        <if test="innName != null and innName != ''">
+            and inn_name like concat('%','${innName}','%')
+        </if>
+    </select>
 
     <select id="selectBangInnByInnLabelId" resultMap="BaseResultMap">
         SELECT
@@ -117,7 +133,7 @@
 
     <select id="selectBangInnList" parameterType="com.fanqielaile.toms.model.UserInfo" resultMap="orderConfigId">
         SELECT b.inn_id,b.inn_name,il.label_name,b.company_id
-        from bang_inn b LEFT  JOIN  inn_label il ON  il.id =b.inn_label_id
+        from bang_inn b LEFT JOIN inn_label il ON il.id =b.inn_label_id
         where b.company_id = #{companyId} and b.deleted=0
         <if test="dataPermission == 0">
             and b.user_id = #{id}
@@ -137,7 +153,7 @@
         from bang_inn where id= #{id} and deleted=0
     </select>
 
-    <select id="selectBangInnByInnIdCompanyId"  resultMap="BangInnDtoResult">
+    <select id="selectBangInnByInnIdCompanyId" resultMap="BangInnDtoResult">
         SELECT
         <include refid="Base_Column_List"/>
         from bang_inn where inn_id= #{innId} and company_id = '${companyId}'and deleted=0
@@ -161,7 +177,7 @@
     <update id="updateBangInnTp" parameterType="com.fanqielaile.toms.model.BangInn">
         update bang_inn
         <trim prefix="SET" suffixOverrides=",">
-             updated_date = now(),sj=#{sj},account_id_di = #{accountIdDi},
+            updated_date = now(),sj=#{sj},account_id_di = #{accountIdDi},
             <if test="mobile != null and mobile != ''">
                 mobile= #{mobile},
             </if>
@@ -220,18 +236,18 @@
         <include refid="Base_Column_List"/>
         from bang_inn where inn_id=#{innId} and deleted=0
     </select>
-    <select id="selectBangInnByTBHotelId"  resultMap="BangInnDtoResult">
+    <select id="selectBangInnByTBHotelId" resultMap="BangInnDtoResult">
         SELECT bi.* from bang_inn bi INNER JOIN ota_inn_ota oo on bi.id = oo.bang_inn_id where oo.wg_hid=#{otaHotelId} and
         oo.deleted = 0 and bi.deleted=0 and oo.company_id = '${companyId}' and oo.ota_info_id ='${otaInfoId}'
     </select>
 
-    <select id="selectBangInnByCompanyIdAndAccountId" resultMap="BangInnDtoResult" >
+    <select id="selectBangInnByCompanyIdAndAccountId" resultMap="BangInnDtoResult">
         SELECT
         <include refid="Base_Column_List"/>
         from bang_inn where company_id ='${companyId}' and account_id=#{accountId} and deleted=0
     </select>
 
-    <select id="selectBangInnByParam" resultMap="BangInnDtoResult" >
+    <select id="selectBangInnByParam" resultMap="BangInnDtoResult">
         SELECT o.* from bang_inn o  INNER JOIN ota_inn_ota oio ON oio.bang_inn_id = o.id
         where  o.deleted=0 and oio.sj=1 and oio.ota_info_id='${otaInfoId}' and o.company_id ='${companyId}' and o.account_id=#{accountId}
     </select>
@@ -240,15 +256,15 @@
         UPDATE bang_inn SET deleted=1 where company_id='${companyId}' and inn_id =#{innId}
     </update>
 
-    <update id="deleteBangInnByCompanyId" parameterType="java.lang.String" >
+    <update id="deleteBangInnByCompanyId" parameterType="java.lang.String">
         UPDATE bang_inn SET deleted=1 where company_id='${companyId}'
     </update>
 
 
-    <select id="selectFcBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
+    <select id="selectFcBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInfoId}'
-        where  b.deleted=0  and b.company_id ='${companyId}'
+        where b.deleted=0 and b.company_id ='${companyId}'
         <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
             and oio.id is NULL
         </if>
@@ -267,15 +283,15 @@
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
 
-    <select id="selectOTABangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
+    <select id="selectOTABangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
 
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.ota_info_id='${otaInfoId}'
-        where  b.deleted=0  and b.company_id='${companyId}'
+        where b.deleted=0 and b.company_id='${companyId}'
         <if test="companyIdList!=null and companyIdList.size()>0">
-            and b.inn_id NOT IN ( SELECT inn_id from bang_inn where  company_id in
-            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator="," >
-               '${item}'
+            and b.inn_id NOT IN ( SELECT inn_id from bang_inn where company_id in
+            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator=",">
+                '${item}'
             </foreach>
             )
         </if>
@@ -299,21 +315,21 @@
     </select>
 
 
-    <select id="selectBangInnByCompanyListInnId"  parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
-        SELECT b.* from bang_inn b where  b.deleted=0  AND b.inn_id=#{innId}
+    <select id="selectBangInnByCompanyListInnId" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
+        SELECT b.* from bang_inn b where b.deleted=0 AND b.inn_id=#{innId}
         <if test="companyIdList!=null and companyIdList.size()>0">
             and b.company_id in
-            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator="," >
+            <foreach collection="companyIdList" index="index" item="item" open="(" close=")" separator=",">
                 '${item}'
             </foreach>
         </if>
 
     </select>
 
-    <select id="selectFcExcelBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId" >
+    <select id="selectFcExcelBangInn" parameterType="com.fanqielaile.toms.dto.BangInnDto" resultMap="fcId">
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id and oio.sj=1 and oio.ota_info_id='${otaInfoId}'
-        where  b.deleted=0  and b.company_id ='${companyId}'
+        where b.deleted=0 and b.company_id ='${companyId}'
         <if test="innStatus!=null and innStatus.name()=='NOT_MATCH'">
             and oio.id is NULL
         </if>
@@ -329,7 +345,7 @@
         </if>
         ORDER BY b.bang_date DESC,b.id ASC
     </select>
-    <select id="selectBangInnByCompanyIdSj"  resultMap="fcId_otaInn" >
+    <select id="selectBangInnByCompanyIdSj" resultMap="fcId_otaInn">
         SELECT b.*,oio.id as ota_inn_ota_id,oio.ota_info_id,oio.sjia_model from bang_inn b
         LEFT JOIN ota_inn_ota oio ON oio.bang_inn_id = b.id
         where b.sj=1 and oio.sj=1 and oio.ota_info_id='${otaInfoId}'  and b.company_id ='${companyId}'
@@ -337,7 +353,9 @@
     </select>
 
     <update id="updateSjBangInn">
-        UPDATE bang_inn SET  <if test="!sj">sj=0</if><if test="sj">sj=1</if>,updated_date=now()
+        UPDATE bang_inn SET
+        <if test="!sj">sj=0</if>
+        <if test="sj">sj=1</if>,updated_date=now()
         where inn_id=#{innId} and company_id='${companyId}'
     </update>
     <select id="selectBangInnListByCompanyCode" parameterType="java.lang.String"

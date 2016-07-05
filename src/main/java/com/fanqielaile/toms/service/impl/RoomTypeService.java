@@ -13,6 +13,7 @@ import com.fanqielaile.toms.model.OtaCommissionPercent;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IRoomTypeService;
 import com.fanqielaile.toms.support.util.TomsUtil;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 @Service
 public class RoomTypeService implements IRoomTypeService {
-    private static  final Logger log = Logger.getLogger(RoomTypeService.class);
+    private static final Logger log = Logger.getLogger(RoomTypeService.class);
     @Resource
     private CompanyDao companyDao;
     @Resource
@@ -51,21 +52,22 @@ public class RoomTypeService implements IRoomTypeService {
     private IOtaInnOtaDao otaInnOtaDao;
     @Resource
     private IOtaCommissionPercentDao commissionPercentDao;
+
     @Override
-    public RoomTypeInfoDto findRoomType(ParamDto paramDto,UserInfo userInfo)throws  Exception{
+    public RoomTypeInfoDto findRoomType(ParamDto paramDto, UserInfo userInfo) throws Exception {
         Company company = companyDao.selectCompanyById(userInfo.getCompanyId());
-        if (!StringUtils.isEmpty(paramDto.getAccountId())){
+        if (!StringUtils.isEmpty(paramDto.getAccountId())) {
             BangInn bangInn = bangInnDao.selectBangInnById(paramDto.getAccountId());
-            if (bangInn!=null && !paramDto.isMaiAccount()){
-                paramDto.setAccountId(bangInn.getAccountIdDi()!=null?String.valueOf(bangInn.getAccountIdDi()):null);
-            }else {
-                paramDto.setAccountId(bangInn.getAccountId()!=null?String.valueOf(bangInn.getAccountId()):null);
+            if (bangInn != null && !paramDto.isMaiAccount()) {
+                paramDto.setAccountId(bangInn.getAccountIdDi() != null ? String.valueOf(bangInn.getAccountIdDi()) : null);
+            } else {
+                paramDto.setAccountId(bangInn.getAccountId() != null ? String.valueOf(bangInn.getAccountId()) : null);
             }
         }
-        if (paramDto.getAccountId()!=null){
+        if (paramDto.getAccountId() != null) {
             String roomStatusUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.roomStatus);
             log.info("roomStatusUrl:" + roomStatusUrl);
-            return  obtRoomTypeInfoDto(roomStatusUrl);
+            return obtRoomTypeInfoDto(roomStatusUrl);
         }
         return null;
 
@@ -81,67 +83,74 @@ public class RoomTypeService implements IRoomTypeService {
     }*/
 
     private RoomTypeInfoDto obtRoomTypeInfoDto(String roomStatusUrl) throws IOException {
-       List<RoomStatusDetail> roomDetail = InnRoomHelper.getRoomStatus(roomStatusUrl);
-       return roomDetail(roomDetail);
+        List<RoomStatusDetail> roomDetail = InnRoomHelper.getRoomStatus(roomStatusUrl);
+        return roomDetail(roomDetail);
     }
-    private RoomTypeInfoDto obtRoomTypeInfoDto(BangInn bangInn,String roomStatus,String otaInfoId,String companyId,OtaCommissionPercentDto commission) throws IOException {
+
+    private RoomTypeInfoDto obtRoomTypeInfoDto(BangInn bangInn, String roomStatus, String otaInfoId, String companyId, OtaCommissionPercentDto commission) throws IOException {
         List<RoomStatusDetail> detailList = InnRoomHelper.getRoomStatus(roomStatus);
-        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(),companyId,otaInfoId);
-        if (otaInnOta!=null){
+        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), companyId, otaInfoId);
+        if (otaInnOta != null) {
             OtaPriceModelDto priceModelDto = priceModelDao.findOtaPriceModelByWgOtaId(otaInnOta.getId());
             if (detailList != null) {
-                for (RoomStatusDetail r:detailList){
+                for (RoomStatusDetail r : detailList) {
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(companyId, r.getRoomTypeId(), otaInfoId));
                     Double value = null;
                     Date startDate = null;
                     Date endDate = null;
-                    if (priceDto!=null) {
-                        value = priceDto.getValue() ;
+                    if (priceDto != null) {
+                        value = priceDto.getValue();
                         startDate = priceDto.getStartDate();
                         endDate = priceDto.getEndDate();
                     }
-                    for (RoomDetail d:r.getRoomDetail()){
+                    for (RoomDetail d : r.getRoomDetail()) {
                         double price = new BigDecimal(d.getRoomPrice()).multiply(priceModelDto.getPriceModelValue()).doubleValue();
-                        d.setCostPrice(TomsUtil.price(price, commission!=null?new BigDecimal(commission.getCommissionPercent()):null));
+                        d.setCostPrice(TomsUtil.price(price, commission != null ? new BigDecimal(commission.getCommissionPercent()) : null));
                         Date parseDate = DateUtil.parseDate(d.getRoomDate());
                         //售价只有MAI2DI才展示
-                        if (commission!=null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())){
-                            price = TomsUtil.price(price,new BigDecimal(commission.getCommissionPercent()));
+                        if (commission != null && commission.getsJiaModel().equals(UsedPriceModel.MAI2DI.name())) {
+                            price = TomsUtil.price(price, new BigDecimal(commission.getCommissionPercent()));
                         }
                         //在设定的范围内才对价格进行处理
-                        if (priceDto!=null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
+                        if (priceDto != null && parseDate.getTime() >= startDate.getTime() && endDate.getTime() >= parseDate.getTime()) {
                             price = price + value;
                             d.setPriceValue(value);
                         }
                         d.setRoomPrice(price);
                     }
                 }
-                return  roomDetail(detailList);
+                return roomDetail(detailList);
             }
         }
 
-      return null;
+        return null;
     }
 
 
     @Override
-    public RoomTypeInfoDto findRoomType(String otaInfoId,ParamDto paramDto,BangInn bangInn) throws Exception {
+    public RoomTypeInfoDto findRoomType(String otaInfoId, ParamDto paramDto, BangInn bangInn) throws Exception {
         Company company = companyDao.selectCompanyById(bangInn.getCompanyId());
         paramDto.setAccountId(String.valueOf(bangInn.getAccountId()));
-        if (StringUtils.isEmpty(paramDto.getStartDate())  || StringUtils.isEmpty(paramDto.getEndDate())){
+        if (StringUtils.isEmpty(paramDto.getStartDate()) || StringUtils.isEmpty(paramDto.getEndDate())) {
             DateTime startTime = DateUtil.addDate(0);
             DateTime endTime = DateUtil.addDate(30);
-            paramDto.setStartDate( DateUtil.format(startTime.toDate()));
+            paramDto.setStartDate(DateUtil.format(startTime.toDate()));
             paramDto.setEndDate(DateUtil.format(endTime.toDate()));
         }
         OtaInfoRefDto otaInfoRef = otaInfoDao.findOtaInfoByOtaIdAndCompanyId(new OtaInfoRefDto(otaInfoId, company.getId()));
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), otaInfoRef.getUsedPriceModel().name()));
         //String roomTypeUrl = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.ROOM_TYPE);
         String roomStatus = DcUtil.roomTypeUrl(paramDto, company.getOtaId(), company.getUserAccount(), company.getUserPassword(), CommonApi.roomStatus);
-        return  obtRoomTypeInfoDto(bangInn,roomStatus,otaInfoId,company.getId(),commission);
+        return obtRoomTypeInfoDto(bangInn, roomStatus, otaInfoId, company.getId(), commission);
     }
 
-    private RoomTypeInfoDto roomDetail(  List<RoomStatusDetail> roomStatusDetails){
+    @Override
+    public List<BangInn> findRoomTypeByName(ParamDto paramDto, UserInfo userInfo, PageBounds pageBounds) {
+        List<BangInn> inns = this.bangInnDao.selectBangInnByName(paramDto.getTagId(), paramDto.getAccountId(), userInfo,pageBounds);
+        return inns;
+    }
+
+    private RoomTypeInfoDto roomDetail(List<RoomStatusDetail> roomStatusDetails) {
         if (roomStatusDetails != null) {
             RoomTypeInfoDto roomTypeInfoDto = new RoomTypeInfoDto();
             List<RoomDetail> roomDetail = roomStatusDetails.get(0).getRoomDetail();
@@ -161,8 +170,8 @@ public class RoomTypeService implements IRoomTypeService {
             }
             roomTypeInfoDto.setRoomDates(dates);
             roomTypeInfoDto.setRoomStatus(roomStatusDetails);
-            return  roomTypeInfoDto;
+            return roomTypeInfoDto;
         }
-        return  null;
+        return null;
     }
 }

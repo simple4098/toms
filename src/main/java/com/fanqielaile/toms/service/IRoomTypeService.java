@@ -4,6 +4,9 @@ import com.fanqie.core.dto.ParamDto;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
 import com.fanqielaile.toms.model.BangInn;
 import com.fanqielaile.toms.model.UserInfo;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+
+import java.util.List;
 
 /**
  * DESC : 第三方公司 查看房态房量
@@ -26,4 +29,12 @@ public interface IRoomTypeService {
      * @throws Exception
      */
     RoomTypeInfoDto  findRoomType( String otaInfoId,ParamDto paramDto,BangInn bangInn)throws Exception;
+
+    /**
+     * 房态数量new-通过客栈名称和用户公司等查询客栈列表
+     * @param paramDto
+     * @param userInfo
+     * @return
+     */
+    List<BangInn> findRoomTypeByName(ParamDto paramDto, UserInfo userInfo, PageBounds pageBounds);
 }
