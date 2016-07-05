@@ -156,16 +156,16 @@
             <property name="kfD" value="http://dc.local.fanqiele.com/api/toms/customer.json"></property>
             <property name="ORDER" value="http://dc.local.fanqiele.com/api/toms/order.json"></property>
             <property name="ActiveInn" value="http://dc.local.fanqiele.com/api/toms/innActive.json"></property>
-            <property name="roomType" value="http://192.168.1.189:8888/api/queryRoomType"></property>
-            <property name="checkRoom" value="http://192.168.1.189:8888/api/check_room_avail"></property>
-            <property name="innInfo" value="http://192.168.1.189:8888/api/queryInn"></property>
-            <property name="roomStatus" value="http://192.168.1.189:8888/api/queryRoomStatus"></property>
-            <property name="cancelCreditOrder" value="http://192.168.1.189:8888/api/toms/cancelCreditOrder"></property>
+            <property name="roomType" value="http://oms.local.fanqiele/api/queryRoomType"></property>
+            <property name="checkRoom" value="http://oms.local.fanqiele/api/check_room_avail"></property>
+            <property name="innInfo" value="http://oms.local.fanqiele/api/queryInn"></property>
+            <property name="roomStatus" value="http://oms.local.fanqiele/api/queryRoomStatus"></property>
+            <property name="cancelCreditOrder" value="http://oms.local.fanqiele/api/toms/cancelCreditOrder"></property>
             <property name="tbUrl" value="http://gw.api.tbsandbox.com/router/rest"></property>
             <property name="pmsOrderStatus" value="http://192.168.1.159:8686/api/book"></property>
             <!--<property name="tbUrl" value="http://gw.api.taobao.com/router/rest"></property>-->
-            <property name="sellingRoomType" value="http://http://192.168.1.189:8888/api/getSellingRoomType"></property>
-            <property name="ProxySaleList" value="http://http://192.168.1.189:8888/api/queryProxySaleList"></property>
+            <property name="sellingRoomType" value="http://oms.local.fanqiele/api/getSellingRoomType"></property>
+            <property name="ProxySaleList" value="http://oms.local.fanqiele/api/queryProxySaleList"></property>
             <property name="imgUrl" value="http://img.fanqiele.com"></property>
             <property name="proxyOtaPercent" value="http://fqms.local.afanqie.com/proxysale/api/channel/"></property>
             <property name="fcHotelInfo" value="http://www.fangcang.org/USP/api_v1/getHotelInfo"></property>
