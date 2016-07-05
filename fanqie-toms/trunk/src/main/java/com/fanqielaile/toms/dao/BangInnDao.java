@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dao;
 
+import com.fanqie.core.dto.ParamDto;
 import com.fanqie.qunar.model.Hotel;
 import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqielaile.toms.dto.BangInnDto;
@@ -30,6 +31,8 @@ public interface BangInnDao {
      * @return
      */
     List<BangInn> selectBangInnByInnLabelId(@Param("innLabelId")String innLabelId,@Param("userInfo")UserInfo userInfo);
+
+    List<BangInn> selectBangInnByName(@Param("innLabelId")String innLabelId,@Param("innName")String innName, @Param("userInfo")UserInfo userInfo,PageBounds pageBounds);
 
     List<BangInn> selectBangInnByInnLabelId(@Param("innLabelId")String innLabelId);
 

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
@@ -11,7 +12,6 @@
     <%--<link rel="stylesheet" type="text/css" href="<%=basePath%>/assets/css/jquery-ui-1.10.3.full.min.css">--%>
     <link rel="stylesheet" href="<%=basePath%>/assets/css/select2.min.css"/>
     <link href="<c:url value='/assets/css/pages.css'/>" rel="stylesheet"/>
-    <script src="<c:url value='/js/select2.full.js'/>"></script>
 </head>
 <div >
     <div class="select-area">
@@ -21,10 +21,13 @@
             <input type="hidden" class="room-num-url" id="roomNumUrl"
                    data-url="<c:url value="/order/find_room_num.json"/>"/>
             <input type="hidden" id="dataUrlId" data-url="<c:url value="/oms/ajax/obtRoomType"/>">
-            <input type="hidden" class="data-url" data-url="<c:url value="/ajax/label.json"/>">
+            <input type="hidden" class="data-url" data-url="<c:url value="/ajax/innClassify.json"/>">
             <input type="hidden" class="room-type-url" id="manualUrl" data-url="<c:url value="/personality/info/manual.json"/>"/>
+            <input type="hidden" value="1" id="pageNo">
             <select class="form-control" id="kz-tags-r"></select>
-            <select class="form-control js-example-basic-single" id="kz_item-r"></select>
+            <input type="hidden" id="kz_item-r">
+            <input id="roomTypeName" name="roomTypeName" placeholder="客栈名称关键字" />
+            <%--<select class="form-control js-example-basic-single" id="kz_item-r"></select>--%>
             <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
                 搜索
                 <i class="icon-search icon-on-right bigger-110"></i>
@@ -338,9 +341,10 @@
     </div>
 </div>
 <%--<script src="<c:url value='/assets/js/jquery-2.0.3.min.js'/>"></script>--%>
-<%--<script src="<c:url value='/assets/layer/layer.js'/>"></script>
-<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>--%>
+<%--<script src="<c:url value='/assets/layer/layer.js'/>"></script>--%>
+<script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
+<script src="<c:url value='/js/select2.full.js'/>"></script>
 <script src="<c:url value='/assets/js/tomato.min.js'/>"></script>
 <script src="<c:url value='/assets/js/room-type.js'/>"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>

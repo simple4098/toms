@@ -276,4 +276,34 @@ public class BangInnService implements IBangInnService {
         result.setHotelList(hotelList);
         return result;
     }
+
+    @Override
+    public List<BangInn> findClassifyByUser(UserInfo userInfo) {
+        List<BangInn> results = new ArrayList<>();
+        List<BangInn> labels = this.bangInnDao.selectBangInnByUser(userInfo);
+        //新增一个全部客栈分类，即查询当前登录用户下所有绑定的客栈
+        BangInn bangInn1 = new BangInn();
+        bangInn1.setInnLabelId(null);
+        labels.add(bangInn1);
+        if (null != labels) {
+            for (BangInn bangInn : labels) {
+                if (StringUtils.isEmpty(bangInn.getInnLabelId())) {
+                    BangInn bangInn2 = new BangInn();
+                    bangInn2.setInnLabelId("");
+                    bangInn2.setInnLabelName("全部客栈分类");
+                    results.add(bangInn2);
+                } else {
+                    InnLabel innLabel = this.innLabelDao.selectLabelById(bangInn.getInnLabelId());
+                    if (null != innLabel) {
+                        BangInn inn = new BangInn();
+                        inn.setInnLabelId(innLabel.getId());
+                        inn.setInnLabelName(innLabel.getLabelName());
+                        results.add(inn);
+                    }
+                }
+            }
+        }
+//        Collections.sort(results);
+        return results;
+    }
 }
