@@ -514,7 +514,7 @@ public class SystemController extends BaseController {
         try {
             if (!StringUtils.isEmpty(keyword)) {
                 UserInfo userInfo = getCurrentUser();
-                List<BangInn> bangInnList = this.bangInnService.findRoomTypeByName(null, keyword, userInfo, new PageBounds(page, 1));
+                List<BangInn> bangInnList = this.bangInnService.findRoomTypeByName(null, keyword, userInfo, new PageBounds(page, defaultRows));
 
                 //分页对象
                 Paginator paginator = ((PageList) bangInnList).getPaginator();
