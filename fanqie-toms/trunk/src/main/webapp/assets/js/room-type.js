@@ -304,15 +304,15 @@ $('#submitBtn').click(function () {
 					var maiAccount = $(".maiAccount:checked").val();
 					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 					getRoomType(postData);
-					$('#hangOrder').modal('toggle');
 				} else {
 					layer.confirm('提示信息：下单失败,请检查所有参数是否完整=>' + data.message, {icon: 5});
 					var startDate = $('#from_datepicker').val(), endDate = $('#to_datepicker').val(), tagId = $('#kz-tags-r').val(), accountId = $('#kz_item-r').val();
 					var maiAccount = $(".maiAccount:checked").val();
 					var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 					getRoomType(postData);
-					$('#hangOrder').modal('toggle');
 				}
+				$('#hangOrder').modal('toggle');
+				$("div -> .modal-backdrop fade in").remove();
 			}
 		})
 	}
