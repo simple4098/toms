@@ -26,7 +26,7 @@
             <input type="hidden" value="1" id="pageNo">
             <select class="form-control" id="kz-tags-r"></select>
             <input type="hidden" id="kz_item-r">
-            <input id="roomTypeName" name="roomTypeName" placeholder="客栈名称关键字" />
+            <input id="roomTypeName" name="roomTypeName" placeholder="客栈名称关键字" style="height:30px;"/>
             <%--<select class="form-control js-example-basic-single" id="kz_item-r"></select>--%>
             <button type="button" id="myButton" data-loading-text="搜索中..." class="btn btn-purple btn-sm search-btn" autocomplete="off">
                 搜索
