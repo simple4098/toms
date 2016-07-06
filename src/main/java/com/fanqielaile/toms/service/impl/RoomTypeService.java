@@ -145,8 +145,8 @@ public class RoomTypeService implements IRoomTypeService {
     }
 
     @Override
-    public List<BangInn> findRoomTypeByName(ParamDto paramDto, UserInfo userInfo, PageBounds pageBounds) {
-        List<BangInn> inns = this.bangInnDao.selectBangInnByName(paramDto.getTagId(), paramDto.getAccountId(), userInfo,pageBounds);
+    public List<BangInn> findRoomTypeByName(String innLabelId,String innName,UserInfo userInfo,PageBounds pageBounds) {
+        List<BangInn> inns = this.bangInnDao.selectBangInnByName(innLabelId,innName, userInfo,pageBounds);
         return inns;
     }
 

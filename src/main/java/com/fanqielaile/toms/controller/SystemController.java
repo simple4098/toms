@@ -76,6 +76,7 @@ public class SystemController extends BaseController {
 
     /**
      * 退出
+     *
      * @return
      */
     @RequestMapping("logout")
@@ -254,6 +255,7 @@ public class SystemController extends BaseController {
         }
         return "/system/update_notice";
     }
+
     /**
      * 修改通知模板
      *
@@ -303,7 +305,7 @@ public class SystemController extends BaseController {
      * @param permission
      * @return
      */
-    @RequestMapping(value = "create_permission",method = RequestMethod.POST)
+    @RequestMapping(value = "create_permission", method = RequestMethod.POST)
     public String createPermission(Permission permission) {
         permissionService.createPermission(permission);
         return "permission";
@@ -315,10 +317,10 @@ public class SystemController extends BaseController {
      * @return
      */
     @RequestMapping("find_companys")
-    public String findCompany(Model model,@RequestParam(defaultValue = "1", required = false) int page) {
+    public String findCompany(Model model, @RequestParam(defaultValue = "1", required = false) int page) {
         try {
             //List<Company> companyList = this.companyService.findCompanyByCompany(null);
-            List<Company> companyList = this.companyService.findCompanyByCompany(null,new PageBounds(page, defaultRows));
+            List<Company> companyList = this.companyService.findCompanyByCompany(null, new PageBounds(page, defaultRows));
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
             model.addAttribute(Constants.DATA, companyList);
             //封装权限信息
@@ -328,8 +330,8 @@ public class SystemController extends BaseController {
             Paginator paginator = ((PageList) companyList).getPaginator();
             Pagination pagination = PaginationHelper.toPagination(paginator);
             FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
-            model.addAttribute("pagination",pagination);
-            model.addAttribute("pageDecorator",pageDecorator);
+            model.addAttribute("pagination", pagination);
+            model.addAttribute("pageDecorator", pageDecorator);
 
         } catch (Exception e) {
             logger.error("查询当前公司下属员工,查询失败", e);
@@ -341,7 +343,7 @@ public class SystemController extends BaseController {
      * 跳转到公司基本信息页面
      */
     @RequestMapping("find_company")
-    public String findCompanyInfo(Model model,@RequestParam String id) {
+    public String findCompanyInfo(Model model, @RequestParam String id) {
         try {
             Company company = companyService.findCompanyByid(id);
             model.addAttribute(Constants.DATA, company);
@@ -350,27 +352,29 @@ public class SystemController extends BaseController {
         }
         return "system/update_company";
     }
+
     /**
      * 公司渠道列表
      */
     @RequestMapping("find_company_ota")
-    public String findCompanyOta(Model model,@RequestParam String id) {
+    public String findCompanyOta(Model model, @RequestParam String id) {
         try {
             Company company = companyService.findCompanyByid(id);
             List<OtaInfoRefDto> list = otaInfoService.findAllOtaByCompany(company.getCompanyCode());
             model.addAttribute(Constants.DATA, list);
-            model.addAttribute("companyName",company.getCompanyName());
-            model.addAttribute("companyId",id);
+            model.addAttribute("companyName", company.getCompanyName());
+            model.addAttribute("companyId", id);
         } catch (Exception e) {
             logger.error("查询当前公司信息失败", e);
         }
         return "system/company_ota_list";
     }
+
     /**
      * 公司渠道具体某一个渠信息
      */
     @RequestMapping("find_company_ota_info")
-    public String findCompanyOtaInfo(Model model,@RequestParam String otaInfoRefId) {
+    public String findCompanyOtaInfo(Model model, @RequestParam String otaInfoRefId) {
         try {
             OtaInfoRefDto otaInfo = otaInfoService.findOtaInfoRefDtoById(otaInfoRefId);
             model.addAttribute(Constants.DATA, otaInfo);
@@ -385,8 +389,8 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("update_company_otaInfo")
     @ResponseBody
-    public Object updateCompanyOtaInfo(Model model,OtaInfoRefDto otaInfoRefDto) {
-        Map<String,Object> param = new HashMap<String, Object>();
+    public Object updateCompanyOtaInfo(Model model, OtaInfoRefDto otaInfoRefDto) {
+        Map<String, Object> param = new HashMap<String, Object>();
         try {
             otaInfoService.updateOtaInfo(otaInfoRefDto);
             param.put(Constants.STATUS, Constants.SUCCESS);
@@ -404,8 +408,8 @@ public class SystemController extends BaseController {
      */
     @RequestMapping("update_company")
     @ResponseBody
-    public Object updateCompany(Model model,Company company) {
-        Map<String,Object> param = new HashMap<String, Object>();
+    public Object updateCompany(Model model, Company company) {
+        Map<String, Object> param = new HashMap<String, Object>();
         try {
             companyService.modifyCompanyInfo(company);
             param.put(Constants.STATUS, Constants.SUCCESS);
@@ -420,10 +424,11 @@ public class SystemController extends BaseController {
 
     /**
      * 删除公司
+     *
      * @param model
      */
     @RequestMapping("delete_company")
-    public void deleteCompany(Model model,@RequestParam String companyId) {
+    public void deleteCompany(Model model, @RequestParam String companyId) {
         try {
             companyService.removeCompany(companyId);
             model.addAttribute(Constants.STATUS, Constants.SUCCESS);
@@ -493,7 +498,7 @@ public class SystemController extends BaseController {
             }
         } catch (Exception e) {
             logger.error("更新公司权限失败", e);
-            throw new TomsRuntimeException("更新公司权限失败",e);
+            throw new TomsRuntimeException("更新公司权限失败", e);
         }
     }
 
@@ -505,10 +510,21 @@ public class SystemController extends BaseController {
      * @return
      */
     @RequestMapping("images")
-    public String findImages(Model model, String id) {
+    public String findImages(Model model, String id, String keyword, @RequestParam(defaultValue = "1", required = false) int page) {
         try {
-            List<BangInn> bangInnList = this.bangInnService.findBangInnByCompanyId(getCurrentUser().getCompanyId());
-            model.addAttribute("bangInns", bangInnList);
+            if (!StringUtils.isEmpty(keyword)) {
+                UserInfo userInfo = getCurrentUser();
+                List<BangInn> bangInnList = this.bangInnService.findRoomTypeByName(null, keyword, userInfo, new PageBounds(page, 1));
+
+                //分页对象
+                Paginator paginator = ((PageList) bangInnList).getPaginator();
+                Pagination pagination = PaginationHelper.toPagination(paginator);
+                FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
+                model.addAttribute("pagination", pagination);
+                model.addAttribute("pageDecorator", pageDecorator);
+                model.addAttribute("bangInns", bangInnList);
+                model.addAttribute("keyword", keyword);
+            }
             //根据ID查询客栈信息
             if (StringUtils.isNotEmpty(id)) {
                 BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);
@@ -519,7 +535,6 @@ public class SystemController extends BaseController {
                 model.addAttribute("imgUrl", CommonApi.IMG_URL);
                 model.addAttribute("bangInn", bangInnDto);
                 //查看客栈对应的风光图片
-
             }
         } catch (Exception e) {
             logger.debug("查询绑定客栈图片信息出错", e);

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqie.core.dto.ParamDto;
 import com.fanqie.qunar.model.Hotel;
 import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqielaile.toms.dto.BangInnDto;
@@ -175,5 +176,12 @@ public interface IBangInnService {
      */
     List<BangInn> findClassifyByUser(UserInfo userInfo);
 
+
+    /**
+     * 通过客栈名称和用户公司等查询客栈列表
+     * @param userInfo
+     * @return
+     */
+    List<BangInn> findRoomTypeByName(String innLabelId,String innName,UserInfo userInfo,PageBounds pageBounds);
 
 }

@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.fanqie.core.dto.ParamDto;
 import com.fanqie.qunar.model.Hotel;
 import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
 import com.fanqie.util.DcUtil;
@@ -305,5 +306,12 @@ public class BangInnService implements IBangInnService {
         }
 //        Collections.sort(results);
         return results;
+    }
+
+
+    @Override
+    public List<BangInn> findRoomTypeByName(String innLabelId,String innName,UserInfo userInfo,PageBounds pageBounds) {
+        List<BangInn> inns = this.bangInnDao.selectBangInnByName(innLabelId, innName, userInfo,pageBounds);
+        return inns;
     }
 }

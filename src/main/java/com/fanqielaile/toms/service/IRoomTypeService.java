@@ -32,9 +32,8 @@ public interface IRoomTypeService {
 
     /**
      * 房态数量new-通过客栈名称和用户公司等查询客栈列表
-     * @param paramDto
      * @param userInfo
      * @return
      */
-    List<BangInn> findRoomTypeByName(ParamDto paramDto, UserInfo userInfo, PageBounds pageBounds);
+    List<BangInn> findRoomTypeByName(String innLabelId,String innName,UserInfo userInfo,PageBounds pageBounds);
 }
