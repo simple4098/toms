@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="toms" uri="http://www.fanqielaile.com/jsp/tag/toms" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path;
@@ -18,25 +19,75 @@
     <script src='<%=basePath%>/js/select2.full.js'></script>
 </head>
 <div class="main-content">
-    <form action="<c:url value="/system/images"/>" method="post">
+    <form action="<c:url value="/system/images"/>" method="post" id="form">
+        <input type="hidden" id="page" name="page" value="1">
         <div>
             &nbsp;&nbsp;&nbsp;
             <div class="ddd">
-                <select name="id" class="js-example-basic-single inn-name" style="width: 300px;">
-                    <option value="">--请选择--</option>
-                    <c:if test="${not empty bangInns}">
-                        <c:forEach items="${bangInns}" var="b">
-                            <option
-                                    <c:if test="${bangInn.id == b.id}">selected</c:if>
-                                    value="${b.id}">${b.innName}</option>
-                        </c:forEach>
-                    </c:if>
-                </select>
+                <input id="keyword" name="keyword" type="text" placeholder="请输入客栈名称关键字" value="${keyword}"/>
+                <input type="hidden" id="id" name="id" />
+                <%--<select name="id" class="js-example-basic-single inn-name" style="width: 300px;">--%>
+                    <%--<option value="">--请选择--</option>--%>
+                    <%--<c:if test="${not empty bangInns}">--%>
+                        <%--<c:forEach items="${bangInns}" var="b">--%>
+                            <%--<option--%>
+                                    <%--<c:if test="${bangInn.id == b.id}">selected</c:if>--%>
+                                    <%--value="${b.id}">${b.innName}</option>--%>
+                        <%--</c:forEach>--%>
+                    <%--</c:if>--%>
+                <%--</select>--%>
                 &nbsp;&nbsp;&nbsp;
                 <button class="btn-success">查询</button>
             </div>
         </div>
     </form>
+
+<c:if test="${!empty keyword}">
+    <div class="table-responsive">
+        <table id="sample-table-2" class="table table-striped table-bordered table-hover">
+            <thead style="font-size: 14px;">
+            <tr>
+                <th width="100">客栈名称</th>
+                <th width="100">操作</th>
+            </tr>
+            </thead>
+            <tbody class="table-data" style="font-size: 14px;">
+            <c:if test="${not empty bangInns}">
+                <c:forEach items="${bangInns}" var="d">
+                    <tr>
+                        <td>${d.innName}</td>
+                        <td>
+                            <a href="/system/images?id=${d.id}">查看</a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
+            </tbody>
+        </table>
+    </div>
+</c:if>
+
+    <c:set value="${pagination}" var="page"/>
+
+    <c:if test="${page.pageCount>1}">
+        <toms:page linkUrl="" pagerDecorator="${pageDecorator}"/>
+    </c:if>
+    <c:if test="${empty bangInns && !empty keyword}">
+        <div class="alert alert-danger center">
+            没有数据,请筛选条件
+        </div>
+    </c:if>
+
+    <script>
+        //分页方法
+        function page(page) {
+            $("#page").attr("value", page);
+            $('#form').submit();
+        }
+    </script>
+
+
+
     <c:if test="${not empty bangInn}">
         <div class="page-content">
             <div class="page-header">
@@ -417,18 +468,4 @@
         </div>
     </div>
 </div>
-<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet"/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".js-example-basic-single").select2();
-    });
-    //    $(document).ready(function(){
-    //        var data = [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }];
-    //        $(".js-example-basic-single").select2({
-    //            data: data
-    //        })
-    //    })
-
-</script>
 <!-- /.main-content -->

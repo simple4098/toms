@@ -49,14 +49,14 @@ public class RoomTypeController extends BaseController {
     public ModelAndView newRoomType(ParamDto paramDto, @RequestParam(defaultValue = "1", required = false) int page) {
         ModelAndView mav = new ModelAndView("/room/room_type_inn");
         UserInfo userInfo = getCurrentUser();
-        List<BangInn> list = roomTypeService.findRoomTypeByName(paramDto, userInfo, new PageBounds(page, defaultRows));
+        List<BangInn> list = roomTypeService.findRoomTypeByName(paramDto.getTagId(), paramDto.getAccountId(), userInfo, new PageBounds(page, defaultRows));
         mav.addObject(Constants.DATA, list);
         //分页对象
         Paginator paginator = ((PageList) list).getPaginator();
         Pagination pagination = PaginationHelper.toPagination(paginator);
         FrontendPagerDecorator pageDecorator = new FrontendPagerDecorator(pagination);
-        mav.addObject("pagination",pagination);
-        mav.addObject("pageDecorator",pageDecorator);
+        mav.addObject("pagination", pagination);
+        mav.addObject("pageDecorator", pageDecorator);
         mav.addObject("paramDto", paramDto);
         return mav;
     }
