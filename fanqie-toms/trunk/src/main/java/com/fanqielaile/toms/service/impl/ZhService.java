@@ -126,6 +126,8 @@ public class ZhService implements ITPService {
                         }
                     }
                 }
+            }else {
+                log.info("房仓获取客栈为空");
             }
         }
 
