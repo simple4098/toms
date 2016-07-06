@@ -24,7 +24,7 @@
         <div>
             &nbsp;&nbsp;&nbsp;
             <div class="ddd">
-                <input id="keyword" name="keyword" type="text" placeholder="请输入客栈名称关键字" value="${keyword}"/>
+                <input id="keyword" name="keyword" type="text" placeholder="请输入客栈名称关键字" value="${keyword}" style="height:30px;"/>
                 <input type="hidden" id="id" name="id" />
                 <%--<select name="id" class="js-example-basic-single inn-name" style="width: 300px;">--%>
                     <%--<option value="">--请选择--</option>--%>

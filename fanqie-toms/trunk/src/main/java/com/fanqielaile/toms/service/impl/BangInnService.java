@@ -304,7 +304,7 @@ public class BangInnService implements IBangInnService {
                 }
             }
         }
-//        Collections.sort(results);
+        Collections.sort(results);
         return results;
     }
 
