@@ -14,10 +14,10 @@
 
 </head>
 <body>
-<toms:authorize uri="/personality/info/otherConsumer">
     <div class="manual-order1">
         <div class="manual-order-icon">
             <ul>
+                <toms:authorize uri="/personality/info/otherConsumer">
                 <a href="<c:url value="/personality/info/otherConsumer"/>">
                 <Li ms-click="divDisplayFun">
                     <dl>
@@ -28,6 +28,8 @@
                     </dl>
                 </Li>
                 </a>
+                </toms:authorize>
+                <toms:authorize uri="/personality/info/myself_channel_page">
                 <a href="<c:url value="/personality/info/myself_channel_page"/>">
                 <Li ms-click="divDisplayFun">
                     <dl>
@@ -38,6 +40,8 @@
                     </dl>
                 </Li>
                 </a>
+                </toms:authorize>
+                <toms:authorize uri="/personality/info/pms_channel_name_page">
                 <a href="<c:url value="/personality/info/pms_channel_name_page"/>">
                     <Li ms-click="divDisplayFun">
                         <dl>
@@ -48,9 +52,10 @@
                         </dl>
                     </Li>
                 </a>
+                </toms:authorize>
             </ul>
         </div>
     </div>
-</toms:authorize>
+
 </body>
 </html>
