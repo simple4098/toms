@@ -56,6 +56,7 @@
         <result column="oms_order_code" property="omsOrderCode"/>
         <result column="xml_data" property="xmlData"/>
         <result column="order_source" property="orderSource"/>
+        <result column="json_data" property="jsonData"/>
     </resultMap>
     <resultMap id="OrderDtoResults" type="com.fanqielaile.toms.dto.OrderParamDto">
         <id column="id" property="id"/>
@@ -114,6 +115,7 @@
         <result column="user_name" property="operator"/>
         <result column="order_source" property="orderSource"/>
         <result column="refund_status" property="refundStatus"/>
+        <result column="json_data" property="jsonData"/>
         <collection property="orderOtherPriceList" column="id" ofType="com.fanqielaile.toms.model.OrderOtherPrice"
                     select="getOrderOtherPrice"/>
     </resultMap>
@@ -184,20 +186,20 @@
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,live_time,leave_time,
         total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,currency,payment_type,
         guest_mobile,OTA_rate_code,fee_status,reason,alipay_trade_no,payment,order_code,company_id,payment,guest_email,special_requirement,reserved_item,fc_bed_type,percent,used_price_model,add_price,basic_total_price,
-        partner_code,order_inn_name,order_room_type_name,person,interface_send_id,oms_order_code,xml_data,order_source
+        partner_code,order_inn_name,order_room_type_name,person,interface_send_id,oms_order_code,xml_data,order_source,json_data
     </sql>
     <insert id="insertOrder" parameterType="com.fanqielaile.toms.model.Order">
         INSERT INTO ota_toms_order(id, user_id, created_date,
         updated_date,modifier_id,version,deleted,channel_source,channel_order_code,order_status,inn_id,guest_name,room_type_id,home_amount,
         live_time,leave_time,total_price,prepay_price,cost_price,OTA_price,order_time,comment,OTA_room_type_id,OTA_hotel_id,OTA_rate_plan_id,OTA_gid,eariest_arrive_time,lastest_arrive_time,
         currency,payment_type,guest_mobile,OTA_rate_code,fee_status,order_code,company_id,payment,guest_email,special_requirement,reserved_item,fc_bed_type,percent,used_price_model,
-        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id,xml_data,order_source)
+        add_price,basic_total_price,partner_code,oms_order_code,order_inn_name,order_room_type_name,person,interface_send_id,xml_data,order_source,json_data)
         VALUES
         (#{id},#{userId},#{createdDate},#{updatedDate},#{modifierId},#{version},#{deleted},#{channelSource},#{channelOrderCode},#{orderStatus},#{innId},#{guestName},#{roomTypeId},#{homeAmount},
         #{liveTime},#{leaveTime},#{totalPrice},#{prepayPrice},#{costPrice},#{OTAPrice},#{orderTime},#{comment},#{OTARoomTypeId},#{OTAHotelId},#{OTARatePlanId},#{OTAGid},#{eariestArriveTime},
         #{lastestArriveTime},#{currency},#{paymentType},#{guestMobile},#{OTARateCode},#{feeStatus},#{orderCode},#{companyId},#{payment},#{guestEmail},#{specialRequirement},
         #{reservedItem},#{fcBedType},#{percent},#{usedPriceModel},#{addPrice},#{basicTotalPrice},#{partnerCode},#{omsOrderCode},#{orderInnName},
-        #{orderRoomTypeName},#{person},#{interFaceSendID},#{xmlData},#{orderSource});
+        #{orderRoomTypeName},#{person},#{interFaceSendID},#{xmlData},#{orderSource},#{jsonData});
     </insert>
     <select id="selectOrderByChannelSourceAndOrderId" resultMap="BaseResultsMap">
         SELECT
@@ -227,6 +229,9 @@
         LEFT JOIN bang_inn bi on oto.inn_id = bi.inn_id and oto.company_id = bi.company_id
         LEFT JOIN user_info ui on oto.user_id = ui.id and ui.deleted = 0
         <where>
+            <if test="order.orderSourceSearchParam != null and order.orderSourceSearchParam != ''">
+                and oto.order_source = '${order.orderSourceSearchParam}'
+            </if>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
                 AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK'
             </if>
@@ -279,6 +284,9 @@
     </select>
     <sql id="selectOrderFilter">
     	<where>
+            <if test="order.orderSourceSearchParam != null and order.orderSourceSearchParam != ''">
+                and oto.order_source = '${order.orderSourceSearchParam}'
+            </if>
             <if test="order.orderStatusString != null and order.orderStatusString =='DEAL'">
                 AND oto.order_status !='NOT_DEAL' AND oto.order_status != 'PAY_BACK' AND oto.order_status != 'CANCEL_APPLY'
             </if>

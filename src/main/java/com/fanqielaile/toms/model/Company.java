@@ -26,6 +26,26 @@ public class Company extends Domain {
     //区别公司来源
     private int type = 1;
     private CompanyType companyType;
+    private String pmsChannelName;
+
+    private List<MyselfChannel> myselfChannelList;
+
+    public String getPmsChannelName() {
+        return pmsChannelName;
+    }
+
+    public void setPmsChannelName(String pmsChannelName) {
+        this.pmsChannelName = pmsChannelName;
+    }
+
+    public List<MyselfChannel> getMyselfChannelList() {
+        return myselfChannelList;
+    }
+
+    public void setMyselfChannelList(List<MyselfChannel> myselfChannelList) {
+        this.myselfChannelList = myselfChannelList;
+    }
+
     //appkey, appSecret
     /*private String appKey;
     private String appSecret;

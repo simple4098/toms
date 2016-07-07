@@ -7,7 +7,7 @@ package com.fanqielaile.toms.enums;
 public enum ChannelSource {
     TAOBAO("淘宝"),
     FC("天下房仓"),
-    HAND_ORDER("其他渠道"), XC("携程"), ZH("众荟"), QUNAR("去哪儿");
+    HAND_ORDER("其他渠道"), XC("携程"), ZH("众荟"), QUNAR("去哪儿"),MYSELF_CHANNEL("自定义渠道");
     private String text;
 
     ChannelSource(String text) {

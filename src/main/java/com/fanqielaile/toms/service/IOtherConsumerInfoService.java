@@ -1,6 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.OtherConsumerInfoDto;
+import com.fanqielaile.toms.model.OtherConsumerFunction;
 import com.fanqielaile.toms.model.Result;
 import com.fanqielaile.toms.model.UserInfo;
 
@@ -25,7 +26,7 @@ public interface IOtherConsumerInfoService {
      * 查询此公司是否开通其他消费管理
      * @param companyId 公司id
      */
-    boolean findOtherConsumerFunction(String companyId);
+    OtherConsumerFunction findOtherConsumerFunction(String companyId);
 
     /**
      * 新增其他消费

@@ -104,6 +104,8 @@ public class QunarOrderService implements IQunarOrderService {
                 roomStatus = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.roomStatus, priceRequest.getCheckIn(), DateUtil.format(DateUtil.addDay(DateUtil.parseDate(priceRequest.getCheckOut(), "yyyy-MM-dd"), -1), "yyyy-MM-dd"));
                 roomType = DcUtil.omsRoomTYpeUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), String.valueOf(bangInnDto.getAccountId()), CommonApi.ROOM_TYPE, priceRequest.getCheckIn(), DateUtil.format(DateUtil.addDay(DateUtil.parseDate(priceRequest.getCheckOut(), "yyyy-MM-dd"), -1), "yyyy-MM-dd"));
             }
+            logger.info("请求oms房型房态，请求地址=>"+roomStatus);
+            logger.info("请求oms房型房态，请求地址=>"+roomType);
             List<RoomTypeInfo> list = InnRoomHelper.getRoomTypeInfo(roomType);
             if (StringUtils.isNotEmpty(priceRequest.getRoomId())) {
                 list = QunarUtil.dealRoomTypeList(list, priceRequest.getRoomId());

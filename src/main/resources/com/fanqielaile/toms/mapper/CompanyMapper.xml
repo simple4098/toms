@@ -19,7 +19,12 @@
         <result column="user_account" property="userAccount"/>
         <result column="user_password" property="userPassword"/>
         <result column="company_type" property="companyType"/>
+        <result column="pms_channel_name" property="pmsChannelName"/>
+        <collection property="myselfChannelList" column="id" ofType="com.fanqielaile.toms.model.MyselfChannel" select="getMyselfChannelList"/>
     </resultMap>
+    <select id="getMyselfChannelList" resultType="com.fanqielaile.toms.model.MyselfChannel" parameterType="java.lang.String">
+        SELECT id as id,channel_name as channelName,channel_code as channelCode FROM toms_myself_channel where deleted = 0 and company_id = #{id}
+    </select>
     <sql id="Base_Column_List">
         id, creator_id, created_date, updated_date,modifier_id,version,deleted,company_name,company_code,type,ota_id,user_account,user_password,company_type
     </sql>
@@ -31,9 +36,9 @@
        </insert>
     <select id="selectCompanyById" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM company where deleted = 0
-        and id = #{id}
+        c.id, c.creator_id, c.created_date, c.updated_date,c.modifier_id,c.version,c.deleted,c.company_name,c.company_code,c.type,c.ota_id,c.user_account,c.user_password,c.company_type,tpcn.pms_channel_name
+        FROM company c LEFT  JOIN toms_pms_channel_name tpcn on c.id = tpcn.company_id and tpcn.deleted = 0   where c.deleted = 0
+        and c.id = #{id}
     </select>
     <insert id="insertCompanyPermission" parameterType="com.fanqielaile.toms.model.Company">
         INSERT INTO company_permission (id,company_id,permission_id,created_date,updated_date)

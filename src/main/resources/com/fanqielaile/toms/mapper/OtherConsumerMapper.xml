@@ -6,6 +6,8 @@
         <id column="id" property="id"/>
         <result column="company_id" property="companyId"/>
         <result column="status" property="status"/>
+        <result column="myself_channel_status" property="myselfChannelStatus"/>
+        <result column="pms_channel_name_status" property="pmsChannelNameStatus"/>
     </resultMap>
 
     <resultMap id="consumerInfoId" type="com.fanqielaile.toms.dto.OtherConsumerInfoDto">
@@ -21,6 +23,8 @@
        <!-- <result column="created_date" property="createdDate"/>
         <result column="updated_date" property="updatedDate"/>-->
         <result column="status" property="status"/>
+        <result column="myself_channel_status" property="myselfChannelStatus"/>
+        <result column="pms_channel_name_status" property="pmsChannelNameStatus"/>
     </resultMap>
 
 
