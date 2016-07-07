@@ -512,9 +512,9 @@ public class SystemController extends BaseController {
     @RequestMapping("images")
     public String findImages(Model model, String id, String keyword, @RequestParam(defaultValue = "1", required = false) int page) {
         try {
-            if (!StringUtils.isEmpty(keyword)) {
+//            if (!StringUtils.isEmpty(keyword)) {
                 UserInfo userInfo = getCurrentUser();
-                List<BangInn> bangInnList = this.bangInnService.findRoomTypeByName(null, keyword, userInfo, new PageBounds(page, defaultRows));
+                List<BangInn> bangInnList = this.bangInnService.findRoomTypeByName(null, keyword, userInfo, new PageBounds(page, 5));
 
                 //分页对象
                 Paginator paginator = ((PageList) bangInnList).getPaginator();
@@ -524,7 +524,7 @@ public class SystemController extends BaseController {
                 model.addAttribute("pageDecorator", pageDecorator);
                 model.addAttribute("bangInns", bangInnList);
                 model.addAttribute("keyword", keyword);
-            }
+//            }
             //根据ID查询客栈信息
             if (StringUtils.isNotEmpty(id)) {
                 BangInnDto bangInnDto = this.bangInnService.findBangInnById(id);

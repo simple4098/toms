@@ -18,7 +18,6 @@
     <script src='<%=basePath%>/assets/js/jquery-2.0.3.min.js'></script>
     <script src='<%=basePath%>/js/select2.full.js'></script>
 </head>
-<div class="main-content">
     <form action="<c:url value="/system/images"/>" method="post" id="form">
         <input type="hidden" id="page" name="page" value="1">
         <div>
@@ -42,7 +41,7 @@
         </div>
     </form>
 
-<c:if test="${!empty keyword}">
+<%--<c:if test="${!empty keyword}">--%>
     <div class="table-responsive">
         <table id="sample-table-2" class="table table-striped table-bordered table-hover">
             <thead style="font-size: 14px;">
@@ -57,7 +56,7 @@
                     <tr>
                         <td>${d.innName}</td>
                         <td>
-                            <a href="/system/images?id=${d.id}">查看</a>
+                            <a href="/system/images?id=${d.id}&keyword=${keyword}">查看</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -65,7 +64,7 @@
             </tbody>
         </table>
     </div>
-</c:if>
+<%--</c:if>--%>
 
     <c:set value="${pagination}" var="page"/>
 
@@ -139,7 +138,7 @@
         </div>
         <!-- /.page-content -->
     </c:if>
-</div>
+
 <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="addUserLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
