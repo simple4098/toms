@@ -37,7 +37,7 @@
         </form>
     </div>
     <div class="btn-box clearfix">
-        <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" disabled id="manualOrder">手动下单</button>
+        <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" style="display: none;" id="manualOrder">手动下单</button>
     </div>
 
     <div class="room-status-box" id="roomTypeContainerId">

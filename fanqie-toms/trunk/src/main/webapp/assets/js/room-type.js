@@ -60,7 +60,7 @@ function getRoomType(postData){
 			}
 			$("#roomTypeContainerId").html(data);
 		}
-	})
+	});
 }
 $('#from_datepicker').change(function(){
 	var url = $("#dataUrlId").attr("data-url")+"?v="+new Date().getTime();
@@ -156,6 +156,8 @@ $('#myButton').on('click', function() {
 			$("#roomTypeContainerId").html(data);
 		}
 	});
+
+	$("#manualOrder").hide();
 });
 
 //spinner
@@ -367,4 +369,5 @@ function getDetail(accountId){
 	var maiAccount = $(".maiAccount:checked").val();
 	var postData = {'startDate': startDate, 'endDate': endDate, 'tagId': tagId, 'accountId': accountId,'maiAccount':maiAccount};
 	getRoomType( postData );
+	$("#manualOrder").show();
 }
