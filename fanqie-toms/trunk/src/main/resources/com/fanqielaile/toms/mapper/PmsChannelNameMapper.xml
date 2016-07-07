@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.PmsChannelNameDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.PmsChannelNameBean">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="pms_channel_name" property="pmsChannelName"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,created_date,updated_date,deleted,creator_id,company_id,pms_channel_name
+    </sql>
+
+    <insert id="insertIntoPmsChannelName" parameterType="com.fanqielaile.toms.model.PmsChannelNameBean">
+        INSERT INTO toms_pms_channel_name( id,created_date,updated_date,deleted,creator_id,company_id,pms_channel_name)
+        VALUES (#{uuid},now(),now(),0,#{creatorId},#{companyId},#{pmsChannelName})
+    </insert>
+    <select id="selectPmsChannelNameByCompanyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM toms_pms_channel_name where company_id = #{companyId}
+    </select>
+</mapper>

@@ -57,12 +57,9 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
     }
 
     @Override
-    public boolean findOtherConsumerFunction(String companyId) {
+    public OtherConsumerFunction findOtherConsumerFunction(String companyId) {
         OtherConsumerFunction otherConsumerFunction = otherConsumerInfoDao.selectFunction(companyId);
-        if (otherConsumerFunction!=null && otherConsumerFunction.getStatus()){
-            return true;
-        }
-        return false;
+        return  otherConsumerFunction;
     }
 
     @Override

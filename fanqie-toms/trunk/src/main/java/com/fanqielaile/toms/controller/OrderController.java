@@ -284,17 +284,19 @@ public class OrderController extends BaseController {
      * @param order
      */
     @RequestMapping("hand_make_order")
-    public void handMakeOrder(Model model, Order order, String liveTimeString, String leaveTimeString) throws Exception {
+    public void handMakeOrder(Model model, Order order, String liveTimeString, String leaveTimeString,String channelSourceValue) throws Exception {
         UserInfo userInfo = getCurrentUser();
         //检查参数
-        Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString);
+        Boolean param = OrderMethodHelper.checkHandMakeOrder(order, liveTimeString, leaveTimeString,channelSourceValue);
         order.setCompanyId(getCurrentUser().getCompanyId());
         order.setUserId(userInfo.getId());
         order.setOrderSource(OrderSource.HAND);
         if (param) {
+            order.setChannelSource(OrderMethodHelper.getHandOrderChannelSource(channelSourceValue));
             order.setLiveTime(DateUtil.parseDate(liveTimeString));
             order.setLeaveTime(DateUtil.parseDate(leaveTimeString));
             order.setId(order.getUuid());
+            order.setMyselfChannelCode(channelSourceValue);
 			//单房型手动下单
 //            Map<String, Object> result = this.orderService.dealHandMakeOrder(order, userInfo);
             //多方手动下单

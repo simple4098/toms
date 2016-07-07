@@ -47,7 +47,16 @@ public class OrderParamDto extends Order {
     private boolean agreeStatus;
     //当前是否是营业统计状态，true为营业统计状态
 //    private boolean statisticsStatus = false;
-    
+    private String orderSourceSearchParam;
+
+    public String getOrderSourceSearchParam() {
+        return orderSourceSearchParam;
+    }
+
+    public void setOrderSourceSearchParam(String orderSourceSearchParam) {
+        this.orderSourceSearchParam = orderSourceSearchParam;
+    }
+
     public String getOrderStatusString() {
         return orderStatusString;
     }

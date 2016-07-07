@@ -3,10 +3,7 @@ package com.fanqielaile.toms.helper;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.dto.RoomDetail;
 import com.fanqielaile.toms.dto.RoomTypeInfoDto;
-import com.fanqielaile.toms.enums.CurrencyCode;
-import com.fanqielaile.toms.enums.FeeStatus;
-import com.fanqielaile.toms.enums.OrderStatus;
-import com.fanqielaile.toms.enums.PaymentType;
+import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.model.DailyInfos;
 import com.fanqielaile.toms.model.Order;
 import com.fanqielaile.toms.model.OrderGuests;
@@ -153,15 +150,16 @@ public class OrderMethodHelper {
      * 检查手动下单参数
      *
      * @param order
+     * @param channelSourceValue
      * @return
      */
-    public static Boolean checkHandMakeOrder(Order order, String liveTimeString, String leaveTimeString) {
+    public static Boolean checkHandMakeOrder(Order order, String liveTimeString, String leaveTimeString, String channelSourceValue) {
         try {
             if (StringUtils.isNotEmpty(order.getGuestMobile()) && StringUtils.isNotEmpty(order.getGuestName()) && StringUtils.isNotEmpty(order.getRoomTypeId()) && StringUtils.isNotEmpty(order.getPayment().toString())
                     ) {
                 return true;
             }
-            if (StringUtils.isNotEmpty(liveTimeString) && StringUtils.isNotEmpty(leaveTimeString)) {
+            if (StringUtils.isNotEmpty(liveTimeString) && StringUtils.isNotEmpty(leaveTimeString)&&StringUtils.isNotEmpty(channelSourceValue)) {
                 return true;
             }
         } catch (Exception e) {
@@ -226,4 +224,19 @@ public class OrderMethodHelper {
         //TODO 判断oms返回订单状态是否成功
         return false;
     }
+
+    /**
+     * 得到手动下单的渠道来源
+     * @param channelSourceValue
+     * @return
+     */
+    public static ChannelSource getHandOrderChannelSource(String channelSourceValue) {
+        try {
+            ChannelSource channelSource = Enum.valueOf(ChannelSource.class, channelSourceValue);
+            return channelSource;
+        }catch (Exception e){
+            return ChannelSource.MYSELF_CHANNEL;
+        }
+    }
+
 }

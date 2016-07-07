@@ -1,25 +1,18 @@
 package com.fanqielaile.toms.support.tag;
 
-import com.fanqie.util.PropertiesUtil;
 import com.fanqielaile.toms.model.UserInfo;
-import com.fanqielaile.toms.service.IOtherConsumerInfoService;
-import com.fanqielaile.toms.service.impl.OtherConsumerInfoService;
 import com.fanqielaile.toms.support.SpringContextUtil;
-import com.fanqielaile.toms.support.exception.TomsRuntimeException;
-import com.fanqielaile.toms.support.util.Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.util.Assert;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.util.WebUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +24,7 @@ import java.util.Collection;
 /**
  * Created by wangdayin on 2015/5/26.
  */
-public class AuthorizeTagConsumer extends SimpleTagSupport {
+public class AuthorizeTagConsumer extends BeanAvailableTag {
 
     protected final Log logger = LogFactory.getLog(getClass());
     private AbstractSecurityInterceptor securityInterceptor;
@@ -39,7 +32,7 @@ public class AuthorizeTagConsumer extends SimpleTagSupport {
     private String uri;
 
 
-    @Override
+   /* @Override
     public void doTag() throws JspException, IOException {
         if (securityInterceptor == null) {
             securityInterceptor = (AbstractSecurityInterceptor)SpringContextUtil.getBean("filterSecurityInterceptor");
@@ -52,11 +45,11 @@ public class AuthorizeTagConsumer extends SimpleTagSupport {
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
         if (isAllowed(contextPath, uri, "GET", authentication)) {
             OtherConsumerInfoService  consumerInfoService = (OtherConsumerInfoService)SpringContextUtil.getBean("otherConsumerInfoService");
-            boolean function = consumerInfoService.findOtherConsumerFunction(userInfo.getCompanyId());
+            OtherConsumerFunction function = consumerInfoService.findOtherConsumerFunction(userInfo.getCompanyId());
             String xLv =  PropertiesUtil.readFile("/data.properties", "xi.lv.html");
             String url = contextPath.concat(uri);
             StringBuffer buffer = new StringBuffer("<a href=\"").append(url).append("\"");
-            if (function){
+            if (null != function && function.getStatus()){
                 xLv = xLv.replace("{"+"iconCoffee"+"}", Constants.ICON_ON);
             }else {
                 xLv = xLv.replace("{"+"iconCoffee"+"}", Constants.ICON_OFF);
@@ -64,10 +57,9 @@ public class AuthorizeTagConsumer extends SimpleTagSupport {
             buffer.append(xLv);
             buffer.append("</a>");
             getJspContext().getOut().write(buffer.toString());
-
         }
 
-    }
+    }*/
 
 
 
@@ -118,8 +110,22 @@ public class AuthorizeTagConsumer extends SimpleTagSupport {
         return true;
     }
 
+    @Override
+    protected int doStartTagInternal() throws Exception {
+        if (securityInterceptor == null) {
+            securityInterceptor = getBean("filterSecurityInterceptor");
+        }
+        String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (isAllowed(contextPath, uri, "GET", authentication)) {
+            return EVAL_BODY_INCLUDE;
+        }
+        return SKIP_BODY;
+    }
 
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+
 }

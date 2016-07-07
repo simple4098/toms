@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.model;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.fanqie.core.Domain;
 import com.fanqie.core.domain.ChildOrder;
 import com.fanqie.core.domain.OMSOrder;
@@ -8,10 +10,7 @@ import com.fanqie.core.dto.CancelOrderParamDto;
 import com.fanqie.core.dto.OrderParamDto;
 import com.fanqie.core.dto.RoomAvailParamDto;
 import com.fanqie.util.DateUtil;
-import com.fanqielaile.toms.dto.RoomDetail;
-import com.fanqielaile.toms.dto.RoomStatusDetail;
-import com.fanqielaile.toms.dto.RoomTypeInfo;
-import com.fanqielaile.toms.dto.RoomTypeInfoDto;
+import com.fanqielaile.toms.dto.*;
 import com.fanqielaile.toms.enums.*;
 import com.fanqielaile.toms.helper.OrderMethodHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -184,6 +183,36 @@ public class Order extends Domain {
     
     //取消订单时，是否扣款 true为扣款
     private boolean refundStatus;
+    private String jsonData;
+    private OrderJsonData orderJsonData;
+    private String myselfChannelCode;
+
+    public String getMyselfChannelCode() {
+        return myselfChannelCode;
+    }
+
+    public void setMyselfChannelCode(String myselfChannelCode) {
+        this.myselfChannelCode = myselfChannelCode;
+    }
+
+    public String getJsonData() {
+        return jsonData;
+    }
+
+    public void setJsonData(String jsonData) {
+        this.jsonData = jsonData;
+    }
+
+    public OrderJsonData getOrderJsonData() {
+        if (StringUtils.isNotEmpty(getJsonData())){
+            return JSON.parseObject(getJsonData(), new TypeReference<OrderJsonData>(){});
+        }
+        return orderJsonData;
+    }
+
+    public void setOrderJsonData(OrderJsonData orderJsonData) {
+        this.orderJsonData = orderJsonData;
+    }
 
     public OrderSource getOrderSource() {
         return orderSource;
@@ -762,6 +791,7 @@ public class Order extends Domain {
         orderParamDto.setvName(company.getUserAccount());
         orderParamDto.setvPWD(company.getUserPassword());
         OMSOrder omsOrder = new OMSOrder();
+        omsOrder.setJsonData(order.getJsonData());
         omsOrder.setOtaId(company.getOtaId());
         omsOrder.setAccountId(order.getAccountId());
         omsOrder.setContact(order.getGuestMobile());
@@ -884,6 +914,7 @@ public class Order extends Domain {
         handOrder.setFeeStatus(FeeStatus.PAID);
         handOrder.setComment(order.getComment());
         handOrder.setCompanyId(order.getCompanyId());
+        handOrder.setMyselfChannelCode(order.getMyselfChannelCode());
         handOrder.setUserId(order.getUserId());
         //设置房型名称
         handOrder.setOrderInnName(order.getOrderInnName());

@@ -5,16 +5,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>个性化功能</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>个性化功能</title>
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/jquery-ui-1.10.3.full.min.css'/>">
     <link rel="stylesheet" type="text/css" href="<c:url value='/assets/css/ace.min.css'/>">
+    <link rel="stylesheet" type="text/css" href="<c:url value='/css/news-center.css'/>">
 
 </head>
 <body>
-<div>
-  <toms:authorizeConsumer uri="/personality/info/otherConsumer"/>
- </div>
+<toms:authorize uri="/personality/info/otherConsumer">
+    <div class="manual-order1">
+        <div class="manual-order-icon">
+            <ul>
+                <a href="<c:url value="/personality/info/otherConsumer"/>">
+                <Li ms-click="divDisplayFun">
+                    <dl>
+                        <dd>
+                            <dl class="gongneng-icon"><i class="icon-coffee ON"></i> </dl>
+                        </dd>
+                        <dd class="other-pay-manage">其它消费管理</dd>
+                    </dl>
+                </Li>
+                </a>
+                <a href="<c:url value="/personality/info/myself_channel_page"/>">
+                <Li ms-click="divDisplayFun">
+                    <dl>
+                        <dd>
+                            <dl class="gongneng-icon"><i class="icon-picture on"></i> </dl>
+                        </dd>
+                        <dd class="other-pay-manage">自定义渠道</dd>
+                    </dl>
+                </Li>
+                </a>
+                <a href="<c:url value="/personality/info/pms_channel_name_page"/>">
+                    <Li ms-click="divDisplayFun">
+                        <dl>
+                            <dd>
+                                <dl class="gongneng-icon"><i class="icon-film on"></i> </dl>
+                            </dd>
+                            <dd class="other-pay-manage">PMS渠道名设置</dd>
+                        </dl>
+                    </Li>
+                </a>
+            </ul>
+        </div>
+    </div>
+</toms:authorize>
 </body>
 </html>

@@ -74,6 +74,11 @@
         <name>currencyCode</name>
         <tag-class>com.fanqielaile.toms.support.tag.CurrencyCodeTag</tag-class>
         <body-content>empty</body-content>
+        <attribute>
+            <name>uri</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 
     <tag>

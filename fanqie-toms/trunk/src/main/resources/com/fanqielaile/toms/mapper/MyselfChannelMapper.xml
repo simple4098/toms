@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.MyselfChannelDao">
+    <resultMap id="BaseResultMap" type="com.fanqielaile.toms.model.MyselfChannel">
+        <id column="id" property="id"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="updated_date" property="updatedDate"/>
+        <result column="deleted" property="deleted"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="channel_name" property="channelName"/>
+        <result column="channel_code" property="channelCode"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+              id,created_date,updated_date,deleted,creator_id,company_id,channel_name,channel_code
+       </sql>
+
+    <insert id="insertIntoMyselfChannel" parameterType="com.fanqielaile.toms.model.MyselfChannel">
+       INSERT INTO toms_myself_channel(id,created_date,updated_date,deleted,creator_id,company_id,channel_name,channel_code)
+       VALUES (#{uuid},now(),now(),0,#{creatorId},#{companyId},#{channelName},#{channelCode})
+    </insert>
+    <update id="updateMySelfChannel" parameterType="com.fanqielaile.toms.model.MyselfChannel">
+        UPDATE toms_myself_channel
+        <set>
+            updated_date = now(),
+            <if test="channelName != null and channelName != ''">
+                channel_name = #{channelName},
+            </if>
+            <if test="channelCode != null and channelCode != ''">
+                channel_code = #{channelCode},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="deletedMySelfChannel" parameterType="java.lang.String">
+        UPDATE toms_myself_channel SET deleted = 1 ,updated_date = now() where id = #{id}
+    </update>
+    <select id="selectMyselfChannelByCompanyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM toms_myself_channel where company_id = #{companyId} and deleted = 0
+    </select>
+    <select id="selectMyselfChannelById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM toms_myself_channel where id = #{id} and deleted = 0
+    </select>
+    <select id="selectMyselfChannelCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM toms_myself_channel where channel_code = #{channelCode} and deleted = 0 limit 1
+    </select>
+    <select id="selectMyselfChannelByChannelName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM toms_myself_channel where channel_name = #{channelName} and deleted = 0 limit 1
+    </select>
+
+    <update id="updateCompanyChannelStatus">
+        UPDATE other_consumer_function SET myself_channel_status = #{status} where company_id =#{companyId}
+    </update>
+    <update id="updatePmsCompanyChannelStatus">
+            UPDATE other_consumer_function SET pms_channel_name_status = #{status} where company_id =#{companyId}
+    </update>
+</mapper>

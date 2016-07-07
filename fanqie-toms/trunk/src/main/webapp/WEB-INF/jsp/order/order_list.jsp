@@ -170,6 +170,14 @@
                                      <li id="enterOrderStatus"><label class="enteroperator"><a>确认</a></label></li>
                                  </ul>
                              </div>
+                            <div>
+                                订单类型选择：
+                                <select name="orderSourceSearchParam">
+                                    <option value="" selected>全部</option>
+                                    <option <c:if test="${order.orderSourceSearchParam == 'HAND'}">selected</c:if> value="HAND">手动</option>
+                                    <option <c:if test="${order.orderSourceSearchParam == 'SYSTEM'}">selected</c:if> value="SYSTEM">系统</option>
+                                </select>
+                            </div>
                         <div class="query-btn">
                             <button type="submit" class="btn-info btn-search">查询</button>
                             <button type="button" style="float: right" class="btn-success btn-export-form">导出订单</button>
@@ -311,8 +319,14 @@
                                 <c:forEach items="${data}" var="d">
                                     <tr>
                                         <td>
-                                            (${d.orderSource.text})${d.channelSource.text}
-                                                    <c:if test="${d.channelSource == 'FC'}">(${d.partnerCode})</c:if>
+                                            <c:if test="${d.channelSource == 'MYSELF_CHANNEL'}">
+                                                (${d.orderSource.text})${d.orderJsonData.myselfChannelName}
+                                                <c:if test="${d.channelSource == 'FC'}">(${d.partnerCode})</c:if>
+                                            </c:if>
+                                            <c:if test="${d.channelSource != 'MYSELF_CHANNEL'}">
+                                                (${d.orderSource.text})${d.channelSource.text}
+                                                <c:if test="${d.channelSource == 'FC'}">(${d.partnerCode})</c:if>
+                                            </c:if>
                                         </td>
                                         <td>${d.channelOrderCode}</td>
                                         <td>${d.orderStatus.text}</td>

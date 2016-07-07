@@ -61,7 +61,7 @@
                         <label class="col-sm-3 control-label no-padding-right"> 渠道来源
                         </label>
                         <div class="col-sm-9">
-                            <select name="channelSource" id="channelSource">
+                            <select name="channelSourceValue" id="channelSource" class="channel-source">
                                 <option value="TAOBAO">淘宝</option>
                                 <option value="FC">天下房仓</option>
                                 <option value="ZH">众荟</option>

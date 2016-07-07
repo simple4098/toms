@@ -100,6 +100,8 @@ public class OrderService implements IOrderService {
 	private IOtaInnOtaDao otaInnOtaDao;
 	@Resource
 	private UserInfoDao userInfoDao;
+	@Resource
+	private MyselfChannelDao myselfChannelDao;
 	/*
 	 * @Resource private BusinLogClient businLogClient; private BusinLog
 	 * businLog = new BusinLog();
@@ -379,6 +381,7 @@ public class OrderService implements IOrderService {
 						JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "创建toms订单"));
 		// 创建订单
 		order.setOrderSource(com.fanqielaile.toms.enums.OrderSource.SYSTEM);
+		order.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),order.getChannelSource().getText(),order.getChannelSource().name())));
 		this.orderDao.insertOrder(order);
 		// 创建每日价格信息
 		this.dailyInfosDao.insertDailyInfos(order.dealDailyInfosMethod(order));
@@ -1468,9 +1471,16 @@ public class OrderService implements IOrderService {
 		order.setPercent(percent);
 		// 多房型下单处理订单参数
 		Order hangOrder = order.makeHandOrderByRoomTypes(order, roomTypeInfoDto);
+		//查询自定义信息
+		MyselfChannel myselfChannel = this.myselfChannelDao.selectMyselfChannelCode(order.getMyselfChannelCode());
+		if (null != myselfChannel){
+			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),myselfChannel.getChannelName(),myselfChannel.getChannelCode())));
+		}else {
+			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),hangOrder.getChannelSource().getText(),hangOrder.getChannelSource().name())));
+		}
 		try {
 
-			logger.info("oms手动下单传递参数" + order.toOrderParamDto(hangOrder, company).toString());
+			logger.info("oms手动下单传递参数" + JSON.toJSONString(order.toOrderParamDto(hangOrder, company)));
 			respose = HttpClientUtil.httpPostOrder(dictionary.getUrl(), order.toOrderParamDto(hangOrder, company));
 			jsonObject = JSONObject.fromObject(respose);
 		} catch (Exception e) {

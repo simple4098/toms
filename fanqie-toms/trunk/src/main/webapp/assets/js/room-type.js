@@ -106,6 +106,13 @@ $('.hand-btn').on('click', function () {
 		url: url,
 		dataType: 'json',
 		success: function (data) {
+			$('.myselfChannelOption').remove();
+			if(data.myselfChannelList != null){
+				for (var i = 0; i < data.myselfChannelList.length; i++) {
+					var obj = data.myselfChannelList[i];
+					$('.channel-source').append('<option class="myselfChannelOption" value="' +obj.channelCode + '">' + obj.channelName + '</option>');
+				}
+			}
 			if (data.roomType != null) {
 				$('.account-id').val(accountId);
 				$('.tag-id').val(tagId);
@@ -125,6 +132,7 @@ $('.hand-btn').on('click', function () {
 					$('#hangOrder').modal();
 				}
 			}
+
 
 		}
 	})

@@ -380,7 +380,7 @@ $(function(){
             liveTimeString : $liveTimeString.val(),
             maiAccount : $(".maiAccount:checked").val(),
             payment: $payment.val(),
-            channelSource: $channelSource.val()
+            channelSourceValue: $channelSource.val()
         }
         $.each($(".room-type-operate"),function(key,val) {
             $selectedObj = $(this).find(".selectRoomType").find("option:checked")
