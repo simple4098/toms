@@ -121,13 +121,17 @@ public class ZhService implements ITPService {
                                     }
                                     //记录日志
                                     MessageCenterUtils.savePushTomsLog(OtaType.ZH, Integer.valueOf(innId), roomTypeInfo.getRoomTypeId(), null, LogDec.RoomType_PHSH, tbParam.isSj() ? "上架房型" : "下架房型");
+                                }else {
+                                    log.info("众荟执行房价 房量接口失败");
                                 }
                             }
+                        }else {
+                            log.info("众荟上架房型为空");
                         }
                     }
                 }
             }else {
-                log.info("房仓获取客栈为空");
+                log.info("众荟获取客栈为空");
             }
         }
 
