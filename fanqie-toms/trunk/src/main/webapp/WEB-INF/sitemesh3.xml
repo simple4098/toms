@@ -3,6 +3,7 @@
     <mapping path="*.json" exclude="true"/>
     <mapping path="/error" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/system/*" decorator="/WEB-INF/decorators/main.jsp"/>
+    <mapping path="/mt/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/personality/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/otherConsumer/*" decorator="/WEB-INF/decorators/main.jsp"/>
     <mapping path="/user/*" decorator="/WEB-INF/decorators/main.jsp"/>

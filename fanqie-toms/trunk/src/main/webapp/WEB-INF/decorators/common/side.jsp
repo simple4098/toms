@@ -121,7 +121,7 @@
                     <c:if test="${fn:contains(url, '/distribution/otaList') || fn:contains(url, '/order/find_orders') || fn:contains(url, '/order/find_non_orders') ||
                                     fn:contains(url, '/order/find_pay_back_orders')
                  || fn:contains(url, '/distribution/orderConfig') || fn:contains(url, '/distribution/fangPrice') ||fn:contains(url, '/distribution/orderConfig')
-                 || fn:contains(url, '/innMatch/match')|| fn:contains(url, '/distribution/addFangPrice') || fn:contains(url, '/exceptionOrder/find_exceptionOrders')}">class="open active" </c:if>  >
+                 || fn:contains(url, '/innMatch/match')|| fn:contains(url, '/distribution/addFangPrice') || fn:contains(url, '/exceptionOrder/find_exceptionOrders')  || fn:contains(url, '/mt/')}">class="open active" </c:if>  >
                     <a href="#" class="dropdown-toggle">
                         <i class="icon-list-alt"></i>
                         <span class="menu-text"> 分销管理 </span>
@@ -171,6 +171,14 @@
                                 <a href="<c:url value="/distribution/orderConfig"/>">
                                     <i class="icon-double-angle-right"></i>
                                     接单设置
+                                </a>
+                            </li>
+                        </toms:authorize>
+                        <toms:authorize uri="/mt/*">
+                            <li <c:if test="${fn:contains(url, '/mt/view')}">class="active" </c:if> >
+                                <a href="<c:url value="/mt/view"/>">
+                                    <i class="icon-double-angle-right"></i>
+                                     信用住推送
                                 </a>
                             </li>
                         </toms:authorize>

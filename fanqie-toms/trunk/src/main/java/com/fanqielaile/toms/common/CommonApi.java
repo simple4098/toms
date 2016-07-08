@@ -33,6 +33,7 @@ public class CommonApi {
     public static   String sellingRoomType;
     public static String qunarOrderOpt;
     public static String cancelCreditOrder;
+    public static String pushCredit;
 
 
     public  String getSellingRoomType() {
@@ -241,4 +242,12 @@ public class CommonApi {
 	public  void setCancelCreditOrder(String cancelCreditOrder) {
 		CommonApi.cancelCreditOrder = cancelCreditOrder;
 	}
+
+    public static String getPushCredit() {
+        return pushCredit;
+    }
+
+    public void setPushCredit(String pushCredit) {
+        CommonApi.pushCredit = pushCredit;
+    }
 }

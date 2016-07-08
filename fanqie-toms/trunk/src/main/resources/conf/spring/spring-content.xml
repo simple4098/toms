@@ -127,7 +127,7 @@
             <property name="validationQuery" value="select 1"/>
         </bean>
         <bean id="msgConsumer" class="com.fanqielaile.toms.support.listener.MsgConsumer">
-            <constructor-arg name="systemName" value="TOMS_DEV111111"></constructor-arg>
+            <constructor-arg name="systemName" value="TOMS_DEV"></constructor-arg>
         </bean>
         <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
             <property name="hostName" value="192.168.1.27"/>
@@ -180,6 +180,8 @@
             <property name="FcDeleteHotelMappingUrl"
                       value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
             <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
+            <property name="pushCredit" value="http://oms.local.fanqiele.com/credit/push"/>
+            <!--<property name="pushCredit" value="http://192.168.1.185:8081/credit/push"/>-->
         </bean>
     </beans>
     <beans profile="staging">
@@ -242,6 +244,7 @@
             <property name="FcDeleteHotelMappingUrl"
                       value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
             <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
+            <property name="pushCredit" value="http://openapi.test.fanqielaile.com/credit/push"/>
 
         </bean>
     </beans>
@@ -307,6 +310,7 @@
             <property name="FcDeleteHotelMappingUrl"
                       value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
             <property name="qunarOrderOpt" value="http://a7im.trade.qunar.com"/>
+            <property name="pushCredit" value="http://oms.fanqiele.com/credit/push"/>
         </bean>
     </beans>
 </beans>
