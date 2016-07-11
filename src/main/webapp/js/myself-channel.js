@@ -1,3 +1,7 @@
+$('.off_button').on('click', function () {
+    window.location.reload();
+})
+
 //验证自定义渠道名称必填
 $('.save-myself-channel, .update-myself-channel').on('click', function () {
     var channelName = $('.myself-channel-name').val();

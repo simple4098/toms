@@ -1,9 +1,11 @@
 package com.fanqielaile.toms.service.impl;
 
 import com.fanqielaile.toms.dao.CompanyDao;
+import com.fanqielaile.toms.dao.IOtherConsumerInfoDao;
 import com.fanqielaile.toms.dao.MyselfChannelDao;
 import com.fanqielaile.toms.model.Company;
 import com.fanqielaile.toms.model.MyselfChannel;
+import com.fanqielaile.toms.model.OtherConsumerFunction;
 import com.fanqielaile.toms.model.UserInfo;
 import com.fanqielaile.toms.service.IMyselfChannelService;
 import com.fanqielaile.toms.support.util.Constants;
@@ -24,6 +26,9 @@ public class MyselfChannelServiceImpl implements IMyselfChannelService {
     private MyselfChannelDao myselfChannelDao;
     @Resource
     private CompanyDao companyDao;
+
+    @Resource
+    private IOtherConsumerInfoDao otherConsumerInfoDao;
 
     @Override
     public void createMyselfChannel(MyselfChannel myselfChannel, UserInfo currentUser) {
@@ -50,7 +55,13 @@ public class MyselfChannelServiceImpl implements IMyselfChannelService {
 
     @Override
     public List<MyselfChannel> findMyselfChannelList(UserInfo currentUser) {
-        return this.myselfChannelDao.selectMyselfChannelByCompanyId(currentUser.getCompanyId());
+        //查询公司是否开启自定义渠道
+        OtherConsumerFunction otherConsumerFunction = otherConsumerInfoDao.selectFunction(currentUser.getCompanyId());
+        if (otherConsumerFunction.getMyselfChannelStatus()) {
+            return this.myselfChannelDao.selectMyselfChannelByCompanyId(currentUser.getCompanyId());
+        } else {
+            return null;
+        }
     }
 
     @Override
