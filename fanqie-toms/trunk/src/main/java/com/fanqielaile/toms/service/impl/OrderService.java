@@ -102,6 +102,8 @@ public class OrderService implements IOrderService {
 	private UserInfoDao userInfoDao;
 	@Resource
 	private MyselfChannelDao myselfChannelDao;
+	@Resource
+	private IOtherConsumerInfoDao otherConsumerInfoDao;
 	/*
 	 * @Resource private BusinLogClient businLogClient; private BusinLog
 	 * businLog = new BusinLog();
@@ -381,7 +383,8 @@ public class OrderService implements IOrderService {
 						JacksonUtil.obj2json(order), null, order.getInnId(), order.getInnCode(), "创建toms订单"));
 		// 创建订单
 		order.setOrderSource(com.fanqielaile.toms.enums.OrderSource.SYSTEM);
-		order.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),order.getChannelSource().getText(),order.getChannelSource().name())));
+		OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(company.getId());
+		order.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", order.getChannelSource().getText(), order.getChannelSource().name())));
 		this.orderDao.insertOrder(order);
 		// 创建每日价格信息
 		this.dailyInfosDao.insertDailyInfos(order.dealDailyInfosMethod(order));
@@ -1473,10 +1476,11 @@ public class OrderService implements IOrderService {
 		Order hangOrder = order.makeHandOrderByRoomTypes(order, roomTypeInfoDto);
 		//查询自定义信息
 		MyselfChannel myselfChannel = this.myselfChannelDao.selectMyselfChannelCode(order.getMyselfChannelCode());
+		OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(userInfo.getCompanyId());
 		if (null != myselfChannel){
-			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),myselfChannel.getChannelName(),myselfChannel.getChannelCode())));
+			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode())));
 		}else {
-			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(company.getPmsChannelName(),hangOrder.getChannelSource().getText(),hangOrder.getChannelSource().name())));
+			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
 		}
 		try {
 
