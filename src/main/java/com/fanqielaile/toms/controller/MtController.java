@@ -18,7 +18,8 @@ import javax.annotation.Resource;
  * @data : 2015/10/13
  * @version: v1.0.0
  */
-@Controller("/mt")
+@Controller()
+@RequestMapping("/mt")
 public class MtController {
 
     private static final Logger logger = LoggerFactory.getLogger(MtController.class);
