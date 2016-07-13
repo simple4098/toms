@@ -180,6 +180,7 @@ public class ZhService implements ITPService {
             price = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), Integer.valueOf(mappingDto.getRoomTypeId()), otaInfoId));
             jointWisdomInnRoom = JwXHotelUtil.buildMapping(price, roomTypeInfo, company.getId(), Integer.valueOf(innId), String.valueOf(company.getOtaId()), otaInfoId, otaRatePlan.getRatePlanCode(), tbParam.isSj());
             result = jointWisdomARI.updateJsPriceInventory(jointWisdomInnRoom, roomTypeInfo, price, commission);
+            log.info("众荟下架状态"+result.getStatus());
             if (Constants.SUCCESS200 == result.getStatus()){
                 updateOtaBang(bangInn, tbParam, otaInnOta, company,  innName, otaInfoId);
                 jointWisdomInnRoom.setId(mappingDto.getId());
