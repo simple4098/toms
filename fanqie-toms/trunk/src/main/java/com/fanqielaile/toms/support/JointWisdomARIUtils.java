@@ -159,9 +159,10 @@ public class JointWisdomARIUtils{
         }
         OTAHotelRatePlanNotifRS resp = null;
         try{
-            LOGGER.info("请求众荟推送房价 request->："+ FcUtil.fcRequest(otaHotel));
+            String hotelCode = otaHotel.getRatePlans().getHotelCode();
+            LOGGER.info("请求众荟推送房价 request->"+hotelCode+ FcUtil.fcRequest(otaHotel));
             resp =  JointWiddomRequest.getDefaultInstance().otaHotelRatePlanNotifRQ(otaHotel);
-            LOGGER.info("请求众荟推送房价：response->"+FcUtil.fcRequest(resp));
+            LOGGER.info("请求众荟推送房价 response->"+hotelCode+FcUtil.fcRequest(resp));
         }catch (Exception e){
             LOGGER.error("众荟推送响应失败：",e);
             throw  new RuntimeException(e.getMessage());
