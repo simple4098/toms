@@ -37,7 +37,7 @@
         </form>
     </div>
     <div class="btn-box clearfix">
-        <button data-toggle="modal" data-target="#hangOrder" class="btn btn-success hand-btn" style="display: none;" id="manualOrder">手动下单</button>
+        <button class="btn btn-success hand-btn" style="display: none;" id="manualOrder">手动下单</button>
     </div>
 
     <div class="room-status-box" id="roomTypeContainerId">
@@ -344,6 +344,7 @@
 <%--<script src="<c:url value='/assets/layer/layer.js'/>"></script>--%>
 <script src="<c:url value='/assets/js/jquery-ui-1.10.3.full.min.js'/>"></script>
 <script src="<c:url value='/assets/js/bootstrap.min.js'/>"></script>
+<script src="<c:url value="/assets/js/dateSelecter_room_price.js"/>"></script>
 <script src="<c:url value='/js/select2.full.js'/>"></script>
 <script src="<c:url value='/assets/js/tomato.min.js'/>"></script>
 <script src="<c:url value='/assets/js/room-type.js'/>"></script>

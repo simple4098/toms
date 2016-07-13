@@ -172,6 +172,8 @@ public class OtherConsumerInfoService implements IOtherConsumerInfoService {
             otherConsumerFunction = new OtherConsumerFunction();
             otherConsumerFunction.setStatus(Boolean.valueOf(status));
             otherConsumerFunction.setCompanyId(companyId);
+            otherConsumerFunction.setMyselfChannelStatus(false);
+            otherConsumerFunction.setPmsChannelNameStatus(false);
             otherConsumerInfoDao.insertConsumerFunction(otherConsumerFunction);
         }
     }

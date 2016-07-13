@@ -2,6 +2,13 @@ $('.off_button').on('click', function () {
     window.location.reload();
 })
 
+$('.delete-myself-channel-url').on('click', function () {
+    $('.delete-channel-url').val($(this).attr("data-url"));
+})
+
+$('.update-myself-channel-url').on('click', function () {
+    $('.update-channel-url').val($(this).attr("data-url"));
+})
 //验证自定义渠道名称必填
 $('.save-myself-channel, .update-myself-channel').on('click', function () {
     var channelName = $('.myself-channel-name').val();
@@ -48,7 +55,7 @@ $('.update-myself-channel').on('click', function () {
     if (channelName == null || channelName == '') {
         layer.alert('提示信息：渠道自定义名称必填', {icon: 5})
     }
-    var url = $('.update-myself-channel-url').attr("data-url");
+    var url = $('.update-channel-url').val();
     layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,
@@ -76,7 +83,7 @@ $('.update-myself-channel').on('click', function () {
 })
 //删除自定义渠道
 $('.delete-myself-channel').on('click', function () {
-    var url = $('.delete-myself-channel-url').attr("data-url");
+    var url = $('.delete-channel-url').val();
     layer.msg('加载中', {icon: 16});
     $.ajax({
         url: url,

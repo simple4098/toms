@@ -125,6 +125,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">编辑自定义渠道名称</h4>
+                        <input type="hidden" class="update-channel-url" value="">
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
@@ -161,7 +162,7 @@
                                 aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">删除自定义渠道名称</h4>
                     </div>
-                    <input type="hidden" id="data-url-id" value="">
+                    <input type="hidden" class="delete-channel-url" id="data-url-id" value="">
 
                     <div class="modal-body">
                         您确定要删除该渠道名称吗？

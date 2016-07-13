@@ -29,8 +29,9 @@
 
 
     <insert id="insertConsumerFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">
-        insert into other_consumer_function(id,company_id,deleted,created_date,updated_date,status)
-        values (#{uuid},#{companyId},0,now(),now(),#{status})
+        insert into
+        other_consumer_function(id,company_id,deleted,created_date,updated_date,status,myself_channel_status,pms_channel_name_status)
+        values (#{uuid},#{companyId},0,now(),now(),#{status},#{myselfChannelStatus},#{pmsChannelNameStatus})
     </insert>
 
     <update id="updateFunction" parameterType="com.fanqielaile.toms.model.OtherConsumerFunction">

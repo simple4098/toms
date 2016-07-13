@@ -90,11 +90,32 @@ public class MyselfChannelServiceImpl implements IMyselfChannelService {
 
     @Override
     public void modifyCompanyChannelStatus(UserInfo currentUser,Boolean status) {
-        this.myselfChannelDao.updateCompanyChannelStatus(currentUser.getCompanyId(),status);
+        OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(currentUser.getCompanyId());
+        if (null != otherConsumerFunction) {
+            this.myselfChannelDao.updateCompanyChannelStatus(currentUser.getCompanyId(), status);
+        } else {
+            OtherConsumerFunction otherConsumerFunction1 = new OtherConsumerFunction();
+            otherConsumerFunction1.setCompanyId(currentUser.getCompanyId());
+            otherConsumerFunction1.setMyselfChannelStatus(status);
+            otherConsumerFunction1.setStatus(false);
+            otherConsumerFunction1.setPmsChannelNameStatus(false);
+            this.otherConsumerInfoDao.insertConsumerFunction(otherConsumerFunction1);
+        }
+
     }
 
     @Override
     public void modifyPmsCompanyChannelStatus(UserInfo currentUser, Boolean status) {
-        this.myselfChannelDao.updatePmsCompanyChannelStatus(currentUser.getCompanyId(),status);
+        OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(currentUser.getCompanyId());
+        if (null != otherConsumerFunction) {
+            this.myselfChannelDao.updatePmsCompanyChannelStatus(currentUser.getCompanyId(), status);
+        } else {
+            OtherConsumerFunction otherConsumerFunction1 = new OtherConsumerFunction();
+            otherConsumerFunction1.setCompanyId(currentUser.getCompanyId());
+            otherConsumerFunction1.setPmsChannelNameStatus(status);
+            otherConsumerFunction1.setMyselfChannelStatus(false);
+            otherConsumerFunction1.setStatus(false);
+            this.otherConsumerInfoDao.insertConsumerFunction(otherConsumerFunction1);
+        }
     }
 }
