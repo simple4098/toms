@@ -57,7 +57,7 @@ public class MyselfChannelServiceImpl implements IMyselfChannelService {
     public List<MyselfChannel> findMyselfChannelList(UserInfo currentUser) {
         //查询公司是否开启自定义渠道
         OtherConsumerFunction otherConsumerFunction = otherConsumerInfoDao.selectFunction(currentUser.getCompanyId());
-        if (otherConsumerFunction.getMyselfChannelStatus()) {
+        if (null != otherConsumerFunction && otherConsumerFunction.getMyselfChannelStatus()) {
             return this.myselfChannelDao.selectMyselfChannelByCompanyId(currentUser.getCompanyId());
         } else {
             return null;

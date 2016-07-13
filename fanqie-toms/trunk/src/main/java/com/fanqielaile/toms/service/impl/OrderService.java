@@ -1482,7 +1482,11 @@ public class OrderService implements IOrderService {
 		if (null != myselfChannel && null != otherConsumerFunction) {
 			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode())));
 		}else {
-			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
+			if (null == otherConsumerFunction) {
+				hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(null, hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
+			} else {
+				hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
+			}
 		}
 		try {
 
