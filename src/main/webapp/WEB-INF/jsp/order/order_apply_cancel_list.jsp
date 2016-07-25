@@ -259,7 +259,7 @@
             <div class="modal-body">
                 <span style="color: red">注：请和淘宝酒店管理后台选择相同的操作执行</span>
                 <br/>
-                您选择“同意退款”操作,系统将在客栈PMS中取消该订单<br/>
+                您选择“同意取消”操作,系统将在客栈PMS中取消该订单<br/>
                 请根据实际情况选择是否扣款<br/>
                 <input type="radio" value='true' name='refundStatus' />扣款
                 <input type="radio" value='false' name='refundStatus' style='margin-left:20px;'/>不扣款
@@ -288,7 +288,7 @@
             </div>
             <div class="modal-body">
                 <span style="color: red">注：请和淘宝酒店管理后台选择相同的操作执行</span> <br/>
-                您选择“拒绝退款”操作，系统将在客栈PMS中保留该订单！
+                您选择“拒绝取消”操作，系统将在客栈PMS中保留该订单！
             </div>
             <input type="hidden" class="refuse-apply-back-url"/>
             
