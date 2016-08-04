@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class RoomStatusDetail {
@@ -11,6 +12,7 @@ public class RoomStatusDetail {
     private RatePlanConfig ratePlanConfig;
 	//价格计划code
 	private String ratePlanCode;
+	private BigDecimal commissionPercent;
 
 	public String getRatePlanCode() {
 		return ratePlanCode;
@@ -48,5 +50,13 @@ public class RoomStatusDetail {
 
 	public void setRoomDetail(List<RoomDetail> roomDetail) {
 		this.roomDetail = roomDetail;
+	}
+
+	public BigDecimal getCommissionPercent() {
+		return commissionPercent;
+	}
+
+	public void setCommissionPercent(BigDecimal commissionPercent) {
+		this.commissionPercent = commissionPercent;
 	}
 }
