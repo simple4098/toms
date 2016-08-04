@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.tomato.framework</groupId>
             <artifactId>framework-log</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <!--dom4j-->
         <dependency>

@@ -61,7 +61,7 @@ public class MessageCenterUtils {
             return;
         }
 
-        BizLog bizLog = new BizLog(innId, bizType, "toms", bizObject);
+        BizLog bizLog = new BizLog(innId, bizType, "toms","", bizObject);
         LOGGER.info("记录日志："+ JSON.toJSON(bizLog));
         new BizLogClient().save(bizLog);
 
@@ -142,7 +142,7 @@ public class MessageCenterUtils {
             BizType parentBizType = new BizType(logDec.getpId(),logDec.getValue(), null);
             BizType bizType = new BizType(logDec.getLogTypeId(), logDec.getValue(), parentBizType);
             BizData bizData = new BizData(logDec,userName==null?"系统操作":userName,content,innId,roomTypeId,otaType);
-            BizLog bizLog = new BizLog(innId, bizType, "TOMS", bizData);
+            BizLog bizLog = new BizLog(innId, bizType, "TOMS",userName, bizData);
             bizLogClient.save(bizLog);
             LOGGER.info("=====记录日志结束======");
         }
@@ -156,7 +156,7 @@ public class MessageCenterUtils {
             BizType parentBizType = new BizType(logDec.getpId(),logDec.getValue(), null);
             BizType bizType = new BizType(logDec.getLogTypeId(), logDec.getValue(), parentBizType);
             BizData bizData = new BizData(logDec,userName==null?"系统操作":userName,content,innId,roomTypeId,channelSource);
-            BizLog bizLog = new BizLog(innId, bizType, "TOMS", bizData);
+            BizLog bizLog = new BizLog(innId, bizType, "TOMS",userName, bizData);
             bizLogClient.save(bizLog);
             LOGGER.info("=====记录日志结束======");
         }
@@ -170,7 +170,7 @@ public class MessageCenterUtils {
         if (aBoolean) {
             LOGGER.info("=====记录日志开始======");
             OrderBizType orderBizType = new OrderBizType(logDec.getLogTypeId(), logDec.getpId());
-            BizLog biz = new BizLog(innId, orderBizType, "TOMS", logData);
+            BizLog biz = new BizLog(innId, orderBizType, "TOMS","", logData);
             bizLogClient.save(biz);
             LOGGER.info("=====记录日志结束======");
         }
