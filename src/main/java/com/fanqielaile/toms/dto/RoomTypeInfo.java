@@ -3,6 +3,7 @@ package com.fanqielaile.toms.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -49,6 +50,7 @@ public class RoomTypeInfo implements Serializable
     private String roomInfo; /* 房间简介 */
     private Integer bindingRoomNumber;/*绑定的房间数*/
     private Double proxyExtraPrice;
+    private BigDecimal commissionPercent;
 
 
     public RatePlanConfig getRatePlanConfig() {
@@ -293,5 +295,13 @@ public class RoomTypeInfo implements Serializable
 
     public void setBedTypeValue(String bedTypeValue) {
         this.bedTypeValue = bedTypeValue;
+    }
+
+    public BigDecimal getCommissionPercent() {
+        return commissionPercent;
+    }
+
+    public void setCommissionPercent(BigDecimal commissionPercent) {
+        this.commissionPercent = commissionPercent;
     }
 }
