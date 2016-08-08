@@ -1502,17 +1502,14 @@ public class OrderService implements IOrderService {
 		orderJsonData.setAccessCode(order.getChannelSource().name());
 		if (null != myselfChannel && null != otherConsumerFunction) {
 			orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode());
-			hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 		}else {
 			if (null == otherConsumerFunction) {
 				orderJsonData = new OrderJsonData(null, hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
-				hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 			} else {
 				orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
-				hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 			}
 		}
-
+		hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 		try {
 
 			logger.info("oms手动下单传递参数" + JSON.toJSONString(order.toOrderParamDto(hangOrder, company)));
