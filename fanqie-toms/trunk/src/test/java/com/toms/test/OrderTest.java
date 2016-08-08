@@ -98,7 +98,7 @@ public class OrderTest {
                 OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByBangId(bangInn.getId(), "d0392bc8-131c-8989-846e-c81c66011111", otaInfoRefDto.getId());
                 //写入酒店信息
                 if (null != otaInfoRefDto) {
-                    if (null != otaInnOtaDto.getWgHid()) {
+                    if (null != otaInnOtaDto && null != otaInnOtaDto.getWgHid()) {
                         bangInn.setOtaWgId(otaInnOtaDto.getWgHid());
                         if (null != bangInn.getInnDto()) {
                             if (ArrayUtils.isNotEmpty(bangInn.getInnDto().getImgList().toArray())) {
