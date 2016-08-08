@@ -384,9 +384,20 @@ public class OrderService implements IOrderService {
 		// 创建订单
 		order.setOrderSource(com.fanqielaile.toms.enums.OrderSource.SYSTEM);
 		OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(company.getId());
+		OrderJsonData orderJsonData = new OrderJsonData();
 		if (null != otherConsumerFunction) {
-			order.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", order.getChannelSource().getText(), order.getChannelSource().name())));
+			orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", order.getChannelSource().getText(), order.getChannelSource().name());
 		}
+		if (ChannelSource.FC.equals(order.getChannelSource())) {
+			orderJsonData.setOrderChannelCode(order.getPartnerCode());
+			orderJsonData.setOrderChannelName(order.getPartnerCode());
+		} else {
+			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
+			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
+		}
+		orderJsonData.setAccessName(order.getChannelSource().getText());
+		orderJsonData.setAccessCode(order.getChannelSource().name());
+		order.setJsonData(JSON.toJSONString(orderJsonData));
 		this.orderDao.insertOrder(order);
 		// 创建每日价格信息
 		this.dailyInfosDao.insertDailyInfos(order.dealDailyInfosMethod(order));
@@ -1479,15 +1490,29 @@ public class OrderService implements IOrderService {
 		//查询自定义信息
 		MyselfChannel myselfChannel = this.myselfChannelDao.selectMyselfChannelCode(order.getMyselfChannelCode());
 		OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(userInfo.getCompanyId());
+		OrderJsonData orderJsonData = new OrderJsonData();
+		if (ChannelSource.FC.equals(order.getChannelSource())) {
+			orderJsonData.setOrderChannelCode(order.getPartnerCode());
+			orderJsonData.setOrderChannelName(order.getPartnerCode());
+		} else {
+			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
+			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
+		}
+		orderJsonData.setAccessName(order.getChannelSource().getText());
+		orderJsonData.setAccessCode(order.getChannelSource().name());
 		if (null != myselfChannel && null != otherConsumerFunction) {
-			hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode())));
+			orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode());
+			hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 		}else {
 			if (null == otherConsumerFunction) {
-				hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(null, hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
+				orderJsonData = new OrderJsonData(null, hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
+				hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 			} else {
-				hangOrder.setJsonData(JSON.toJSONString(new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name())));
+				orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
+				hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 			}
 		}
+
 		try {
 
 			logger.info("oms手动下单传递参数" + JSON.toJSONString(order.toOrderParamDto(hangOrder, company)));
