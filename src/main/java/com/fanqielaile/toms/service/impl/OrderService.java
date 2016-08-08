@@ -1491,15 +1491,6 @@ public class OrderService implements IOrderService {
 		MyselfChannel myselfChannel = this.myselfChannelDao.selectMyselfChannelCode(order.getMyselfChannelCode());
 		OtherConsumerFunction otherConsumerFunction = this.otherConsumerInfoDao.selectFunction(userInfo.getCompanyId());
 		OrderJsonData orderJsonData = new OrderJsonData();
-		if (ChannelSource.FC.equals(order.getChannelSource())) {
-			orderJsonData.setOrderChannelCode(order.getPartnerCode());
-			orderJsonData.setOrderChannelName(order.getPartnerCode());
-		} else {
-			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
-			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
-		}
-		orderJsonData.setAccessName(order.getChannelSource().getText());
-		orderJsonData.setAccessCode(order.getChannelSource().name());
 		if (null != myselfChannel && null != otherConsumerFunction) {
 			orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", myselfChannel.getChannelName(), myselfChannel.getChannelCode());
 		}else {
@@ -1509,6 +1500,15 @@ public class OrderService implements IOrderService {
 				orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
 			}
 		}
+		if (ChannelSource.FC.equals(order.getChannelSource())) {
+			orderJsonData.setOrderChannelCode(order.getPartnerCode());
+			orderJsonData.setOrderChannelName(order.getPartnerCode());
+		} else {
+			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
+			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
+		}
+		orderJsonData.setAccessName(order.getChannelSource().getText());
+		orderJsonData.setAccessCode(order.getChannelSource().name());
 		hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
 		try {
 
