@@ -18,6 +18,7 @@ public class RoomDetail {
 	private Integer roomPriceInt;
 	private Integer priRoomPriceInt;
 	private String otaRoomTypeIdstr;
+	private String status;
 
 	public Double getOriginalPrice() {
 		return originalPrice;
@@ -140,5 +141,13 @@ public class RoomDetail {
 
 	public void setPriceValue(Double priceValue) {
 		this.priceValue = priceValue;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
