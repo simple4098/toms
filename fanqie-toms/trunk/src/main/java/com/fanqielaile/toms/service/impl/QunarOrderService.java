@@ -242,6 +242,7 @@ public class QunarOrderService implements IQunarOrderService {
         BookingResponse result = new BookingResponse();
         //解析xml
         Order order = QunarUtil.getOrderDto(xml);
+        String response = "";
         try {
             //根据otahotelid查询信息
             OtaInnOtaDto otaInnOtaDto = this.otaInnOtaDao.selectOtaInnOtaByTBHotelId(order.getOTAHotelId());
@@ -327,7 +328,6 @@ public class QunarOrderService implements IQunarOrderService {
                 this.orderOperationRecordDao.insertOrderOperationRecord(new OrderOperationRecord(order.getId(), order.getOrderStatus(), OrderStatus.NOT_DEAL, "去哪儿预定", ChannelSource.QUNAR.name()));
                 jsonModel = new JsonModel(true, "付款成功");
             }
-            String response = "";
             //判断下单到oms是否成功
             if (jsonModel.isSuccess()) {
                 //下单到oms成功
@@ -350,14 +350,6 @@ public class QunarOrderService implements IQunarOrderService {
                 // 调用去哪儿订单修改接口
                 response = HttpClientUtil.httpPostQunarOrderOpt(CommonApi.qunarOrderOpt, order.getChannelOrderCode(), OptCode.CONFIRM_ROOM_FAILURE.name(), otaInfoRefDto.getSessionKey(), BigDecimal.ZERO);
             }
-            //判断返回是否失败，记录异常订单
-            JSONObject jsonObject = JSONObject.parseObject(response);
-            logger.info("调用去哪儿订单操作接口返回值：orderCode" + order.getChannelOrderCode() + response);
-            if (!(Boolean) jsonObject.get("ret")) {
-                this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
-                //发送微信
-                MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
-            }
         } catch (Exception e) {
             logger.info("去哪儿创建订单出错,orderCode:" + order.getChannelOrderCode());
             result.setOrderId(order.getId());
@@ -368,6 +360,18 @@ public class QunarOrderService implements IQunarOrderService {
             this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
             //发送微信
             MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
+        } finally {
+            try {
+                //判断返回是否失败，记录异常订单
+                JSONObject jsonObject = JSONObject.parseObject(response);
+                logger.info("调用去哪儿订单操作接口返回值：orderCode" + order.getChannelOrderCode() + response);
+                if (!(Boolean) jsonObject.get("ret")) {
+                    this.exceptionOrderDao.insertExceptionOrder(order.getExceptionOrderListByOrder(order));
+                    //发送微信
+                    MessageCenterUtils.sendWeiXin("去哪儿预定异常，请联系相关人员，订单号：" + order.getChannelOrderCode());
+                }
+            } catch (Exception e) {
+            }
         }
         return result;
     }
