@@ -453,6 +453,7 @@ public class TBXHotelUtilPromotion {
             InventoryPrice inventory = new InventoryPrice();
             List<InventoryRate> rateList = TomsUtil.inventory(roomTypeInfo.getRoomDetail(), priceDto, priceModelDto, commission);
             //todo 信用住关房
+            roomRateZero(infoRefDto,rateList);
             inventory.setInventory_price(rateList);
             String json = JacksonUtil.obj2json(inventory);
             req.setInventoryPrice(json);
@@ -469,7 +470,7 @@ public class TBXHotelUtilPromotion {
         return  null;
     }
 
-    /*public static  void roomRateZero(OtaInfoRefDto otaInfoRefDto,List<InventoryRate> rateList){
+    public static  void roomRateZero(OtaInfoRefDto otaInfoRefDto,List<InventoryRate> rateList){
         if (StringUtils.isNotEmpty(otaInfoRefDto.getVendorId())){
             String creditSwitchDate = PropertiesUtil.readFile("/data.properties", "credit.switch.room");
             if (StringUtils.isNotEmpty(creditSwitchDate)){
@@ -484,7 +485,7 @@ public class TBXHotelUtilPromotion {
 
             }
         }
-    }*/
+    }
 
     /**
      * 获取库存
