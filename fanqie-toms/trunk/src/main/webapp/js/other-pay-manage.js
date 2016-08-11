@@ -111,8 +111,8 @@ var vm = avalon.define({
         })
     },
     saveValid : function(otherPayItem) {
-        if(!otherPayItem.consumerProjectName || otherPayItem.consumerProjectName.length>5){
-            layer.alert("消费项目名称不能为空,并且长度最大为5个字符!")
+        if(!otherPayItem.consumerProjectName || otherPayItem.consumerProjectName.length>10){
+            layer.alert("消费项目名称不能为空,并且长度最大为10个字符!")
             return false;
         }
         var isValid = false;

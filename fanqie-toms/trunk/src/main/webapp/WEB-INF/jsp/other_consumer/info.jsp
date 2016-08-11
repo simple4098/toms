@@ -71,7 +71,7 @@
                             <label class="col-sm-4 control-label no-padding-right"> 消费项目名称
                             </label>
                             <div class="col-sm-8">
-                                <input type="text" data-tips="如：“车票”、“门票” " autocomplete="off" value="" maxlength="5" placeholder="如：“车票”、“门票” " class="ipt" ms-duplex="addOtherPayItem.consumerProjectName"/>
+                                <input type="text" data-tips="如：“车票”、“门票” " autocomplete="off" value="" maxlength="10" placeholder="如：“车票”、“门票” " class="ipt" ms-duplex="addOtherPayItem.consumerProjectName"/>
                             </div>
                         </div>
                         <div class="form-group">
