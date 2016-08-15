@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.fanqie</groupId>
             <artifactId>JointWisdom</artifactId>
-            <version>1.3.3-SNAPSHOT</version>
+            <version>1.3.5-SNAPSHOT</version>
             <!--<version>1.3.2</version>-->
         </dependency>
         <!--淘宝依赖-->
