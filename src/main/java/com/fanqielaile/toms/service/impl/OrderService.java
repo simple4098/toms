@@ -388,9 +388,15 @@ public class OrderService implements IOrderService {
 		if (null != otherConsumerFunction) {
 			orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", order.getChannelSource().getText(), order.getChannelSource().name());
 		}
+		//// TODO: 2016/8/22  mumu
 		if (ChannelSource.FC.equals(order.getChannelSource())) {
 			orderJsonData.setOrderChannelCode(order.getPartnerCode());
-			orderJsonData.setOrderChannelName(order.getPartnerCode());
+			try{
+				EnumOtaChild enumOtaChild = EnumOtaChild.valueOf(order.getPartnerCode());
+				orderJsonData.setOrderChannelName(enumOtaChild.getText());
+			}catch (Exception e){
+				orderJsonData.setOrderChannelName(order.getPartnerCode());
+			}
 		} else {
 			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
 			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
