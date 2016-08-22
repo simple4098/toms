@@ -56,8 +56,8 @@ public class JointWisdomARI implements IJointWisdomARI {
             List<Object> refsOrSuccess = null;
             List<Object> successOrWarnings = null;
             if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
-                refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
-                successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
+                refsOrSuccess = otaHotelRatePlanNotifRS.getRatePlanCrossRefsOrWarningsOrErrors();
+                successOrWarnings = otaHotelInvCountNotifRS.getWarningsOrErrorsOrSuccess();
                 if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
                     //房型上下架
                     Result status = xjRoomStatus(mappingDto, roomTypeInfo);
@@ -92,7 +92,7 @@ public class JointWisdomARI implements IJointWisdomARI {
         Result result = new Result();
         try {
             OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(list);
-            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getErrorsOrWarningsOrSuccess();
+            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getWarningsOrSuccessOrErrors();
             if (CollectionUtils.isEmpty(errorsOrWarningsOrSuccess)){
                 result.setStatus(Constants.SUCCESS200);
             }else {
@@ -119,8 +119,8 @@ public class JointWisdomARI implements IJointWisdomARI {
             List<Object> refsOrSuccess = null;
             List<Object> successOrWarnings = null;
             if (otaHotelRatePlanNotifRS!=null && otaHotelInvCountNotifRS!=null ){
-                refsOrSuccess = otaHotelRatePlanNotifRS.getErrorsOrRatePlanCrossRefsOrSuccess();
-                successOrWarnings = otaHotelInvCountNotifRS.getErrorsOrSuccessOrWarnings();
+                refsOrSuccess = otaHotelRatePlanNotifRS.getRatePlanCrossRefsOrWarningsOrErrors();
+                successOrWarnings = otaHotelInvCountNotifRS.getWarningsOrErrorsOrSuccess();
                 if (CollectionUtils.isEmpty(refsOrSuccess) && CollectionUtils.isEmpty(successOrWarnings)){
                     //房型上下架
                     Result status = xjRoomStatus(jointWisdomInnRoomList);
@@ -156,7 +156,7 @@ public class JointWisdomARI implements IJointWisdomARI {
         Result result = new Result();
         try {
             OTAHotelAvailNotifRS otaHotelAvailNotifRS = JointWisdomARIUtils.hotelAvailNotifRQ(hotelRoomAvail);
-            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getErrorsOrWarningsOrSuccess();
+            List<Object> errorsOrWarningsOrSuccess = otaHotelAvailNotifRS.getWarningsOrSuccessOrErrors();
             if (CollectionUtils.isEmpty(errorsOrWarningsOrSuccess)){
                 result.setStatus(Constants.SUCCESS200);
             }else {
