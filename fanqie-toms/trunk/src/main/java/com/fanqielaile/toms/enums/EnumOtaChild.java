@@ -8,6 +8,7 @@ public enum EnumOtaChild {
     MG("芒果网"),
     FANGCANG("途牛"),
     YX("悦享"),
+    NR("云南纳若"),
     LY("旅游百事通");
 
     private String text;
