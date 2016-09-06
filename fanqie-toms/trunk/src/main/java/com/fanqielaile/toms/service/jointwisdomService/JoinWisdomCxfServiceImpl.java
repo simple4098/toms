@@ -37,8 +37,7 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
     @WebResult(name = "OTA_HotelAvailRS", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
     @WebMethod(operationName = "CheckAvailability", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#CheckAvailability")
     public JointWisdomAvailCheckOrderSuccessResponse CheckAvailability(@WebParam(name = "OTA_HotelAvailRQ", targetNamespace = "http://www.opentravel.org/OTA/2003/05") OTAHotelAvailRQ hotelAvailRQ) throws Exception {
-        //// TODO: 2016/9/6 取消众荟下试订单
-        /*String xml = "";
+        String xml = "";
         if (hotelAvailRQ != null) {
             xml = FcUtil.fcRequest(hotelAvailRQ);
             logger.info("众荟对象转换为xml值为：" + xml);
@@ -60,16 +59,15 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.ZH, JacksonUtil.obj2json(basicError), "众荟试订单返回值"));
             return basicError;
 //            return  null;
-        }*/
-        return null;
+        }
     }
 
     @Override
     @WebResult(name = "OTA_HotelResRS", targetNamespace = "http://www.opentravel.org/OTA/2003/05")
     @WebMethod(operationName = "ProcessReservationRequest", action = "http://htng.org/2014B/HTNG_SeamlessShopAndBookService#ProcessReservationRequest")
     public JointWisdomAddOrderSuccessResponse ProcessReservationRequest(@WebParam(name = "OTA_HotelResRQ") OTAHotelResRQ otaHotelResRQ) throws Exception {
-        //// TODO: 2016/9/6 取消众荟下单
-       /* String xml = "";
+
+        String xml = "";
         if (null != otaHotelResRQ) {
             xml = FcUtil.fcRequest(otaHotelResRQ);
             logger.info("众荟订单流程传入参数：" + xml);
@@ -104,7 +102,6 @@ public class JoinWisdomCxfServiceImpl implements IJointWisdomCxfService {
             logger.info("处理携程订单流程异常" + e);
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.ADD_ORDER, new OrderLogData(ChannelSource.ZH, JacksonUtil.obj2json(new JointWisdomAddOrderSuccessResponse().getBasicError("处理众荟订单流程异常", Version.v1003.getText(), OrderResponseType.Committed.name())), "众荟创建订单返回值"));
             return new JointWisdomAddOrderSuccessResponse().getBasicError("处理众荟订单流程异常", Version.v1003.getText(), OrderResponseType.Committed.name());
-        }*/
-        return null;
+        }
     }
 }

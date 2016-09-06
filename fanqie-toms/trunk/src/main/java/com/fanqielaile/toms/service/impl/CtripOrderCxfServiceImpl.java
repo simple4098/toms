@@ -33,7 +33,7 @@ public class CtripOrderCxfServiceImpl implements ICtripOrderCxfService {
 
     @Override
     public String Invoke(@WebParam(name = "xml") String xml, @WebParam(name = "Invoketype") String Invoketype) throws Exception {
-       /* CtripBaseResponse ctripBaseResponse = new CtripBaseResponse();
+        CtripBaseResponse ctripBaseResponse = new CtripBaseResponse();
         try {
             if (StringUtils.isNotEmpty(xml)) {
                 //1.判断接口调用者的用户信息是否正确
@@ -88,7 +88,6 @@ public class CtripOrderCxfServiceImpl implements ICtripOrderCxfService {
             logger.info("处理携程下单流程出错" + e, e);
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.XC, FcUtil.fcRequest(ctripBaseResponse.getCtripBaseResponse("108", "处理携程对接异常")), "携程订单请求返回值"));
             return FcUtil.fcRequest(ctripBaseResponse.getCtripBaseResponse("108", "处理携程对接异常"));
-        }*/
-        return  null;
+        }
     }
 }
