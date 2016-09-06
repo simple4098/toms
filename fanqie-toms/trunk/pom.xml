@@ -532,6 +532,13 @@
             <artifactId>commons-net</artifactId>
             <version>3.3</version>
         </dependency>
+        
+        <!-- swagger-mvc -->
+		<dependency>
+			<groupId>com.mangofactory</groupId>
+			<artifactId>swagger-springmvc</artifactId>
+			<version>1.0.2</version>
+		</dependency>
     </dependencies>
     <build>
         <finalName>toms</finalName>

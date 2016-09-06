@@ -103,4 +103,8 @@
               <property name="prefix" value="/WEB-INF/jsp/"/>
               <property name="suffix" value=".jsp" />
        </bean>
+       
+       <!--  Swagger -->
+    	<mvc:resources mapping="/swagger/**" location="/WEB-INF/swagger/"/>
+    	<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig"/>
 </beans>
