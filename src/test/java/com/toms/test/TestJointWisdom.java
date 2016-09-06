@@ -4,7 +4,6 @@ import com.fanqie.jw.dto.Inventory;
 import com.fanqie.jw.dto.InventoryRelation;
 import com.fanqie.jw.dto.RoomPrice;
 import com.fanqie.jw.dto.RoomPriceRelation;
-import com.fanqielaile.toms.support.JointWisdomARIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
