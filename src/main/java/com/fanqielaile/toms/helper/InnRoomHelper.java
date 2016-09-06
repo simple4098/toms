@@ -41,7 +41,8 @@ public class InnRoomHelper {
         String httpGets = HttpClientUtil.httpGets(roomStatusUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(httpGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
-            return  JacksonUtil.json2list(jsonObject.get("list").toString(), RoomStatusDetail.class);
+            return JSON.parseObject(jsonObject.get("list").toString(), new TypeReference<List<RoomStatusDetail>>(){});
+            //return  JacksonUtil.json2list(jsonObject.get("list").toString(), RoomStatusDetail.class);
         }else {
             log.info("oms 房态返回错误："+jsonObject.get("message"));
         }
@@ -58,7 +59,8 @@ public class InnRoomHelper {
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         //房型
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null) {
-            return JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+            return JSON.parseObject(jsonObject.get("list").toString(), new TypeReference<List<RoomTypeInfo>>(){});
+            //return JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
         }else {
             log.info("oms 房型返回错误："+jsonObject.get("message"));
         }
@@ -75,7 +77,8 @@ public class InnRoomHelper {
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         //客栈
         if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
-            return JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
+            return JSON.parseObject(jsonInn.get("list").toString(), new TypeReference<InnDto>(){});
+            //return JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
         }
         return null;
     }
@@ -114,7 +117,8 @@ public class InnRoomHelper {
             if(!JSONNull.getInstance().equals(o1)){
                 String data = jsonObject.getJSONArray("data").toString();
                 if (!StringUtils.isEmpty(data)){
-                    return  JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
+                    return JSON.parseObject(jsonObject.getJSONArray("data").toString(), new TypeReference<List<RoomDetail>>(){});
+                    //return  JacksonUtil.json2list(jsonObject.getJSONArray("data").toString(), RoomDetail.class);
                 }
             }
         }
@@ -131,7 +135,8 @@ public class InnRoomHelper {
         String roomTypeGets = HttpClientUtil.httpGets(sellingRoomTypeUrl, null);
         JSONObject jsonObject = JSONObject.fromObject(roomTypeGets);
         if (TomsConstants.SUCCESS.equals(jsonObject.get("status").toString()) && jsonObject.get("list")!=null) {
-            return JacksonUtil.json2list(jsonObject.getJSONArray("list").toString(), SellingRoomType.class);
+            return JSON.parseObject(jsonObject.getJSONArray("list").toString(), new TypeReference<List<SellingRoomType>>(){});
+            //return JacksonUtil.json2list(jsonObject.getJSONArray("list").toString(), SellingRoomType.class);
         }
         return null;
     }
