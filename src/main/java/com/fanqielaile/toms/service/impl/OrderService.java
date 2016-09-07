@@ -1506,13 +1506,16 @@ public class OrderService implements IOrderService {
 				orderJsonData = new OrderJsonData(otherConsumerFunction.getPmsChannelNameStatus() ? company.getPmsChannelName() : "", hangOrder.getChannelSource().getText(), hangOrder.getChannelSource().name());
 			}
 		}
-		if (ChannelSource.FC.equals(order.getChannelSource())) {
+		// TODO: 2016/9/7  房仓手动下单问题
+		/*if (ChannelSource.FC.equals(order.getChannelSource())) {
 			orderJsonData.setOrderChannelCode(order.getPartnerCode());
 			orderJsonData.setOrderChannelName(order.getPartnerCode());
 		} else {
 			orderJsonData.setOrderChannelCode(order.getChannelSource().name());
 			orderJsonData.setOrderChannelName(order.getChannelSource().getText());
-		}
+		}*/
+		orderJsonData.setOrderChannelCode(order.getChannelSource().name());
+		orderJsonData.setOrderChannelName(order.getChannelSource().getText());
 		orderJsonData.setAccessName(order.getChannelSource().getText());
 		orderJsonData.setAccessCode(order.getChannelSource().name());
 		hangOrder.setJsonData(JSON.toJSONString(orderJsonData));
