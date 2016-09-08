@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.model.minsu;
+package com.fanqielaile.toms.model.homestay;
 
 /**
  * Created by LZQ on 2016/9/2.
@@ -34,7 +34,7 @@ public class RoomInfo implements Serializable {
     private Owner owner;
     private Integer maxGuests;
     private Integer totalFloor;
-    private Integer floor;
+    private String floor;
     private Integer invoiceType;
     private Integer hasLandlord;
     private Geo geo;
@@ -167,11 +167,11 @@ public class RoomInfo implements Serializable {
         this.totalFloor = totalFloor;
     }
 
-    public Integer getFloor() {
+    public String getFloor() {
         return floor;
     }
 
-    public void setFloor(Integer floor) {
+    public void setFloor(String floor) {
         this.floor = floor;
     }
 

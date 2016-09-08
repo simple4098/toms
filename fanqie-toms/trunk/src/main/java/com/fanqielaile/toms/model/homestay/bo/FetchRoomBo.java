@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.model.minsu.bo;
+package com.fanqielaile.toms.model.homestay.bo;
 
 /**
  * Created by Administrator on 2016/9/2.

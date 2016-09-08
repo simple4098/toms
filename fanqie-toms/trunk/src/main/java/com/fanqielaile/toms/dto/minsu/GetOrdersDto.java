@@ -2,7 +2,7 @@ package com.fanqielaile.toms.dto.minsu;
 
 import java.util.List;
 
-import com.fanqielaile.toms.model.minsu.Order;
+import com.fanqielaile.toms.model.homestay.Order;
 
 /**
  * Created by LZQ on 2016/9/2.

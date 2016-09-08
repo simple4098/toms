@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.dto.minsu;
 
-import com.fanqielaile.toms.model.minsu.Deposit;
+import com.fanqielaile.toms.model.homestay.Deposit;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**

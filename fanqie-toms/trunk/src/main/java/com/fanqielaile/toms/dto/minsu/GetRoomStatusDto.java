@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.dto.minsu;
 import java.util.List;
 
-import com.fanqielaile.toms.model.minsu.RoomStatusData;
+import com.fanqielaile.toms.model.homestay.RoomStatusData;
 
 /**
  * Created by LZQ on 2016/9/2.

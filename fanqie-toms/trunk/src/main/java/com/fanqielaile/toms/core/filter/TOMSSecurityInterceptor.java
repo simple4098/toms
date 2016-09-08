@@ -1,4 +1,4 @@
-/*package com.fanqielaile.toms.filter;
+package com.fanqielaile.toms.core.filter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,17 +15,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.exception.BusinessException;
-import com.fanqielaile.toms.model.minsu.bo.RequestBean;
-import com.fanqielaile.toms.util.CommonUtil;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.homestay.bo.RequestBean;
+import com.fanqielaile.toms.util.CompanyCache;
 import com.fanqielaile.toms.util.PassWordUtil;
 
 
-public class OMSSecurityInterceptor  implements HandlerInterceptor   {
-	private MemcachedCacheManager cached= SpringContextHolder.getBean(MemcachedCacheManager.class);
+public class TOMSSecurityInterceptor  implements HandlerInterceptor   {
 	protected transient final Logger log  =  Logger.getLogger(this.getClass());
-//	private String loginUri;
-//	private List<String> noFiltUris;
-
 	
 	@Override
 	public boolean  preHandle(HttpServletRequest request,  HttpServletResponse response, 
@@ -59,45 +56,38 @@ public class OMSSecurityInterceptor  implements HandlerInterceptor   {
 				 && !StringUtils.isEmpty(qBean.getSignature()) 
 				 && !StringUtils.isEmpty(qBean.getTimestamp())){
 			long time=0;
-			TomatoOmsOtaInfo channelBean = new TomatoOmsOtaInfo();
+			Company company = new Company();
 			try{
 				 time = Long.valueOf(qBean.getTimestamp());
-				 channelBean.setOtaId(Integer.valueOf(qBean.getOtaId()));
 			} catch (NumberFormatException e) {
-		    	throw new BusinessException(ResultCode.PARAM_ERROR.getMessage(),ResultCode.PARAM_ERROR.getCode());
-				return sign;
+		    	setErrorInfo(requestMap, ResultCode.PARAM_ERROR.getMessage(),ResultCode.PARAM_ERROR.getCode());
+		    	return sign;
 			} 
 			// 是否超时
-
 			long starttmil =System.currentTimeMillis()-(5*DateUtil.MILLION_SECONDS_OF_MINUTE);
   			long endtmil =System.currentTimeMillis()+(5*DateUtil.MILLION_SECONDS_OF_MINUTE);
 
 			if(time<=starttmil || time>=endtmil){ //请求超时
-				CommonUtil.setInfo(requestMap,Constants.CODE_412_MESSAGE,Constants.HTTP_412,null);
 		    	sign =false;
+		    	setErrorInfo(requestMap, ResultCode.TIME_OUT.getMessage(),ResultCode.TIME_OUT.getCode());
+		    	//throw new BusinessException(ResultCode.TIME_OUT.getMessage(),ResultCode.TIME_OUT.getCode());
 			}else{				
 				try {//sign 是否合法
-					//channelBean = (TomatoOmsOtaInfo) cached.getCache(Constants.OMS_CACHE_NAMESPACE+Constants.OMS_CACHE_OTA).get(qBean.getOtaId(),TomatoOmsOtaInfo.class);
-					if(channelBean==null){
-						CacheServiceImpl cacheServiceImpl= SpringContextHolder.getBean(CacheServiceImpl.class);
-						cacheServiceImpl.putOtaInfo(new TomatoOmsOtaInfo());
-						channelBean = (TomatoOmsOtaInfo) cached.getCache(Constants.OMS_CACHE_NAMESPACE+Constants.OMS_CACHE_OTA).get(qBean.getOtaId(),TomatoOmsOtaInfo.class);
-					}
-					
-					if(channelBean != null){
-						String key =channelBean.getOtaId()+""+time+channelBean.getUserCode()+channelBean.getUserPassword();
+					company = CompanyCache.get(qBean.getOtaId());
+					if(company != null){
+						String key =company.getOtaId()+""+time+company.getUserAccount()+company.getUserPassword();
 						log.info("获取的 key:"+key);
-						key = PassWordUtil.getMd5Pwd(key);
-						if(!key.equals(qBean.getSignature())){
-							CommonUtil.setInfo(requestMap,Constants.CODE_413_MESSAGE,Constants.HTTP_413,null);
+						String signature = PassWordUtil.getMd5Pwd(key);
+						if(!signature.equals(qBean.getSignature())){
+							setErrorInfo(requestMap, ResultCode.SIFNATURE_ERROR.getMessage(),ResultCode.SIFNATURE_ERROR.getCode());
 							sign =false;
 						}
 					}else{
-						CommonUtil.setInfo(requestMap,Constants.CODE_411_MESSAGE,Constants.HTTP_411,null);
+						setErrorInfo(requestMap, ResultCode.PARAM_ERROR.getMessage(),ResultCode.PARAM_ERROR.getCode());
 						sign =false;
 					}
-				} catch (Exception e) {	
-					CommonUtil.setInfo(requestMap,"系统错误",Constants.HTTP_500,null);
+				} catch (Exception e) {
+					setErrorInfo(requestMap, ResultCode.SYSTEM_EXCEPTION.getMessage(),ResultCode.SYSTEM_EXCEPTION.getCode());
 					sign =false;
 					log.error("拦截系统异常!e"+e);
 				}
@@ -105,10 +95,8 @@ public class OMSSecurityInterceptor  implements HandlerInterceptor   {
 			
 			//秘钥是不对
 	    }else{
-	    	requestMap.put(Constants.STATUS,Constants.HTTP_411);
-	    	requestMap.put(Constants.MESSAGE,Constants.CODE_411_MESSAGE);
+	    	setErrorInfo(requestMap, ResultCode.PARAM_ERROR.getMessage(),ResultCode.PARAM_ERROR.getCode());
 	    	sign = false;
-	    	
 	    }
 		log.debug(requestMap);
 		return sign;
@@ -131,8 +119,9 @@ public class OMSSecurityInterceptor  implements HandlerInterceptor   {
 
 	
 	private void setErrorInfo(Map<String, Object> map,String msg,String code){
+		map.put("resultCode", code);
+		map.put("resultMessage", msg);
 	}
 
 
 }
-*/

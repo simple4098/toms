@@ -3,7 +3,7 @@ package com.fanqielaile.toms.dto.minsu;
 
 import java.util.List;
 
-import com.fanqielaile.toms.model.minsu.RoomInfo;
+import com.fanqielaile.toms.model.homestay.RoomInfo;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
