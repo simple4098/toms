@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.fanqielaile.toms.model.minsu.bo;
+package com.fanqielaile.toms.model.homestay.bo;
 
 /**
  * 接口请求头

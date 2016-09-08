@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.model.minsu;
+package com.fanqielaile.toms.model.homestay;
 
 
 /**

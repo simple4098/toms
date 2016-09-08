@@ -1,10 +1,10 @@
-package com.fanqielaile.toms.model.minsu;
+package com.fanqielaile.toms.model.homestay;
 
 /**
  * Created by LZQ on 2016/9/2.
  */
 public class Owner {
-    private String id;
+    private Integer id;
     private String nickName;
     private String avatarUrl;
     private String tel;
@@ -14,11 +14,11 @@ public class Owner {
     private float responseRate;
     private String description;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

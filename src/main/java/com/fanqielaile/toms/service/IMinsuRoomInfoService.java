@@ -1,7 +1,7 @@
 package com.fanqielaile.toms.service;
 
 import com.fanqielaile.toms.dto.minsu.FetchRoomDto;
-import com.fanqielaile.toms.model.minsu.bo.FetchRoomBo;
+import com.fanqielaile.toms.model.homestay.bo.FetchRoomBo;
 
 /**
  * 民宿房源服务

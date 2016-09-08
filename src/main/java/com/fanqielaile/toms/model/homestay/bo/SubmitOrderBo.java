@@ -1,9 +1,9 @@
-package com.fanqielaile.toms.model.minsu.bo;
+package com.fanqielaile.toms.model.homestay.bo;
 import java.util.Date;
 import java.util.List;
 
-import com.fanqielaile.toms.model.minsu.Deposit;
-import com.fanqielaile.toms.model.minsu.Guest;
+import com.fanqielaile.toms.model.homestay.Deposit;
+import com.fanqielaile.toms.model.homestay.Guest;
 
 /**
  * Created by LZQ on 2016/9/2.

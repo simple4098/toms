@@ -1,5 +1,5 @@
 
-package com.fanqielaile.toms.controller.minsu;
+package com.fanqielaile.toms.controller.homestay;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,10 +15,12 @@ import com.fanqielaile.toms.controller.BaseController;
 * @date 2016年9月6日 上午9:42:28
  */
 import com.fanqielaile.toms.dto.minsu.FetchRoomDto;
-import com.fanqielaile.toms.model.minsu.bo.FetchRoomBo;
+import com.fanqielaile.toms.enums.ResultCode;
+import com.fanqielaile.toms.exception.BusinessException;
+import com.fanqielaile.toms.model.homestay.bo.FetchRoomBo;
 import com.fanqielaile.toms.service.IMinsuRoomInfoService;
 @Controller
-@RequestMapping("/minsu")
+@RequestMapping("/homestay")
 public class FetchRoomController extends BaseController{
 	@Autowired
 	private IMinsuRoomInfoService minsuRoomInfoService;
@@ -29,7 +31,11 @@ public class FetchRoomController extends BaseController{
 		return minsuRoomInfoService.fetchRoom(fetchRoomBo);
 	}
 	private void checkParam(FetchRoomBo fetchRoomBo) {
-		// TODO Auto-generated method stub
+		if(fetchRoomBo != null){
+			if(fetchRoomBo.getCity()==null){
+				throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"传入城市参数异常");
+			}
+		}
 		
 	}
 	

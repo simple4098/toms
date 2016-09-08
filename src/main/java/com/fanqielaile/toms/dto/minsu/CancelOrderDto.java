@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.dto.minsu;
 
-import com.fanqielaile.toms.model.minsu.Refund;
+import com.fanqielaile.toms.model.homestay.Refund;
 
 /**
  * Created by LZQ on 2016/9/2.
