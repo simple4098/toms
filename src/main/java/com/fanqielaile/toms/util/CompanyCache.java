@@ -9,9 +9,9 @@ public class CompanyCache {
 	private static Map<String, Company> map = new HashMap<>();
 	static{
 		Company company = new Company();
-		company.setUserAccount("minSuTest");
-		company.setOtaId(111);
-		company.setUserPassword("123456");
+		company.setUserAccount("XCMS");
+		company.setOtaId(936);
+		company.setUserPassword("XCMS654");
 		map.put(company.getOtaId()+"", company);
 	}
 	
