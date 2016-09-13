@@ -92,7 +92,7 @@ public class FcRoomTypeFqService implements IFcRoomTypeFqService {
         ratePlan.setCurrency(otaRatePlan.getCurrency());
         ratePlan.setPayMethod(otaRatePlan.getPayMethod().getValue());
         ratePlan.setSpRatePlanId(otaRatePlan.getRatePlanId());
-        ratePlan.setSpRatePlanName(otaRatePlan.getRatePlanName());
+        ratePlan.setSpRatePlanName(otaRatePlan.getPayMethod().getDesc());
         ratePlanList.add(ratePlan);
         syncRatePlanRequestInfo.setRatePlanList(ratePlanList);
         syncRatePlanRequest.setSyncRatePlanRequest(syncRatePlanRequestInfo);
