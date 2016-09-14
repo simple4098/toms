@@ -4,7 +4,7 @@ package com.fanqielaile.toms.model.homestay.bo;
 /**
  * Created by LZQ on 2016/9/2.
  */
-public class BookingCheckBo {
+public class BookingCheckBo extends RequestBean{
     private Integer roomId;
     private String checkIn;
     private String checkOut;

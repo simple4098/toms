@@ -3,7 +3,7 @@ package com.fanqielaile.toms.core.handler;
 
 
 import com.alibaba.fastjson.JSON;
-import com.fanqielaile.toms.dto.minsu.BaseResultDto;
+import com.fanqielaile.toms.dto.homestay.BaseResultDto;
 import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.exception.BusinessException;
 import com.fanqielaile.toms.exception.SystemException;
@@ -37,7 +37,7 @@ public class CommonExceptionHandler implements HandlerExceptionResolver {
 			// 业务异常
 			BusinessException bex = (BusinessException) ex;
 			result = new BaseResultDto();
-			result.setResultMessage(bex.getMessage());
+			result.setResultMessage(bex.getMsg());
 			//当有返回Code值时候
 			if (bex.getCode() != null) {
 				result.setResultCode(bex.getCode());
@@ -47,8 +47,8 @@ public class CommonExceptionHandler implements HandlerExceptionResolver {
 			// 系统异常
 			SystemException sex = (SystemException) ex;
 			result = new BaseResultDto(ResultCode.SYSTEM_EXCEPTION);
-			result.setResultMessage(sex.getMessage());
-			log.info("CommonExceptionHandler catche the SystemException : ", sex.getMsg());
+			result.setResultMessage(sex.getMsg());
+			log.info("CommonExceptionHandler catche the SystemException : ", sex.getMessage());
 		}else{
 			// 其他错误
 			result = new BaseResultDto(ResultCode.OTHER_EXCEPTION);

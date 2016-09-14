@@ -12,7 +12,7 @@
         <param-value>
             classpath:conf/spring/spring-content.xml,
             classpath:conf/spring/spring-security.xml
-           <!-- ,classpath:conf/spring/cxf.xml-->
+           ,classpath:conf/spring/cxf.xml
             <!--classpath:conf/spring/spring-memcached.xml-->
         </param-value>
     </context-param>

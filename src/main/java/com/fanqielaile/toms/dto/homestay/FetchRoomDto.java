@@ -1,8 +1,9 @@
-package com.fanqielaile.toms.dto.minsu;
+package com.fanqielaile.toms.dto.homestay;
 
 
 import java.util.List;
 
+import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.model.homestay.RoomInfo;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -14,6 +15,19 @@ public class FetchRoomDto extends BaseResultDto {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public FetchRoomDto() {
+		super();
+	}
+
+	public FetchRoomDto(ResultCode code) {
+		super(code);
+	}
+
+	public FetchRoomDto(String resultMessage, String resultCode) {
+		super(resultMessage, resultCode);
+	}
+
 	@ApiModelProperty(value="房源列表信息",required=true)
 	private List<RoomInfo> rooms;
 

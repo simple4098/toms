@@ -15,5 +15,15 @@ public interface HomeStayConstants {
 	int hasLandlord = 0;
 	int refundDays = 1;
 	int instantBook = 1;
+	/**
+	 * 线上支付比例
+	 */
+	int OnlinePayRatio = 100;
+	String bedType = "床位";
+	
+	int DEFAULE_PAGE_INDEX = 0;
+	int DEFAULE_PAGE_SIZE = 50;
+	Integer BOOKING_STATUS_YES = 1;
+	Integer BOOKING_STATUS_NO = 0;
 }
 

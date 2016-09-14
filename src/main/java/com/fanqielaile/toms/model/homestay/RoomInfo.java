@@ -49,7 +49,7 @@ public class RoomInfo implements Serializable {
 
     private Deposit deposit;
     private String tradingRules;
-    private Float onlinePayRatio;
+    private Integer onlinePayRatio;
     private String traffic;
     private String description;
 
@@ -279,11 +279,11 @@ public class RoomInfo implements Serializable {
         this.tradingRules = tradingRules;
     }
 
-    public Float getOnlinePayRatio() {
+    public Integer getOnlinePayRatio() {
         return onlinePayRatio;
     }
 
-    public void setOnlinePayRatio(Float onlinePayRatio) {
+    public void setOnlinePayRatio(Integer onlinePayRatio) {
         this.onlinePayRatio = onlinePayRatio;
     }
 

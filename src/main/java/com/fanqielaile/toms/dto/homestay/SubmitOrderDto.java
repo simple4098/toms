@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.dto.minsu;
+package com.fanqielaile.toms.dto.homestay;
 /**
  * Created by LZQ on 2016/9/2.
  */

@@ -39,10 +39,10 @@
                      <mvc:mapping path="/*"/>
                      <bean class="com.github.miemiedev.mybatis.paginator.springmvc.PageListAttrHandlerInterceptor"/>
               </mvc:interceptor>
-              <mvc:interceptor>
+             <!--  <mvc:interceptor>
            			<mvc:mapping path="/homestay/**"/>
             		<bean class="com.fanqielaile.toms.core.filter.TOMSSecurityInterceptor"/>
-        	</mvc:interceptor>
+        	</mvc:interceptor> -->
        </mvc:interceptors>
        
        <bean class="org.springframework.web.servlet.i18n.FixedLocaleResolver">

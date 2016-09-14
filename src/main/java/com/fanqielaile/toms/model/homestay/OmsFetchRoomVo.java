@@ -48,7 +48,7 @@ public class OmsFetchRoomVo {
 	 */
 	private Integer roomArea;
 	
-	private List<Image> images;
+	private List<OmsImg> images;
 	/**
 	 * 房源名
 	 */
@@ -74,6 +74,8 @@ public class OmsFetchRoomVo {
 	 * 修改时间
 	 */
 	private String updateTime;
+	private Integer otaRoomTypeId;
+	private Integer  status;
 	public String getCity() {
 		return city;
 	}
@@ -140,10 +142,10 @@ public class OmsFetchRoomVo {
 	public void setRoomArea(Integer roomArea) {
 		this.roomArea = roomArea;
 	}
-	public List<Image> getImages() {
+	public List<OmsImg> getImages() {
 		return images;
 	}
-	public void setImages(List<Image> images) {
+	public void setImages(List<OmsImg> images) {
 		this.images = images;
 	}
 	public String getRoomTypeName() {
@@ -181,6 +183,18 @@ public class OmsFetchRoomVo {
 	}
 	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
+	}
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	public Integer getOtaRoomTypeId() {
+		return otaRoomTypeId;
+	}
+	public void setOtaRoomTypeId(Integer otaRoomTypeId) {
+		this.otaRoomTypeId = otaRoomTypeId;
 	}
 	
 }

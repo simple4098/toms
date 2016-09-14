@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.dto.minsu;
+package com.fanqielaile.toms.dto.homestay;
 
 import java.util.List;
 

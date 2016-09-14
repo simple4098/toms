@@ -8,7 +8,8 @@ public enum  ResultCode {
     SUCCESS("1","成功"),
     OTHER_EXCEPTION("101","其他错误"),
     PARAM_ERROR("102","缺少必要参数"),
-    SYSTEM_EXCEPTION("103","参数无效"),
+    PARAM_DISABLED("103","参数无效"),
+    SYSTEM_EXCEPTION("104","系统内部异常"),
     TIME_OUT("105","请求超时"),
     SIFNATURE_ERROR("106","签名有误"),
     COMMEN_BUSINESS_EXCEPTION("104","系统内部异常");

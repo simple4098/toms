@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="toms" owner="tomasky" organization="tomasky"/>
+
+    <!--zookeeper注册中心-->
+   <dubbo:registry protocol="zookeeper" address="115.28.185.117:90" timeout="60000"/>
+
+    <!--dubbo协议-->
+    <dubbo:protocol name="dubbo" port="20880" />
+
+    <!--监控配置-->
+    <dubbo:monitor protocol="registry" />
+
+    <!--向外暴露的服务接口-->
+    <dubbo:service interface="com.fanqielaile.toms.service.IOrderService" ref="orderService"/>
+
+</beans>

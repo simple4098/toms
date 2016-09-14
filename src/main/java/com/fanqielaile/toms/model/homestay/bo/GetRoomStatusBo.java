@@ -3,7 +3,7 @@ package com.fanqielaile.toms.model.homestay.bo;
 /**
  * Created by LZQ on 2016/9/2.
  */
-public class GetRoomStatusBo {
+public class GetRoomStatusBo extends RequestBean{
     private Integer roomId;
     private String startTime;
     private String endTime;
