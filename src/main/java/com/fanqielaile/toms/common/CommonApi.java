@@ -42,6 +42,29 @@ public class CommonApi {
     public static String roomType;
 
 
+    public static String getHomeStayFetchRoom() {
+        return homeStayFetchRoom;
+    }
+
+    public static void setHomeStayFetchRoom(String homeStayFetchRoom) {
+        CommonApi.homeStayFetchRoom = homeStayFetchRoom;
+    }
+
+    public static String getQueryRoomStatus() {
+        return queryRoomStatus;
+    }
+
+    public static void setQueryRoomStatus(String queryRoomStatus) {
+        CommonApi.queryRoomStatus = queryRoomStatus;
+    }
+
+    public static String getQueryOtaRoomType() {
+        return queryOtaRoomType;
+    }
+
+    public static void setQueryOtaRoomType(String queryOtaRoomType) {
+        CommonApi.queryOtaRoomType = queryOtaRoomType;
+    }
 
     public static String getSubmitOmsOrder() {
         return submitOmsOrder;
