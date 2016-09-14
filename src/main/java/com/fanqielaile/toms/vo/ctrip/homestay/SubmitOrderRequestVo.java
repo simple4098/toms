@@ -1,5 +1,9 @@
 package com.fanqielaile.toms.vo.ctrip.homestay;
 
+import com.fanqielaile.toms.model.homestay.bo.RequestBean;
+import com.fanqielaile.toms.support.util.JodaTimeUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -27,7 +31,7 @@ import java.util.List;
  * idCode	string	N	入住人证件号码,证件号码类型根据idType决定
  * idType	int	N	入住人证件号码类型:1.身份证;2.军人证;3.护照;
  */
-public class SubmitOrderRequestVo implements Serializable{
+public class SubmitOrderRequestVo extends RequestBean implements Serializable{
     private long roomId;
     private long ctripOrderId;
     private String checkIn;
@@ -75,6 +79,9 @@ public class SubmitOrderRequestVo implements Serializable{
     }
 
     public String getCheckIn() {
+        if(StringUtils.isNotEmpty(checkIn)){
+            checkIn= JodaTimeUtil.format(checkIn);
+        }
         return checkIn;
     }
 
@@ -83,6 +90,9 @@ public class SubmitOrderRequestVo implements Serializable{
     }
 
     public String getCheckOut() {
+        if(StringUtils.isNotEmpty(checkOut)){
+            checkOut= JodaTimeUtil.format(checkOut);
+        }
         return checkOut;
     }
 

@@ -94,6 +94,9 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             OmsOrder omsOrder = convertOrderModel(submitOrderParamVo, accountId);
             Map param = new HashMap();
             param.put("order", JSON.toJSONString(omsOrder));
+            param.put("timestamp",submitOrderParamVo.getTimestamp());
+            param.put("otaId",submitOrderParamVo.getOtaId());
+            param.put("signature",submitOrderParamVo.getSignature());
             // 查询调用的url
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             logger.debug("请求oms下单URL：" + dictionary.getUrl());
