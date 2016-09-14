@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.exception;
 
+import com.fanqielaile.toms.enums.ResultCode;
 
 /**
  * Created by LZQ on 2016/9/2.
@@ -11,7 +12,11 @@ public class SystemException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	private String msg;
     private String code;
-
+    
+    public SystemException(ResultCode resultCode) {
+    	this.msg = resultCode.getMessage();
+    	this.code = resultCode.getCode();
+    }
     public SystemException(String msg, String code) {
         this.msg = msg;
         this.code = code;

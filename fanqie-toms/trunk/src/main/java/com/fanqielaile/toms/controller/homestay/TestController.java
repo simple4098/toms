@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fanqielaile.toms.dto.minsu.BaseResultDto;
+import com.fanqielaile.toms.dto.homestay.BaseResultDto;
 import com.fanqielaile.toms.enums.ResultCode;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;

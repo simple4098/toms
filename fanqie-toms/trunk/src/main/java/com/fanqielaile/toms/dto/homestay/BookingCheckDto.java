@@ -1,5 +1,6 @@
-package com.fanqielaile.toms.dto.minsu;
+package com.fanqielaile.toms.dto.homestay;
 
+import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.model.homestay.Deposit;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -28,7 +29,23 @@ public class BookingCheckDto extends BaseResultDto {
 	@ApiModelProperty(value="押金信息",required=true)
     private Deposit deposit;
 
-    public Integer getBookingStatus() {
+	
+    public BookingCheckDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public BookingCheckDto(ResultCode code) {
+		super(code);
+		// TODO Auto-generated constructor stub
+	}
+
+	public BookingCheckDto(String resultMessage, String resultCode) {
+		super(resultMessage, resultCode);
+		// TODO Auto-generated constructor stub
+	}
+
+	public Integer getBookingStatus() {
         return bookingStatus;
     }
 

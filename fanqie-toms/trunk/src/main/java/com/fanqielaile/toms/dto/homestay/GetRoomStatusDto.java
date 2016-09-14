@@ -1,6 +1,7 @@
-package com.fanqielaile.toms.dto.minsu;
+package com.fanqielaile.toms.dto.homestay;
 import java.util.List;
 
+import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.model.homestay.RoomStatusData;
 
 /**
@@ -14,7 +15,15 @@ public class GetRoomStatusDto extends BaseResultDto {
 	private String roomId;
     private List<RoomStatusData> data;
 
-    public String getRoomId() {
+    public GetRoomStatusDto() {
+		super();
+	}
+
+	public GetRoomStatusDto(ResultCode code) {
+		super(code);
+	}
+
+	public String getRoomId() {
         return roomId;
     }
 

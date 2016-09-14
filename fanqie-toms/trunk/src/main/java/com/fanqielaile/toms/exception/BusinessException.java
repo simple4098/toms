@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.exception;
 
+import com.fanqielaile.toms.enums.ResultCode;
 
 /**
  * Created by LZQ on 2016/9/2.
@@ -18,6 +19,10 @@ public class BusinessException extends RuntimeException {
     public BusinessException(String code, String msg) {
         this.msg = msg;
         this.code = code;
+    }
+    public BusinessException(ResultCode resultCode) {
+    	this.msg = resultCode.getMessage();
+    	this.code = resultCode.getCode();
     }
 
     public BusinessException(String message) {

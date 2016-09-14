@@ -34,6 +34,9 @@ public class CommonApi {
     public static String qunarOrderOpt;
     public static String cancelCreditOrder;
     public static String pushCredit;
+    public static String homeStayFetchRoom;
+    public static String queryRoomStatus;
+    public static String queryOtaRoomType;
 
 
     public  String getSellingRoomType() {
@@ -250,4 +253,29 @@ public class CommonApi {
     public void setPushCredit(String pushCredit) {
         CommonApi.pushCredit = pushCredit;
     }
+
+	public static String getHomeStayFetchRoom() {
+		return homeStayFetchRoom;
+	}
+
+	public void setHomeStayFetchRoom(String homeStayFetchRoom) {
+		CommonApi.homeStayFetchRoom = homeStayFetchRoom;
+	}
+
+	public static String getQueryRoomStatus() {
+		return queryRoomStatus;
+	}
+
+	public void setQueryRoomStatus(String queryRoomStatus) {
+		CommonApi.queryRoomStatus = queryRoomStatus;
+	}
+
+	public static String getQueryOtaRoomType() {
+		return queryOtaRoomType;
+	}
+
+	public void setQueryOtaRoomType(String queryOtaRoomType) {
+		CommonApi.queryOtaRoomType = queryOtaRoomType;
+	}
+    
 }
