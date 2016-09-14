@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fanqielaile.toms.dao.ICtripHomeStayRoomRefDao">
+    <resultMap id="resultMap" type="com.fanqielaile.toms.model.CtripHomeStayRoomRef">
+        <id column="id" property="id"/>
+        <result column="ota_id" property="otaId"/>
+        <result column="inn_id" property="innId"/>
+        <result column="account_id" property="accountId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="ota_roomtype_id" property="otaRoomTypeId"/>
+        <result column="roomtype_name" property="roomTypename"></result>
+    </resultMap>
+
+    <insert id="insertAll" parameterType="list">
+        insert into ctrip_homestay_room_ref (ota_id,inn_id, account_id, ota_roomtype_id,deleted,roomtype_name)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.otaId}, #{item.innId},
+            #{item.accountId},#{item.otaRoomTypeId},0,#{roomTypeName})
+        </foreach>
+    </insert>
+    <select id="query" parameterType="map" resultMap="resultMap">
+        select t.id,t.ota_id,t.inn_id,t.account_id,t.deleted,t.ota_roomtype_id from ctrip_homestay_room_ref t where 1=1
+        and t.deleted=0
+        <if test="accountId!=null">
+            and account_id=#{accountId}
+        </if>
+        <if test="otaRoomTypeId!=null">
+            and ota_roomtype_id=#{otaRoomTypeId}
+        </if>
+    </select>
+    <update id="deleteByAccountId" parameterType="map">
+        update ctrip_homestay_room_ref set deleted = 1,update_at=now() where account_id=#{accountId}
+    </update>
+</mapper>
