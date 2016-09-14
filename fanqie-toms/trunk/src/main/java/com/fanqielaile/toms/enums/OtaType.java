@@ -41,6 +41,13 @@ public enum OtaType {
         public ITPService create() {
             return (QunarService) SpringContextUtil.getBean("qunarService");
         }
-    };
+    },
+    CTRIP_HOMESTAY{
+        @Override
+        public ITPService create() {
+            return SpringContextUtil.getBean(CtripHomeStayConnServiceImpl.class);
+        }
+    }
+    ;
     public abstract ITPService create();
 }

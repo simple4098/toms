@@ -30,14 +30,36 @@ public class CommonApi {
     public static   String checkRoom;
     public static   String roomStatus;
     public static String pmsOrderStatus;
-    public static   String sellingRoomType;
+    public static String sellingRoomType;
     public static String qunarOrderOpt;
     public static String cancelCreditOrder;
     public static String pushCredit;
     public static String homeStayFetchRoom;
     public static String queryRoomStatus;
     public static String queryOtaRoomType;
+    public static String submitOmsOrder;
+    public static String cancelOmsOrder;
+    public static String roomType;
 
+
+
+    public static String getSubmitOmsOrder() {
+        return submitOmsOrder;
+    }
+
+
+
+    public static void setSubmitOmsOrder(String submitOmsOrder) {
+        CommonApi.submitOmsOrder = submitOmsOrder;
+    }
+
+    public static String getCancelOmsOrder() {
+        return cancelOmsOrder;
+    }
+
+    public static void setCancelOmsOrder(String cancelOmsOrder) {
+        CommonApi.cancelOmsOrder = cancelOmsOrder;
+    }
 
     public  String getSellingRoomType() {
         return sellingRoomType;
@@ -253,29 +275,4 @@ public class CommonApi {
     public void setPushCredit(String pushCredit) {
         CommonApi.pushCredit = pushCredit;
     }
-
-	public static String getHomeStayFetchRoom() {
-		return homeStayFetchRoom;
-	}
-
-	public void setHomeStayFetchRoom(String homeStayFetchRoom) {
-		CommonApi.homeStayFetchRoom = homeStayFetchRoom;
-	}
-
-	public static String getQueryRoomStatus() {
-		return queryRoomStatus;
-	}
-
-	public void setQueryRoomStatus(String queryRoomStatus) {
-		CommonApi.queryRoomStatus = queryRoomStatus;
-	}
-
-	public static String getQueryOtaRoomType() {
-		return queryOtaRoomType;
-	}
-
-	public void setQueryOtaRoomType(String queryOtaRoomType) {
-		CommonApi.queryOtaRoomType = queryOtaRoomType;
-	}
-    
 }
