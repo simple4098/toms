@@ -336,31 +336,31 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             ctripHomeStayRoomRef.setAccountId(Integer.parseInt(tbParam.getAccountId()));
             ctripHomeStayRoomRefDao.deleteByAccountId(ctripHomeStayRoomRef);
         }
-
-        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.parseInt(innId));
-        tpHolder.validate(company, tbParam.getInnId(), otaInfo.getOtaInfoId());
-        tbParam.setOtaId(String.valueOf(company.getOtaId()));
-        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
-        logger.info("inn url:" + inn_info);
-        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(Integer.parseInt(tbParam.getInnId()), company.getId(), otaInfo.getOtaInfoId());
-        InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
-        //未绑定
-        BangInnDto bangInnDto = null;
-        if (bangInn == null) {
-            bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
-            bangInnDao.createBangInn(bangInnDto);
-        } else {
-            BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
-            bangInnDao.updateBangInnTp(bangInn);
-        }
-        if (otaInnOta != null) {
-            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
-            otaInnOtaDao.updateOtaInnOta(otaInnOta);
-        } else {
-            String hid = tbParam.getOtaId().toString() + tbParam.getInnId().toString();
-            otaInnOta = OtaInnOtaDto.toDto(hid, omsInnDto.getInnName(), company.getId(), tbParam, bangInn == null ? bangInnDto.getId() : bangInn.getId(), otaInfo.getOtaInfoId());
-            otaInnOtaDao.saveOtaInnOta(otaInnOta);
-        }
+//
+//        BangInn bangInn = bangInnDao.selectBangInnByCompanyIdAndInnId(company.getId(), Integer.parseInt(innId));
+//        tpHolder.validate(company, tbParam.getInnId(), otaInfo.getOtaInfoId());
+//        tbParam.setOtaId(String.valueOf(company.getOtaId()));
+//        String inn_info = DcUtil.omsUrl(company.getOtaId(), company.getUserAccount(), company.getUserPassword(), tbParam.getAccountId() != null ? tbParam.getAccountId() : tbParam.getAccountIdDi(), CommonApi.INN_INFO);
+//        logger.info("inn url:" + inn_info);
+//        OtaInnOtaDto otaInnOta = otaInnOtaDao.selectOtaInnOtaByInnIdAndCompanyIdAndOtaInfoId(Integer.parseInt(tbParam.getInnId()), company.getId(), otaInfo.getOtaInfoId());
+//        InnDto omsInnDto = InnRoomHelper.getInnInfo(inn_info);
+//        //未绑定
+//        BangInnDto bangInnDto = null;
+//        if (bangInn == null) {
+//            bangInnDto = BangInnDto.toDto(company.getId(), tbParam, omsInnDto);
+//            bangInnDao.createBangInn(bangInnDto);
+//        } else {
+//            BangInnDto.toUpdateDto(bangInn, tbParam, omsInnDto);
+//            bangInnDao.updateBangInnTp(bangInn);
+//        }
+//        if (otaInnOta != null) {
+//            otaInnOta.setSj(tbParam.isSj() ? 1 : 0);
+//            otaInnOtaDao.updateOtaInnOta(otaInnOta);
+//        } else {
+//            String hid = tbParam.getOtaId().toString() + tbParam.getInnId().toString();
+//            otaInnOta = OtaInnOtaDto.toDto(hid, omsInnDto.getInnName(), company.getId(), tbParam, bangInn == null ? bangInnDto.getId() : bangInn.getId(), otaInfo.getOtaInfoId());
+//            otaInnOtaDao.saveOtaInnOta(otaInnOta);
+//        }
     }
 
     @Override

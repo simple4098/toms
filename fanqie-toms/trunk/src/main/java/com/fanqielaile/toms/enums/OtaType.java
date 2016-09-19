@@ -42,7 +42,7 @@ public enum OtaType {
             return (QunarService) SpringContextUtil.getBean("qunarService");
         }
     },
-    CTRIP_HOMESTAY{
+    HOMESTAY{
         @Override
         public ITPService create() {
             return SpringContextUtil.getBean(CtripHomeStayConnServiceImpl.class);
