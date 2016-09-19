@@ -8,7 +8,7 @@
         <result column="account_id" property="accountId"/>
         <result column="deleted" property="deleted"/>
         <result column="ota_roomtype_id" property="otaRoomTypeId"/>
-        <result column="roomtype_name" property="roomTypename"></result>
+        <result column="roomtype_name" property="roomTypeName"></result>
     </resultMap>
 
     <insert id="insertAll" parameterType="list">
