@@ -20,7 +20,7 @@
         </foreach>
     </insert>
     <select id="query" parameterType="map" resultMap="resultMap">
-        select t.id,t.ota_id,t.inn_id,t.account_id,t.deleted,t.ota_roomtype_id from ctrip_homestay_room_ref t where 1=1
+        select t.id,t.ota_id,t.inn_id,t.account_id,t.deleted,t.ota_roomtype_id,t.roomtype_name from ctrip_homestay_room_ref t where 1=1
         and t.deleted=0
         <if test="accountId!=null">
             and account_id=#{accountId}
