@@ -24,6 +24,7 @@ import com.fanqielaile.toms.support.util.HttpClientUtil;
 import com.fanqielaile.toms.support.util.JodaTimeUtil;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.util.CommonUtil;
+import com.fanqielaile.toms.util.PassWordUtil;
 import com.fanqielaile.toms.vo.ctrip.homestay.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,8 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
     DictionaryDao dictionaryDao;
 
     private static final String HOMESTAY_COMPANY_CODE = "45470283";
-
+    private static final String USERCODE = "XCMS";
+    private static final String PASSWORD = "XCMS654";
 
     private static final Logger logger = LoggerFactory.getLogger(CtripHomeStayConnServiceImpl.class);
 
@@ -94,9 +96,9 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             OmsOrder omsOrder = convertOrderModel(submitOrderParamVo, accountId);
             Map param = new HashMap();
             param.put("order", JSON.toJSONString(omsOrder));
-            param.put("timestamp",submitOrderParamVo.getTimestamp());
-            param.put("otaId",submitOrderParamVo.getOtaId());
-            param.put("signature",submitOrderParamVo.getSignature());
+            param.put("timestamp", submitOrderParamVo.getTimestamp());
+            param.put("otaId", submitOrderParamVo.getOtaId());
+            param.put("signature", submitOrderParamVo.getSignature());
             // 查询调用的url
             Dictionary dictionary = dictionaryDao.selectDictionaryByType(DictionaryType.CREATE_ORDER.name());
             logger.debug("请求oms下单URL：" + dictionary.getUrl());
@@ -315,6 +317,11 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             Map param = new HashMap();
             param.put("accountId", tbParam.getAccountId());
             param.put("otaId", tbParam.getOtaId());
+            Long time = System.currentTimeMillis();
+            param.put("timestamp", time);
+            String signature = tbParam.getOtaId() + time + USERCODE + PASSWORD;
+            signature = PassWordUtil.getMd5Pwd(signature);
+            param.put("signature", signature);
             logger.debug("请求oms查询房型参数：" + JSON.toJSONString(param));
             String result = HttpClientUtil.httpKvPost(CommonApi.getRoomType(), param);
             Map resultMap = JSON.parseObject(result, Map.class);
