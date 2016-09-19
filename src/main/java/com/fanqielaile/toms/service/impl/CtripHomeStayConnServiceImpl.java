@@ -82,7 +82,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             String roomTypeName;
             try {
                 CtripHomeStayRoomRef ctripHomeStayRoomRef = new CtripHomeStayRoomRef();
-                ctripHomeStayRoomRef.setOtaRoomTypeId((int) submitOrderParamVo.getRoomId());
+                ctripHomeStayRoomRef.setOtaRoomTypeId(Integer.parseInt(String.valueOf(submitOrderParamVo.getRoomId())));
                 List<CtripHomeStayRoomRef> list = ctripHomeStayRoomRefDao.query(ctripHomeStayRoomRef);//通过otaRoomTypeId查找accounId
                 accountId = list.get(0).getAccountId();
                 innId = list.get(0).getInnId();
