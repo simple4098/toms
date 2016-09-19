@@ -16,7 +16,7 @@
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.otaId}, #{item.innId},
-            #{item.accountId},#{item.otaRoomTypeId},0,#{roomTypeName})
+            #{item.accountId},#{item.otaRoomTypeId},0,#{item.roomTypeName})
         </foreach>
     </insert>
     <select id="query" parameterType="map" resultMap="resultMap">
