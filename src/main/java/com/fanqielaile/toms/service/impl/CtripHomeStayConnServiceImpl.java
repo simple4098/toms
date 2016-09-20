@@ -69,13 +69,14 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
     private static final Logger logger = LoggerFactory.getLogger(CtripHomeStayConnServiceImpl.class);
 
     @Override
-    public SubmitOrderReturnVo submitOrder(SubmitOrderRequestVo submitOrderParamVo) {
-        logger.info("携程民宿，提交订单请求，参数：" + JSON.toJSONString(submitOrderParamVo));
+    public SubmitOrderReturnVo submitOrder(Map map) {
         SubmitOrderReturnVo submitOrderReturnVo = new SubmitOrderReturnVo();
         Order tomsOrder = null;
         try {
             Integer accountId, innId;
             String roomTypeName;
+            SubmitOrderRequestVo submitOrderParamVo = convertParam(map);
+            logger.info("携程民宿，提交订单请求，参数：" + JSON.toJSONString(submitOrderParamVo));
             try {
                 CtripHomeStayRoomRef ctripHomeStayRoomRef = new CtripHomeStayRoomRef();
                 ctripHomeStayRoomRef.setOtaRoomTypeId(Integer.parseInt(String.valueOf(submitOrderParamVo.getRoomId())));
@@ -123,6 +124,66 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
         orderDao.insertOrder(tomsOrder);
         return submitOrderReturnVo;
     }
+
+
+    private SubmitOrderRequestVo convertParam(Map map) {
+        SubmitOrderRequestVo submitOrderRequestVo = new SubmitOrderRequestVo();
+        try {
+            if (map.containsKey("roomId") && map.get("roomId") != null) {
+                submitOrderRequestVo.setRoomId(Long.parseLong(map.get("roomId").toString()));
+            }
+            if (map.containsKey("ctripOrderId") && map.get("ctripOrderId") != null) {
+                submitOrderRequestVo.setCtripOrderId(Long.parseLong(map.get("ctripOrderId").toString()));
+            }
+            if (map.containsKey("checkIn") && map.get("checkIn") != null) {
+                submitOrderRequestVo.setCheckIn(map.get("checkIn").toString());
+            }
+            if (map.containsKey("checkOut") && map.get("checkOut") != null) {
+                submitOrderRequestVo.setCheckOut(map.get("checkOut").toString());
+            }
+            if (map.containsKey("quantity") && map.get("quantity") != null) {
+                submitOrderRequestVo.setQuantity(Integer.parseInt(map.get("quantity").toString()));
+            }
+            if (map.containsKey("totalAmount") && map.get("totalAmount") != null) {
+                submitOrderRequestVo.setTotalAmount(Integer.parseInt(map.get("totalAmount").toString()));
+            }
+            if (map.containsKey("onlineAmount") && map.get("onlineAmount") != null) {
+                submitOrderRequestVo.setOnlineAmount(Integer.parseInt(map.get("roomId").toString()));
+            }
+            if (map.containsKey("offlineAmount") && map.get("offlineAmount") != null) {
+                submitOrderRequestVo.setOfflineAmount(Integer.parseInt(map.get("offlineAmount").toString()));
+            }
+            if (map.containsKey("deposit") && map.get("deposit") != null) {
+                String deposit = map.get("deposit").toString();
+                submitOrderRequestVo.setDeposit(JSON.parseObject(deposit, new TypeReference<SubmitOrderDepositVo>() {
+                }));
+            }
+            if (map.containsKey("contacts") && map.get("contacts") != null) {
+                String contacts = map.get("contacts").toString();
+                submitOrderRequestVo.setContacts(JSON.parseObject(contacts, new TypeReference<SubmitOrderContactsVo>() {
+                }));
+            }
+            if (map.containsKey("guests") && map.get("guests") != null) {
+                String guests = map.get("guests").toString();
+                submitOrderRequestVo.setGuests(JSON.parseObject(guests, new TypeReference<List<SubmitOrderGuestsVo>>() {
+                }));
+            }
+            if (map.containsKey("signature") && map.get("signature") != null) {
+                submitOrderRequestVo.setSignature(map.get("signature").toString());
+            }
+            if (map.containsKey("otaId") && map.get("otaId") != null) {
+                submitOrderRequestVo.setOtaId(map.get("otaId").toString());
+            }
+            if (map.containsKey("timestamp") && map.get("timestamp") != null) {
+                submitOrderRequestVo.setTimestamp(map.get("timestamp").toString());
+            }
+        } catch (NumberFormatException e) {
+            logger.error("提交订单toms对象转换异常，method=convertParam", e);
+            throw new CtripHomeStayConnException("提交订单对象转换异常，请检查参数是否正确", e);
+        }
+        return submitOrderRequestVo;
+    }
+
 
     private Order getTomsOrder(SubmitOrderRequestVo submitOrderParamVo, Integer accountId, Integer innId, String roomTypeName) {
         Order tomsOrder = new Order();
