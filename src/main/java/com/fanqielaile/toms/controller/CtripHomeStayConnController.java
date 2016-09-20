@@ -32,20 +32,20 @@ public class CtripHomeStayConnController {
 
     @RequestMapping("SubmitOrder")
     @ResponseBody
-    public SubmitOrderReturnVo submitOrder(@RequestBody SubmitOrderRequestVo submitOrderParamVo) {
+    public SubmitOrderReturnVo submitOrder(SubmitOrderRequestVo submitOrderParamVo) {
         return ctripHomeStayConnService.submitOrder(submitOrderParamVo);
     }
 
     @RequestMapping("GetOrders")
     @ResponseBody
-    public GetOrderReturnVo getOrders(@RequestBody Map map){
+    public GetOrderReturnVo getOrders(Map map){
         return ctripHomeStayConnService.getOrder(map);
     }
 
 
     @RequestMapping("CancelOrder")
     @ResponseBody
-    public CancelOrderReturnVo cancelOrder(@RequestBody CancelOrderRequestVo cancelOrderRequestVo){
+    public CancelOrderReturnVo cancelOrder(CancelOrderRequestVo cancelOrderRequestVo){
         return ctripHomeStayConnService.cancelOrder(cancelOrderRequestVo);
     }
 }

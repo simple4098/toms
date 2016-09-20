@@ -1,6 +1,8 @@
 
 package com.fanqielaile.toms.controller.homestay;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.controller.BaseController;
 import com.fanqielaile.toms.dto.homestay.BookingCheckDto;
 import com.fanqielaile.toms.dto.homestay.FetchRoomDto;
@@ -26,8 +29,8 @@ import com.wordnik.swagger.annotations.ApiImplicitParams;
 import com.wordnik.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/homestay")
-public class FetchRoomController extends BaseController{
-	private Logger log = LoggerFactory.getLogger(FetchRoomController.class);
+public class HomeStayController extends BaseController{
+	private Logger log = LoggerFactory.getLogger(HomeStayController.class);
 	@Autowired
 	private IHomeStayRoomInfoService homeStayRoomInfoService;
 	
@@ -89,12 +92,40 @@ public class FetchRoomController extends BaseController{
 	
 	
 	private void checkBookingCheckParam(BookingCheckBo bookingCheckBo) {
-		// TODO Auto-generated method stub
+		if(bookingCheckBo == null){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"请传入请求参数");
+		}
+		if(bookingCheckBo.getRoomId() == null || bookingCheckBo.getRoomId()<0){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"传入roomTypeId有误");
+		}
+		if(bookingCheckBo.getQuantity() == null || bookingCheckBo.getRoomId()<0){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"传入quantity有误");
+		}
+		if(bookingCheckBo.getCheckIn()==null
+				|| bookingCheckBo.getCheckOut()==null){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"缺少时间参数");
+		}
+		try {
+			DateUtil.parseDate(bookingCheckBo.getCheckIn());
+			DateUtil.parseDate(bookingCheckBo.getCheckOut());
+			
+		} catch (Exception e) {
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"时间参数有误");
+		}
 		
 	}
 	
 	private void checkRoomStatusParam(GetRoomStatusBo roomStatusBo) {
-		// TODO Auto-generated method stub
+		if(roomStatusBo == null){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"请传入请求参数");
+		}
+		if(roomStatusBo.getRoomId() == null || roomStatusBo.getRoomId()<0){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"传入roomTypeId有误");
+		}
+		if(roomStatusBo.getStartTime()==null
+				|| roomStatusBo.getStartTime()==null){
+			throw new BusinessException(ResultCode.PARAM_ERROR.getCode(),"缺少时间参数");
+		}
 		
 	}
 

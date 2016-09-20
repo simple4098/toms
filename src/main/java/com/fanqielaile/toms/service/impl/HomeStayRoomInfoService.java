@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fanqie.util.DateUtil;
 import com.fanqie.util.HttpClientUtil;
 import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.homestay.BookingCheckDto;
@@ -35,6 +36,7 @@ import com.fanqielaile.toms.model.oms.vo.OmsRoomDetail;
 import com.fanqielaile.toms.service.IHomeStayRoomInfoService;
 import com.fanqielaile.toms.util.Constants;
 import com.fanqielaile.toms.util.HomeStayConstants;
+import com.fanqielaile.toms.util.HomeStayHttpUtil;
 import com.ibm.icu.math.BigDecimal;
 @Service("homeStayRoomInfoService")
 public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
@@ -59,23 +61,16 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 	 * @return
 	 */
 	private List<OmsFetchRoomVo> getRoomFromOMS(FetchRoomBo fetchRoomBo) {
-		String httpResult = "";
-		try {
-			httpResult = HttpClientUtil.httpKvPost(CommonApi.homeStayFetchRoom, JSON.toJSONString(fetchRoomBo));
-			JSONObject object = JSONObject.parseObject(httpResult);
-			Integer status = object.getInteger("status");
-			String message = object.getString("message");
-			if(status == Constants.HTTP_SUCCESS){
-				String listStr = object.getString("list");
-				List<OmsFetchRoomVo> list = JSONArray.parseArray(listStr, OmsFetchRoomVo.class);
-				return list;
-			}else{
-				log.error("【向OMS搜索房源失败】【错误状态信息:{}】",message);
-				throw new BusinessException(ResultCode.OTHER_EXCEPTION.getCode(), message);
-			}
-		} catch (Exception e) {
-			log.error("【向OMS搜索房源失败】",e);
-			throw new SystemException(ResultCode.SYSTEM_EXCEPTION.getCode(), ResultCode.SYSTEM_EXCEPTION.getMessage());
+		JSONObject object =HomeStayHttpUtil.doHttp(CommonApi.homeStayFetchRoom, fetchRoomBo);
+		Integer status = object.getInteger("status");
+		String message = object.getString("message");
+		if(status == Constants.HTTP_SUCCESS){
+			String listStr = object.getString("list");
+			List<OmsFetchRoomVo> list = JSONArray.parseArray(listStr, OmsFetchRoomVo.class);
+			return list;
+		}else{
+			log.error("【向OMS搜索房源失败】【错误状态信息:{}】",message);
+			throw new BusinessException(ResultCode.OTHER_EXCEPTION.getCode(), message);
 		}
 		
 	}
@@ -198,7 +193,8 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 				for (OmsRoomDetail omsRoomDetail : details) {
 					RoomStatusData data = new RoomStatusData();
 					data.setDate(omsRoomDetail.getRoomDate());
-					data.setPrice(new BigDecimal(omsRoomDetail.getPriRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue());
+					data.setPrice(new BigDecimal(omsRoomDetail.getRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue());
+					data.setOriginPrice(new BigDecimal(omsRoomDetail.getPriRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue());
 					data.setStock(omsRoomDetail.getRoomNum());
 					roomDetails.add(data);
 				}
@@ -209,14 +205,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 	}
 
 	private List<OmsRoomInfo> getRoomStatusFromOms(OmsGetRoomStatusBo statusBo) {
-		String httpResult;
-		try {
-			httpResult = HttpClientUtil.httpKvPost(CommonApi.queryRoomStatus, JSON.toJSONString(statusBo));
-		} catch (Exception e) {
-			log.error("【向OMS获取otaRoomType信息错误】【accountId:"+statusBo.getAccountId()+"】",e);
-			throw new SystemException(ResultCode.SYSTEM_EXCEPTION.getCode(), ResultCode.SYSTEM_EXCEPTION.getMessage());
-		}
-		JSONObject object = JSONObject.parseObject(httpResult);
+		JSONObject object =HomeStayHttpUtil.doHttp(CommonApi.queryRoomStatus, statusBo);
 		Integer status = object.getInteger("status");
 		String message = object.getString("message");
 		if(status == Constants.HTTP_SUCCESS){
@@ -313,7 +302,9 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		bo.setOtaId(bookingCheckBo.getOtaId());
 		bo.setSignature(bookingCheckBo.getSignature());
 		bo.setTimestamp(bookingCheckBo.getTimestamp());
-		bo.setTo(bookingCheckBo.getCheckOut());
+		//结束日期为 离店日期的前一天
+		bo.setTo(DateUtil.format(DateUtil.addDay(DateUtil.parseDate(bookingCheckBo.getCheckOut()), -1)));
+		//bo.setTo(bookingCheckBo.getCheckOut());
 		return bo;
 	}
 
