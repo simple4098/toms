@@ -77,7 +77,10 @@ public class InnRoomHelper {
         JSONObject jsonInn = JSONObject.fromObject(innInfoGet);
         //客栈
         if (TomsConstants.SUCCESS.equals(jsonInn.get("status").toString()) && jsonInn.get("list")!=null) {
-            return JSON.parseObject(jsonInn.get("list").toString(), new TypeReference<InnDto>(){});
+            List<InnDto> list = JSON.parseObject(jsonInn.get("list").toString(), new TypeReference<List<InnDto>>() { });
+            if (CollectionUtils.isNotEmpty(list)){
+                return list.get(0);
+            }
             //return JacksonUtil.json2list(jsonInn.get("list").toString(), InnDto.class).get(0);
         }
         return null;
