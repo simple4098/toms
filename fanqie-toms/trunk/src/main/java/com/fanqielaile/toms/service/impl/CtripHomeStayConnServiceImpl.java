@@ -54,12 +54,6 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
     private ICtripHomeStayRoomRefDao ctripHomeStayRoomRefDao;
 
     @Autowired
-    private IOtaInnOtaDao otaInnOtaDao;
-
-    @Resource
-    private BangInnDao bangInnDao;
-
-    @Autowired
     private OrderDao orderDao;
 
     @Autowired
@@ -90,7 +84,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                 innId = list.get(0).getInnId();
                 roomTypeName = list.get(0).getRoomTypeName();
             } catch (Exception e) {
-                throw new CtripHomeStayConnException("通过roomId获取accountId失败");
+                throw new CtripHomeStayConnException("该房型对应的客栈没有设置携程民宿渠道，请联系管理员");
             }
             tomsOrder = getTomsOrder(submitOrderParamVo, accountId, innId, roomTypeName);
             OmsOrder omsOrder = convertOrderModel(submitOrderParamVo, accountId);
@@ -174,7 +168,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             tomsOrder.setOrderSource(OrderSource.SYSTEM);
         } catch (Exception e) {
             logger.error("提交订单toms对象转换异常，method=getTomsOrder", e);
-            throw new CtripHomeStayConnException("提交订单toms对象转换异常", e);
+            throw new CtripHomeStayConnException("提交订单toms对象转换异常，请检查参数是否正确", e);
         }
         return tomsOrder;
     }
@@ -218,7 +212,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             return omsOrder;
         } catch (Exception e) {
             logger.error("提交订单对象转换异常，method=convertOrderModel", e);
-            throw new CtripHomeStayConnException("提交订单对象转换异常", e);
+            throw new CtripHomeStayConnException("提交订单对象转换异常，请检查参数是否正确", e);
         }
     }
 
