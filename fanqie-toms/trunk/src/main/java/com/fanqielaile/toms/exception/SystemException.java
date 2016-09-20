@@ -17,7 +17,7 @@ public class SystemException extends RuntimeException {
     	this.msg = resultCode.getMessage();
     	this.code = resultCode.getCode();
     }
-    public SystemException(String msg, String code) {
+    public SystemException( String code,String msg) {
         this.msg = msg;
         this.code = code;
     }

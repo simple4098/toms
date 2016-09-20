@@ -5,7 +5,7 @@ package com.fanqielaile.toms.enums;
  * Created by LZQ on 2016/9/2.
  */
 public enum  ResultCode {
-    SUCCESS("1","成功"),
+    SUCCESS("0","成功"),
     OTHER_EXCEPTION("101","其他错误"),
     PARAM_ERROR("102","缺少必要参数"),
     PARAM_DISABLED("103","参数无效"),
