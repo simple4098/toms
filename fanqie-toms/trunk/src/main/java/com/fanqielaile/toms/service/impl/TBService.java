@@ -5,14 +5,44 @@ import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
 import com.fanqie.util.JacksonUtil;
 import com.fanqielaile.toms.common.CommonApi;
-import com.fanqielaile.toms.dao.*;
-import com.fanqielaile.toms.dto.*;
+import com.fanqielaile.toms.dao.BangInnDao;
+import com.fanqielaile.toms.dao.CompanyDao;
+import com.fanqielaile.toms.dao.IOtaBangInnRoomDao;
+import com.fanqielaile.toms.dao.IOtaCommissionPercentDao;
+import com.fanqielaile.toms.dao.IOtaInfoDao;
+import com.fanqielaile.toms.dao.IOtaInnOtaDao;
+import com.fanqielaile.toms.dao.IOtaInnRoomTypeGoodsDao;
+import com.fanqielaile.toms.dao.IOtaPriceModelDao;
+import com.fanqielaile.toms.dao.IOtaRoomPriceDao;
+import com.fanqielaile.toms.dao.IOtaTaoBaoAreaDao;
+import com.fanqielaile.toms.dao.ITimerRatePriceDao;
+import com.fanqielaile.toms.dto.AddFangPrice;
+import com.fanqielaile.toms.dto.BangInnDto;
+import com.fanqielaile.toms.dto.InnDto;
+import com.fanqielaile.toms.dto.OtaBangInnRoomDto;
+import com.fanqielaile.toms.dto.OtaCommissionPercentDto;
+import com.fanqielaile.toms.dto.OtaInfoRefDto;
+import com.fanqielaile.toms.dto.OtaInnOtaDto;
+import com.fanqielaile.toms.dto.OtaInnRoomTypeGoodsDto;
+import com.fanqielaile.toms.dto.OtaPriceModelDto;
+import com.fanqielaile.toms.dto.OtaRoomPriceDto;
+import com.fanqielaile.toms.dto.ProxyInns;
+import com.fanqielaile.toms.dto.PushRoom;
+import com.fanqielaile.toms.dto.RoomDetail;
+import com.fanqielaile.toms.dto.RoomStatusDetail;
+import com.fanqielaile.toms.dto.RoomTypeInfo;
+import com.fanqielaile.toms.dto.SellingRoomType;
 import com.fanqielaile.toms.enums.LogDec;
 import com.fanqielaile.toms.enums.OtaType;
 import com.fanqielaile.toms.enums.TBType;
 import com.fanqielaile.toms.enums.TimerRateType;
 import com.fanqielaile.toms.helper.InnRoomHelper;
-import com.fanqielaile.toms.model.*;
+import com.fanqielaile.toms.model.BangInn;
+import com.fanqielaile.toms.model.Company;
+import com.fanqielaile.toms.model.OtaCommissionPercent;
+import com.fanqielaile.toms.model.OtaTaoBaoArea;
+import com.fanqielaile.toms.model.Result;
+import com.fanqielaile.toms.model.TimerRatePrice;
 import com.fanqielaile.toms.service.ITPService;
 import com.fanqielaile.toms.support.CallableBean;
 import com.fanqielaile.toms.support.exception.TomsRuntimeException;
@@ -33,7 +63,11 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * DESC : 添加/获取/更新 酒店
@@ -174,7 +208,7 @@ public class TBService implements ITPService {
     //添加更新宝贝
     private   void updateOrAddRoom(TBParam tbParam, OtaInfoRefDto otaInfo, OtaPriceModelDto otaPriceModel, OtaInnOtaDto otaInnOta, OtaTaoBaoArea andArea)throws Exception{
         String otaPriceModelId = TomsUtil.obtOtaPriceModelId(otaPriceModel);
-        String otaInnOtaId=TomsUtil.obtOtaInnOtaId(otaInnOta);
+        String otaInnOtaId= TomsUtil.obtOtaInnOtaId(otaInnOta);
         Company company = companyDao.selectCompanyByCompanyCode(tbParam.getCompanyCode());
         OtaCommissionPercentDto commission = commissionPercentDao.selectCommission(new OtaCommissionPercent(company.getOtaId(), company.getId(), otaInfo.getUsedPriceModel().name()));
         tbParam.setOtaId(String.valueOf(company.getOtaId()));
@@ -215,6 +249,7 @@ public class TBService implements ITPService {
                     }else {
                         rpid = TBXHotelUtilPromotion.ratePlanAddOrUpdate(otaInfo, r);
                     }
+                    r.setInnId(Integer.valueOf(tbParam.getInnId()));
                     String gid_rpId = TBXHotelUtilPromotion.rateAddOrUpdate(otaInfo, r, otaPriceModel, priceDto, commission);
                     Long gid = TomsUtil.obtGidRpId(gid_rpId);
                     log.info("==========================gid:"+gid+" gid_rpId:"+gid_rpId);
@@ -274,7 +309,7 @@ public class TBService implements ITPService {
         }
     }
 
-    private Callable getTask(final Company company, final OtaInfoRefDto o,  final ProxyInns proxyInns,final  OtaCommissionPercentDto commission) {
+    private Callable getTask(final Company company, final OtaInfoRefDto o, final ProxyInns proxyInns, final OtaCommissionPercentDto commission) {
         return new Callable<CallableBean>() {
             @Override
             public CallableBean call()  {
@@ -296,6 +331,7 @@ public class TBService implements ITPService {
                                 log.info("1 线程名称："+Thread.currentThread().getName()+" 客栈id："+proxyInns.getInnId()+" roomTypeId:"+r.getRoomTypeId()+" goodId:"+good.getGid());
                                 priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), o.getOtaInfoId()));
                                 otaPriceModelDto = new OtaPriceModelDto(new BigDecimal(1));
+                                r.setInnId(proxyInns.getInnId());
                                 boolean b = TBXHotelUtilPromotion.updateRoomRate(o, r, otaPriceModelDto, priceDto, commission);
                                 log.info("2 线程名称："+Thread.currentThread().getName()+" roomTypeId:"+r.getRoomTypeId()+" 价格库存更新是否成功:"+ b);
                                 if (!b){
@@ -338,7 +374,7 @@ public class TBService implements ITPService {
                     priceModel = priceModelDao.findOtaPriceModelByWgOtaId(good.getOtaWgId());
                     log.info("roomTypeId:"+roomTypeId+" roomTypeName："+pushRoom.getRoomType().getRoomTypeName());
                     priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(o.getCompanyId(), roomTypeId,  o.getOtaInfoId()));
-                    TBXHotelUtilPromotion.ratesUpdate(o, pushRoom, priceModel, priceDto, commission);
+                    TBXHotelUtilPromotion.ratesUpdate(o, pushRoom, priceModel, priceDto, commission,good.getInnId().toString());
                 } else {
                     log.info("此房型还没有上架 roomTypeId:"+pushRoom.getRoomType().getRoomTypeId());
                 }
@@ -409,6 +445,7 @@ public class TBService implements ITPService {
                                 if (roomDetailList!= null){
                                     try {
                                         log.info("宝贝roomTypeId：" + price.getRoomTypeId() + " 同步到tp店");
+                                        roomTypeInfo.setInnId(bangInn.getInnId());
                                         TBXHotelUtilPromotion.updateRoomRate(infoRefDto,roomTypeInfo,priceModelDto,priceDto,commission);
                                         otaRoomPriceDao.saveOtaRoomPriceDto(priceDto);
                                         MessageCenterUtils.savePushTomsLog(OtaType.TB, Integer.valueOf(innId), price.getRoomTypeId(), userId, LogDec.MT_RoomType_Price,
@@ -437,7 +474,7 @@ public class TBService implements ITPService {
     public Result validatedOTAAccuracy(OtaInfoRefDto infoRefDto) {
         Result result = new Result();
         try {
-            TBXHotelUtilPromotion.vettedOtaAppKey(infoRefDto,Constants.TB_InnId);
+            TBXHotelUtilPromotion.vettedOtaAppKey(infoRefDto, Constants.TB_InnId);
             otaInfoDao.saveOtaInfo(infoRefDto);
             result.setStatus(Constants.SUCCESS200);
         } catch (Exception e) {
