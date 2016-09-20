@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface ICtripHomeStayConnService {
 
-    SubmitOrderReturnVo submitOrder(Map map);
+    SubmitOrderReturnVo submitOrder(SubmitOrderRequestVo submitOrderParamVo);
 
     GetOrderReturnVo getOrder(Map map);
 

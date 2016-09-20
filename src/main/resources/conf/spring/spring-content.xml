@@ -137,7 +137,7 @@
             <property name="hostName" value="192.168.1.27"/>
             <property name="port" value="6379"/>
             <property name="password" value="111111"/>
-            <property name="database" value="0"/>
+            <property name="database" value="8"/>
             <property name="poolConfig" ref="jedisPoolConfig"/>
         </bean>
         <!-- <bean  class="com.fanqielaile.toms.common.CommonApi">

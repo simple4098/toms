@@ -1,14 +1,13 @@
 package com.fanqielaile.toms.controller;
 
-import com.alibaba.fastjson.TypeReference;
 import com.fanqielaile.toms.service.ICtripHomeStayConnService;
 import com.fanqielaile.toms.vo.ctrip.homestay.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,20 +32,20 @@ public class CtripHomeStayConnController {
 
     @RequestMapping("SubmitOrder")
     @ResponseBody
-    public SubmitOrderReturnVo submitOrder(Map param) {
-        return ctripHomeStayConnService.submitOrder(param);
+    public SubmitOrderReturnVo submitOrder(@RequestBody SubmitOrderRequestVo submitOrderParamVo) {
+        return ctripHomeStayConnService.submitOrder(submitOrderParamVo);
     }
 
     @RequestMapping("GetOrders")
     @ResponseBody
-    public GetOrderReturnVo getOrders(Map map) {
+    public GetOrderReturnVo getOrders(@RequestBody Map map){
         return ctripHomeStayConnService.getOrder(map);
     }
 
 
     @RequestMapping("CancelOrder")
     @ResponseBody
-    public CancelOrderReturnVo cancelOrder(CancelOrderRequestVo cancelOrderRequestVo) {
+    public CancelOrderReturnVo cancelOrder(@RequestBody CancelOrderRequestVo cancelOrderRequestVo){
         return ctripHomeStayConnService.cancelOrder(cancelOrderRequestVo);
     }
 }
