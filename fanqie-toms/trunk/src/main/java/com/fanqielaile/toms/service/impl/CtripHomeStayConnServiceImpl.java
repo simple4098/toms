@@ -282,15 +282,18 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                     logger.debug("处理取消订单，返回值：" + JSON.toJSONString(jsonModel));
                     if (jsonModel.isSuccess()) {
                         cancelOrderReturnVo.setStatusId(2);
+                        CancelOrderRefundVo cancelOrderRefundVo = new CancelOrderRefundVo();
+                        cancelOrderRefundVo.setAmount(order.getTotalPrice().multiply(BigDecimal.valueOf(100)).intValue());
+                        cancelOrderRefundVo.setDesc(jsonModel.getMessage());
+                        cancelOrderReturnVo.setRefund(cancelOrderRefundVo);
+                    } else {
+                        cancelOrderReturnVo.setStatusId(1);
+                        cancelOrderReturnVo.setResultMessage(jsonModel.getMessage());
                     }
                 } else {
                     cancelOrderReturnVo.setStatusId(1); //不可取消
                 }
             }
-            CancelOrderRefundVo cancelOrderRefundVo = new CancelOrderRefundVo();
-            cancelOrderRefundVo.setAmount(order.getTotalPrice().multiply(BigDecimal.valueOf(100)).intValue());
-            cancelOrderRefundVo.setDesc(order.getReason());
-            cancelOrderReturnVo.setRefund(cancelOrderRefundVo);
             cancelOrderReturnVo.setResultCode(CtripHomeStayResultCodeEnum.SUCCESS.getValue());
         } catch (Exception e) {
             logger.error("取消订单异常，method=getOrder", e);
