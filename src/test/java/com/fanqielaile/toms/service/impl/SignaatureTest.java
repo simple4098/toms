@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fanqie.util.DateUtil;
 import com.fanqielaile.toms.util.PassWordUtil;
 
 public class SignaatureTest {
@@ -23,12 +24,7 @@ public class SignaatureTest {
 	}
 	@Test
 	public void testB(){
-		int i =2000000;
-		a(i);
-		System.out.println(i);
-	}
-	void a(Integer i){
-		i=300000000;
+		System.out.println(DateUtil.format(DateUtil.addDay(DateUtil.parseDate(null), -1)));
 	}
 	class A {
 		int a = 3;
