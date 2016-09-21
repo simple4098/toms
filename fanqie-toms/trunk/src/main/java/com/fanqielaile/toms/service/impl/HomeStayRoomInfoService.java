@@ -34,6 +34,7 @@ import com.fanqielaile.toms.model.oms.bo.OmsGetRoomStatusBo;
 import com.fanqielaile.toms.model.oms.vo.OmsRoomInfo;
 import com.fanqielaile.toms.model.oms.vo.OmsRoomDetail;
 import com.fanqielaile.toms.service.IHomeStayRoomInfoService;
+import com.fanqielaile.toms.support.util.ResourceBundleUtil;
 import com.fanqielaile.toms.util.Constants;
 import com.fanqielaile.toms.util.HomeStayConstants;
 import com.fanqielaile.toms.util.HomeStayHttpUtil;
@@ -120,7 +121,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		Owner owner = new Owner();
 		owner.setId(omsFetchRoomVo.getInnId());
 		owner.setNickName(omsFetchRoomVo.getInnName());
-		owner.setAvatarUrl(HomeStayConstants.avatarUrl);
+		owner.setAvatarUrl(ResourceBundleUtil.getString("homestay.owner.url"));
 		roomInfo.setOwner(owner);
 		
 		//地址
@@ -185,6 +186,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		//oms 查询房态
 		List<OmsRoomInfo> roomInfos = getRoomStatusFromOms(statusBo);
 		//转换成民宿接口房态
+		String rate = ResourceBundleUtil.getString("homestay.price.rate");
 		for (OmsRoomInfo omsRoomInfo : roomInfos) {
 			if(omsRoomInfo.getRoomTypeId() == otaRoomTypeId){
 				dto.setRoomId(otaRoomTypeId+"");
@@ -193,8 +195,10 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 				for (OmsRoomDetail omsRoomDetail : details) {
 					RoomStatusData data = new RoomStatusData();
 					data.setDate(omsRoomDetail.getRoomDate());
-					data.setPrice(new BigDecimal(omsRoomDetail.getRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue());
-					data.setOriginPrice(new BigDecimal(omsRoomDetail.getPriRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue());
+					int price = new BigDecimal(omsRoomDetail.getRoomPrice()).multiply(BigDecimal.valueOf(100)).intValue();
+					data.setPrice(price);
+					int orignPrice = (int) (price*Double.valueOf(rate));
+					data.setOriginPrice(orignPrice);
 					data.setStock(omsRoomDetail.getRoomNum());
 					roomDetails.add(data);
 				}

@@ -8,7 +8,7 @@ public interface HomeStayConstants {
 	String receptionHours = "23:00";
 	int depositAmount = 0;
 	String houseModel = "标准间";
-	String avatarUrl ="XXX.PNG";
+	String avatarUrl ="http://img.fanqiele.com/imgFtpFolder/1474337511842/yflx.jpg";
 	String depositType = "预付";
 	
 	int invoiceType = 0;
