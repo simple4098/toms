@@ -4,7 +4,7 @@ package com.fanqielaile.toms.model.homestay.bo;
  * Created by Administrator on 2016/9/2.
  */
 public class FetchRoomBo extends RequestBean{
-    private String roomTd;
+    private String roomId;
     private String city;
     private String minPrice;
     private String maxPrice;
@@ -12,15 +12,15 @@ public class FetchRoomBo extends RequestBean{
     private String pageIndex;
     private String pageSize;
 
-    public String getRoomTd() {
-        return roomTd;
-    }
+    public String getRoomId() {
+		return roomId;
+	}
 
-    public void setRoomTd(String roomTd) {
-        this.roomTd = roomTd;
-    }
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
 
-    public String getCity() {
+	public String getCity() {
         return city;
     }
 
