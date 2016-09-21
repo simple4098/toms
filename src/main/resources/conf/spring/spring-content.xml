@@ -114,7 +114,7 @@
     </bean>
 
     <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton"/>
-    <beans profile="dev">
+    <beans profile="test">
         <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
               destroy-method="close">
             <property name="driverClassName" value="org.postgresql.Driver"/>
@@ -252,7 +252,9 @@
                       value="http://www.fangcang.org/USP/api_v1/deleteHotelMapping"></property>
             <property name="qunarOrderOpt" value="http://open.hotel.beta.qunar.com/open/api/ota/otaOpt"/>
             <property name="pushCredit" value="http://openapi.test.fanqielaile.com/credit/push"/>
-
+			<property name="homeStayFetchRoom" value="http://openapi.test.fanqielaile.com/api/homeStay/fetchRoom"/>
+            <property name="queryRoomStatus" value="http://openapi.test.fanqielaile.com/api/queryRoomStatus"/>
+            <property name="queryOtaRoomType" value="http://openapi.test.fanqielaile.com/web/getOtaRoomTypeById"/>
         </bean>
     </beans>
 
@@ -318,6 +320,10 @@
                       value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
             <property name="qunarOrderOpt" value="http://a7im.trade.qunar.com"/>
             <property name="pushCredit" value="http://oms.fanqiele.com/credit/push"/>
+            <property name="homeStayFetchRoom" value="http://oms.fanqiele.com/api/homeStay/fetchRoom"/>
+            <property name="queryRoomStatus" value="http://oms.fanqiele.com/api/queryRoomStatus"/>
+            <property name="queryOtaRoomType" value="http://oms.fanqiele.com/web/getOtaRoomTypeById"/>
+        	
         </bean>
     </beans>
 </beans>
