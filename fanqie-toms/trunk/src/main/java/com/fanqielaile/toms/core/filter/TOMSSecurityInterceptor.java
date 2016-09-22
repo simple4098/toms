@@ -13,10 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
+import com.fanqielaile.toms.bo.ctrip.homestay.RequestBean;
 import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.exception.BusinessException;
 import com.fanqielaile.toms.model.Company;
-import com.fanqielaile.toms.model.homestay.bo.RequestBean;
 import com.fanqielaile.toms.util.CompanyCache;
 import com.fanqielaile.toms.util.PassWordUtil;
 

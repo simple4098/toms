@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.fanqielaile.toms.model.homestay.bo.FetchRoomBo;
-import com.fanqielaile.toms.model.homestay.bo.GetRoomStatusBo;
+import com.fanqielaile.toms.bo.ctrip.homestay.FetchRoomBo;
+import com.fanqielaile.toms.bo.ctrip.homestay.GetRoomStatusBo;
 import com.fanqielaile.toms.service.IHomeStayRoomInfoService;
 import com.fanqielaile.toms.util.PassWordUtil;
 import com.toms.test.BaseUnitTest;

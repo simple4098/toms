@@ -1,8 +1,8 @@
 package com.fanqielaile.toms.vo.ctrip.homestay;
 
-import com.fanqielaile.toms.model.homestay.bo.RequestBean;
-
 import java.io.Serializable;
+
+import com.fanqielaile.toms.bo.ctrip.homestay.RequestBean;
 
 /**
  * Create by jame
