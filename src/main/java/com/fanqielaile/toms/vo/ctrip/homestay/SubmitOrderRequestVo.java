@@ -1,6 +1,6 @@
 package com.fanqielaile.toms.vo.ctrip.homestay;
 
-import com.fanqielaile.toms.model.homestay.bo.RequestBean;
+import com.fanqielaile.toms.bo.ctrip.homestay.RequestBean;
 import com.fanqielaile.toms.support.util.JodaTimeUtil;
 import org.apache.commons.lang3.StringUtils;
 

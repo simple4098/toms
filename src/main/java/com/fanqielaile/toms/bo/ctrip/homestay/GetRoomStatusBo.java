@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.model.homestay.bo;
+package com.fanqielaile.toms.bo.ctrip.homestay;
 
 /**
  * Created by LZQ on 2016/9/2.

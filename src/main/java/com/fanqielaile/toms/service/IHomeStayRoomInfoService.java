@@ -1,11 +1,11 @@
 package com.fanqielaile.toms.service;
 
+import com.fanqielaile.toms.bo.ctrip.homestay.BookingCheckBo;
+import com.fanqielaile.toms.bo.ctrip.homestay.FetchRoomBo;
+import com.fanqielaile.toms.bo.ctrip.homestay.GetRoomStatusBo;
 import com.fanqielaile.toms.dto.homestay.BookingCheckDto;
 import com.fanqielaile.toms.dto.homestay.FetchRoomDto;
 import com.fanqielaile.toms.dto.homestay.GetRoomStatusDto;
-import com.fanqielaile.toms.model.homestay.bo.BookingCheckBo;
-import com.fanqielaile.toms.model.homestay.bo.FetchRoomBo;
-import com.fanqielaile.toms.model.homestay.bo.GetRoomStatusBo;
 
 /**
  * 民宿房源服务

@@ -1,4 +1,4 @@
-package com.fanqielaile.toms.model.homestay.bo;
+package com.fanqielaile.toms.bo.ctrip.homestay;
 import java.util.Date;
 import java.util.List;
 

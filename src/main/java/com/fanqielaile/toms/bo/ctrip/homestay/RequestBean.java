@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.fanqielaile.toms.model.homestay.bo;
+package com.fanqielaile.toms.bo.ctrip.homestay;
 
 /**
  * 接口请求头
