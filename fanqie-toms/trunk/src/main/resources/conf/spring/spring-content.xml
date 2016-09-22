@@ -114,7 +114,7 @@
     </bean>
 
     <bean id="springContextUtil" class="com.fanqielaile.toms.support.SpringContextUtil" scope="singleton"/>
-    <beans profile="test">
+    <beans profile="dev">
         <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
               destroy-method="close">
             <property name="driverClassName" value="org.postgresql.Driver"/>
