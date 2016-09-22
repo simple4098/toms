@@ -122,6 +122,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		owner.setId(omsFetchRoomVo.getInnId());
 		owner.setNickName(omsFetchRoomVo.getInnName());
 		owner.setAvatarUrl(ResourceBundleUtil.getString("homestay.owner.url"));
+		owner.setTel(omsFetchRoomVo.getFrontPhone());
 		roomInfo.setOwner(owner);
 		
 		//地址

@@ -1,15 +1,24 @@
 package com.fanqielaile.toms.bo.ctrip.homestay;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by Administrator on 2016/9/2.
  */
 public class FetchRoomBo extends RequestBean{
-    private String roomId;
+	@ApiModelProperty(value="房源Id",required=false)
+	private String roomId;
+	@ApiModelProperty(value="城市",required=true)
     private String city;
+	@ApiModelProperty(value="最低价",required=false)
     private String minPrice;
+	@ApiModelProperty(value="最高价",required=false)
     private String maxPrice;
+	@ApiModelProperty(value="修改时间",required=false)
     private String updateTime;
+    @ApiModelProperty(value="分页页码，第一页为0",required=true)
     private String pageIndex;
+    @ApiModelProperty(value="分页条数",required=true)
     private String pageSize;
 
     public String getRoomId() {

@@ -8,8 +8,11 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class RoomStatusData {
 	@ApiModelProperty(value="价格日期,格式:yyyy-mm-dd,如:2015-10-21",required=true)
     private String date;
-    private Integer price;
+	@ApiModelProperty(value="房源单价,单位：分；")
+	private Integer price;
+	@ApiModelProperty(value="房源原价,单位：分；")
     private Integer originPrice;
+	@ApiModelProperty(value="可预定数")
     private Integer stock;
 
     public String getDate() {

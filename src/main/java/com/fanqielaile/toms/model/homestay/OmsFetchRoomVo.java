@@ -76,6 +76,10 @@ public class OmsFetchRoomVo {
 	private String updateTime;
 	private Integer otaRoomTypeId;
 	private Integer  status;
+	/**
+	 * 联系电话
+	 */
+	private String frontPhone;
 	public String getCity() {
 		return city;
 	}
@@ -195,6 +199,12 @@ public class OmsFetchRoomVo {
 	}
 	public void setOtaRoomTypeId(Integer otaRoomTypeId) {
 		this.otaRoomTypeId = otaRoomTypeId;
+	}
+	public String getFrontPhone() {
+		return frontPhone;
+	}
+	public void setFrontPhone(String frontPhone) {
+		this.frontPhone = frontPhone;
 	}
 	
 }

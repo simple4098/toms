@@ -29,9 +29,13 @@ public class RoomInfo implements Serializable {
     private Integer rentSize;
 	@ApiModelProperty(value="出租的床型，如：双人床1.8*2M,双人床1.5*2M/大圆床",required=false)
     private List<Bed> beds ;
+	@ApiModelProperty(value="该房源累计被预定间夜数")
     private Integer bookingCount;
+	@ApiModelProperty(value="该房源好评率")
     private Float goodRate;
+	@ApiModelProperty(value="房屋所有者(房东)的信息")
     private Owner owner;
+	
     private Integer maxGuests;
     private Integer totalFloor;
     private String floor;
@@ -39,21 +43,29 @@ public class RoomInfo implements Serializable {
     private Integer hasLandlord;
     private Geo geo;
     private List<Image> images;
+    @ApiModelProperty(value="房源详细地址")
     private Address address;
+    
     private List<Facility> facilities;
+    @ApiModelProperty(value="最小允许预定天数")
     private Integer minBookingDays;
+    @ApiModelProperty(value="最大允许预定天数")
     private Integer maxBookingDays;
+    @ApiModelProperty(value="最早入住时间")
     private String checkOutTime;
+    @ApiModelProperty(value="最晚入住时间")
     private String checkInTime;
+    @ApiModelProperty(value="接待时间")
     private String receptionHours;
 
     private Deposit deposit;
     private String tradingRules;
     private Integer onlinePayRatio;
     private String traffic;
+    @ApiModelProperty(value="房源描述")
     private String description;
 
-    private Deposit discount;
+    private Discount discount;
     private Integer refundDays;
     private Integer price;
     private String userule;
@@ -303,15 +315,15 @@ public class RoomInfo implements Serializable {
         this.description = description;
     }
 
-    public Deposit getDiscount() {
-        return discount;
-    }
+    public Discount getDiscount() {
+		return discount;
+	}
 
-    public void setDiscount(Deposit discount) {
-        this.discount = discount;
-    }
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
+	}
 
-    public Integer getRefundDays() {
+	public Integer getRefundDays() {
         return refundDays;
     }
 
