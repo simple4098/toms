@@ -1,11 +1,16 @@
 package com.fanqielaile.toms.bo.ctrip.homestay;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by LZQ on 2016/9/2.
  */
 public class GetRoomStatusBo extends RequestBean{
+	@ApiModelProperty(value="房型Id",required=true)
     private Integer roomId;
+	@ApiModelProperty(value="开始时间",required=true)
     private String startTime;
+	@ApiModelProperty(value="结束时间",required=true)
     private String endTime;
 
     public Integer getRoomId() {

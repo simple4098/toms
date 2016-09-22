@@ -1,11 +1,15 @@
 package com.fanqielaile.toms.model.homestay;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by LZQ on 2016/9/2.
  */
 public class Owner {
     private Integer id;
+    @ApiModelProperty(value="房东昵称(页面展示)")
     private String nickName;
+    @ApiModelProperty(value="头像图片")
     private String avatarUrl;
     private String tel;
     private String email;
