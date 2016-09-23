@@ -20,6 +20,10 @@ public class OmsFetchRoomVo {
 	 */
 	private String bedType;
 	/**
+	 * 床型值
+	 */
+	private String bedTypeValue;
+	/**
 	 * 床的长度
 	 */
 	private String bedLen;
@@ -205,6 +209,12 @@ public class OmsFetchRoomVo {
 	}
 	public void setFrontPhone(String frontPhone) {
 		this.frontPhone = frontPhone;
+	}
+	public String getBedTypeValue() {
+		return bedTypeValue;
+	}
+	public void setBedTypeValue(String bedTypeValue) {
+		this.bedTypeValue = bedTypeValue;
 	}
 	
 }
