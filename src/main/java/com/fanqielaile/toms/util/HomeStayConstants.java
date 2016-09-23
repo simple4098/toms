@@ -9,7 +9,7 @@ public interface HomeStayConstants {
 	int depositAmount = 0;
 	String houseModel = "标准间";
 	String avatarUrl ="http://img.fanqiele.com/imgFtpFolder/1474337511842/yflx.jpg";
-	String depositType = "预付";
+	String depositType = "Online";
 	
 	int invoiceType = 0;
 	int hasLandlord = 0;
@@ -25,5 +25,6 @@ public interface HomeStayConstants {
 	int DEFAULE_PAGE_SIZE = 50;
 	Integer BOOKING_STATUS_YES = 1;
 	Integer BOOKING_STATUS_NO = 0;
+	int maxGuests = 999;
 }
 

@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fanqie.util.DateUtil;
@@ -17,6 +16,7 @@ import com.fanqielaile.toms.common.CommonApi;
 import com.fanqielaile.toms.dto.homestay.BookingCheckDto;
 import com.fanqielaile.toms.dto.homestay.FetchRoomDto;
 import com.fanqielaile.toms.dto.homestay.GetRoomStatusDto;
+import com.fanqielaile.toms.enums.OmsBedType;
 import com.fanqielaile.toms.enums.ResultCode;
 import com.fanqielaile.toms.exception.BusinessException;
 import com.fanqielaile.toms.exception.SystemException;
@@ -92,12 +92,13 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setInvoiceType(HomeStayConstants.invoiceType);//发票
 		roomInfo.setHasLandlord(HomeStayConstants.hasLandlord);//房东合住
 		roomInfo.setRefundDays(HomeStayConstants.refundDays);//全额退款提前天数;-1：表示不可退，0：表示随时退，1:表示需要提前一天退，等
-		roomInfo.setUpdateTime(omsFetchRoomVo.getUpdateTime());
+		roomInfo.setUpdateTime(omsFetchRoomVo.getUpdateTime()==null?"":omsFetchRoomVo.getUpdateTime());
 		
 		roomInfo.setRentSize(omsFetchRoomVo.getRoomArea());
 		roomInfo.setInstantBook(HomeStayConstants.instantBook);//0=非即时预订/需要房东确认，1=即时预订/及时确认
 		roomInfo.setReceptionHours(HomeStayConstants.receptionHours);//接待时间
 		roomInfo.setOnlinePayRatio(HomeStayConstants.OnlinePayRatio);//线上支付百分比,如:50
+		
 		String bedType = omsFetchRoomVo.getBedType();
 		int rentType = HomeStayConstants.bedType.equals(bedType)?3:1;
 		roomInfo.setRentType(rentType);//出租类型
@@ -106,7 +107,6 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setDiscount(null);//折扣
 		roomInfo.setTradingRules(null);//交易规则
 		roomInfo.setRoomUrl(null);//roomURL
-		roomInfo.setMaxGuests(null);//最大人数
 		roomInfo.setLandmark(null);//
 		roomInfo.setTotalFloor(null);//
 		roomInfo.setUserule(null);
@@ -131,8 +131,8 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		address.setCity(omsFetchRoomVo.getCity());
 		roomInfo.setAddress(address);
 		
-		//床位
-		roomInfo.setBeds(changeBeds(omsFetchRoomVo));
+		//床位 并根据床位计算最大入住人数
+		setBedsInfo(omsFetchRoomVo,roomInfo);
 		
 		Geo geo = new Geo();//经纬度
 		geo.setLatitude(omsFetchRoomVo.getLatitude());
@@ -146,20 +146,37 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		return roomInfo;
 	}
 
-	private List<Bed> changeBeds(OmsFetchRoomVo omsFetchRoomVo) {
+	private void setBedsInfo(OmsFetchRoomVo omsFetchRoomVo, RoomInfo roomInfo) {
+		List<Bed> beds = null;
+		int maxGuests = 0;
 		if(omsFetchRoomVo.getBedLen()==null
 				|| omsFetchRoomVo.getBedWid()==null
 				|| omsFetchRoomVo.getBedType()==null
 				|| omsFetchRoomVo.getBedNum()==null){
-			return null;
+			roomInfo.setBeds(null);
+		}else{
+			beds = new ArrayList<>(1);
+			Bed bed = new Bed();
+			bed.setNumOfBeds(omsFetchRoomVo.getBedNum());
+			bed.setSize(omsFetchRoomVo.getBedLen()+"*"+omsFetchRoomVo.getBedWid());
+			bed.setType(omsFetchRoomVo.getBedType());
+			beds.add(bed);
+
+			String bedTypeValue = omsFetchRoomVo.getBedTypeValue();
+			if(OmsBedType.Bed.equals(bedTypeValue)){
+				maxGuests = OmsBedType.Bed.getNumber();
+			}else
+			if(OmsBedType.SignleBed.equals(bedTypeValue)){
+				maxGuests = OmsBedType.SignleBed.getNumber();
+			}else
+			if(OmsBedType.ThreeBed.equals(bedTypeValue)){
+				maxGuests = OmsBedType.ThreeBed.getNumber();
+			}else
+				maxGuests = OmsBedType.Other.getNumber();
+			
 		}
-		List<Bed> beds = new ArrayList<>(1);
-		Bed bed = new Bed();
-		bed.setNumOfBeds(omsFetchRoomVo.getBedNum());
-		bed.setSize(omsFetchRoomVo.getBedLen()+"*"+omsFetchRoomVo.getBedWid());
-		bed.setType(omsFetchRoomVo.getBedType());
-		beds.add(bed);
-		return beds;
+		roomInfo.setMaxGuests(maxGuests);
+		roomInfo.setBeds(beds);
 	}
 
 	private List<Image> changeImg(List<OmsImg> images) {
