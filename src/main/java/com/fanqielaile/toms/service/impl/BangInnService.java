@@ -1,5 +1,7 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.fanqie.core.dto.ParamDto;
 import com.fanqie.qunar.model.Hotel;
 import com.fanqie.qunar.response.QunarGetHotelInfoResponse;
@@ -18,6 +20,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +33,7 @@ import java.util.*;
  */
 @Service
 public class BangInnService implements IBangInnService {
+    private static final Logger log = Logger.getLogger(BangInnService.class);
     @Resource
     private BangInnDao bangInnDao;
     @Resource
@@ -196,10 +200,12 @@ public class BangInnService implements IBangInnService {
             String timestamp = String.valueOf(new Date().getTime());
             String signature = DcUtil.obtMd5(company.getOtaId() + timestamp + company.getUserAccount() + company.getUserPassword());
             String url = CommonApi.getRoomType() + "?timestamp=" + timestamp + "&from=" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "&to=" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "&otaId=" + company.getOtaId() + "&accountId=" + bangInnDto.getAccountId() + "&signature=" + signature;
+            log.info("toms 获取oms图片url:"+url);
             String response = HttpClientUtil.httpGets(url, null);
             JSONObject jsonObject = JSONObject.fromObject(response);
             if ("200".equals(jsonObject.get("status").toString()) && jsonObject.get("list") != null) {
-                result = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+                //result = JacksonUtil.json2list(jsonObject.get("list").toString(), RoomTypeInfo.class);
+                result = JSON.parseObject(jsonObject.get("list").toString(), new TypeReference<List<RoomTypeInfo>>(){});
                 if (ArrayUtils.isNotEmpty(result.toArray())) {
                     for (RoomTypeInfo roomTypeInfo : result) {
                         if (ArrayUtils.isNotEmpty(roomTypeInfo.getImgList().toArray())) {
