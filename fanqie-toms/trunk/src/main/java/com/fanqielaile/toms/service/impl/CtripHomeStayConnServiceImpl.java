@@ -180,7 +180,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             omsOrder.setOtaOrderNo(String.valueOf(submitOrderParamVo.getCtripOrderId()));
             omsOrder.setRoomTypeNum(submitOrderParamVo.getQuantity());
             omsOrder.setTotalPrice((double) (submitOrderParamVo.getTotalAmount() / 100));
-            omsOrder.setPaidAmount((double) (submitOrderParamVo.getTotalAmount() / 100));
+            omsOrder.setPaidAmount((double) (submitOrderParamVo.getOnlineAmount() / 100));
             omsOrder.setContact(submitOrderParamVo.getContacts().getMobile());
             omsOrder.setUserName(submitOrderParamVo.getContacts().getName());
             omsOrder.setOtaId(EnumOta.ctrip_homestay.getValue());
