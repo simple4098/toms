@@ -104,8 +104,8 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setRentType(rentType);//出租类型
 
 		roomInfo.setState(omsFetchRoomVo.getStatus());
+		roomInfo.setTradingRules(HomeStayConstants.tradingRules);//交易规则
 		roomInfo.setDiscount(null);//折扣
-		roomInfo.setTradingRules(null);//交易规则
 		roomInfo.setRoomUrl(null);//roomURL
 		roomInfo.setLandmark(null);//
 		roomInfo.setTotalFloor(null);//
@@ -311,6 +311,10 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 			dto.setRate(HomeStayConstants.OnlinePayRatio);
 			dto.setDerateAmount(0);
 			dto.setOriginAmount(totalAmount);
+			Deposit deposit = new Deposit();
+			deposit.setAmount(HomeStayConstants.depositAmount);
+			deposit.setType(HomeStayConstants.depositType);
+			dto.setDeposit(deposit);
 		//不可预订
 		}else{
 			dto.setBookingStatus(HomeStayConstants.BOOKING_STATUS_NO);
