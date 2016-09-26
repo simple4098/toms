@@ -96,4 +96,10 @@
     <delete id="deleteCompanyPermissionByCompanyId" parameterType="java.lang.String">
         DELETE FROM company_permission where company_id = #{companyId}
     </delete>
+
+    <select id="selectByUser" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from company where user_account = #{userAccount} and user_password=#{userPassword} and type = 1 and deleted = 0 limit 1
+    </select>
 </mapper>

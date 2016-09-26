@@ -65,4 +65,6 @@ public interface CompanyDao {
      * @param companyId
      */
     void deleteCompanyPermissionByCompanyId(String companyId);
+
+    Company selectByUser(Company company);
 }
