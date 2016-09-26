@@ -14,7 +14,7 @@ public interface HomeStayConstants {
 	int invoiceType = 0;
 	int hasLandlord = 0;
 	int refundDays = 1;
-	String tradingRules = "入住前1天 14:00如果取消订单，预付定金将全部退还";
+	String tradingRules = "入住前1天 14:00前如果取消订单，预付定金将全部退还";
 	int instantBook = 1;
 	/**
 	 * 线上支付比例
