@@ -72,7 +72,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
     public SubmitOrderReturnVo submitOrder(SubmitOrderRequestVo submitOrderParamVo) {
         logger.info("携程民宿，提交订单请求，参数：" + JSON.toJSONString(submitOrderParamVo));
         SubmitOrderReturnVo submitOrderReturnVo = new SubmitOrderReturnVo();
-        Order tomsOrder = null;
+        Order tomsOrder = new Order();
         try {
             Integer accountId, innId;
             String roomTypeName;
@@ -118,6 +118,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             submitOrderReturnVo.setResultMessage("提交订单异常，" + e.getMessage());
             tomsOrder.setReason(submitOrderReturnVo.getResultMessage());
             tomsOrder.setOrderStatus(OrderStatus.REFUSE);
+            logger.error(submitOrderReturnVo.getResultMessage(), e);
         }
         tomsOrder.setId(tomsOrder.getUuid());
         orderDao.insertOrder(tomsOrder);
@@ -157,7 +158,10 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                 tomsOrder.setPerson(submitOrderParamVo.getGuests().size());
             }
             tomsOrder.setPayment(BigDecimal.valueOf((submitOrderParamVo.getTotalAmount() / 100)));
-            Company company = companyDao.selectCompanyByCompanyCode(HOMESTAY_COMPANY_CODE);
+            Company company=new Company();
+            company.setUserAccount(USERCODE);
+            company.setUserPassword(PASSWORD);
+            company = companyDao.selectByUser(company);
             tomsOrder.setCompanyId(company.getId());
             tomsOrder.setOrderCode(OrderMethodHelper.getOrderCode());
             tomsOrder.setUsedPriceModel(UsedPriceModel.MAI);
