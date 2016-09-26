@@ -173,7 +173,6 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 				maxGuests = OmsBedType.ThreeBed.getNumber();
 			}else
 				maxGuests = OmsBedType.Other.getNumber();
-			
 		}
 		roomInfo.setMaxGuests(maxGuests);
 		roomInfo.setBeds(beds);
@@ -310,6 +309,8 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 			dto.setOfflineAmount(0);
 			dto.setOnlineAmount(totalAmount);
 			dto.setRate(HomeStayConstants.OnlinePayRatio);
+			dto.setDerateAmount(0);
+			dto.setOriginAmount(totalAmount);
 		//不可预订
 		}else{
 			dto.setBookingStatus(HomeStayConstants.BOOKING_STATUS_NO);
