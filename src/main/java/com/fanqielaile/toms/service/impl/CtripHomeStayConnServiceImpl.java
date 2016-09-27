@@ -247,7 +247,13 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                     getOrderDetailVo.setOnlinePayment(submitOrderParamVo.getOnlineAmount());
                     getOrderDetailVo.setOrderId(Long.valueOf(orderID.toString()));
                     getOrderDetailVo.setTotalAmount(submitOrderParamVo.getTotalAmount());
-                    getOrderDetailVo.setStatusId(order.getOrderStatus().name().equals(OrderStatus.CONFIM_AND_ORDER.name()) ? 22 : 23);
+                    if (order.getOrderStatus().name().equals(OrderStatus.CONFIM_AND_ORDER.name())) {
+                        getOrderDetailVo.setStatusId(22);//预定已确认
+                    } else if (order.getOrderStatus().name().equals(OrderStatus.CANCEL_ORDER.name())) {
+                        getOrderDetailVo.setStatusId(31);//预定已取消
+                    } else {//已拒绝
+                        getOrderDetailVo.setStatusId(23);
+                    }
                     orderDetailVos.add(getOrderDetailVo);
                 }
                 getOrderReturnVo.setOrders(orderDetailVos);
