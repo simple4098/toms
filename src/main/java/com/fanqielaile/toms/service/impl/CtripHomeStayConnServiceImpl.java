@@ -139,7 +139,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
             tomsOrder.setHomeAmount(submitOrderParamVo.getQuantity());
             tomsOrder.setLiveTime(JodaTimeUtil.parse(submitOrderParamVo.getCheckIn()));
             tomsOrder.setLeaveTime(JodaTimeUtil.parse(submitOrderParamVo.getCheckOut()));
-            tomsOrder.setTotalPrice(BigDecimal.valueOf((submitOrderParamVo.getTotalAmount() / 100)));
+            tomsOrder.setTotalPrice(BigDecimal.valueOf(submitOrderParamVo.getTotalAmount()).divide(new BigDecimal(100)));
             tomsOrder.setOrderTime(new Date());
             tomsOrder.setOTARoomTypeId(String.valueOf(submitOrderParamVo.getRoomId()));
             tomsOrder.setCurrency(CurrencyCode.CNY);
@@ -157,15 +157,15 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                 tomsOrder.setGuestName(guestName);
                 tomsOrder.setPerson(submitOrderParamVo.getGuests().size());
             }
-            tomsOrder.setPayment(BigDecimal.valueOf((submitOrderParamVo.getTotalAmount() / 100)));
-            Company company=new Company();
+            tomsOrder.setPayment(BigDecimal.valueOf(submitOrderParamVo.getTotalAmount()).divide(new BigDecimal(100)));
+            Company company = new Company();
             company.setUserAccount(USERCODE);
             company.setUserPassword(PASSWORD);
             company = companyDao.selectByUser(company);
             tomsOrder.setCompanyId(company.getId());
             tomsOrder.setOrderCode(OrderMethodHelper.getOrderCode());
             tomsOrder.setUsedPriceModel(UsedPriceModel.MAI);
-            tomsOrder.setBasicTotalPrice(BigDecimal.valueOf((submitOrderParamVo.getTotalAmount() / 100)));
+            tomsOrder.setBasicTotalPrice(BigDecimal.valueOf(submitOrderParamVo.getTotalAmount()).divide(new BigDecimal(100)));
 //        tomsOrder.setOrderInnName //
             tomsOrder.setRoomTypeName(roomTypeName);
             tomsOrder.setJsonData(JSON.toJSONString(submitOrderParamVo));
@@ -177,14 +177,15 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
         return tomsOrder;
     }
 
+
     private OmsOrder convertOrderModel(SubmitOrderRequestVo submitOrderParamVo, Integer accountId) throws CtripHomeStayConnException {
         OmsOrder omsOrder = new OmsOrder();
         try {
             omsOrder.setAccountId(accountId);
             omsOrder.setOtaOrderNo(String.valueOf(submitOrderParamVo.getCtripOrderId()));
             omsOrder.setRoomTypeNum(submitOrderParamVo.getQuantity());
-            omsOrder.setTotalPrice((double) (submitOrderParamVo.getTotalAmount() / 100));
-            omsOrder.setPaidAmount((double) (submitOrderParamVo.getOnlineAmount() / 100));
+            omsOrder.setTotalPrice((BigDecimal.valueOf(submitOrderParamVo.getTotalAmount()).divide(new BigDecimal(100))).doubleValue());
+            omsOrder.setPaidAmount(BigDecimal.valueOf(submitOrderParamVo.getOnlineAmount()).divide(new BigDecimal(100)).doubleValue());
             omsOrder.setContact(submitOrderParamVo.getContacts().getMobile());
             omsOrder.setUserName(submitOrderParamVo.getContacts().getName());
             omsOrder.setOtaId(EnumOta.ctrip_homestay.getValue());
