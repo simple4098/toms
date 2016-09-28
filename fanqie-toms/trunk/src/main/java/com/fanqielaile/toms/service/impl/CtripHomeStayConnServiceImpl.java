@@ -236,10 +236,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                 List<GetOrderDetailVo> orderDetailVos = new ArrayList<>();
                 for (Object orderID : orderIDs) {
                     GetOrderDetailVo getOrderDetailVo = new GetOrderDetailVo();
-                    Order order = new Order();
-                    order.setChannelSource(ChannelSource.CTRIP_HOMESTAY);
-                    order.setChannelOrderCode(String.valueOf(orderID));
-                    order = orderDao.selectOrderByChannelOrderCodeAndSource(order);
+                    Order order = orderDao.selectOrderByOmsOrderCodeAndSource(ChannelSource.CTRIP_HOMESTAY.name(), String.valueOf(orderID));
                     getOrderDetailVo.setCreateTime(JodaTimeUtil.format(order.getOrderTime(), "yyyy-MM-dd HH:mm:ss"));
                     SubmitOrderRequestVo submitOrderParamVo = JSON.parseObject(order.getJsonData(), new TypeReference<SubmitOrderRequestVo>() {
                     });
@@ -273,16 +270,17 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
         logger.info("携程民宿，取消订单请求，参数：" + JSON.toJSONString(cancelOrderRequestVo));
         CancelOrderReturnVo cancelOrderReturnVo = new CancelOrderReturnVo();
         try {
-            Order order = new Order();
-            order.setChannelSource(ChannelSource.CTRIP_HOMESTAY);
-            order.setChannelOrderCode(String.valueOf(cancelOrderRequestVo.getOrderId()));
-            order = orderDao.selectOrderByChannelOrderCodeAndSource(order);
+            Order order = orderDao.selectOrderByOmsOrderCodeAndSource(ChannelSource.CTRIP_HOMESTAY.name(), String.valueOf(cancelOrderRequestVo.getOrderId()));
             if (order == null) {
                 throw new CtripHomeStayConnException("不存在此渠道订单id：" + cancelOrderRequestVo.getOrderId());
             }
+            CancelOrderRefundVo cancelOrderRefundVo = new CancelOrderRefundVo();
+            cancelOrderRefundVo.setAmount(order.getTotalPrice().multiply(BigDecimal.valueOf(100)).intValue());
             if (cancelOrderRequestVo.getCancelType() == 1) { //1.检查是否可以取消
                 if (order.getOrderStatus().name().equals(OrderStatus.CONFIM_AND_ORDER.name())) {
                     cancelOrderReturnVo.setStatusId(2); //可取消
+                    cancelOrderRefundVo.setDesc("此订单可退线上支付的金额。");
+                    cancelOrderReturnVo.setRefund(cancelOrderRefundVo);
                 } else {
                     cancelOrderReturnVo.setStatusId(1); //不可取消
                 }
@@ -293,9 +291,7 @@ public class CtripHomeStayConnServiceImpl implements ICtripHomeStayConnService, 
                     logger.debug("处理取消订单，返回值：" + JSON.toJSONString(jsonModel));
                     if (jsonModel.isSuccess()) {
                         cancelOrderReturnVo.setStatusId(2);
-                        CancelOrderRefundVo cancelOrderRefundVo = new CancelOrderRefundVo();
-                        cancelOrderRefundVo.setAmount(order.getTotalPrice().multiply(BigDecimal.valueOf(100)).intValue());
-                        cancelOrderRefundVo.setDesc(jsonModel.getMessage());
+                        cancelOrderRefundVo.setDesc("订单退款结果：" + jsonModel.getMessage());
                         cancelOrderReturnVo.setRefund(cancelOrderRefundVo);
                     } else {
                         cancelOrderReturnVo.setStatusId(1);
