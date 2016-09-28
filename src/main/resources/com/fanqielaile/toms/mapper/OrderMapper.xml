@@ -439,6 +439,13 @@
         from ota_toms_order where channel_order_code = #{channelOrderCode} and channel_source = #{channelSource} and
         deleted = 0 limit 1
     </select>
+    <select id="selectOrderByOmsOrderCodeAndSource" resultMap="BaseResultsMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from ota_toms_order where oms_order_code = #{omsOrderCode} and channel_source = #{channelSource} and
+        deleted = 0 limit 1
+    </select>
+
     <select id="selectOrderByOmsOrderCodeAndChannelSourceCode" resultMap="BaseResultsMap">
         SELECT
         <include refid="Base_Column_List"/>
