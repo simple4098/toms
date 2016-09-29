@@ -84,7 +84,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setMaxBookingDays(HomeStayConstants.maxBookingDays);//最大预定天数
 		roomInfo.setMinBookingDays(HomeStayConstants.minBookingDays);//
 		roomInfo.setHouseSize(omsFetchRoomVo.getRoomArea());
-		roomInfo.setName(omsFetchRoomVo.getRoomTypeName());
+		roomInfo.setName(omsFetchRoomVo.getInnName()+"-"+omsFetchRoomVo.getRoomTypeName());
 		roomInfo.setPrice(omsFetchRoomVo.getPrice());
 		roomInfo.setHouseModel(HomeStayConstants.houseModel);//户型
 		roomInfo.setCheckInTime(HomeStayConstants.checkInTime);//最早
@@ -148,7 +148,7 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 
 	private void setBedsInfo(OmsFetchRoomVo omsFetchRoomVo, RoomInfo roomInfo) {
 		List<Bed> beds = null;
-		int maxGuests = 0;
+		int maxGuests = 1;
 		if(omsFetchRoomVo.getBedLen()==null
 				|| omsFetchRoomVo.getBedWid()==null
 				|| omsFetchRoomVo.getBedType()==null
