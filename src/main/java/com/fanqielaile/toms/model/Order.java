@@ -1177,8 +1177,13 @@ public class Order extends Domain {
      */
     public RoomAvailParamDto toRoomAvail(Company company, Order order) {
         RoomAvailParamDto roomAvailParamDto = new RoomAvailParamDto();
-        roomAvailParamDto.setFrom(DateUtil.format(order.getLiveTime()));
-        roomAvailParamDto.setTo(DateUtil.format(order.getLeaveTime()));
+        Date liveTime = order.getLiveTime();
+        roomAvailParamDto.setFrom(DateUtil.format(liveTime));
+        Date leaveTime = order.getLeaveTime();
+        if (!liveTime.equals(leaveTime)){
+            leaveTime = DateUtil.addDay(leaveTime, -1);
+        }
+        roomAvailParamDto.setTo(DateUtil.format(leaveTime));
         roomAvailParamDto.setInnId(order.getInnId());
         roomAvailParamDto.setRoomTypeId(Integer.parseInt(order.getRoomTypeId()));
         roomAvailParamDto.setOtaId(company.getOtaId());
