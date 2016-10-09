@@ -124,4 +124,15 @@ public class TPServiceUtil {
         }
         return "A";
     }
+
+    public static boolean qunarBroadband(List<FacilitiesVo> facilitiesMap) {
+        if (!CollectionUtils.isEmpty(facilitiesMap)){
+            for (FacilitiesVo f : facilitiesMap){
+                if (f.getValue()==4){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
