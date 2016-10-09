@@ -128,6 +128,7 @@ public class QunarOrderService implements IQunarOrderService {
             result.setHotelName(bangInnDto.getInnName());
             result.setHotelPhone(bangInnDto.getMobile());
             List<Room> roomList = new ArrayList<>();
+            String bedNum = "";
             if (null != list && ArrayUtils.isNotEmpty(list.toArray())) {
                 for (RoomTypeInfo roomDetail : list) {
                     Room room = new Room();
@@ -142,8 +143,9 @@ public class QunarOrderService implements IQunarOrderService {
                     room.setWifi(broadband?"免费wifi":FeeMode.UNKNOWN.name());
                     room.setBroadband(FeeMode.UNKNOWN.name());
                     room.setWifi(FeeMode.UNKNOWN.name());
-                    room.setMaxOccupancy(roomDetail.getBedTypeValue());
-                    room.setOccupancyNumber(roomDetail.getBedTypeValue());
+                    bedNum = roomDetail.getBedNum()!=null?roomDetail.getBedNum().toString():"";
+                    room.setMaxOccupancy(bedNum);
+                    room.setOccupancyNumber(bedNum);
                     room.setCheckinTime("12:30");
                     room.setCheckoutTime("12:00");
                     room.setArea(String.valueOf(roomDetail.getRoomArea()));
