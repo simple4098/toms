@@ -139,8 +139,8 @@ public class QunarOrderService implements IQunarOrderService {
                     room.setName(roomDetail.getRoomTypeName());
                     room.setPayType(PaymentType.PREPAY.name());
                     boolean broadband = TPServiceUtil.qunarBroadband(roomDetail.getFacilitiesMap());
-                    room.setBroadband(broadband?"FREE":FeeMode.UNKNOWN.name());
-                    room.setWifi(broadband?"FREE":FeeMode.UNKNOWN.name());
+                    room.setBroadband(broadband?FeeMode.FREE.name():FeeMode.UNKNOWN.name());
+                    room.setWifi(broadband?FeeMode.FREE.name():FeeMode.UNKNOWN.name());
                     bedNum = roomDetail.getBedNum()!=null?roomDetail.getBedNum().toString():"";
                     room.setMaxOccupancy(bedNum);
                     room.setOccupancyNumber(bedNum);
