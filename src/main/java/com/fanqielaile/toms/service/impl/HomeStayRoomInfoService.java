@@ -80,7 +80,8 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		RoomInfo roomInfo = new RoomInfo();
 		roomInfo.setRoomId(0l+omsFetchRoomVo.getOtaRoomTypeId());
 		roomInfo.setDescription(omsFetchRoomVo.getRoomInfo());
-		roomInfo.setFloor(omsFetchRoomVo.getFloorNum());
+		Integer floor = changeFloor(omsFetchRoomVo.getFloorNum());
+		roomInfo.setFloor(floor);
 		roomInfo.setMaxBookingDays(HomeStayConstants.maxBookingDays);//最大预定天数
 		roomInfo.setMinBookingDays(HomeStayConstants.minBookingDays);//
 		roomInfo.setHouseSize(omsFetchRoomVo.getRoomArea());
@@ -144,6 +145,16 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		deposit.setType(HomeStayConstants.depositType);
 		roomInfo.setDeposit(deposit);// 押金
 		return roomInfo;
+	}
+
+	private Integer changeFloor(String floorNum) {
+		Integer floor = null;
+		try {
+			floor = Integer.valueOf(floorNum);
+		} catch (NumberFormatException e) {
+			
+		}
+		return floor;
 	}
 
 	private void setBedsInfo(OmsFetchRoomVo omsFetchRoomVo, RoomInfo roomInfo) {
