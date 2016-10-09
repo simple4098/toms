@@ -38,7 +38,7 @@ public class RoomInfo implements Serializable {
 	
     private Integer maxGuests;
     private Integer totalFloor;
-    private String floor;
+    private Integer floor;
     private Integer invoiceType;
     private Integer hasLandlord;
     private Geo geo;
@@ -179,15 +179,15 @@ public class RoomInfo implements Serializable {
         this.totalFloor = totalFloor;
     }
 
-    public String getFloor() {
-        return floor;
-    }
+    public Integer getFloor() {
+		return floor;
+	}
 
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
+	public void setFloor(Integer floor) {
+		this.floor = floor;
+	}
 
-    public Integer getInvoiceType() {
+	public Integer getInvoiceType() {
         return invoiceType;
     }
 
