@@ -28,6 +28,7 @@ import com.fanqielaile.toms.support.exception.TomsRuntimeException;
 import com.fanqielaile.toms.support.util.JsonModel;
 import com.fanqielaile.toms.support.util.MessageCenterUtils;
 import com.fanqielaile.toms.support.util.QunarUtil;
+import com.fanqielaile.toms.support.util.TPServiceUtil;
 import com.fanqielaile.toms.support.util.TomsUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -136,6 +137,9 @@ public class QunarOrderService implements IQunarOrderService {
                     OtaRoomPriceDto otaRoomPriceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(otaInnOtaDto.getCompanyId(), roomDetail.getRoomTypeId(), otaInnOtaDto.getOtaInfoId()));
                     room.setName(roomDetail.getRoomTypeName());
                     room.setPayType(PaymentType.PREPAY.name());
+                    boolean broadband = TPServiceUtil.qunarBroadband(roomDetail.getFacilitiesMap());
+                    room.setBroadband(broadband?"免费宽带":FeeMode.UNKNOWN.name());
+                    room.setWifi(broadband?"免费wifi":FeeMode.UNKNOWN.name());
                     room.setBroadband(FeeMode.UNKNOWN.name());
                     room.setWifi(FeeMode.UNKNOWN.name());
                     room.setMaxOccupancy(roomDetail.getBedTypeValue());
