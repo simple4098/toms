@@ -13,7 +13,7 @@ public enum OmsBedType {
 	private String bedTypeName;
 	private String bedTypeValue;
 	private int number;
-	private OmsBedType(String bedTypeName, String bedTypeValue,int number) {
+	private OmsBedType(String bedTypeValue,String bedTypeName, int number) {
 		this.bedTypeName = bedTypeName;
 		this.bedTypeValue = bedTypeValue;
 		this.number = number;

@@ -27,5 +27,6 @@ public interface HomeStayConstants {
 	Integer BOOKING_STATUS_YES = 1;
 	Integer BOOKING_STATUS_NO = 0;
 	int maxGuests = 999;
+	int houseSize = 10;
 }
 
