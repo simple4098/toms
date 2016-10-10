@@ -84,7 +84,6 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setFloor(floor);
 		roomInfo.setMaxBookingDays(HomeStayConstants.maxBookingDays);//最大预定天数
 		roomInfo.setMinBookingDays(HomeStayConstants.minBookingDays);//
-		roomInfo.setHouseSize(omsFetchRoomVo.getRoomArea());
 		roomInfo.setName(omsFetchRoomVo.getInnName()+"-"+omsFetchRoomVo.getRoomTypeName());
 		roomInfo.setPrice(omsFetchRoomVo.getPrice());
 		roomInfo.setHouseModel(HomeStayConstants.houseModel);//户型
@@ -94,8 +93,10 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 		roomInfo.setHasLandlord(HomeStayConstants.hasLandlord);//房东合住
 		roomInfo.setRefundDays(HomeStayConstants.refundDays);//全额退款提前天数;-1：表示不可退，0：表示随时退，1:表示需要提前一天退，等
 		roomInfo.setUpdateTime(omsFetchRoomVo.getUpdateTime()==null?"":omsFetchRoomVo.getUpdateTime());
-		
-		roomInfo.setRentSize(omsFetchRoomVo.getRoomArea());
+		//为空默认10
+		Integer houseSize = omsFetchRoomVo.getRoomArea() == null? HomeStayConstants.houseSize:omsFetchRoomVo.getRoomArea();
+		roomInfo.setHouseSize(houseSize);
+		roomInfo.setRentSize(houseSize);
 		roomInfo.setInstantBook(HomeStayConstants.instantBook);//0=非即时预订/需要房东确认，1=即时预订/及时确认
 		roomInfo.setReceptionHours(HomeStayConstants.receptionHours);//接待时间
 		roomInfo.setOnlinePayRatio(HomeStayConstants.OnlinePayRatio);//线上支付百分比,如:50
@@ -164,6 +165,13 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 				|| omsFetchRoomVo.getBedWid()==null
 				|| omsFetchRoomVo.getBedType()==null
 				|| omsFetchRoomVo.getBedNum()==null){
+			
+			beds = new ArrayList<>(1);
+			Bed bed = new Bed();
+			bed.setNumOfBeds(1);
+			bed.setSize(200+"*"+120);
+			bed.setType(HomeStayConstants.bedType);
+			beds.add(bed);
 			roomInfo.setBeds(null);
 		}else{
 			beds = new ArrayList<>(1);
@@ -174,13 +182,13 @@ public class HomeStayRoomInfoService implements IHomeStayRoomInfoService{
 			beds.add(bed);
 
 			String bedTypeValue = omsFetchRoomVo.getBedTypeValue();
-			if(OmsBedType.Bed.equals(bedTypeValue)){
+			if(OmsBedType.Bed.getBedTypeValue().equals(bedTypeValue)){
 				maxGuests = OmsBedType.Bed.getNumber();
 			}else
-			if(OmsBedType.SignleBed.equals(bedTypeValue)){
+			if(OmsBedType.SignleBed.getBedTypeValue().equals(bedTypeValue)){
 				maxGuests = OmsBedType.SignleBed.getNumber();
 			}else
-			if(OmsBedType.ThreeBed.equals(bedTypeValue)){
+			if(OmsBedType.ThreeBed.getBedTypeValue().equals(bedTypeValue)){
 				maxGuests = OmsBedType.ThreeBed.getNumber();
 			}else
 				maxGuests = OmsBedType.Other.getNumber();
