@@ -427,7 +427,9 @@ public class TBXHotelUtilPromotion {
             req.setPaymentType(1L);
             //0：不含早1：含单早2：含双早N：含N早（1-99可选）
             req.setBreakfastCount(0L);
-            req.setCancelPolicy("{\"cancelPolicyType\":2}");
+           // req.setCancelPolicy("{\"cancelPolicyType\":2}");
+            //表示从入住日24点往前推至少6个小时即入住日18点前可免费取消
+            req.setCancelPolicy("{\"cancelPolicyType\":5,\"policyInfo\":{\"timeBefore\":6}}");
         }
         req.setStatus(1L);
         try{
