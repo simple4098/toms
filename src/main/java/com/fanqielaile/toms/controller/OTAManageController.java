@@ -74,6 +74,7 @@ public class OTAManageController extends BaseController {
     @ResponseBody
     public Object TBService(HttpServletRequest request) {
         Result result = new Result();
+        String orderNo = "";
         try {
             String xmlStr = HttpClientUtil.convertStreamToString(request.getInputStream());
             if (StringUtils.isNotEmpty(xmlStr)) {
@@ -92,6 +93,7 @@ public class OTAManageController extends BaseController {
                         if (rootElementString.equals(OrderMethod.BookRQ.name())) {
                             //创建订单
                             Map<String, Object> map = orderService.addOrder(xmlStr, ChannelSource.TAOBAO);
+                            orderNo =  (String)map.get("channelOrderCode");
                             Order order = (Order) map.get("data");
                             if ((Boolean) map.get("status")) {
                                 result.setResultCode("0");
@@ -186,9 +188,13 @@ public class OTAManageController extends BaseController {
                 result.setResultCode("-400");
             }
             logger.info("返回淘宝的xml值=>" + result.toString());
-            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, result.toString(), "淘宝接口返回值"));
+            OrderLogData orderLogData = new OrderLogData(ChannelSource.TAOBAO, result.toString(), "淘宝接口返回值");
+            orderLogData.setChannelOrderCode(orderNo);
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, orderLogData);
         } catch (Exception e) {
-            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN, new OrderLogData(ChannelSource.TAOBAO, e.getMessage(), "淘宝接口异常"));
+            OrderLogData orderLogData =  new OrderLogData(ChannelSource.TAOBAO, e.getMessage(), "淘宝接口异常");
+            orderLogData.setChannelOrderCode(orderNo);
+            MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.RESPONSE_RETURN,orderLogData);
         }
         return result;
     }
@@ -335,7 +341,7 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("试订单接口返回值=>" + result.toString());
+        //logger.info("试订单接口返回值=>" + result.toString());
         MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓试订单返回值"));
         return result;
     }
@@ -350,11 +356,15 @@ public class OTAManageController extends BaseController {
     @ResponseBody
     public Object createhotelOrder(String xml) throws Exception {
         FcCreateHotelOrderResponseResult result = new FcCreateHotelOrderResponseResult();
+        Integer innId = null;
+        String orderNo = null;
         if (StringUtils.isNotEmpty(xml)) {
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.ADD_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓创建订单传入参数"));
             Map<String, Object> map = this.orderService.createFcHotelOrder(xml);
             JsonModel jsonModel = (JsonModel) map.get("status");
             Order order = (Order) map.get("order");
+            innId = order.getInnId();
+            orderNo = order.getChannelOrderCode();
             CreateHotelOrderResponse createHotelOrderResponse = new CreateHotelOrderResponse();
             if (null != createHotelOrderResponse) {
                 if (jsonModel.isSuccess()) {
@@ -376,8 +386,10 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("创建订单接口返回值=>" + result.toString());
-        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓创建订单返回值"));
+        //logger.info("创建订单接口返回值=>" + result.toString());
+        OrderLogData orderLogData = new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓创建订单返回值");
+        orderLogData.setChannelOrderCode(orderNo);
+        MessageCenterUtils.savePushTomsOrderLog(innId, OrderLogDec.CHECK_ORDER,orderLogData);
         return result;
     }
 
@@ -391,9 +403,11 @@ public class OTAManageController extends BaseController {
     @ResponseBody
     public Object cancelHotelOrder(String xml) throws Exception {
         FcCancelHotelOrderResponseResult result = new FcCancelHotelOrderResponseResult();
+        String orderNo="";
         if (StringUtils.isNotEmpty(xml)) {
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓取消订单传入参数"));
             CancelHotelOrderResponse cancelHotelOrderResponse = this.orderService.cancelFcHotelOrder(xml);
+            orderNo = cancelHotelOrderResponse.getSpOrderId();
             if (null != cancelHotelOrderResponse) {
                 result.setResultFlag("1");
                 result.setResultMsg("success");
@@ -407,8 +421,10 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("取消订单接口返回值=>" + result.toString());
-        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓取消订单返回值"));
+        //logger.info("取消订单接口返回值=>" + result.toString());
+        OrderLogData orderLogData = new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓创建订单返回值");
+        orderLogData.setChannelOrderCode(orderNo);
+        MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, orderLogData);
         return result;
     }
 
@@ -422,9 +438,11 @@ public class OTAManageController extends BaseController {
     @ResponseBody
     public Object getFcOrderStatus(String xml) throws Exception {
         FcGetOrderStatusResponseResult result = new FcGetOrderStatusResponseResult();
+        String orderNo = "";
         if (StringUtils.isNotEmpty(xml)) {
             MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.SEARCH_ORDER, new OrderLogData(ChannelSource.FC, xml, "天下房仓查询订单传入参数"));
             GetOrderStatusResponse fcOrderStatus = this.orderService.getFcOrderStatus(xml);
+            orderNo = fcOrderStatus.getSpOrderId();
             if (null != fcOrderStatus) {
                 result.setResultMsg("success");
                 result.setResultFlag("1");
@@ -437,7 +455,9 @@ public class OTAManageController extends BaseController {
             result.setResultFlag("0");
             result.setResultMsg("xml参数错误");
         }
-        logger.info("查询订单状态接口返回值=>" + result.toString());
+        //logger.info("查询订单状态接口返回值=>" + result.toString());
+        OrderLogData orderLogData = new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓查询订单返回值");
+        orderLogData.setChannelOrderCode(orderNo);
         MessageCenterUtils.savePushTomsOrderLog(null, OrderLogDec.CHECK_ORDER, new OrderLogData(ChannelSource.FC, result.toString(), "天下房仓查询订单返回值"));
         return result;
     }
@@ -554,7 +574,7 @@ public class OTAManageController extends BaseController {
 //            if (StringUtils.isNotEmpty(xml)) {
 //                xml = new String(xml.getBytes("iso8859-1"), "utf-8");
 //            }
-            logger.info("去哪儿传入参数：" + xml);
+            logger.info("去哪儿传入参数：" + xml.replaceAll("\r|\n", ""));
             if (StringUtils.isNotEmpty(companyCode)) {
                 //获取酒店信息
                 logger.info("去哪儿获取酒店信息，传入参数：" + companyCode);
@@ -639,7 +659,7 @@ public class OTAManageController extends BaseController {
     @RequestMapping(value = "/getRoomTypeInfo")
     @ResponseBody
     public Object getRoomTypeInfo(String xml) {
-        logger.info("去哪儿获取房型信息，传入参数：" + xml);
+        logger.info("去哪儿获取房型信息，传入参数：" + xml.replaceAll("\r|\n", ""));
         QunarGetRoomTypeInfoResponse result = null;
         try {
             if (StringUtils.isNotEmpty(xml)) {
@@ -663,7 +683,7 @@ public class OTAManageController extends BaseController {
     @RequestMapping(value = "/createOrder")
     @ResponseBody
     public Object createOrderQunar(String xml) {
-        logger.info("去哪儿预定订单传入参数：" + xml);
+        logger.info("去哪儿预定订单传入参数：" + xml.replaceAll("\r|\n", ""));
         BookingResponse bookingResponse = new BookingResponse();
         try {
             if (StringUtils.isNotEmpty(xml)) {
@@ -687,7 +707,7 @@ public class OTAManageController extends BaseController {
     @RequestMapping(value = "/cancelOrder")
     @ResponseBody
     public Object cancelOrderQunar(String xml) {
-        logger.info("去哪儿取消订单传入参数：" + xml);
+        logger.info("去哪儿取消订单传入参数：" + xml.replaceAll("\r|\n", ""));
         QunarCancelOrderResponse result = new QunarCancelOrderResponse();
         try {
             if (StringUtils.isNotEmpty(xml)) {
