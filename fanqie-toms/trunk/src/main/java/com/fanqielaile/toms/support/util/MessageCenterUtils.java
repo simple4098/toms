@@ -2,7 +2,6 @@ package com.fanqielaile.toms.support.util;
 
 import com.alibaba.fastjson.JSON;
 import com.fanqie.util.DateUtil;
-import com.fanqie.util.PropertiesUtil;
 import com.fanqielaile.toms.dto.orderLog.OrderBizType;
 import com.fanqielaile.toms.dto.orderLog.OrderLogData;
 import com.fanqielaile.toms.enums.ChannelSource;
@@ -18,6 +17,7 @@ import com.tomasky.msp.model.SmsMessage;
 import com.tomasky.msp.model.WeChatMessage;
 import com.tomato.framework.log.client.BizLogClient;
 import com.tomato.framework.log.model.BizLog;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,6 +166,21 @@ public class MessageCenterUtils {
      * 推送toms订单日志
      */
     public static void savePushTomsOrderLog(Integer innId, OrderLogDec logDec, OrderLogData logData) {
+        if (logData!=null){
+            String requestParam = logData.getRequestParam();
+            requestParam = requestParam.replaceAll("\r|\n", "");
+            String channelOrderCode = logData.getChannelOrderCode();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("【"+logData.getChannelSource().name()+"】");
+            if (innId!=null){
+                stringBuilder.append(" 【客栈innId: "+innId+"】");
+            }
+            if (StringUtils.isNotEmpty(channelOrderCode)){
+               stringBuilder.append(" 订单号："+channelOrderCode);
+            }
+            stringBuilder.append(logData.getContent()+":"+requestParam);
+            LOGGER.info(stringBuilder.toString());
+        }
         boolean aBoolean = ResourceBundleUtil.getBoolean("log.open");
         if (aBoolean) {
             LOGGER.info("=====记录日志开始======");
