@@ -318,7 +318,7 @@
                       value="http://www.fangcang.com/USP/api_v1/deleteRoomTypeMapping"></property>
             <property name="FcDeleteHotelMappingUrl"
                       value="http://www.fangcang.com/USP/api_v1/deleteHotelMapping"></property>
-            <property name="qunarOrderOpt" value="http://a7im.trade.qunar.com"/>
+            <property name="qunarOrderOpt" value="http://a7im.trade.qunar.com/api/ota/otaOpt"/>
             <property name="pushCredit" value="http://oms.fanqiele.com/credit/push"/>
             <property name="homeStayFetchRoom" value="http://oms.fanqiele.com/api/homeStay/fetchRoom"/>
             <property name="queryRoomStatus" value="http://oms.fanqiele.com/api/queryRoomStatus"/>
