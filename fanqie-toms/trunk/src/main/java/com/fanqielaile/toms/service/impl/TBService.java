@@ -221,8 +221,9 @@ public class TBService implements ITPService {
         Long rpid = null;
         //房型
         if (!CollectionUtils.isEmpty(list)){
+            log.info("获取客栈房型信息："+JSON.toJSONString(list));
             for (RoomTypeInfo r:list){
-                log.info("========开始推客栈房型【"+r.getRoomTypeName()+"["+r.getRoomTypeId()+"]"+"】============== size:"+r.getRoomDetail().size());
+                log.info("========开始推客栈房型【"+r.getRoomTypeName()+"["+r.getRoomTypeId()+"]"+"】==============");
                 if (TBType.CREDIT.equals(otaInfo.getTbType())){
                     if (r.getRatePlanConfig()==null || StringUtils.isEmpty(r.getRatePlanCode())){
                         continue;
