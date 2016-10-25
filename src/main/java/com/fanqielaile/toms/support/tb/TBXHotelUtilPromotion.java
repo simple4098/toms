@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.support.tb;
 
+import com.alibaba.fastjson.JSON;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.util.DateUtil;
 import com.fanqie.util.JacksonUtil;
@@ -343,6 +344,7 @@ public class TBXHotelUtilPromotion {
             /*log.info("库存json:" + json);*/
             log.info("房态json:"+roomSwitchJson);
         }
+        log.info("请求参数："+ JSON.toJSONString(req));
         XhotelRoomUpdateResponse response = client.execute(req , otaInfoRefDto.getSessionKey());
         log.info("===========roomUpdate Gid:"+response.getGid());
         return response.getGid();
