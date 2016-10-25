@@ -1,5 +1,6 @@
 package com.fanqielaile.toms.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.fanqie.core.dto.RoomSwitchCalStatus;
 import com.fanqie.core.dto.TBParam;
 import com.fanqie.util.DcUtil;
@@ -237,7 +238,9 @@ public class TBService implements ITPService {
                     }
                     OtaRoomPriceDto priceDto = otaRoomPriceDao.selectOtaRoomPriceDto(new OtaRoomPriceDto(company.getId(), r.getRoomTypeId(), otaInfo.getOtaInfoId()));
                     //商品上架
-                    TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.isSj() ? RoomSwitchCalStatus.SJ : RoomSwitchCalStatus.XJ);
+                    log.info("商品上架:"+ JSON.toJSONString(tbParam));
+                    Long aLong = TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.isSj() ? RoomSwitchCalStatus.SJ : RoomSwitchCalStatus.XJ);
+                    log.info("商品上架:"+ aLong);
                     //Long gid = TBXHotelUtilPromotion.roomUpdate(r, otaInfo, tbParam.getStatus());
                     //创建酒店rp
                     if (TBType.CREDIT.equals(otaInfo.getTbType())){
