@@ -1,6 +1,0 @@
---bang_inn 更新字段
-alter table bang_inn add column updated_date timestamp(6);
-alter table bang_inn add column sj int2  DEFAULT 1;
-
-ALTER TABLE  bang_inn ALTER COLUMN bang_date TYPE timestamp;
-ALTER TABLE "public"."bang_inn" ADD UNIQUE ("company_id", "inn_id");
